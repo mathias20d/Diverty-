@@ -26,7 +26,7 @@
       "telephone": "+50766677965",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Tu Dirección Exacta Aquí (Ej: Calle 50, Edificio XYZ)", <!-- ¡IMPORTANTE! Reemplaza con tu dirección física -->
+        "streetAddress": "Tu Dirección Exacta Aquí (Ej: Calle 50, Edificio XYZ)", <!-- ¡IMPORTANT_E! Reemplaza con tu dirección física -->
         "addressLocality": "Panamá Centro",
         "addressRegion": "Panamá",
         "postalCode": "Tu Código Postal Aquí", <!-- Opcional, pero recomendado si lo tienes -->
@@ -229,6 +229,7 @@
                 <li><button id="navHome" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Inicio 🏠</button></li>
                 <li><button id="navServices" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Servicios 📋</button></li>
                 <li><button id="navPackages" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Paquetes 📦</button></li>
+                <li><button id="navReviews" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Reseñas 🌟</button></li>
                 <li><button id="navBooking" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Reservar 🗓️</button></li>
             </ul>
         </nav>
@@ -312,6 +313,66 @@
             ], description: 'Servicio por 2 horas y media. Incluye payaso o animador, animación, juegos, concursos, pintacaritas, show de magia cómica y asistencia para la piñata. ¡Celebra a tu estilo!💖', color: 'bg-orange-100 border-orange-300 text-orange-800' },
         ];
 
+        // Customer Reviews data
+        const customerReviews = [
+            {
+                id: 1,
+                name: "Ana García",
+                rating: 5,
+                review: "¡Excelente servicio! Quedé muy satisfecha con la atención y la calidad del producto. Lo recomiendo totalmente.",
+                date: "01/06/2025"
+            },
+            {
+                id: 2,
+                name: "Carlos Rodríguez",
+                rating: 4,
+                review: "Buen producto, aunque la entrega tardó un poco más de lo esperado. En general, una buena experiencia.",
+                date: "28/05/2025"
+            },
+            {
+                id: 3,
+                name: "María Fernández",
+                rating: 5,
+                review: "Increíble. La mejor compra que he hecho en mucho tiempo. Definitivamente volveré a comprar.",
+                date: "25/05/2025"
+            },
+            {
+                id: 4,
+                name: "Juan Pérez",
+                rating: 3,
+                review: "El producto cumple con lo prometido, pero no me sorprendió. Es lo que esperaba.",
+                date: "20/05/2025"
+            },
+            {
+                id: 5,
+                name: "Sofía Martínez",
+                rating: 5,
+                review: "Atención al cliente excepcional y el producto superó mis expectativas. ¡Cinco estrellas!",
+                date: "15/05/2025"
+            },
+            {
+                id: 6,
+                name: "Luis González",
+                rating: 4,
+                review: "Muy buena animación para la fiesta de mi hijo. Los niños se divirtieron mucho.",
+                date: "10/05/2025"
+            },
+            {
+                id: 7,
+                name: "Laura Jiménez",
+                rating: 5,
+                review: "El show de burbujas fue el centro de atención. ¡Todos los niños lo amaron!",
+                date: "05/05/2025"
+            },
+            {
+                id: 8,
+                name: "Roberto Castro",
+                rating: 5,
+                review: "Contratamos el paquete Aventura de Ensueño y fue todo un éxito. Muy profesionales.",
+                date: "01/05/2025"
+            }
+        ];
+
         // Recargos por transporte según la ubicación
         const transportFeesByLocation = {
             'Panamá Centro': 0,
@@ -387,6 +448,24 @@
 
         function renderSection(sectionHtml) {
             document.getElementById('mainContent').innerHTML = sectionHtml;
+        }
+
+        // Helper function to render star ratings for reviews
+        function renderStars(rating) {
+            const stars = [];
+            for (let i = 0; i < 5; i++) {
+                stars.push(
+                    `<svg
+                        key="${i}"
+                        class="h-5 w-5 ${i < rating ? 'text-yellow-400' : 'text-gray-300'}"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                    >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.817 2.045a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.817-2.045a1 1 0 00-1.175 0l-2.817 2.045c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+                    </svg>`
+                );
+            }
+            return `<div class="flex">${stars.join('')}</div>`;
         }
 
         function updateCartSummary() {
@@ -688,6 +767,41 @@
                 };
             });
         }
+
+        // New function to render the Reviews section
+        function renderReviewsSection() {
+            const reviewsHtml = customerReviews.map(review => `
+                <div class="bg-blue-50 p-6 rounded-xl shadow-md flex flex-col justify-between border-4 border-blue-200">
+                    <div>
+                        <div class="flex items-center mb-3">
+                            ${renderStars(review.rating)}
+                            <span class="ml-2 text-sm text-gray-600">${review.rating} de 5 estrellas</span>
+                        </div>
+                        <p class="text-gray-800 text-base leading-relaxed mb-4 italic">"${review.review}"</p>
+                    </div>
+                    <div class="text-right mt-4">
+                        <p class="font-semibold text-blue-800">- ${review.name}</p>
+                        <p class="text-sm text-gray-500">${review.date}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            const html = `
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-indigo-400">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">
+                        Lo Que Dicen Nuestros Clientes 🌟
+                    </h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${reviewsHtml}
+                    </div>
+                    <p class="text-center text-gray-600 text-sm mt-8">
+                        ¡Gracias a todos nuestros clientes por compartir sus experiencias!
+                    </p>
+                </section>
+            `;
+            renderSection(html);
+        }
+
 
         function renderBookingSection() {
             const selectedItemsListHtml = appState.selectedItems.length === 0
@@ -1073,6 +1187,7 @@
                 if ((buttonId === 'navHome' && sectionName === 'home') ||
                     (buttonId === 'navServices' && sectionName === 'services') ||
                     (buttonId === 'navPackages' && sectionName === 'packages') ||
+                    (buttonId === 'navReviews' && sectionName === 'reviews') || // New Reviews nav button
                     (buttonId === 'navBooking' && sectionName === 'booking')) {
                     button.classList.add('bg-purple-500', 'text-white', 'shadow-md');
                     button.classList.remove('text-gray-700', 'hover:bg-purple-100');
@@ -1091,6 +1206,9 @@
                     break;
                 case 'packages':
                     renderPackagesSection();
+                    break;
+                case 'reviews': // New case for reviews
+                    renderReviewsSection();
                     break;
                 case 'trivia':
                     startTrivia(); 
@@ -1226,6 +1344,7 @@
             document.getElementById('navHome').onclick = () => setActiveSection('home');
             document.getElementById('navServices').onclick = () => setActiveSection('services');
             document.getElementById('navPackages').onclick = () => setActiveSection('packages');
+            document.getElementById('navReviews').onclick = () => setActiveSection('reviews'); // Event listener for new Reviews button
             document.getElementById('navBooking').onclick = () => setActiveSection('booking');
             document.getElementById('proceedToBookButton').onclick = () => setActiveSection('booking');
 
@@ -1235,3 +1354,4 @@
     </script>
 </body>
 </html>
+
