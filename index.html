@@ -1101,13 +1101,16 @@
                             displayItemPrice = item.price * 0.90;
                         }
 
+                        // Corrección: Usar concatenación de cadenas en lugar de template literal anidado para evitar el error de análisis
+                        const priceDisplay = originalItemPrice !== null
+                            ? '<span class="line-through text-gray-500">$' + item.price.toFixed(2) + '</span> ' +
+                              '<span class="text-green-700">$' + displayItemPrice.toFixed(2) + '</span>'
+                            : '$' + displayItemPrice.toFixed(2);
+
                         return `
                             <li>
                                 ${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} -
-                                ${originalItemPrice !== null ? `
-                                    <span class="line-through text-gray-500">$${item.price.toFixed(2)}</span> 
-                                    <span class="text-green-700">$${displayItemPrice.toFixed(2)}</span>
-                                ` : `$${displayItemPrice.toFixed(2)}`}
+                                ${priceDisplay}
                             </li>
                         `;
                     }).join('')}
