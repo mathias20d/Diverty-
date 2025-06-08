@@ -26,14 +26,14 @@
       "@type": ["LocalBusiness", "Organization"],
       "name": "Diverty Eventos",
       "image": "https://placehold.co/1200x630/A78BFA/ffffff?text=Diverty+Eventos+Logo",
-      "url": "TU_URL_DEL_SITIO_WEB_AQUI", <!-- ¡IMPORTANT_E! Reemplaza con la URL real de tu sitio -->
+      "url": "https://www.divertyeventos.com", <!-- ¡IMPORTANTE! Reemplaza con la URL real de tu sitio -->
       "telephone": "+50766677965",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Tu Dirección Exacta Aquí (Ej: Calle 50, Edificio XYZ)", <!-- ¡IMPORTANT_E! Reemplaza con tu dirección física -->
+        "streetAddress": "Tu Dirección Exacta Aquí (Ej: Calle 50, Edificio XYZ)", <!-- ¡IMPORTANTE! Reemplaza con tu dirección física -->
         "addressLocality": "Panamá Centro",
         "addressRegion": "Panamá",
-        "postalCode": "Tu Código Postal Aquí", <!-- Opcional, pero recomendado si lo tienes -->
+        "postalCode": "0819-01234", <!-- Opcional, pero recomendado si lo tienes. Ejemplo de formato. -->
         "addressCountry": "PA"
       },
       "priceRange": "$$",
@@ -126,9 +126,9 @@
               "@type": "Service",
               "name": "Paquete Celebración Personalizada",
               "description": "Servicio premium con payaso, animación, pintacaritas, show de magia cómica y asistencia para piñata."
-            }
           }
-        ]
+        }
+      ]
       },
       "slogan": "¡Hacemos magia!",
       "description": "Diverty Eventos ofrece la mejor animación y shows para fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Especialistas en shows de burbujas, pintacaritas y paquetes de diversión inolvidable."
@@ -214,7 +214,7 @@
             }
         }
 
-        /* Ajuste de padding para botones de navegación para mejorar el touch target en móviles */
+        /* Ajuste de padding para botones de navegación para mejor interacción táctil */
         header ul li button {
             font-size: 1rem; /* text-base */
             font-weight: 700; /* font-bold */
@@ -444,7 +444,7 @@
     </main>
 
     <!-- Botón Flotante de WhatsApp -->
-    <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank">
+    <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank" aria-label="Chatear por WhatsApp">
         <!-- Atributo alt descriptivo para SEO y accesibilidad -->
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="Icono de WhatsApp para chatear con Diverty Eventos">
         <!-- Se ha eliminado el span que contenía el texto "Consultas aquí" -->
@@ -559,36 +559,36 @@
                     }
 
                     // Construir el HTML de las opciones de respuesta
-                    const optionsHtml = currentQuestion.options.map((option) => \`
+                    const optionsHtml = currentQuestion.options.map((option) => `
                         <button
                             class="trivia-option-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md text-lg transition duration-300 w-full sm:w-auto flex-grow"
-                            data-option="\${option}"
+                            data-option="${option}"
                         >
-                            \${option}
+                            ${option}
                         </button>
-                    \`).join('');
+                    `).join('');
 
                     // HTML completo de la sección de trivia
-                    const html = \`
+                    const html = `
                         <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-purple-400">
                             <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-6 sm:mb-8">
                                 Trivia de Programas Infantiles 🧠
                             </h1>
                             <div class="bg-white p-6 rounded-2xl shadow-inner border-4 border-purple-300 text-center">
                                 <p class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
-                                    Pregunta \${this.currentIndex + 1} para ganar el descuento:
+                                    Pregunta ${this.currentIndex + 1} para ganar el descuento:
                                 </p>
                                 <p class="text-2xl sm:text-3xl font-extrabold text-indigo-700 mb-8">
-                                    \${currentQuestion.question}
+                                    ${currentQuestion.question}
                                 </p>
                                 <div id="triviaOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    \${optionsHtml}
+                                    ${optionsHtml}
                                 </div>
                                 <p id="triviaFeedback" class="text-lg font-bold mt-6 hidden"></p>
                                 <p id="triviaTimer" class="text-xl font-bold text-red-600 mt-4">Tiempo restante: 20s</p>
                             </div>
                         </section>
-                    \`;
+                    `;
                     // Renderizar la sección en el contenedor principal
                     renderSection(html);
 
@@ -599,12 +599,12 @@
 
                     let timeLeft = 20; // Tiempo límite para cada pregunta
                     const timerDisplay = document.getElementById('triviaTimer');
-                    timerDisplay.textContent = \`Tiempo restante: \${timeLeft}s\`;
+                    timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
 
                     // Iniciar el temporizador
                     this.timer = setInterval(() => {
                         timeLeft--;
-                        timerDisplay.textContent = \`Tiempo restante: \${timeLeft}s\`;
+                        timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
                         if (timeLeft <= 0) {
                             clearInterval(this.timer);
                             this.handleTimeUp(); // Manejar el tiempo agotado
@@ -668,7 +668,7 @@
                         }
 
                     } else {
-                        triviaFeedback.textContent = \`¡Incorrecto! ❌ La respuesta correcta era: \${currentQuestion.answer}\`;
+                        triviaFeedback.textContent = `¡Incorrecto! ❌ La respuesta correcta era: ${currentQuestion.answer}`;
                         triviaFeedback.classList.add('text-red-600');
                         
                         document.querySelectorAll('.trivia-option-button').forEach(button => {
@@ -692,9 +692,9 @@
                     let message = '';
                     if (won && this.correctAnswers >= 5) { 
                         appState.triviaBubbleDiscountActive = true; 
-                        message = \`¡Felicidades! 🎉 Respondiste \${this.correctAnswers} preguntas correctamente. ¡Has ganado un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! Este descuento se aplicará automáticamente en tu carrito. 🥳\`;
+                        message = `¡Felicidades! 🎉 Respondiste ${this.correctAnswers} preguntas correctamente. ¡Has ganado un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! Este descuento se aplicará automáticamente en tu carrito. 🥳`;
                     } else {
-                        message = \`¡Fin del juego! Respondiste \${this.correctAnswers} preguntas correctamente. Necesitas 5 aciertos para ganar. Sigue practicando para la próxima vez. No te preocupes, aún puedes aprovechar nuestras otras promociones. 😊\`;
+                        message = `¡Fin del juego! Respondiste ${this.correctAnswers} preguntas correctamente. Necesitas 5 aciertos para ganar. Sigue practicando para la próxima vez. No te preocupes, aún puedes aprovechar nuestras otras promociones. 😊`;
                         appState.triviaBubbleDiscountActive = false; 
                     }
                     showInfoModal(message);
@@ -739,7 +739,7 @@
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: 'Diversión por 1 hora y media con animador, juegos, globos y piñata. ¡Ideal para fiestas express! 🥳', borderColorClass: 'border-pink-300' },
+            ], description: 'Diversión por 1.5 horas. Ideal para fiestas express. 🥳', borderColorClass: 'border-pink-300' },
             { id: 'P2', name: 'Aventura de Ensueño 🌈', price: 100, services: [
                 'Payas@ o animad@r 🤡🎤',
                 'Pintacaritas 🎨👧👦',
@@ -747,14 +747,14 @@
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: 'Servicio por 2 horas. Incluye payaso o animador, pintacaritas, animación infantil, juegos, concursos, figuras con globos y la emocionante rotura de piñata. ¡Una aventura completa! 🌈', borderColorClass: 'border-indigo-300' },
+            ], description: 'Servicio de 2 horas. Incluye animador y pintacaritas para una aventura completa. 🌈', borderColorClass: 'border-indigo-300' },
             { id: 'P3', name: 'Celebración Personalizada ✨', price: 135, services: [
                 'Payasit@ o animad@r 🤡🎤',
                 'Animación juegos y concursos 🥳🎲',
                 'PintaCaritas 🎨👧👦',
                 'Show de magia Cómica ✨🤣',
                 'Asistencia para la piñata 🍬🎉'
-            ], description: 'Servicio por 2 horas y media. Incluye payaso o animador, animación, juegos, concursos, pintacaritas, show de magia cómica y asistencia para la piñata. ¡Celebra a tu estilo!💖', borderColorClass: 'border-orange-300' },
+            ], description: 'Servicio premium por 2.5 horas. Con magia cómica y pintacaritas. ¡Celebra a tu estilo!💖', borderColorClass: 'border-orange-300' },
         ];
 
         // Recargos por transporte según la ubicación
@@ -1131,7 +1131,6 @@
                 } else if (packagesData.some(p => p.name === item.name) && appState.monthlyPackageDiscountActive) {
                     itemPriceForCalculation = item.price * 0.90;
                 }
-                
                 return sum + (itemPriceForCalculation * item.quantity);
             }, 0);
             const finalTotalPrice = totalItemsPrice + currentTransportFee;
@@ -1395,7 +1394,8 @@
         async function handleBookingSubmit(event) {
             event.preventDefault();
 
-            const formspreeEndpoint = 'https://formspree.io/f/xyzjznaw'; <!-- ¡ACTUALIZA ESTO! -->
+            // ¡IMPORTANTE! Reemplaza este endpoint con el tuyo de Formspree
+            const formspreeEndpoint = 'https://formspree.io/f/xyzjznaw'; 
 
             const formData = new FormData();
             formData.append('Fecha del Evento', document.getElementById('bookingDate').value);
