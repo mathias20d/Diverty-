@@ -3,37 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Meta Título Optimizado: Claro, conciso y con palabras clave relevantes para la búsqueda local -->
-    <title>Diverty Eventos | Fiestas Infantiles en Panamá Centro | Animación, Shows de Burbujas y Pintacaritas</title>
-    <!-- Meta Descripción Optimizada: Atractiva, con palabras clave y un llamado a la acción claro -->
-    <meta name="description" content="Organizamos las fiestas infantiles más mágicas en Panamá Centro. Descubre nuestros animadores, shows de burbujas gigantes, pintacaritas y paquetes de diversión. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!">
+    <title>Diverty Eventos | Fiestas Infantiles en Panamá Centro | Animación y Shows</title>
+    <meta name="description" content="Organizamos fiestas infantiles mágicas en Panamá Centro. Animadores, shows de burbujas, pintacaritas y más. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!">
     
-    <!-- Google tag (gtag.js) - Se mantiene en el head, ya que es un script de análisis no crítico para el renderizado -->
+    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R3G3Y0FLVN"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        // Se inicializa gtag con una configuración base, importante para page_view
-        gtag('config', 'G-R3G3Y0FLVN', { 'send_page_view': false }); // send_page_view: false para controlar manualmente
+        gtag('config', 'G-R3G3Y0FLVN');
     </script>
 
     <!-- Schema Markup (Datos Estructurados) para LocalBusiness y Organization - SEO -->
-    <!-- ¡IMPORTANTE! Asegúrate de reemplazar los marcadores de posición (URL, dirección, etc.) con tu información real y verificada. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": ["LocalBusiness", "Organization"],
       "name": "Diverty Eventos",
       "image": "https://placehold.co/1200x630/A78BFA/ffffff?text=Diverty+Eventos+Logo",
-      "url": "https://www.divertyeventos.com", <!-- ¡IMPORTANTE! Reemplaza con la URL real de tu sitio -->
+      "url": "TU_URL_DEL_SITIO_WEB_AQUI", <!-- ¡IMPORTANTE! Reemplaza con la URL real de tu sitio -->
       "telephone": "+50766677965",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Tu Dirección Exacta Aquí (Ej: Calle 50, Edificio XYZ)", <!-- ¡IMPORTANTE! Reemplaza con tu dirección física -->
+        "streetAddress": "Tu Dirección Exacta Aquí (Ej: Calle 50, Edificio XYZ)", <!-- ¡IMPORTANT_E! Reemplaza con tu dirección física -->
         "addressLocality": "Panamá Centro",
         "addressRegion": "Panamá",
-        "postalCode": "0819-01234", <!-- Opcional, pero recomendado si lo tienes. Ejemplo de formato. -->
+        "postalCode": "Tu Código Postal Aquí", <!-- Opcional, pero recomendado si lo tienes -->
         "addressCountry": "PA"
       },
       "priceRange": "$$",
@@ -126,266 +122,77 @@
               "@type": "Service",
               "name": "Paquete Celebración Personalizada",
               "description": "Servicio premium con payaso, animación, pintacaritas, show de magia cómica y asistencia para piñata."
+            }
           }
-        }
-      ]
+        ]
       },
       "slogan": "¡Hacemos magia!",
       "description": "Diverty Eventos ofrece la mejor animación y shows para fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Especialistas en shows de burbujas, pintacaritas y paquetes de diversión inolvidable."
     }
     </script>
-    
-    <!-- Preconnect para Google Fonts (mejora la velocidad de descarga de fuentes) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Preload y carga asíncronas de Google Fonts para evitar el bloqueo del renderizado, optimizando LCP de texto -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"></noscript>
-    
+    <!-- Tailwind CSS CDN para estilos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter para la tipografía -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* CRITICAL CSS: Estilos esenciales para el "above-the-fold" para mejorar el FCP (First Contentful Paint) */
+        /* Estilos base para el cuerpo de la página */
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
-            background: linear-gradient(to bottom right, #e9d5ff, #fbcfe8, #fef08a); /* approximated bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-200 */
-            color: #374151; /* approximated text-gray-800 */
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+        }
+        /* Estilos personalizados para el hover de botones para consistencia */
+        .hover\:bg-purple-600:hover { background-color: #7c3aed; }
+        .hover\:bg-pink-600:hover { background-color: #db2777; }
+        .hover\:bg-blue-600:hover { background-color: #2563eb; }
+        .hover\:bg-green-600:hover { background-color: #16a34a; }
+        .hover\:bg-indigo-600:hover { background-color: #4f46e5; }
+        /* Estilo para tachar texto (precios anteriores) */
+        .line-through { text-decoration: line-through; }
+
+        /* Estilo para el botón flotante de WhatsApp */
+        .whatsapp-float-button {
+            position: fixed;
+            bottom: 80px; /* Se ajustó la posición para que esté más arriba */
+            right: 20px;
+            z-index: 1000; /* Asegura que esté por encima de otros elementos */
+            width: 56px; /* Ajuste para que el botón sea cuadrado */
+            height: 56px;
+            display: flex; /* Usar flexbox para centrar contenido */
+            justify-content: center; /* Centra el icono horizontalmente */
+            align-items: center; /* Centra el icono verticalmente */
+            border-radius: 9999px; /* Redondo completo */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Sombra más pronunciada */
+            transition: all 0.3s ease; /* Transiciones suaves para hover */
+            background-color: #25D366; /* Color de fondo de WhatsApp */
+        }
+        .whatsapp-float-button:hover {
+            transform: scale(1.1); /* Ligero aumento de tamaño al pasar el ratón */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Sombra aún más pronunciada en hover */
         }
 
-        header {
-            background-color: rgba(255, 255, 255, 0.95); /* bg-white bg-opacity-95 */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
-            padding: 1rem; /* p-4 */
-            width: 100%; /* w-full */
-            border-bottom-left-radius: 0.75rem; /* rounded-b-xl */
-            border-bottom-right-radius: 0.75rem; /* rounded-b-xl */
-        }
-
-        header nav {
-            max-width: 1280px; /* container, adjust as needed or remove if not fixed width */
-            margin-left: auto;
-            margin-right: auto; /* mx-auto */
+        /* Estilos para el FAQ (aunque no se usan ya) */
+        .faq-question {
+            cursor: pointer;
+            padding: 1rem;
+            background-color: #f3f4f6; /* bg-gray-100 */
+            border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+            font-weight: 600; /* font-semibold */
             display: flex;
-            flex-direction: column; /* flex-col */
             justify-content: space-between;
             align-items: center;
         }
-
-        @media (min-width: 640px) { /* sm breakpoint */
-            header nav {
-                flex-direction: row; /* sm:flex-row */
-            }
-        }
-
-        header h1 {
-            font-size: 1.875rem; /* text-3xl */
-            line-height: 2.25rem; /* text-3xl */
-            font-weight: 800; /* font-extrabold */
-            color: #6d28d9; /* text-purple-700 */
-            margin-bottom: 1rem; /* mb-4 */
-            text-align: center;
-        }
-
-        @media (min-width: 640px) { /* sm breakpoint */
-            header h1 {
-                font-size: 2.25rem; /* sm:text-4xl */
-                line-height: 2.5rem; /* sm:text-4xl */
-                margin-bottom: 0; /* sm:mb-0 */
-                text-align: left; /* sm:text-left */
-            }
-        }
-
-        header ul {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            list-style: none; /* remove default list style */
-            padding: 0; /* remove default padding */
-            margin: 0; /* remove default margin */
-            gap: 0.5rem; /* space-x-2 for small screens, then sm:space-x-4 */
-        }
-
-        @media (min-width: 640px) { /* sm breakpoint */
-            header ul {
-                gap: 1rem; /* sm:space-x-4 */
-            }
-        }
-
-        /* Ajuste de padding para botones de navegación para mejor interacción táctil */
-        header ul li button {
-            font-size: 1rem; /* text-base */
-            font-weight: 700; /* font-bold */
-            padding: 0.5rem 1rem; /* py-2 px-4, mejorado para mayor tamaño táctil */
-            border-radius: 9999px; /* rounded-full */
-            color: #1a202c; /* text-gray-900 (stronger contrast) */
-            transition-property: background-color;
-            transition-duration: 0.15s; /* transition duration for hover */
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer; /* Añadir cursor-pointer para mejor indicación de interactividad */
-        }
-
-        header ul li button:hover {
-            background-color: #ede9fe; /* hover:bg-purple-100 */
-        }
-
-        /* Styles for active nav button */
-        header ul li button.bg-purple-500 { /* This class is added by JS */
-            background-color: #8b5cf6; /* bg-purple-500 */
-            color: #ffffff; /* text-white */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
-        }
-
-        main {
-            max-width: 1280px; /* container */
-            margin-left: auto;
-            margin-right: auto; /* mx-auto */
-            padding: 1rem; /* p-4 */
-            flex-grow: 1; /* flex-grow */
-        }
-
-        /* Home Section - Critical Styles for above-the-fold */
-        #mainContent section { /* Apply to all sections as they are dynamically rendered */
+        .faq-answer {
+            padding: 1rem;
             background-color: #ffffff; /* bg-white */
-            border-radius: 1.5rem; /* rounded-3xl */
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); /* shadow-2xl */
-            padding: 1rem; /* p-4 */
-            margin-top: 2rem; /* my-8 */
-            margin-bottom: 2rem; /* my-8 */
+            border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
+            display: none; /* Oculto por defecto */
         }
-
-        @media (min-width: 640px) { /* sm breakpoint */
-            #mainContent section {
-                padding: 2rem; /* sm:p-8 */
-            }
+        .faq-arrow {
+            transition: transform 0.3s ease;
         }
-
-        #mainContent section.border-yellow-400 { /* Specific for home section border */
-            border-width: 8px; /* border-8 */
-            border-color: #facc15; /* border-yellow-400 */
-        }
-
-        #mainContent section > div { /* For the inner content block in home section */
-            background-color: #fffbeb; /* bg-yellow-50 */
-            padding: 1.5rem; /* p-6 */
-            border-radius: 1rem; /* rounded-2xl */
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); /* shadow-inner */
-            border-width: 4px; /* border-4 */
-            border-color: #fde047; /* border-yellow-300 */
-            max-width: 48rem; /* max-w-3xl */
-            margin-left: auto;
-            margin-right: auto; /* mx-auto */
-            text-align: center;
-        }
-
-        @media (min-width: 640px) { /* sm breakpoint */
-            #mainContent section > div {
-                padding: 2.5rem; /* sm:p-10 */
-            }
-        }
-
-        #mainContent section h1.text-purple-900 { /* Specific to home h1 for contrast */
-            font-weight: 800; /* font-extrabold */
-            color: #581c87; /* text-purple-900 */
-            line-height: 1.25; /* leading-tight */
-            margin-bottom: 1rem; /* mb-4 */
-        }
-
-        #mainContent section p.text-gray-800 { /* Specific to home paragraph for contrast */
-            color: #1f2937; /* text-gray-800 */
-            margin-bottom: 2rem; /* mb-8 */
-            padding-left: 0.5rem; /* px-2 */
-            padding-right: 0.5rem; /* px-2 */
-        }
-
-        #mainContent button { /* General button styles for home section buttons */
-            font-weight: 700; /* font-bold */
-            padding: 0.75rem 2rem; /* py-3 px-8 */
-            border-radius: 9999px; /* rounded-full */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
-            font-size: 1rem; /* text-base */
-            color: #ffffff; /* text-white */
-            transition-property: all;
-            transition-duration: 0.3s;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer; /* Añadir cursor-pointer para mejor indicación de interactividad */
-        }
-
-        #mainContent button.bg-pink-500 { background-color: #ec4899; }
-        #mainContent button.bg-pink-500:hover { background-color: #db2777; /* hover:bg-pink-600 */ }
-        #mainContent button.bg-purple-500 { background-color: #8b5cf6; }
-        #mainContent button.bg-purple-500:hover { background-color: #7c3aed; /* hover:bg-purple-600 */ }
-        #mainContent button.bg-gradient-to-r.from-yellow-400.to-orange-500 {
-            background-image: linear-gradient(to right, #fbbf24, #f97316); /* from-yellow-400 to-orange-500 */
-        }
-        #mainContent button.bg-gradient-to-r.from-yellow-400.to-orange-500:hover {
-            background-image: linear-gradient(to right, #facc15, #ea580c); /* hover:from-yellow-500 hover:to-orange-600 */
-        }
-        #mainContent button.bg-gradient-to-r.from-green-400.to-teal-500 {
-            background-image: linear-gradient(to right, #4ade80, #14b8a6); /* from-green-400 to-teal-500 */
-        }
-        #mainContent button.bg-gradient-to-r.from-green-400.to-teal-500:hover {
-            background-image: linear-gradient(to right, #22c55e, #0d9488); /* hover:from-green-500 hover:to-teal-600 */
-        }
-
-        /* Footer styles (simple, can be inlined) */
-        footer {
-            background-color: #6d28d9; /* bg-purple-700 */
-            color: #ffffff; /* text-white */
-            padding: 2rem 1rem; /* py-8 px-4 */
-            text-align: center;
-            margin-top: 2rem; /* mt-8 */
-            border-top-left-radius: 0.75rem; /* rounded-t-xl */
-            border-top-right-radius: 0.75rem; /* rounded-t-xl */
-            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06); /* shadow-inner */
-            width: 100%;
-        }
-
-        footer p {
-            font-weight: 600; /* font-semibold */
-            font-size: 1.125rem; /* text-lg */
-        }
-        footer p.text-sm {
-            font-size: 0.875rem; /* text-sm */
-        }
-
-        /* Updated WhatsApp floating button styles */
-        .whatsapp-float-button {
-            display: flex; /* Para alinear el icono, aunque ya no haya texto */
-            align-items: center; /* Centrar verticalmente */
-            justify-content: center; /* Centrar el icono horizontalmente */
-            padding: 0.75rem; /* Un padding más uniforme para un botón de solo ícono */
-            border-radius: 9999px; /* Mantener forma redondeada */
-            background-color: #25D366; /* Color de fondo de WhatsApp */
-            color: #ffffff; /* Color del texto (no usado, pero se mantiene por consistencia) */
-            font-weight: 700; /* Negrita (no usado) */
-            font-size: 1rem; /* Tamaño de fuente base (no usado) */
-            text-decoration: none; /* Sin subrayado */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            z-index: 1000;
-            width: 3.5rem; /* Ancho fijo para un botón circular */
-            height: 3.5rem; /* Altura fija para un botón circular */
-            cursor: pointer; /* Añadir cursor-pointer */
-        }
-        .whatsapp-float-button:hover {
-            transform: scale(1.1); /* Ligeramente más grande al pasar el cursor */
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        .whatsapp-float-button img {
-            width: 2.25rem; /* w-9 */
-            height: 2.25rem; /* h-9 */
-            object-fit: contain;
-            margin-right: 0; /* Eliminar margen derecho ya que no hay texto */
-        }
-        /* Eliminar estilos redundantes del img si ya están en .whatsapp-float-button img */
-        .whatsapp-float-button span {
-            display: none; /* Ocultar el span completamente */
+        .faq-question.active .faq-arrow {
+            transform: rotate(180deg);
         }
     </style>
 </head>
@@ -416,22 +223,22 @@
     <header class="bg-white bg-opacity-95 shadow-xl p-4 w-full rounded-b-xl">
         <nav class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 mb-4 sm:mb-0 text-center sm:text-left">
-                Diverty Eventos ✨🥳 <!-- H1 para el título principal de la marca -->
+                Diverty Eventos ✨🥳
             </h1>
             <ul class="flex flex-wrap justify-center sm:space-x-4 space-x-2">
-                <!-- Se ajusta el padding de los botones de navegación para mejor interacción táctil -->
-                <li><button id="navHome" class="text-base font-bold py-2 px-4 rounded-full text-gray-900 hover:bg-purple-100">Inicio 🏠</button></li>
-                <li><button id="navServices" class="text-base font-bold py-2 px-4 rounded-full text-gray-900 hover:bg-purple-100">Servicios 📋</button></li>
-                <li><button id="navPackages" class="text-base font-bold py-2 px-4 rounded-full text-gray-900 hover:bg-purple-100">Paquetes 📦</button></li>
-                <li><button id="navBooking" class="text-base font-bold py-2 px-4 rounded-full text-gray-900 hover:bg-purple-100">Reservar 🗓️</button></li>
+                <li><button id="navHome" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Inicio 🏠</button></li>
+                <li><button id="navServices" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Servicios 📋</button></li>
+                <li><button id="navPackages" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Paquetes 📦</button></li>
+                <li><button id="navReviews" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Reseñas 🌟</button></li>
+                <li><button id="navBooking" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Reservar 🗓️</button></li>
             </ul>
         </nav>
     </header>
 
-    <!-- Resumen del Carrito de Compra (Barra Flotante) - Contraste Mejorado -->
-    <div id="cartSummary" class="bg-purple-700 text-white font-extrabold p-6 text-center rounded-b-lg shadow-lg border-4 border-purple-900 hidden">
+    <!-- Resumen del Carrito de Compra (Barra Flotante) -->
+    <div id="cartSummary" class="bg-yellow-200 text-purple-800 font-extrabold p-6 text-center rounded-b-lg shadow-lg border-4 border-yellow-400 hidden">
         <p class="text-2xl sm:text-3xl mb-3">
-            🛒 Ítems seleccionados: <span id="selectedItemsCount" class="text-yellow-300">0</span> | Total: <span id="totalPriceDisplay" class="text-yellow-300">$0.00</span>
+            🛒 Ítems seleccionados: <span id="selectedItemsCount" class="text-purple-700">0</span> | Total: <span id="totalPriceDisplay" class="text-pink-700">$0.00</span>
         </p>
         <button id="proceedToBookButton" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full shadow-md text-base sm:text-lg">
             Proceder a Reservar Ahora! ✨
@@ -444,10 +251,8 @@
     </main>
 
     <!-- Botón Flotante de WhatsApp -->
-    <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank" aria-label="Chatear por WhatsApp">
-        <!-- Atributo alt descriptivo para SEO y accesibilidad -->
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="Icono de WhatsApp para chatear con Diverty Eventos">
-        <!-- Se ha eliminado el span que contenía el texto "Consultas aquí" -->
+    <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="Logo de WhatsApp" class="w-8 h-8 object-contain">
     </a>
 
     <!-- Pie de Página -->
@@ -456,255 +261,8 @@
         <p class="text-sm">Todos los derechos reservados. 🎉</p>
     </footer>
 
-    <!-- Script de Tailwind CSS (movido al final del body para no bloquear el renderizado inicial, optimizando LCP) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Script de JavaScript para la funcionalidad de la página (movido al final del body para no bloquear el renderizado inicial, optimizando LCP) -->
+    <!-- Script de JavaScript para la funcionalidad de la página -->
     <script>
-        // --- Lógica de la Trivia (se cargará de forma diferida) ---
-        // Esta cadena de texto se convertirá en un Blob y se cargará como un script separado
-        // solo cuando el usuario haga clic en el botón de la trivia.
-        const triviaCodeString = `
-            // Preguntas de la Trivia
-            const triviaQuestions = [
-                {
-                    question: "Soy una perrita azul, me encanta jugar con mi hermana Bingo y mis padres. ¿Quién soy?",
-                    options: ["Bingo", "Chilli", "Bluey", "Bandit"],
-                    answer: "Bluey"
-                },
-                {
-                    question: "Uso lentes y un sombrero naranja, y me encanta explorar lugares divertidos para niños. ¿Quién soy?",
-                    options: ["Elmo", "Mickey Mouse", "Blippi", "El Pato Donald"],
-                    answer: "Blippi"
-                },
-                {
-                    question: "Soy un payaso héroe con una nariz roja y un corazón grande, que siempre ayuda a los niños. ¿Quién soy?",
-                    options: ["Bob Esponja", "Plim Plim", "Peppa Pig", "Pocoyó"],
-                    answer: "Plim Plim"
-                },
-                {
-                    question: "Soy la hermana de Bluey, y juntas hacemos muchas aventuras imaginarias. Mi color es naranja. ¿Quién soy?",
-                    options: ["Bluey", "Chilli", "Bingo", "Bandit"],
-                    answer: "Bingo"
-                },
-                {
-                    question: "Me llamo Bandit, soy el papá de Bluey y Bingo. ¿Qué animal soy?",
-                    options: ["Perro", "Gato", "Oso", "Conejo"],
-                    answer: "Perro"
-                },
-                {
-                    question: "Visto de naranja y azul, me encanta bailar y enseñar sobre el mundo. ¿Quién soy?",
-                    options: ["Blippi", "Elmo", "JJ de Cocomelon", "Peppa Pig"],
-                    answer: "Blippi"
-                },
-                {
-                    question: "Mi canción es 'Un mundo mágico, un mundo de amor'. Soy un payaso que hace sonreír a todos. ¿Quién soy?",
-                    options: ["Plim Plim", "Patylu", "El Chavo del 8", "Cantinflas"],
-                    answer: "Plim Plim"
-                },
-                {
-                    question: "Soy la mamá de Bluey y Bingo, y me llamo Chilli. ¿Qué animal soy?",
-                    options: ["Perro", "Gato", "Pato", "Caballo"],
-                    answer: "Perro"
-                },
-                {
-                    question: "En el mundo de Blippi, soy un amigo peludo con una nariz de payaso. ¿Quién soy?",
-                    options: ["Buddy", "Gilly", "Squeaky", "Pebbles"],
-                    answer: "Squeaky"
-                },
-                {
-                    question: "Siempre digo '¡Es hora de la aventura!' y tengo una mochila mágica. ¿Quién soy?",
-                    options: ["Dora la Exploradora", "Mickey Mouse", "Blippi", "Paw Patrol"],
-                    answer: "Blippi"
-                }
-            ];
-
-            // Objeto global para la lógica de la trivia
-            window.triviaModule = {
-                questions: [],
-                currentIndex: 0,
-                correctAnswers: 0,
-                timer: null,
-                timeout: null,
-
-                start: function() {
-                    // Acceso a appState desde el ámbito global para limpiar timers anteriores
-                    if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
-                    if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
-
-                    // Inicializar preguntas y contadores
-                    this.questions = shuffleArray([...triviaQuestions]).slice(0, 10); // Toma 10 preguntas aleatorias
-                    this.currentIndex = 0;
-                    this.correctAnswers = 0;
-                    
-                    // Mostrar mensaje inicial de la trivia
-                    showInfoModal('¡Completa 5 respuestas correctas y gana un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! 🫧');
-                    
-                    // Esperar un momento antes de mostrar la primera pregunta
-                    setTimeout(() => {
-                        this.displayQuestion();
-                    }, 3000); // 3 segundos para que el usuario lea el modal
-                },
-
-                displayQuestion: function() {
-                    // Limpiar timers existentes antes de mostrar una nueva pregunta
-                    if (this.timer) clearInterval(this.timer);
-                    if (this.timeout) clearTimeout(this.timeout);
-
-                    const currentQuestion = this.questions[this.currentIndex];
-                    // Si no hay más preguntas, terminar la trivia
-                    if (!currentQuestion) {
-                        this.end(true); // Termina como si hubiera ganado si ya no hay más preguntas
-                        return;
-                    }
-
-                    // Construir el HTML de las opciones de respuesta
-                    const optionsHtml = currentQuestion.options.map((option) => `
-                        <button
-                            class="trivia-option-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md text-lg transition duration-300 w-full sm:w-auto flex-grow"
-                            data-option="${option}"
-                        >
-                            ${option}
-                        </button>
-                    `).join('');
-
-                    // HTML completo de la sección de trivia
-                    const html = `
-                        <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-purple-400">
-                            <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-6 sm:mb-8">
-                                Trivia de Programas Infantiles 🧠
-                            </h1>
-                            <div class="bg-white p-6 rounded-2xl shadow-inner border-4 border-purple-300 text-center">
-                                <p class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
-                                    Pregunta ${this.currentIndex + 1} para ganar el descuento:
-                                </p>
-                                <p class="text-2xl sm:text-3xl font-extrabold text-indigo-700 mb-8">
-                                    ${currentQuestion.question}
-                                </p>
-                                <div id="triviaOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    ${optionsHtml}
-                                </div>
-                                <p id="triviaFeedback" class="text-lg font-bold mt-6 hidden"></p>
-                                <p id="triviaTimer" class="text-xl font-bold text-red-600 mt-4">Tiempo restante: 20s</p>
-                            </div>
-                        </section>
-                    `;
-                    // Renderizar la sección en el contenedor principal
-                    renderSection(html);
-
-                    // Asignar event listeners a los botones de opción de la trivia
-                    document.querySelectorAll('#mainContent .trivia-option-button').forEach(button => {
-                        button.onclick = (event) => this.checkAnswer(event.target.dataset.option);
-                    });
-
-                    let timeLeft = 20; // Tiempo límite para cada pregunta
-                    const timerDisplay = document.getElementById('triviaTimer');
-                    timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-
-                    // Iniciar el temporizador
-                    this.timer = setInterval(() => {
-                        timeLeft--;
-                        timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-                        if (timeLeft <= 0) {
-                            clearInterval(this.timer);
-                            this.handleTimeUp(); // Manejar el tiempo agotado
-                        }
-                    }, 1000);
-
-                    this.timeout = setTimeout(() => {
-                        if (timeLeft > 0) {
-                            this.handleTimeUp();
-                        }
-                    }, 20000);
-                },
-
-                handleTimeUp: function() {
-                    if (this.timer) clearInterval(this.timer);
-                    if (this.timeout) clearTimeout(this.timeout);
-
-                    document.getElementById('triviaFeedback').textContent = '¡Tiempo agotado! ⌛';
-                    document.getElementById('triviaFeedback').classList.add('text-red-600');
-                    document.getElementById('triviaFeedback').classList.remove('hidden');
-
-                    document.querySelectorAll('.trivia-option-button').forEach(button => {
-                        button.disabled = true;
-                    });
-
-                    setTimeout(() => {
-                        this.end(false);
-                    }, 2000);
-                },
-
-                checkAnswer: function(selectedOption) {
-                    if (this.timer) clearInterval(this.timer);
-                    if (this.timeout) clearTimeout(this.timeout);
-
-                    const currentQuestion = this.questions[this.currentIndex];
-                    const triviaFeedback = document.getElementById('triviaFeedback');
-                    triviaFeedback.classList.remove('hidden', 'text-green-600', 'text-red-600');
-
-                    document.querySelectorAll('.trivia-option-button').forEach(button => {
-                        button.disabled = true;
-                        if (button.dataset.option === currentQuestion.answer) {
-                            button.classList.add('bg-green-600');
-                            button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-                        }
-                    });
-
-                    if (selectedOption === currentQuestion.answer) {
-                        this.correctAnswers++;
-                        triviaFeedback.textContent = '¡Correcto! ✅';
-                        triviaFeedback.classList.add('text-green-600');
-
-                        if (this.currentIndex + 1 === this.questions.length || this.correctAnswers >= 5) {
-                            setTimeout(() => {
-                                this.end(true);
-                            }, 2000);
-                        } else {
-                            setTimeout(() => {
-                                this.currentIndex++;
-                                this.displayQuestion();
-                            }, 2000);
-                        }
-
-                    } else {
-                        triviaFeedback.textContent = `¡Incorrecto! ❌ La respuesta correcta era: ${currentQuestion.answer}`;
-                        triviaFeedback.classList.add('text-red-600');
-                        
-                        document.querySelectorAll('.trivia-option-button').forEach(button => {
-                            if (button.dataset.option === selectedOption) {
-                                button.classList.add('bg-red-600');
-                                button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-                            }
-                        });
-
-                        setTimeout(() => {
-                            this.end(false);
-                        }, 2000);
-                    }
-                    triviaFeedback.classList.remove('hidden');
-                },
-
-                end: function(won = false) {
-                    if (this.timer) clearInterval(this.timer);
-                    if (this.timeout) clearTimeout(this.timeout);
-
-                    let message = '';
-                    if (won && this.correctAnswers >= 5) { 
-                        appState.triviaBubbleDiscountActive = true; 
-                        message = `¡Felicidades! 🎉 Respondiste ${this.correctAnswers} preguntas correctamente. ¡Has ganado un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! Este descuento se aplicará automáticamente en tu carrito. 🥳`;
-                    } else {
-                        message = `¡Fin del juego! Respondiste ${this.correctAnswers} preguntas correctamente. Necesitas 5 aciertos para ganar. Sigue practicando para la próxima vez. No te preocupes, aún puedes aprovechar nuestras otras promociones. 😊`;
-                        appState.triviaBubbleDiscountActive = false; 
-                    }
-                    showInfoModal(message);
-                    appState.currentTriviaQuestionIndex = 0;
-                    appState.triviaCorrectAnswers = 0;
-                    setActiveSection('home');
-                }
-            };
-        `;
-
         // --- Gestión del Estado Global de la Aplicación ---
         let appState = {
             activeSection: 'home',
@@ -713,23 +271,21 @@
             triviaBubbleDiscountActive: false,
             monthlyPackageDiscountActive: false,
             selectedLocation: 'Panamá Centro',
-            // Estas variables se mantienen en appState pero serán gestionadas por triviaModule
-            triviaQuestionsShuffled: [], 
+            triviaQuestionsShuffled: [],
             currentTriviaQuestionIndex: 0,
             triviaCorrectAnswers: 0,
             currentTriviaTimer: null,
             currentQuestionTimeout: null,
             hasPlayedTrivia: false,
-            triviaLoaded: false // Nuevo flag para saber si la lógica de la trivia ya se cargó
         };
 
-        // --- Definición de Datos (Servicios y Paquetes) - Propiedad 'borderColorClass' para control de contraste ---
+        // --- Definición de Datos (Servicios y Paquetes) ---
         const servicesData = [
-            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 40, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora.', borderColorClass: 'border-blue-300' },
-            { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', borderColorClass: 'border-green-300' },
-            { id: '6', name: 'Show de Burbujas Gigantes 🫧', price: 135, description: '¡Burbujas enormes que los niños pueden atrapar y explotar! Servicio por 1 hora. ¡Un súper show único en Panamá!', borderColorClass: 'border-teal-300' },
-            { id: '7', name: 'Decoraciones Temáticas 🎈🎉', price: 120, description: 'Transforma cualquier espacio en un mundo mágico con nuestras decoraciones personalizadas.', borderColorClass: 'border-fuchsia-300' },
-            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', borderColorClass: 'border-lime-300' },
+            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 40, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora.', color: 'bg-blue-100 border-blue-300 text-blue-800' },
+            { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-green-100 border-green-300 text-green-800' },
+            { id: '6', name: 'Show de Burbujas Gigantes 🫧', price: 135, description: '¡Burbujas enormes que los niños pueden atrapar y explotar! Servicio por 1 hora. ¡Un súper show único en Panamá!', color: 'bg-teal-100 border-teal-300 text-teal-800' },
+            { id: '7', name: 'Decoraciones Temáticas 🎈🎉', price: 120, description: 'Transforma cualquier espacio en un mundo mágico con nuestras decoraciones personalizadas.', color: 'bg-fuchsia-100 border-fuchsia-300 text-fuchsia-800' },
+            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-lime-100 border-lime-300 text-lime-800' },
         ];
 
         const packagesData = [
@@ -739,7 +295,7 @@
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: 'Diversión por 1.5 horas. Ideal para fiestas express. 🥳', borderColorClass: 'border-pink-300' },
+            ], description: 'Diversión por 1 hora y media con animador, juegos, globos y piñata. ¡Ideal para fiestas express! 🥳', color: 'bg-pink-100 border-pink-300 text-pink-800' },
             { id: 'P2', name: 'Aventura de Ensueño 🌈', price: 100, services: [
                 'Payas@ o animad@r 🤡🎤',
                 'Pintacaritas 🎨👧👦',
@@ -747,14 +303,74 @@
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: 'Servicio de 2 horas. Incluye animador y pintacaritas para una aventura completa. 🌈', borderColorClass: 'border-indigo-300' },
+            ], description: 'Servicio por 2 horas. Incluye payaso o animador, pintacaritas, animación infantil, juegos, concursos, figuras con globos y la emocionante rotura de piñata. ¡Una aventura completa! 🌈', color: 'bg-indigo-100 border-indigo-300 text-indigo-800' },
             { id: 'P3', name: 'Celebración Personalizada ✨', price: 135, services: [
                 'Payasit@ o animad@r 🤡🎤',
                 'Animación juegos y concursos 🥳🎲',
                 'PintaCaritas 🎨👧👦',
                 'Show de magia Cómica ✨🤣',
                 'Asistencia para la piñata 🍬🎉'
-            ], description: 'Servicio premium por 2.5 horas. Con magia cómica y pintacaritas. ¡Celebra a tu estilo!💖', borderColorClass: 'border-orange-300' },
+            ], description: 'Servicio por 2 horas y media. Incluye payaso o animador, animación, juegos, concursos, pintacaritas, show de magia cómica y asistencia para la piñata. ¡Celebra a tu estilo!💖', color: 'bg-orange-100 border-orange-300 text-orange-800' },
+        ];
+
+        // Customer Reviews data
+        const customerReviews = [
+            {
+                id: 1,
+                name: "Ana García",
+                rating: 5,
+                review: "¡Excelente servicio! Quedé muy satisfecha con la atención y la calidad del producto. Lo recomiendo totalmente.",
+                date: "01/06/2025"
+            },
+            {
+                id: 2,
+                name: "Carlos Rodríguez",
+                rating: 4,
+                review: "Buen producto, aunque la entrega tardó un poco más de lo esperado. En general, una buena experiencia.",
+                date: "28/05/2025"
+            },
+            {
+                id: 3,
+                name: "María Fernández",
+                rating: 5,
+                review: "Increíble. La mejor compra que he hecho en mucho tiempo. Definitivamente volveré a comprar.",
+                date: "25/05/2025"
+            },
+            {
+                id: 4,
+                name: "Juan Pérez",
+                rating: 3,
+                review: "El producto cumple con lo prometido, pero no me sorprendió. Es lo que esperaba.",
+                date: "20/05/2025"
+            },
+            {
+                id: 5,
+                name: "Sofía Martínez",
+                rating: 5,
+                review: "Atención al cliente excepcional y el producto superó mis expectativas. ¡Cinco estrellas!",
+                date: "15/05/2025"
+            },
+            {
+                id: 6,
+                name: "Luis González",
+                rating: 4,
+                review: "Muy buena animación para la fiesta de mi hijo. Los niños se divirtieron mucho.",
+                date: "10/05/2025"
+            },
+            {
+                id: 7,
+                name: "Laura Jiménez",
+                rating: 5,
+                review: "El show de burbujas fue el centro de atención. ¡Todos los niños lo amaron!",
+                date: "05/05/2025"
+            },
+            {
+                id: 8,
+                name: "Roberto Castro",
+                rating: 5,
+                review: "Contratamos el paquete Aventura de Ensueño y fue todo un éxito. Muy profesionales.",
+                date: "01/05/2025"
+            }
         ];
 
         // Recargos por transporte según la ubicación
@@ -766,7 +382,61 @@
             'Panamá Norte': 10,
         };
 
-        // --- Funciones de Ayuda (Se mantienen globales porque son usadas por varias secciones o por la trivia) ---
+        // Preguntas de la Trivia
+        const triviaQuestions = [
+            {
+                question: "Soy una perrita azul, me encanta jugar con mi hermana Bingo y mis padres. ¿Quién soy?",
+                options: ["Bingo", "Chilli", "Bluey", "Bandit"],
+                answer: "Bluey"
+            },
+            {
+                question: "Uso lentes y un sombrero naranja, y me encanta explorar lugares divertidos para niños. ¿Quién soy?",
+                options: ["Elmo", "Mickey Mouse", "Blippi", "El Pato Donald"],
+                answer: "Blippi"
+            },
+            {
+                question: "Soy un payaso héroe con una nariz roja y un corazón grande, que siempre ayuda a los niños. ¿Quién soy?",
+                options: ["Bob Esponja", "Plim Plim", "Peppa Pig", "Pocoyó"],
+                answer: "Plim Plim"
+            },
+            {
+                question: "Soy la hermana de Bluey, y juntas hacemos muchas aventuras imaginarias. Mi color es naranja. ¿Quién soy?",
+                options: ["Bluey", "Chilli", "Bingo", "Bandit"],
+                answer: "Bingo"
+            },
+            {
+                question: "Me llamo Bandit, soy el papá de Bluey y Bingo. ¿Qué animal soy?",
+                options: ["Perro", "Gato", "Oso", "Conejo"],
+                answer: "Perro"
+            },
+            {
+                question: "Visto de naranja y azul, me encanta bailar y enseñar sobre el mundo. ¿Quién soy?",
+                options: ["Blippi", "Elmo", "JJ de Cocomelon", "Peppa Pig"],
+                answer: "Blippi"
+            },
+            {
+                question: "Mi canción es 'Un mundo mágico, un mundo de amor'. Soy un payaso que hace sonreír a todos. ¿Quién soy?",
+                options: ["Plim Plim", "Patylu", "El Chavo del 8", "Cantinflas"],
+                answer: "Plim Plim"
+            },
+            {
+                question: "Soy la mamá de Bluey y Bingo, y me llamo Chilli. ¿Qué animal soy?",
+                options: ["Perro", "Gato", "Pato", "Caballo"],
+                answer: "Perro"
+            },
+            {
+                question: "En el mundo de Blippi, soy un amigo peludo con una nariz de payaso. ¿Quién soy?",
+                options: ["Buddy", "Gilly", "Squeaky", "Pebbles"],
+                answer: "Squeaky"
+            },
+            {
+                question: "Siempre digo '¡Es hora de la aventura!' y tengo una mochila mágica. ¿Quién soy?",
+                options: ["Dora la Exploradora", "Mickey Mouse", "Blippi", "Paw Patrol"],
+                answer: "Blippi"
+            }
+        ];
+
+        // --- Funciones de Ayuda ---
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -778,6 +448,24 @@
 
         function renderSection(sectionHtml) {
             document.getElementById('mainContent').innerHTML = sectionHtml;
+        }
+
+        // Helper function to render star ratings for reviews
+        function renderStars(rating) {
+            const stars = [];
+            for (let i = 0; i < 5; i++) {
+                stars.push(
+                    `<svg
+                        key="${i}"
+                        class="h-5 w-5 ${i < rating ? 'text-yellow-400' : 'text-gray-300'}"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                    >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.817 2.045a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.817-2.045a1 1 0 00-1.175 0l-2.817 2.045c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+                    </svg>`
+                );
+            }
+            return `<div class="flex">${stars.join('')}</div>`;
         }
 
         function updateCartSummary() {
@@ -883,10 +571,10 @@
             const html = `
                 <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-yellow-400 flex items-center justify-center min-h-[60vh]">
                     <div class="bg-yellow-50 p-6 sm:p-10 rounded-2xl shadow-inner border-4 border-yellow-300 max-w-3xl mx-auto text-center">
-                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-900 mb-4 leading-tight text-center">
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-800 mb-4 leading-tight text-center">
                             ¡Tu Fiesta Soñada Comienza Aquí con Diverty Eventos! 🥳✨
                         </h1>
-                        <p class="text-base sm:text-lg lg:text-xl text-gray-800 mb-8 px-2">
+                        <p class="text-base sm:text-lg lg:text-xl text-gray-700 mb-8 px-2">
                             En Diverty Eventos, transformamos celebraciones ordinarias en aventuras extraordinarias.
                             Tenemos todo para que el día especial de tu hijo sea inolvidable. ¡Prepárate para la diversión! 🚀
                         </p>
@@ -980,11 +668,11 @@
                 }
 
                 return `
-                    <div class="bg-white ${service.borderColorClass} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                    <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
                         <div>
-                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2> <!-- H2 para títulos de servicios -->
-                            <p class="text-sm sm:text-base text-gray-800 mb-3 sm:mb-4">${service.description}</p>
-                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-800 mb-3 sm:mb-4">
+                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2>
+                            <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
+                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
                                 ${originalPriceHtmlForCard}$${displayPriceForCard.toFixed(2)}
                             </p>
                         </div>
@@ -995,7 +683,7 @@
 
             const html = `
                 <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-green-400">
-                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Servicios Individuales 🎉</h1> <!-- H1 para el título principal de la sección -->
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Servicios Individuales 🎉</h1>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                         ${cardsHtml}
                     </div>
@@ -1038,14 +726,14 @@
                 }
 
                 return `
-                    <div class="bg-white ${pkg.borderColorClass} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                    <div class="${pkg.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
                         <div>
-                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${pkg.name}</h2> <!-- H2 para títulos de paquetes -->
-                            <p class="text-sm sm:text-base text-gray-800 mb-3 sm:mb-4">${pkg.description}</p>
-                            <ul class="list-disc list-inside text-gray-700 mb-3 sm:mb-4 text-sm sm:text-base">
+                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${pkg.name}</h2>
+                            <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
+                            <ul class="list-disc list-inside text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
                                 ${pkg.services.map(service => `<li>${service}</li>`).join('')}
                             </ul>
-                            <p class="text-3xl sm:text-4xl font-extrabold text-purple-800 mb-3 sm:mb-4">
+                            <p class="text-3xl sm:text-4xl font-extrabold text-purple-600 mb-3 sm:mb-4">
                                 ${originalPriceHtml}$${displayPrice.toFixed(2)}
                             </p>
                         </div>
@@ -1062,7 +750,7 @@
 
             const html = `
                 <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-pink-400">
-                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Paquetes de Diversión Inolvidable 🥳</h1> <!-- H1 para el título principal de la sección -->
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Paquetes de Diversión Inolvidable 🥳</h1>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                         ${cardsHtml}
                     </div>
@@ -1080,11 +768,45 @@
             });
         }
 
+        // New function to render the Reviews section
+        function renderReviewsSection() {
+            const reviewsHtml = customerReviews.map(review => `
+                <div class="bg-blue-50 p-6 rounded-xl shadow-md flex flex-col justify-between border-4 border-blue-200">
+                    <div>
+                        <div class="flex items-center mb-3">
+                            ${renderStars(review.rating)}
+                            <span class="ml-2 text-sm text-gray-600">${review.rating} de 5 estrellas</span>
+                        </div>
+                        <p class="text-gray-800 text-base leading-relaxed mb-4 italic">"${review.review}"</p>
+                    </div>
+                    <div class="text-right mt-4">
+                        <p class="font-semibold text-blue-800">- ${review.name}</p>
+                        <p class="text-sm text-gray-500">${review.date}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            const html = `
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-indigo-400">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">
+                        Lo Que Dicen Nuestros Clientes 🌟
+                    </h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${reviewsHtml}
+                    </div>
+                    <p class="text-center text-gray-600 text-sm mt-8">
+                        ¡Gracias a todos nuestros clientes por compartir sus experiencias!
+                    </p>
+                </section>
+            `;
+            renderSection(html);
+        }
+
 
         function renderBookingSection() {
             const selectedItemsListHtml = appState.selectedItems.length === 0
                 ? `<p class="text-red-600 text-sm sm:text-base">No has seleccionado ningún servicio. Por favor, vuelve a la sección de Servicios o Paquetes.</p>`
-                : `<ul class="list-disc list-inside text-gray-800 text-sm sm:text-base bg-white p-3 rounded-md border border-blue-200">
+                : `<ul class="list-disc list-inside text-gray-800 text-sm sm:text-base bg-blue-50 p-3 rounded-md border border-blue-200">
                     ${appState.selectedItems.map((item) => {
                         let displayItemPrice = item.price;
                         let originalItemPrice = null;
@@ -1101,16 +823,13 @@
                             displayItemPrice = item.price * 0.90;
                         }
 
-                        // Corrección: Usar concatenación de cadenas en lugar de template literal anidado para evitar el error de análisis
-                        const priceDisplay = originalItemPrice !== null
-                            ? '<span class="line-through text-gray-500">$' + item.price.toFixed(2) + '</span> ' +
-                              '<span class="text-green-700">$' + displayItemPrice.toFixed(2) + '</span>'
-                            : '$' + displayItemPrice.toFixed(2);
-
                         return `
                             <li>
                                 ${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} -
-                                ${priceDisplay}
+                                ${originalItemPrice !== null ? `
+                                    <span class="line-through text-gray-500">$${item.price.toFixed(2)}</span>{' '}
+                                    <span class="text-green-700">$${displayItemPrice.toFixed(2)}</span>
+                                ` : `$${displayItemPrice.toFixed(2)}`}
                             </li>
                         `;
                     }).join('')}
@@ -1131,26 +850,27 @@
                 } else if (packagesData.some(p => p.name === item.name) && appState.monthlyPackageDiscountActive) {
                     itemPriceForCalculation = item.price * 0.90;
                 }
+                
                 return sum + (itemPriceForCalculation * item.quantity);
             }, 0);
             const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
             const html = `
                 <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-blue-400">
-                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Reserva Tu Evento Fantástico Ahora Mismo! 🗓️✨</h1> <!-- H1 para el título principal de la sección -->
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Reserva Tu Evento Fantástico Ahora Mismo! 🗓️✨</h1>
                     <div class="grid grid-cols-1 lg:grid-cols-1 gap-4 sm:gap-12">
-                        <h2 class="text-xl sm:text-2xl font-bold text-blue-800 mb-4 sm:mb-6">Completa los Detalles de Tu Reserva 📝</h2> <!-- H2 para subtítulo -->
-                        <div class="bg-white p-4 sm:p-8 rounded-2xl shadow-lg border-4 border-blue-300">
+                        <h2 class="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6">Completa los Detalles de Tu Reserva 📝</h2>
+                        <div class="bg-blue-100 p-4 sm:p-8 rounded-2xl shadow-lg border-4 border-blue-300">
                             <form id="bookingForm" class="space-y-4">
                                 <div>
-                                    <label htmlFor="locationSelect" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Servicios/Paquetes Seleccionados:🎁</label>
+                                    <label class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Servicios/Paquetes Seleccionados:🎁</label>
                                     ${selectedItemsListHtml}
                                     ${transportFeeDisplayHtml}
                                     <p class="text-lg font-bold text-purple-700 mt-3">Total a Pagar: <span class="text-pink-600">$${finalTotalPrice.toFixed(2)}</span></p>
                                 </div>
 
-                                <div class="bg-orange-100 p-3 rounded-md border border-orange-300 text-sm sm:text-base text-gray-800 font-semibold mt-4">
-                                    <p class="text-orange-900 font-bold mb-2">¡Importante! Se requiere un abono de $10.</p>
+                                <div class="bg-yellow-50 p-3 rounded-md border border-yellow-300 text-sm sm:text-base text-gray-700 font-semibold mt-4">
+                                    <p class="text-orange-700 font-bold mb-2">¡Importante! Se requiere un abono de $10.</p>
                                     <p>Por favor, realiza un abono de $10 vía Yappy Panamá a <span class="font-bold">Ailen Camarena</span> al número <span class="font-bold">6667-7965</span>.</p>
                                     <p class="mt-2">Nos pondremos en contacto para confirmar tu abono.</p>
                                 </div>
@@ -1248,7 +968,7 @@
                                     />
                                 </div>
                                 <div>
-                                    <label htmlFor="numKids" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Número Estimado de Niños:👧👦</label>
+                                    <label htmlFor="numKids" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Número Estimado de Niños: 👧👦</label>
                                     <input
                                         type="number"
                                         id="numKids"
@@ -1280,92 +1000,202 @@
             }
         }
 
-        // --- Función para iniciar la Trivia (Llama al módulo de trivia cargado dinámicamente) ---
+        // --- Funciones de Trivia ---
+
         function startTrivia() {
-            // Verifica si ya se ha jugado la trivia en esta sesión o si ha sido deshabilitada permanentemente
-            if (localStorage.getItem('triviaPlayed') === 'true') {
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            const triviaPlayedStatus = localStorage.getItem('triviaPlayed');
+            if (triviaPlayedStatus === 'true') {
                 appState.hasPlayedTrivia = true;
                 showInfoModal('¡Ya has participado en la trivia! Solo se permite una participación por cliente. 😊');
                 setActiveSection('home');
                 return;
             }
 
-            // Marcar la trivia como jugada inmediatamente para prevenir múltiples intentos
             localStorage.setItem('triviaPlayed', 'true');
             appState.hasPlayedTrivia = true;
-            // Actualizar el botón de la trivia en la página de inicio
-            const triviaButton = document.getElementById('homeTriviaButton');
-            if (triviaButton) {
-                triviaButton.classList.add('opacity-50', 'cursor-not-allowed');
-                triviaButton.disabled = true;
-                triviaButton.textContent = '¡Trivia Completada! 🏆';
+
+            appState.triviaQuestionsShuffled = shuffleArray([...triviaQuestions]).slice(0, 10); 
+            appState.currentTriviaQuestionIndex = 0;
+            appState.triviaCorrectAnswers = 0;
+
+            showInfoModal('¡Completa 5 respuestas correctas y gana un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! 🫧');
+            
+            setTimeout(() => {
+                displayTriviaQuestion();
+            }, 3000);
+        }
+
+        function displayTriviaQuestion() {
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            const currentQuestion = appState.triviaQuestionsShuffled[appState.currentTriviaQuestionIndex];
+            if (!currentQuestion) {
+                endTrivia(true);
+                return;
             }
 
+            const optionsHtml = currentQuestion.options.map((option) => `
+                <button
+                    class="trivia-option-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md text-lg transition duration-300 w-full sm:w-auto flex-grow"
+                    data-option="${option}"
+                >
+                    ${option}
+                </button>
+            `).join('');
 
-            // Si la lógica de la trivia aún no se ha cargado
-            if (!appState.triviaLoaded) {
-                const scriptBlob = new Blob([triviaCodeString], { type: 'text/javascript' });
-                const scriptURL = URL.createObjectURL(scriptBlob);
-                const scriptElement = document.createElement('script');
-                scriptElement.src = scriptURL;
-                scriptElement.onload = () => {
-                    // Una vez que el script de la trivia se ha cargado, su módulo (window.triviaModule) estará disponible.
-                    appState.triviaLoaded = true;
-                    if (window.triviaModule) {
-                        window.triviaModule.start();
-                    } else {
-                        console.error('Error: El módulo de trivia no se encontró después de la carga diferida.');
-                        showInfoModal('Error al cargar la trivia. Por favor, inténtalo de nuevo.');
-                        setActiveSection('home');
-                    }
-                };
-                scriptElement.onerror = (e) => {
-                    console.error('Error al cargar el script de la trivia:', e);
-                    showInfoModal('Error al cargar la trivia. Por favor, inténtalo de nuevo.');
-                    setActiveSection('home');
-                };
-                document.body.appendChild(scriptElement);
+            const html = `
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-purple-400">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-6 sm:mb-8">
+                        Trivia de Programas Infantiles 🧠
+                    </h1>
+                    <div class="bg-purple-50 p-6 rounded-2xl shadow-inner border-4 border-purple-300 text-center">
+                        <p class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
+                            Pregunta ${appState.currentTriviaQuestionIndex + 1} para ganar el descuento:
+                        </p>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-indigo-700 mb-8">
+                            ${currentQuestion.question}
+                        </p>
+                        <div id="triviaOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            ${optionsHtml}
+                        </div>
+                        <p id="triviaFeedback" class="text-lg font-bold mt-6 hidden"></p>
+                        <p id="triviaTimer" class="text-xl font-bold text-red-600 mt-4">Tiempo restante: 20s</p>
+                    </div>
+                </section>
+            `;
+            renderSection(html);
+
+            document.querySelectorAll('#mainContent .trivia-option-button').forEach(button => {
+                button.onclick = (event) => checkTriviaAnswer(event.target.dataset.option);
+            });
+
+            let timeLeft = 20;
+            const timerDisplay = document.getElementById('triviaTimer');
+            timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
+
+            appState.currentTriviaTimer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(appState.currentTriviaTimer);
+                    handleTimeUp();
+                }
+            }, 1000);
+
+            appState.currentQuestionTimeout = setTimeout(() => {
+                if (timeLeft > 0) {
+                     handleTimeUp();
+                }
+            }, 20000);
+        }
+
+        function handleTimeUp() {
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            document.getElementById('triviaFeedback').textContent = '¡Tiempo agotado! ⌛';
+            document.getElementById('triviaFeedback').classList.add('text-red-600');
+            document.getElementById('triviaFeedback').classList.remove('hidden');
+
+            document.querySelectorAll('.trivia-option-button').forEach(button => {
+                button.disabled = true;
+            });
+
+            setTimeout(() => {
+                endTrivia(false);
+            }, 2000);
+        }
+
+        function checkTriviaAnswer(selectedOption) {
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            const currentQuestion = appState.triviaQuestionsShuffled[appState.currentTriviaQuestionIndex];
+            const triviaFeedback = document.getElementById('triviaFeedback');
+            triviaFeedback.classList.remove('hidden', 'text-green-600', 'text-red-600');
+
+            document.querySelectorAll('.trivia-option-button').forEach(button => {
+                button.disabled = true;
+                if (button.dataset.option === currentQuestion.answer) {
+                    button.classList.add('bg-green-600');
+                    button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                }
+            });
+
+            if (selectedOption === currentQuestion.answer) {
+                appState.triviaCorrectAnswers++;
+                triviaFeedback.textContent = '¡Correcto! ✅';
+                triviaFeedback.classList.add('text-green-600');
+
+                if (appState.currentTriviaQuestionIndex + 1 === appState.triviaQuestionsShuffled.length || appState.triviaCorrectAnswers >= 5) {
+                    setTimeout(() => {
+                        endTrivia(true);
+                    }, 2000);
+                } else {
+                    setTimeout(() => {
+                        appState.currentTriviaQuestionIndex++;
+                        displayTriviaQuestion();
+                    }, 2000);
+                }
+
             } else {
-                // Si la lógica de la trivia ya se cargó, simplemente la iniciamos.
-                window.triviaModule.start();
+                triviaFeedback.textContent = `¡Incorrecto! ❌ La respuesta correcta era: ${currentQuestion.answer}`;
+                triviaFeedback.classList.add('text-red-600');
+                
+                document.querySelectorAll('.trivia-option-button').forEach(button => {
+                    if (button.dataset.option === selectedOption) {
+                        button.classList.add('bg-red-600');
+                        button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                    }
+                });
+
+                setTimeout(() => {
+                    endTrivia(false);
+                }, 2000);
             }
+            triviaFeedback.classList.remove('hidden');
+        }
+
+        function endTrivia(won = false) {
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            let message = '';
+            if (won && appState.triviaCorrectAnswers >= 5) { 
+                appState.triviaBubbleDiscountActive = true; 
+                message = `¡Felicidades! 🎉 Respondiste ${appState.triviaCorrectAnswers} preguntas correctamente. ¡Has ganado un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! Este descuento se aplicará automáticamente en tu carrito. 🥳`;
+            } else {
+                message = `¡Fin del juego! Respondiste ${appState.triviaCorrectAnswers} preguntas correctamente. Necesitas 5 aciertos para ganar. Sigue practicando para la próxima vez. No te preocupes, aún puedes aprovechar nuestras otras promociones. 😊`;
+                appState.triviaBubbleDiscountActive = false; 
+            }
+            showInfoModal(message);
+            appState.currentTriviaQuestionIndex = 0;
+            appState.triviaCorrectAnswers = 0;
+            setActiveSection('home');
         }
 
         // --- Lógica Principal de la Aplicación ---
-        // Mapeo de secciones a rutas y títulos para Google Analytics
-        const gaPageMapping = {
-            'home': { path: '/', title: 'Página Principal' },
-            'services': { path: '/servicios', title: 'Nuestros Servicios' },
-            'packages': { path: '/paquetes', title: 'Nuestros Paquetes' },
-            'trivia': { path: '/trivia', title: 'Trivia de Programas Infantiles' },
-            'booking': { path: '/reservar', title: 'Formulario de Reserva' }
-        };
 
         function setActiveSection(sectionName) {
             appState.activeSection = sectionName;
             document.querySelectorAll('header nav button').forEach(button => {
                 const buttonId = button.id;
-                // Aplica estilos de contraste mejorado a los botones de navegación
                 if ((buttonId === 'navHome' && sectionName === 'home') ||
                     (buttonId === 'navServices' && sectionName === 'services') ||
                     (buttonId === 'navPackages' && sectionName === 'packages') ||
+                    (buttonId === 'navReviews' && sectionName === 'reviews') || // New Reviews nav button
                     (buttonId === 'navBooking' && sectionName === 'booking')) {
                     button.classList.add('bg-purple-500', 'text-white', 'shadow-md');
-                    button.classList.remove('text-gray-900', 'hover:bg-purple-100'); // Elimina el color de texto anterior
+                    button.classList.remove('text-gray-700', 'hover:bg-purple-100');
                 } else {
                     button.classList.remove('bg-purple-500', 'text-white', 'shadow-md');
-                    button.classList.add('text-gray-900', 'hover:bg-purple-100'); // Aplica el nuevo color de texto con alto contraste
+                    button.classList.add('text-gray-700', 'hover:bg-purple-100');
                 }
             });
-
-            // Envía el page_view a Google Analytics
-            const pageInfo = gaPageMapping[sectionName];
-            if (typeof gtag === 'function' && pageInfo) {
-                gtag('event', 'page_view', {
-                    page_title: pageInfo.title,
-                    page_path: pageInfo.path
-                });
-            }
 
             switch (sectionName) {
                 case 'home':
@@ -1377,8 +1207,10 @@
                 case 'packages':
                     renderPackagesSection();
                     break;
+                case 'reviews': // New case for reviews
+                    renderReviewsSection();
+                    break;
                 case 'trivia':
-                    // startTrivia ahora maneja la carga diferida
                     startTrivia(); 
                     break;
                 case 'booking':
@@ -1394,8 +1226,7 @@
         async function handleBookingSubmit(event) {
             event.preventDefault();
 
-            // ¡IMPORTANTE! Reemplaza este endpoint con el tuyo de Formspree
-            const formspreeEndpoint = 'https://formspree.io/f/xyzjznaw'; 
+            const formspreeEndpoint = 'https://formspree.io/f/xyzjznaw'; <!-- ¡ACTUALIZA ESTO! -->
 
             const formData = new FormData();
             formData.append('Fecha del Evento', document.getElementById('bookingDate').value);
@@ -1503,7 +1334,6 @@
 
         // --- Inicialización ---
         document.addEventListener('DOMContentLoaded', () => {
-            // Verifica si ya se ha jugado la trivia en sesiones anteriores para deshabilitar el botón
             if (localStorage.getItem('triviaPlayed') === 'true') {
                 appState.hasPlayedTrivia = true; 
             }
@@ -1514,13 +1344,14 @@
             document.getElementById('navHome').onclick = () => setActiveSection('home');
             document.getElementById('navServices').onclick = () => setActiveSection('services');
             document.getElementById('navPackages').onclick = () => setActiveSection('packages');
+            document.getElementById('navReviews').onclick = () => setActiveSection('reviews'); // Event listener for new Reviews button
             document.getElementById('navBooking').onclick = () => setActiveSection('booking');
             document.getElementById('proceedToBookButton').onclick = () => setActiveSection('booking');
 
-            // Carga la sección inicial y envía el page_view inicial
             setActiveSection('home');
             updateCartSummary();
         });
     </script>
 </body>
 </html>
+
