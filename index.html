@@ -1165,7 +1165,7 @@
         // --- Lógica Principal de la Aplicación ---
 
         /**
-         * Establece la sección activa y actualiza la navegación.
+         * Establece la sección activa y actualiza la navegación, enviando un page_view a Google Analytics.
          * @param {string} sectionName - El nombre de la sección a activar ('home', 'services', 'packages', 'trivia', 'booking').
          */
         function setActiveSection(sectionName) {
@@ -1184,6 +1184,43 @@
                     button.classList.add('text-gray-700', 'hover:bg-purple-100');
                 }
             });
+
+            let pagePath = '/'; // Ruta por defecto para la página de inicio
+            let pageTitle = 'Diverty Eventos | Inicio'; // Título por defecto
+
+            // Determina la ruta y el título de la página virtual para Google Analytics
+            switch (sectionName) {
+                case 'home':
+                    pagePath = '/inicio';
+                    pageTitle = 'Diverty Eventos | Inicio';
+                    break;
+                case 'services':
+                    pagePath = '/servicios';
+                    pageTitle = 'Diverty Eventos | Servicios';
+                    break;
+                case 'packages':
+                    pagePath = '/paquetes';
+                    pageTitle = 'Diverty Eventos | Paquetes';
+                    break;
+                case 'trivia':
+                    pagePath = '/trivia';
+                    pageTitle = 'Diverty Eventos | Trivia';
+                    break;
+                case 'booking':
+                    pagePath = '/reservar';
+                    pageTitle = 'Diverty Eventos | Reservar';
+                    break;
+            }
+
+            // Envía el evento de vista de página virtual a Google Analytics
+            if (typeof gtag === 'function') {
+                gtag('event', 'page_view', {
+                    page_path: pagePath,
+                    page_title: pageTitle
+                });
+            } else {
+                console.warn('gtag is not defined. Google Analytics might not be loaded.');
+            }
 
             // Renderiza la sección correspondiente
             switch (sectionName) {
@@ -1216,7 +1253,7 @@
         async function handleBookingSubmit(event) {
             event.preventDefault(); // Evita el envío por defecto del formulario
 
-            // ¡IMPORTANTE! Reemplaza 'https://formspree.io/f/xyzjznaw' con tu endpoint real de Formspree.
+            // ¡IMPORTANT_E! Reemplaza 'https://formspree.io/f/xyzjznaw' con tu endpoint real de Formspree.
             // Para obtener tu endpoint, visita Formspree.io, crea un nuevo formulario y copia la URL.
             const formspreeEndpoint = 'https://formspree.io/f/xyzjznaw'; 
 
@@ -1346,7 +1383,6 @@
             document.getElementById('navHome').onclick = () => setActiveSection('home');
             document.getElementById('navServices').onclick = () => setActiveSection('services');
             document.getElementById('navPackages').onclick = () => setActiveSection('packages');
-            // Se eliminó el event listener para el botón de Reseñas
             document.getElementById('navBooking').onclick = () => setActiveSection('booking');
             document.getElementById('proceedToBookButton').onclick = () => setActiveSection('booking');
 
