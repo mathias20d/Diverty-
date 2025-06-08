@@ -138,12 +138,12 @@
     <!-- Preconnect para Google Fonts (mejora la velocidad de descarga de fuentes) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Preload y carga asíncrona de Google Fonts para evitar el bloqueo del renderizado, optimizando LCP de texto -->
+    <!-- Preload y carga asíncronas de Google Fonts para evitar el bloqueo del renderizado, optimizando LCP de texto -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap"></noscript>
     
     <style>
-        /* CRITICAL CSS: Estilos esenciales para el "above-the-fold" para mejorar el FCP */
+        /* CRITICAL CSS: Estilos esenciales para el "above-the-fold" para mejorar el FCP (First Contentful Paint) */
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -214,18 +214,17 @@
             }
         }
 
+        /* Ajuste de padding para botones de navegación para mejorar el touch target en móviles */
         header ul li button {
             font-size: 1rem; /* text-base */
             font-weight: 700; /* font-bold */
-            padding-top: 0.25rem; /* py-1 */
-            padding-bottom: 0.25rem; /* py-1 */
-            padding-left: 0.75rem; /* px-3 */
-            padding-right: 0.75rem; /* px-3 */
+            padding: 0.5rem 1rem; /* py-2 px-4, mejorado para mayor tamaño táctil */
             border-radius: 9999px; /* rounded-full */
             color: #1a202c; /* text-gray-900 (stronger contrast) */
             transition-property: background-color;
             transition-duration: 0.15s; /* transition duration for hover */
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; /* Añadir cursor-pointer para mejor indicación de interactividad */
         }
 
         header ul li button:hover {
@@ -311,6 +310,7 @@
             transition-property: all;
             transition-duration: 0.3s;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer; /* Añadir cursor-pointer para mejor indicación de interactividad */
         }
 
         #mainContent button.bg-pink-500 { background-color: #ec4899; }
@@ -371,6 +371,7 @@
             z-index: 1000;
             width: 3.5rem; /* Ancho fijo para un botón circular */
             height: 3.5rem; /* Altura fija para un botón circular */
+            cursor: pointer; /* Añadir cursor-pointer */
         }
         .whatsapp-float-button:hover {
             transform: scale(1.1); /* Ligeramente más grande al pasar el cursor */
@@ -418,11 +419,11 @@
                 Diverty Eventos ✨🥳 <!-- H1 para el título principal de la marca -->
             </h1>
             <ul class="flex flex-wrap justify-center sm:space-x-4 space-x-2">
-                <!-- Se ajusta el color del texto para mejorar el contraste cuando el botón no está activo -->
-                <li><button id="navHome" class="text-base font-bold py-1 px-3 rounded-full text-gray-900 hover:bg-purple-100">Inicio 🏠</button></li>
-                <li><button id="navServices" class="text-base font-bold py-1 px-3 rounded-full text-gray-900 hover:bg-purple-100">Servicios 📋</button></li>
-                <li><button id="navPackages" class="text-base font-bold py-1 px-3 rounded-full text-gray-900 hover:bg-purple-100">Paquetes 📦</button></li>
-                <li><button id="navBooking" class="text-base font-bold py-1 px-3 rounded-full text-gray-900 hover:bg-purple-100">Reservar 🗓️</button></li>
+                <!-- Se ajusta el padding de los botones de navegación para mejor interacción táctil -->
+                <li><button id="navHome" class="text-base font-bold py-2 px-4 rounded-full text-gray-900 hover:bg-purple-100">Inicio 🏠</button></li>
+                <li><button id="navServices" class="text-base font-bold py-2 px-4 rounded-full text-gray-900 hover:bg-purple-100">Servicios 📋</button></li>
+                <li><button id="navPackages" class="text-base font-bold py-2 px-4 rounded-full text-gray-900 hover:bg-purple-100">Paquetes 📦</button></li>
+                <li><button id="navBooking" class="text-base font-bold py-2 px-4 rounded-full text-gray-900 hover:bg-purple-100">Reservar 🗓️</button></li>
             </ul>
         </nav>
     </header>
@@ -527,30 +528,37 @@
                 timeout: null,
 
                 start: function() {
-                    // Acceso a appState desde el ámbito global
+                    // Acceso a appState desde el ámbito global para limpiar timers anteriores
                     if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
                     if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
 
-                    this.questions = shuffleArray([...triviaQuestions]).slice(0, 10);
+                    // Inicializar preguntas y contadores
+                    this.questions = shuffleArray([...triviaQuestions]).slice(0, 10); // Toma 10 preguntas aleatorias
                     this.currentIndex = 0;
                     this.correctAnswers = 0;
-                    appState.hasPlayedTrivia = true;
+                    
+                    // Mostrar mensaje inicial de la trivia
                     showInfoModal('¡Completa 5 respuestas correctas y gana un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! 🫧');
+                    
+                    // Esperar un momento antes de mostrar la primera pregunta
                     setTimeout(() => {
                         this.displayQuestion();
-                    }, 3000);
+                    }, 3000); // 3 segundos para que el usuario lea el modal
                 },
 
                 displayQuestion: function() {
+                    // Limpiar timers existentes antes de mostrar una nueva pregunta
                     if (this.timer) clearInterval(this.timer);
                     if (this.timeout) clearTimeout(this.timeout);
 
                     const currentQuestion = this.questions[this.currentIndex];
+                    // Si no hay más preguntas, terminar la trivia
                     if (!currentQuestion) {
-                        this.end(true);
+                        this.end(true); // Termina como si hubiera ganado si ya no hay más preguntas
                         return;
                     }
 
+                    // Construir el HTML de las opciones de respuesta
                     const optionsHtml = currentQuestion.options.map((option) => \`
                         <button
                             class="trivia-option-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md text-lg transition duration-300 w-full sm:w-auto flex-grow"
@@ -560,6 +568,7 @@
                         </button>
                     \`).join('');
 
+                    // HTML completo de la sección de trivia
                     const html = \`
                         <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-purple-400">
                             <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-6 sm:mb-8">
@@ -580,23 +589,25 @@
                             </div>
                         </section>
                     \`;
-                    // Acceso a renderSection desde el ámbito global
+                    // Renderizar la sección en el contenedor principal
                     renderSection(html);
 
+                    // Asignar event listeners a los botones de opción de la trivia
                     document.querySelectorAll('#mainContent .trivia-option-button').forEach(button => {
                         button.onclick = (event) => this.checkAnswer(event.target.dataset.option);
                     });
 
-                    let timeLeft = 20;
+                    let timeLeft = 20; // Tiempo límite para cada pregunta
                     const timerDisplay = document.getElementById('triviaTimer');
                     timerDisplay.textContent = \`Tiempo restante: \${timeLeft}s\`;
 
+                    // Iniciar el temporizador
                     this.timer = setInterval(() => {
                         timeLeft--;
                         timerDisplay.textContent = \`Tiempo restante: \${timeLeft}s\`;
                         if (timeLeft <= 0) {
                             clearInterval(this.timer);
-                            this.handleTimeUp();
+                            this.handleTimeUp(); // Manejar el tiempo agotado
                         }
                     }, 1000);
 
@@ -686,7 +697,6 @@
                         message = \`¡Fin del juego! Respondiste \${this.correctAnswers} preguntas correctamente. Necesitas 5 aciertos para ganar. Sigue practicando para la próxima vez. No te preocupes, aún puedes aprovechar nuestras otras promociones. 😊\`;
                         appState.triviaBubbleDiscountActive = false; 
                     }
-                    // Acceso a showInfoModal y setActiveSection desde el ámbito global
                     showInfoModal(message);
                     appState.currentTriviaQuestionIndex = 0;
                     appState.triviaCorrectAnswers = 0;
@@ -1095,7 +1105,7 @@
                             <li>
                                 ${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} -
                                 ${originalItemPrice !== null ? `
-                                    <span class="line-through text-gray-500">$${item.price.toFixed(2)}</span>{' '}
+                                    <span class="line-through text-gray-500">$${item.price.toFixed(2)}</span> 
                                     <span class="text-green-700">$${displayItemPrice.toFixed(2)}</span>
                                 ` : `$${displayItemPrice.toFixed(2)}`}
                             </li>
@@ -1278,6 +1288,18 @@
                 return;
             }
 
+            // Marcar la trivia como jugada inmediatamente para prevenir múltiples intentos
+            localStorage.setItem('triviaPlayed', 'true');
+            appState.hasPlayedTrivia = true;
+            // Actualizar el botón de la trivia en la página de inicio
+            const triviaButton = document.getElementById('homeTriviaButton');
+            if (triviaButton) {
+                triviaButton.classList.add('opacity-50', 'cursor-not-allowed');
+                triviaButton.disabled = true;
+                triviaButton.textContent = '¡Trivia Completada! 🏆';
+            }
+
+
             // Si la lógica de la trivia aún no se ha cargado
             if (!appState.triviaLoaded) {
                 const scriptBlob = new Blob([triviaCodeString], { type: 'text/javascript' });
@@ -1288,7 +1310,7 @@
                     // Una vez que el script de la trivia se ha cargado, su módulo (window.triviaModule) estará disponible.
                     appState.triviaLoaded = true;
                     if (window.triviaModule) {
-                        window.triviaModule.start(); // Inicia la trivia a través del módulo cargado
+                        window.triviaModule.start();
                     } else {
                         console.error('Error: El módulo de trivia no se encontró después de la carga diferida.');
                         showInfoModal('Error al cargar la trivia. Por favor, inténtalo de nuevo.');
