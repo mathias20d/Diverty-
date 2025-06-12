@@ -402,4 +402,1048 @@
             let currentTotalPrice = appState.selectedItems.reduce((sum, item) => {
                 let itemPriceAdjusted = item.price;
                 // Determina si el ítem es un paquete comparando con los nombres en packagesData
-                const isPackage = packagesData.some(p 
+                const isPackage = packagesData.some(p => p.name === item.name);
+
+                // Lógica de descuento para "Pintacaritas" si se añaden más de 1
+                if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                    itemPriceAdjusted = 35; // Precio con descuento por unidad
+                }
+                // Lógica de descuento de trivia para "Show de Burbujas Gigantes"
+                if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
+                    itemPriceAdjusted = item.price * 0.90; // 10% de descuento
+                }
+                // Lógica de descuento mensual para paquetes
+                else if (appState.monthlyPackageDiscountActive && isPackage) {
+                    itemPriceAdjusted = item.price * 0.90; // 10% de descuento
+                }
+                
+                return sum + (itemPriceAdjusted * item.quantity);
+            }, 0);
+
+            // Añadir recargo por transporte basado en la ubicación seleccionada
+            currentTotalPrice += transportFeesByLocation[appState.selectedLocation] || 0;
+
+            const cartSummaryDiv = document.getElementById('cartSummary');
+            const selectedItemsCountSpan = document.getElementById('selectedItemsCount');
+            const totalPriceDisplaySpan = document.getElementById('totalPriceDisplay');
+
+            const totalItemsInCart = appState.selectedItems.reduce((total, item) => total + item.quantity, 0);
+
+            if (totalItemsInCart > 0 || currentTotalPrice > 0) {
+                cartSummaryDiv.classList.remove('hidden');
+                selectedItemsCountSpan.textContent = totalItemsInCart;
+                totalPriceDisplaySpan.textContent = `$${currentTotalPrice.toFixed(2)}`;
+            } else {
+                cartSummaryDiv.classList.add('hidden');
+            }
+        }
+
+        /**
+         * Maneja la adición/eliminación/decremento de ítems en el carrito.
+         * @param {object} item - El objeto del servicio/paquete a añadir/quitar. Debe contener { name, price }.
+         * @param {string} actionType - 'add' para añadir/incrementar, 'remove_all' para quitar todas las unidades, 'toggle' para alternar (usado en no-repetibles).
+         */
+        function handleCartAction(item, actionType) {
+            const existingItemIndex = appState.selectedItems.findIndex(selected => selected.name === item.name);
+
+            if (actionType === 'add') {
+                if (existingItemIndex > -1) {
+                    appState.selectedItems[existingItemIndex].quantity++;
+                } else {
+                    // Si el ítem no existe, lo añade con cantidad 1
+                    appState.selectedItems.push({ ...item, quantity: 1 });
+                }
+            } else if (actionType === 'remove_all') {
+                // Filtra el ítem para eliminar todas sus unidades
+                appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
+            } else if (actionType === 'toggle') { // Para servicios no repetibles (ej: paquetes)
+                if (existingItemIndex > -1) {
+                    // Si ya está seleccionado, lo quita
+                    appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
+                } else {
+                    // Si no está seleccionado, lo añade con cantidad 1
+                    appState.selectedItems.push({ ...item, quantity: 1 });
+                }
+            }
+
+            // Volver a renderizar la sección activa para actualizar los botones y precios.
+            if (appState.activeSection === 'services') {
+                renderServicesSection();
+            } else if (appState.activeSection === 'packages') {
+                renderPackagesSection();
+            } else if (appState.activeSection === 'booking') {
+                renderBookingSection();
+            }
+            updateCartSummary(); // Actualiza la barra flotante del carrito.
+        }
+
+        // --- Funciones de Modales (Ventanas Emergentes) ---
+        /**
+         * Muestra un modal de información genérico.
+         * @param {string} message - El mensaje a mostrar en el modal.
+         * @param {function} [callback] - Función a ejecutar cuando se cierra el modal.
+         */
+        function showInfoModal(message, callback = null) {
+            document.getElementById('modalMessage').textContent = message;
+            document.getElementById('infoModal').classList.remove('hidden');
+            appState.infoModalCallback = callback; // Almacena el callback en el estado global
+        }
+
+        /**
+         * Oculta el modal de información genérico y ejecuta el callback si existe.
+         */
+        function closeModal() {
+            document.getElementById('infoModal').classList.add('hidden');
+            document.getElementById('modalMessage').textContent = '';
+            if (appState.infoModalCallback) {
+                appState.infoModalCallback(); // Ejecuta el callback
+                appState.infoModalCallback = null; // Limpia el callback después de usarlo
+            }
+        }
+
+        /**
+         * Muestra el modal de promoción y activa el descuento mensual.
+         * @param {string} message - El mensaje de la promoción.
+         */
+        function showPromoInfoModal(message) {
+            document.getElementById('promoMessage').textContent = message;
+            document.getElementById('promoModal').classList.remove('hidden');
+            appState.monthlyPackageDiscountActive = true; 
+            updateCartSummary();
+            // Re-renderiza las secciones si están activas para mostrar el descuento
+            if (appState.activeSection === 'services') renderServicesSection();
+            if (appState.activeSection === 'packages') renderPackagesSection();
+            if (appState.activeSection === 'booking') renderBookingSection();
+        }
+
+        /**
+         * Oculta el modal de promoción.
+         */
+        function closePromoModal() {
+            document.getElementById('promoModal').classList.add('hidden');
+            document.getElementById('promoMessage').textContent = '';
+        }
+
+        // --- Funciones de Renderizado de Secciones ---
+
+        /**
+         * Renderiza la sección de Inicio.
+         */
+        function renderHomeSection() {
+            const html = `
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-yellow-400 flex items-center justify-center min-h-[60vh]">
+                    <div class="bg-yellow-50 p-6 sm:p-10 rounded-2xl shadow-inner border-4 border-yellow-300 max-w-3xl mx-auto text-center">
+                        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-800 mb-4 leading-tight text-center">
+                            ¡Tu Fiesta Soñada Comienza Aquí con Diverty Eventos! 🥳✨
+                        </h1>
+                        <p class="text-base sm:text-lg lg:text-xl text-gray-700 mb-8 px-2">
+                            En Diverty Eventos, transformamos celebraciones ordinarias en aventuras extraordinarias.
+                            Tenemos todo para que el día especial de tu hijo sea inolvidable. ¡Prepárate para la diversión! 🚀
+                        </p>
+                        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
+                            <button id="homeExploreServices" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg">
+                                ¡Explora Nuestros Servicios! 🎉
+                            </button>
+                            <button id="homeExplorePackages" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg">
+                                ¡Explora Nuestros Paquetes! 📦
+                            </button>
+                        </div>
+                        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
+                            <button id="homePromoButton" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg">
+                                🎉 Promoción del Mes 🎉
+                            </button>
+                            <button id="homeTriviaButton" 
+                                class="bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg ${appState.hasPlayedTrivia ? 'opacity-50 cursor-not-allowed' : ''}"
+                                ${appState.hasPlayedTrivia ? 'disabled' : ''}>
+                                ${appState.hasPlayedTrivia ? '¡Trivia Completada! 🏆' : '🚀 ¡Juega la Trivia y Gana un Descuento! 🧠'}
+                            </button>
+                        </div>
+                    </div>
+                </section>
+            `;
+            renderSection(html);
+
+            // Asigna los event listeners a los botones de la sección de Inicio
+            document.getElementById('homeExploreServices').onclick = () => { setActiveSection('services'); };
+            document.getElementById('homeExplorePackages').onclick = () => { setActiveSection('packages'); };
+            document.getElementById('homePromoButton').onclick = () => {
+                showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en TODOS nuestros Paquetes! 📦');
+            };
+            document.getElementById('homeTriviaButton').onclick = () => { setActiveSection('trivia'); };
+        }
+
+        /**
+         * Renderiza la sección de Servicios Individuales.
+         */
+        function renderServicesSection() {
+            // Servicios que pueden tener cantidades múltiples y, por lo tanto, botones de "Añadir" y "Quitar Todo".
+            const repeatableServices = ['Pintacaritas 🎨👧👦', 'Globoflexia 🎈💫', 'Show de Burbujas Gigantes 🫧'];
+
+            const cardsHtml = servicesData.map(service => {
+                const isRepeatableService = repeatableServices.includes(service.name);
+                const selectedItemInCart = appState.selectedItems.find(selected => selected.name === service.name);
+                const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 0;
+                
+                let displayPriceForCard = service.price;
+                let originalPriceHtmlForCard = '';
+
+                // Lógica de descuento para "Pintacaritas" si se añaden más de 1
+                if (service.name === 'Pintacaritas 🎨👧👦' && currentQuantity > 1) {
+                    originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
+                    displayPriceForCard = 35; // Precio con descuento por unidad si se añade más de 1
+                } else if (appState.triviaBubbleDiscountActive && service.name === 'Show de Burbujas Gigantes 🫧') {
+                    originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
+                    displayPriceForCard = service.price * 0.90; // 10% de descuento por trivia
+                }
+
+                let buttonsHtml;
+                if (isRepeatableService) {
+                    // Botones para servicios que se pueden añadir varias veces
+                    buttonsHtml = `
+                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
+                            <button
+                                data-item-name="${service.name}"
+                                data-item-price="${service.price}"
+                                data-action-type="add"
+                                class="add-remove-button flex-grow bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300">
+                                Añadir ➕ ${currentQuantity > 0 ? `(x${currentQuantity})` : ''}
+                            </button>
+                            ${currentQuantity > 0 ? `
+                            <button
+                                data-item-name="${service.name}"
+                                data-item-price="${service.price}"
+                                data-action-type="remove_all"
+                                class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300">
+                                Quitar Todo 🗑️
+                            </button>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    // Botón para servicios no repetibles (añadir/quitar)
+                    const isSelected = selectedItemInCart ? true : false;
+                    const buttonText = isSelected ? 'Quitar del Carrito ➖' : 'Añadir al Carrito ➕';
+                    const buttonClassColor = isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-purple-500 hover:bg-purple-600';
+                    buttonsHtml = `
+                        <button
+                            data-item-name="${service.name}"
+                            data-item-price="${service.price}"
+                            data-action-type="toggle"
+                            class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white">
+                            ${buttonText}
+                        </button>
+                    `;
+                }
+
+                return `
+                    <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2>
+                            <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
+                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                                ${originalPriceHtmlForCard}$${displayPriceForCard.toFixed(2)}
+                            </p>
+                        </div>
+                        ${buttonsHtml}
+                    </div>
+                `;
+            }).join('');
+
+            const html = `
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-green-400">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Servicios Individuales 🎉</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                        ${cardsHtml}
+                    </div>
+                </section>
+            `;
+            renderSection(html);
+
+            // Asigna event listeners a todos los botones de añadir/quitar en la sección de servicios
+            document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
+                button.onclick = (event) => {
+                    const itemName = event.target.dataset.itemName;
+                    const itemPrice = parseFloat(event.target.dataset.itemPrice);
+                    const actionType = event.target.dataset.actionType;
+                    handleCartAction({ name: itemName, price: itemPrice }, actionType);
+                };
+            });
+        }
+
+        /**
+         * Renderiza la sección de Paquetes.
+         */
+        function renderPackagesSection() {
+            const cardsHtml = packagesData.map(pkg => {
+                const selectedItemInCart = appState.selectedItems.find(item => item.name === pkg.name);
+                const isSelected = selectedItemInCart ? true : false;
+
+                let buttonText;
+                let buttonClassColor;
+
+                if (isSelected) {
+                    buttonText = 'Quitar del Carrito ➖';
+                    buttonClassColor = 'bg-red-500 hover:bg-red-600';
+                } else {
+                    buttonText = 'Añadir al Carrito ➕';
+                    buttonClassColor = 'bg-indigo-500 hover:bg-indigo-600';
+                }
+
+                let displayPrice = pkg.price;
+                let originalPriceHtml = '';
+                
+                // Lógica de descuento mensual para paquetes
+                if (appState.monthlyPackageDiscountActive) {
+                    originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
+                    displayPrice = pkg.price * 0.90; // 10% de descuento
+                }
+
+                return `
+                    <div class="${pkg.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                        <div>
+                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${pkg.name}</h2>
+                            <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
+                            <ul class="list-disc list-inside text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
+                                ${pkg.services.map(service => `<li>${service}</li>`).join('')}
+                            </ul>
+                            <p class="text-3xl sm:text-4xl font-extrabold text-purple-600 mb-3 sm:mb-4">
+                                ${originalPriceHtml}$${displayPrice.toFixed(2)}
+                            </p>
+                        </div>
+                        <button
+                            data-item-name="${pkg.name}"
+                            data-item-price="${pkg.price}"
+                            data-action-type="toggle"
+                            class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white">
+                            ${buttonText}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            const html = `
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-pink-400">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Paquetes de Diversión Inolvidable 🥳</h1>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                        ${cardsHtml}
+                    </div>
+                </section>
+            `;
+            renderSection(html);
+
+            // Asigna event listeners a todos los botones de añadir/quitar en la sección de paquetes
+            document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
+                button.onclick = (event) => {
+                    const itemName = event.target.dataset.itemName;
+                    const itemPrice = parseFloat(event.target.dataset.itemPrice);
+                    const actionType = event.target.dataset.actionType;
+                    handleCartAction({ name: itemName, price: itemPrice }, actionType);
+                };
+            });
+        }
+
+        /**
+         * Renderiza la sección de Reservas, mostrando los ítems seleccionados y el formulario.
+         */
+        function renderBookingSection() {
+            // Genera la lista de ítems seleccionados para mostrar en la sección de reserva
+            const selectedItemsListHtml = appState.selectedItems.length === 0
+                ? `<p class="text-red-600 text-sm sm:text-base">No has seleccionado ningún servicio. Por favor, vuelve a la sección de Servicios o Paquetes.</p>`
+                : `<ul class="list-disc list-inside text-gray-800 text-sm sm:text-base bg-blue-50 p-3 rounded-md border border-blue-200">
+                    ${appState.selectedItems.map((item) => {
+                        let displayItemPrice = item.price;
+                        let originalItemPrice = null;
+                        const isPackage = packagesData.some(p => p.name === item.name); // Verifica si es un paquete
+
+                        // Aplica lógicas de descuento para mostrar el precio en la lista
+                        if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                            originalItemPrice = item.price;
+                            displayItemPrice = 35; // Precio con descuento por unidad
+                        } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
+                            originalItemPrice = item.price;
+                            displayItemPrice = item.price * 0.90; // Descuento de trivia
+                        } else if (appState.monthlyPackageDiscountActive && isPackage) {
+                            originalItemPrice = item.price;
+                            displayItemPrice = item.price * 0.90; // Descuento mensual de paquete
+                        }
+
+                        return `
+                            <li>
+                                ${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} -
+                                ${originalItemPrice !== null ? `
+                                    <span class="line-through text-gray-500">$${item.price.toFixed(2)}</span>{' '}
+                                    <span class="text-green-700">$${displayItemPrice.toFixed(2)}</span>
+                                ` : `$${displayItemPrice.toFixed(2)}`}
+                            </li>
+                        `;
+                    }).join('')}
+                </ul>`;
+
+            // Calcula y muestra el recargo por transporte
+            const currentTransportFee = transportFeesByLocation[appState.selectedLocation] || 0;
+            const transportFeeDisplayHtml = currentTransportFee > 0
+                ? `<p class="text-lg font-bold text-gray-700 mt-2">Recargo por Transporte (${appState.selectedLocation}): <span class="text-orange-600">$${currentTransportFee.toFixed(2)}</span></p>`
+                : `<p class="text-lg font-bold text-gray-700 mt-2">Recargo por Transporte: <span class="text-green-600">¡Gratis en Panamá Centro!</span></p>`;
+
+            // Calcula el precio total final incluyendo descuentos y recargos
+            const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
+                let itemPriceForCalculation = item.price;
+
+                if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                    itemPriceForCalculation = 35;
+                } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
+                    itemPriceForCalculation = item.price * 0.90;
+                } else if (packagesData.some(p => p.name === item.name) && appState.monthlyPackageDiscountActive) {
+                    itemPriceForCalculation = item.price * 0.90;
+                }
+                return sum + (itemPriceForCalculation * item.quantity);
+            }, 0);
+            const finalTotalPrice = totalItemsPrice + currentTransportFee;
+
+            const html = `
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-blue-400">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Reserva Tu Evento Fantástico Ahora Mismo! 🗓️✨</h1>
+                    <div class="grid grid-cols-1 lg:grid-cols-1 gap-4 sm:gap-12">
+                        <h2 class="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6">Completa los Detalles de Tu Reserva 📝</h2>
+                        <div class="bg-blue-100 p-4 sm:p-8 rounded-2xl shadow-lg border-4 border-blue-300">
+                            <form id="bookingForm" class="space-y-4">
+                                <div>
+                                    <label htmlFor="selectedItemsDisplay" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Servicios/Paquetes Seleccionados:🎁</label>
+                                    ${selectedItemsListHtml}
+                                    ${transportFeeDisplayHtml}
+                                    <p class="text-lg font-bold text-purple-700 mt-3">Total a Pagar: <span class="text-pink-600">$${finalTotalPrice.toFixed(2)}</span></p>
+                                </div>
+
+                                <div class="bg-yellow-50 p-3 rounded-md border border-yellow-300 text-sm sm:text-base text-gray-700 font-semibold mt-4">
+                                    <p class="text-orange-700 font-bold mb-2">¡Importante! Se requiere un abono de $10.</p>
+                                    <p>Por favor, realiza un abono de $10 vía Yappy Panamá a <span class="font-bold">Ailen Camarena</span> al número <span class="font-bold">6667-7965</span>.</p>
+                                    <p class="mt-2">Nos pondremos en contacto para confirmar tu abono.</p>
+                                </div>
+                                
+                                <div>
+                                    <label htmlFor="locationSelect" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Ubicación del Evento (Provincia/Zona):📍</label>
+                                    <select
+                                        id="locationSelect"
+                                        name="ubicacionEvento"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                    >
+                                        <option value="Panamá Centro" ${appState.bookingFormData.selectedLocation === 'Panamá Centro' ? 'selected' : ''}>Panamá Centro</option>
+                                        <option value="Arraiján" ${appState.bookingFormData.selectedLocation === 'Arraiján' ? 'selected' : ''}>Arraiján ($10 adicional)</option>
+                                        <option value="La Chorrera" ${appState.bookingFormData.selectedLocation === 'La Chorrera' ? 'selected' : ''}>La Chorrera ($15 adicional)</option>
+                                        <option value="Pacora" ${appState.bookingFormData.selectedLocation === 'Pacora' ? 'selected' : ''}>Pacora ($10 adicional)</option>
+                                        <option value="Panamá Norte" ${appState.bookingFormData.selectedLocation === 'Panamá Norte' ? 'selected' : ''}>Panamá Norte ($10 adicional)</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label htmlFor="exactLocation" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Dirección Exacta del Evento: 🗺️</label>
+                                    <input
+                                        type="text"
+                                        id="exactLocation"
+                                        name="direccionExacta"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        placeholder="Ej: Calle Principal, Casa #15, Cerca de la escuela..."
+                                        value="${appState.bookingFormData.exactLocation || ''}"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label htmlFor="bookingDate" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Fecha del Evento: 📆</label>
+                                    <input
+                                        type="date"
+                                        id="bookingDate"
+                                        name="fechaEvento"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        min="${new Date().toISOString().split('T')[0]}"
+                                        value="${appState.bookingFormData.bookingDate || ''}"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="bookingTime" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Hora del Evento: ⏰</label>
+                                    <input
+                                        type="time"
+                                        id="bookingTime"
+                                        name="horaEvento"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        value="${appState.bookingFormData.bookingTime || ''}"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="customerName" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Nombre: 👤</label>
+                                    <input
+                                        type="text"
+                                        id="customerName"
+                                        name="nombreCliente"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        placeholder="Ej: Juan Pérez"
+                                        value="${appState.bookingFormData.customerName || ''}"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="customerEmail" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Email: 📧</label>
+                                    <input
+                                        type="email"
+                                        id="customerEmail"
+                                        name="emailCliente"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        placeholder="Ej: tu.email@example.com"
+                                        value="${appState.bookingFormData.customerEmail || ''}"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="customerPhone" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Teléfono:📞</label>
+                                    <input
+                                        type="tel"
+                                        id="customerPhone"
+                                        name="telefonoCliente"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        placeholder="Ej: 555-1234567"
+                                        value="${appState.bookingFormData.customerPhone || ''}"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="eventType" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tipo de Evento: 🎉</label>
+                                    <input
+                                        type="text"
+                                        id="eventType"
+                                        name="tipoEvento"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        placeholder="Ej: Cumpleaños, Graduación"
+                                        value="${appState.bookingFormData.eventType || ''}"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label htmlFor="numKids" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Número Estimado de Niños: 👧👦</label>
+                                    <input
+                                        type="number"
+                                        id="numKids"
+                                        name="numeroNinos"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        placeholder="Ej: 20"
+                                        min="1"
+                                        value="${appState.bookingFormData.numKids || ''}"
+                                        required
+                                    />
+                                </div>
+                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg text-base sm:text-lg mt-4">
+                                    ¡Confirmar Reserva Mágica! ✨
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            `;
+            renderSection(html);
+
+            const bookingForm = document.getElementById('bookingForm');
+            if (bookingForm) {
+                bookingForm.onsubmit = handleBookingSubmit;
+                document.getElementById('locationSelect').onchange = (e) => {
+                    appState.bookingFormData.selectedLocation = e.target.value; // Actualiza el estado al cambiar ubicación
+                    updateCartSummary(); 
+                    renderBookingSection(); 
+                };
+            }
+        }
+
+        // --- Funciones de Trivia ---
+
+        /**
+         * Inicia el juego de trivia.
+         * Verifica si el usuario ya jugó la trivia usando localStorage.
+         */
+        function startTrivia() {
+            // Limpia cualquier temporizador o timeout anterior para evitar solapamientos
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            const triviaPlayedStatus = localStorage.getItem('triviaPlayed');
+            if (triviaPlayedStatus === 'true') {
+                appState.hasPlayedTrivia = true;
+                showInfoModal('¡Ya has participado en la trivia! Solo se permite una participación por cliente. 😊');
+                setActiveSection('home');
+                return;
+            }
+
+            // Marca la trivia como jugada en localStorage
+            localStorage.setItem('triviaPlayed', 'true');
+            appState.hasPlayedTrivia = true; // Actualiza el estado local de la app
+
+            // Baraja las preguntas y selecciona las primeras 10 (o menos si hay menos)
+            appState.triviaQuestionsShuffled = shuffleArray([...triviaQuestions]).slice(0, 10); 
+            appState.currentTriviaQuestionIndex = 0; // Reinicia el índice de la pregunta actual
+            appState.triviaCorrectAnswers = 0; // Reinicia el contador de respuestas correctas
+
+            showInfoModal('¡Completa 5 respuestas correctas y gana un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! 🫧');
+            
+            // Retrasa la visualización de la primera pregunta para que el usuario lea el modal
+            setTimeout(() => {
+                displayTriviaQuestion();
+            }, 3000);
+        }
+
+        /**
+         * Muestra la pregunta de trivia actual en la pantalla.
+         */
+        function displayTriviaQuestion() {
+            // Limpia cualquier temporizador o timeout anterior al mostrar una nueva pregunta
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            const currentQuestion = appState.triviaQuestionsShuffled[appState.currentTriviaQuestionIndex];
+            if (!currentQuestion) {
+                // Si no hay más preguntas, termina la trivia
+                endTrivia(true);
+                return;
+            }
+
+            const optionsHtml = currentQuestion.options.map((option) => `
+                <button
+                    class="trivia-option-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md text-lg transition duration-300 w-full sm:w-auto flex-grow"
+                    data-option="${option}"
+                >
+                    ${option}
+                </button>
+            `).join('');
+
+            const html = `
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-purple-400">
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-6 sm:mb-8">
+                        Trivia de Programas Infantiles 🧠
+                    </h1>
+                    <div class="bg-purple-50 p-6 rounded-2xl shadow-inner border-4 border-purple-300 text-center">
+                        <p class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
+                            Pregunta ${appState.currentTriviaQuestionIndex + 1} para ganar el descuento:
+                        </p>
+                        <p class="text-2xl sm:text-3xl font-extrabold text-indigo-700 mb-8">
+                            ${currentQuestion.question}
+                        </p>
+                        <div id="triviaOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            ${optionsHtml}
+                        </div>
+                        <p id="triviaFeedback" class="text-lg font-bold mt-6 hidden"></p>
+                        <p id="triviaTimer" class="text-xl font-bold text-red-600 mt-4">Tiempo restante: 20s</p>
+                    </div>
+                </section>
+            `;
+            renderSection(html);
+
+            // Asigna los event listeners a los botones de opción de la trivia
+            document.querySelectorAll('#mainContent .trivia-option-button').forEach(button => {
+                button.onclick = (event) => checkTriviaAnswer(event.target.dataset.option);
+            });
+
+            // Inicia el temporizador de la pregunta
+            let timeLeft = 20;
+            const timerDisplay = document.getElementById('triviaTimer');
+            timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
+
+            appState.currentTriviaTimer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
+                if (timeLeft <= 0) {
+                    clearInterval(appState.currentTriviaTimer);
+                    handleTimeUp(); // Llama a la función de tiempo agotado
+                }
+            }, 1000);
+
+            // Establece un timeout para la pregunta en caso de que el temporizador no se limpie (seguridad)
+            appState.currentQuestionTimeout = setTimeout(() => {
+                if (timeLeft > 0) { // Solo si el tiempo no se ha agotado ya por el intervalo
+                     handleTimeUp();
+                }
+            }, 20000);
+        }
+
+        /**
+         * Maneja el evento de tiempo agotado en una pregunta de trivia.
+         */
+        function handleTimeUp() {
+            // Limpia ambos temporizadores para asegurar que no haya ejecuciones duplicadas
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            document.getElementById('triviaFeedback').textContent = '¡Tiempo agotado! ⌛';
+            document.getElementById('triviaFeedback').classList.add('text-red-600');
+            document.getElementById('triviaFeedback').classList.remove('hidden');
+
+            // Deshabilita los botones de opción para evitar más interacciones
+            document.querySelectorAll('.trivia-option-button').forEach(button => {
+                button.disabled = true;
+            });
+
+            // Después de un breve retraso, termina la trivia
+            setTimeout(() => {
+                endTrivia(false); // Indica que no se ganó el descuento
+            }, 2000);
+        }
+
+        /**
+         * Verifica la respuesta seleccionada por el usuario en la trivia.
+         * @param {string} selectedOption - La opción seleccionada por el usuario.
+         */
+        function checkTriviaAnswer(selectedOption) {
+            // Limpia ambos temporizadores al recibir una respuesta para evitar problemas
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            const currentQuestion = appState.triviaQuestionsShuffled[appState.currentTriviaQuestionIndex];
+            const triviaFeedback = document.getElementById('triviaFeedback');
+            triviaFeedback.classList.remove('hidden', 'text-green-600', 'text-red-600');
+
+            // Deshabilita todos los botones de opción
+            document.querySelectorAll('.trivia-option-button').forEach(button => {
+                button.disabled = true;
+                // Resalta la respuesta correcta en verde
+                if (button.dataset.option === currentQuestion.answer) {
+                    button.classList.add('bg-green-600');
+                    button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                }
+            });
+
+            if (selectedOption === currentQuestion.answer) {
+                appState.triviaCorrectAnswers++;
+                triviaFeedback.textContent = '¡Correcto! ✅';
+                triviaFeedback.classList.add('text-green-600');
+
+                // Verifica si ha ganado el descuento o si hay más preguntas
+                if (appState.currentTriviaQuestionIndex + 1 === appState.triviaQuestionsShuffled.length || appState.triviaCorrectAnswers >= 5) {
+                    setTimeout(() => {
+                        endTrivia(true); // Termina la trivia, indicando que se pudo haber ganado
+                    }, 2000);
+                } else {
+                    setTimeout(() => {
+                        appState.currentTriviaQuestionIndex++;
+                        displayTriviaQuestion(); // Muestra la siguiente pregunta
+                    }, 2000);
+                }
+
+            } else {
+                triviaFeedback.textContent = `¡Incorrecto! ❌ La respuesta correcta era: ${currentQuestion.answer}`;
+                triviaFeedback.classList.add('text-red-600');
+                
+                // Resalta la opción incorrecta seleccionada por el usuario en rojo
+                document.querySelectorAll('.trivia-option-button').forEach(button => {
+                    if (button.dataset.option === selectedOption) {
+                        button.classList.add('bg-red-600');
+                        button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                    }
+                });
+
+                setTimeout(() => {
+                    endTrivia(false); // Termina la trivia, indicando que no se ganó el descuento
+                }, 2000);
+            }
+            triviaFeedback.classList.remove('hidden'); // Asegura que el feedback sea visible
+        }
+
+        /**
+         * Finaliza la trivia y muestra el resultado.
+         * @param {boolean} won - True si el usuario ganó el descuento, False de lo contrario.
+         */
+        function endTrivia(won = false) {
+            // Asegura que los temporizadores se limpien al finalizar
+            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
+            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
+
+            let message = '';
+            // Aplica el descuento si se cumplen las condiciones de victoria
+            if (won && appState.triviaCorrectAnswers >= 5) { 
+                appState.triviaBubbleDiscountActive = true; 
+                message = `¡Felicidades! 🎉 Respondiste ${appState.triviaCorrectAnswers} preguntas correctamente. ¡Has ganado un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! Este descuento se aplicará automáticamente en tu carrito. 🥳`;
+            } else {
+                message = `¡Fin del juego! Respondiste ${appState.triviaCorrectAnswers} preguntas correctamente. Necesitas 5 aciertos para ganar. Sigue practicando para la próxima vez. No te preocupes, aún puedes aprovechar nuestras otras promociones. 😊`;
+                appState.triviaBubbleDiscountActive = false; // Asegura que el descuento no esté activo si no se ganó
+            }
+            showInfoModal(message); // Muestra el resultado al usuario
+            
+            // Reinicia el estado de la trivia para futuras sesiones (aunque localStorage evita re-jugar)
+            appState.currentTriviaQuestionIndex = 0;
+            appState.triviaCorrectAnswers = 0;
+            
+            setActiveSection('home'); // Regresa a la sección de inicio
+        }
+
+        // --- Funciones para guardar y cargar los datos del formulario de reserva ---
+        /**
+         * Guarda los datos actuales del formulario de reserva en appState y localStorage.
+         */
+        function saveBookingFormData() {
+            const bookingForm = document.getElementById('bookingForm');
+            if (bookingForm) {
+                appState.bookingFormData.bookingDate = bookingForm.elements.bookingDate.value;
+                appState.bookingFormData.bookingTime = bookingForm.elements.bookingTime.value;
+                appState.bookingFormData.customerName = bookingForm.elements.customerName.value;
+                appState.bookingFormData.customerEmail = bookingForm.elements.customerEmail.value;
+                appState.bookingFormData.customerPhone = bookingForm.elements.customerPhone.value;
+                appState.bookingFormData.eventType = bookingForm.elements.eventType.value;
+                appState.bookingFormData.numKids = bookingForm.elements.numKids.value;
+                appState.bookingFormData.exactLocation = bookingForm.elements.exactLocation.value;
+                appState.bookingFormData.selectedLocation = bookingForm.elements.locationSelect.value;
+                
+                // Guardar también los ítems seleccionados del carrito
+                localStorage.setItem('selectedItems', JSON.stringify(appState.selectedItems));
+                localStorage.setItem('bookingFormData', JSON.stringify(appState.bookingFormData));
+                console.log('Datos del formulario guardados:', appState.bookingFormData); // Para depuración
+            }
+        }
+
+        /**
+         * Carga los datos del formulario de reserva desde localStorage a appState.
+         */
+        function loadBookingFormData() {
+            const savedFormData = localStorage.getItem('bookingFormData');
+            if (savedFormData) {
+                appState.bookingFormData = JSON.parse(savedFormData);
+                console.log('Datos del formulario cargados:', appState.bookingFormData); // Para depuración
+            }
+            const savedSelectedItems = localStorage.getItem('selectedItems');
+            if (savedSelectedItems) {
+                appState.selectedItems = JSON.parse(savedSelectedItems);
+                console.log('Ítems del carrito cargados:', appState.selectedItems); // Para depuración
+            }
+        }
+
+
+        // --- Lógica Principal de la Aplicación ---
+
+        /**
+         * Establece la sección activa y actualiza la navegación, enviando un page_view a Google Analytics.
+         * @param {string} sectionName - El nombre de la sección a activar ('home', 'services', 'packages', 'trivia', 'booking').
+         */
+        function setActiveSection(sectionName) {
+            // Si la sección actual es 'booking' y vamos a otra sección, guarda los datos
+            if (appState.activeSection === 'booking') {
+                saveBookingFormData();
+            }
+
+            appState.activeSection = sectionName;
+            // Actualiza los estilos de los botones de navegación para indicar la sección activa
+            document.querySelectorAll('header nav button').forEach(button => {
+                const buttonId = button.id;
+                if ((buttonId === 'navHome' && sectionName === 'home') ||
+                    (buttonId === 'navServices' && sectionName === 'services') ||
+                    (buttonId === 'navPackages' && sectionName === 'packages') ||
+                    (buttonId === 'navBooking' && sectionName === 'booking')) {
+                    button.classList.add('bg-purple-500', 'text-white', 'shadow-md');
+                    button.classList.remove('text-gray-700', 'hover:bg-purple-100');
+                } else {
+                    button.classList.remove('bg-purple-500', 'text-white', 'shadow-md');
+                    button.classList.add('text-gray-700', 'hover:bg-purple-100');
+                }
+            });
+
+            let pagePath = '/'; // Ruta por defecto para la página de inicio
+            let pageTitle = 'Diverty Eventos | Inicio'; // Título por defecto
+
+            // Determina la ruta y el título de la página virtual para Google Analytics
+            switch (sectionName) {
+                case 'home':
+                    pagePath = '/inicio';
+                    pageTitle = 'Diverty Eventos | Inicio';
+                    break;
+                case 'services':
+                    pagePath = '/servicios';
+                    pageTitle = 'Diverty Eventos | Servicios';
+                    break;
+                case 'packages':
+                    pagePath = '/paquetes';
+                    pageTitle = 'Diverty Eventos | Paquetes';
+                    break;
+                case 'trivia':
+                    pagePath = '/trivia';
+                    pageTitle = 'Diverty Eventos | Trivia';
+                    break;
+                case 'booking':
+                    pagePath = '/reservar';
+                    pageTitle = 'Diverty Eventos | Reservar';
+                    break;
+            }
+
+            // Envía el evento de vista de página virtual a Google Analytics
+            if (typeof gtag === 'function') {
+                gtag('event', 'page_view', {
+                    page_path: pagePath,
+                    page_title: pageTitle
+                });
+            } else {
+                console.warn('gtag is not defined. Google Analytics might not be loaded.');
+            }
+
+            // Renderiza la sección correspondiente
+            switch (sectionName) {
+                case 'home':
+                    renderHomeSection();
+                    break;
+                case 'services':
+                    renderServicesSection();
+                    break;
+                case 'packages':
+                    renderPackagesSection();
+                    break;
+                case 'trivia':
+                    startTrivia(); 
+                    break;
+                case 'booking':
+                    renderBookingSection();
+                    break;
+                default:
+                    renderHomeSection(); // Fallback por defecto
+            }
+            updateCartSummary(); // Siempre actualiza el resumen del carrito al cambiar de sección
+        }
+
+        // --- Evento para la advertencia al intentar salir de la página ---
+        window.onbeforeunload = function() {
+            // El mensaje personalizado aquí a menudo es ignorado por los navegadores modernos
+            // y en su lugar se muestra un mensaje genérico de confirmación.
+            return "¡Espera! ¿Estás seguro de que quieres salir de la página? Tu información podría no guardarse.";
+        };
+
+
+        // --- Envío del Formulario a JotForm ---
+        /**
+         * Maneja el envío del formulario de reserva.
+         * @param {Event} event - El evento de envío del formulario.
+         */
+        async function handleBookingSubmit(event) {
+            event.preventDefault(); // Evita el envío por defecto del formulario
+
+            // *** Validaciones se realizan primero ***
+            if (appState.selectedItems.length === 0) {
+                showInfoModal('¡Por favor, añade al menos un servicio o paquete a tu reserva! 🛒');
+                return;
+            }
+            const requiredFields = [
+                'bookingDate', 'bookingTime', 'customerName', 'customerEmail',
+                'customerPhone', 'eventType', 'numKids', 'exactLocation'
+            ];
+            for (const fieldId of requiredFields) {
+                if (!document.getElementById(fieldId).value) {
+                    showInfoModal('¡Oops! Por favor, completa todos los campos para realizar la reserva. 📝');
+                    return;
+                }
+            }
+
+            // Si todas las validaciones pasan, se guarda el formulario y se muestra el modal.
+            saveBookingFormData(); // Guarda los datos antes de la redirección
+            showInfoModal('¡Redirigiendo a JotForm para finalizar tu reserva! 🎉 Haz clic en "¡Entendido!" para continuar.', () => {
+                // Esto es lo que se ejecutará cuando el usuario haga clic en "¡Entendido!" en el modal.
+
+                // --- Recopilación de Datos para JotForm (se re-obtiene para asegurar los últimos valores) ---
+                const bookingDate = document.getElementById('bookingDate').value; 
+                const bookingTime = document.getElementById('bookingTime').value; 
+
+                const [year, month, day] = bookingDate.split('-'); 
+
+                const customerName = document.getElementById('customerName').value;
+                const customerEmail = document.getElementById('customerEmail').value;
+                const customerPhone = document.getElementById('customerPhone').value;
+                const eventType = document.getElementById('eventType').value;
+                const numKids = document.getElementById('numKids').value;
+                const exactLocation = document.getElementById('exactLocation').value;
+                const selectedLocationName = appState.selectedLocation;
+                const currentTransportFee = transportFeesByLocation[selectedLocationName] || 0;
+
+                const selectedItemsString = appState.selectedItems.map(item => {
+                    let itemPriceForJotForm = item.price;
+                    const isPackage = packagesData.some(p => p.name === item.name);
+
+                    if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                        itemPriceForJotForm = 35;
+                    } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
+                        itemPriceForJotForm = item.price * 0.90;
+                    } else if (appState.monthlyPackageDiscountActive && isPackage) {
+                        itemPriceForJotForm = item.price * 0.90;
+                    }
+                    
+                    return `${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} ($${itemPriceForJotForm.toFixed(2)})`; 
+                }).join(', ');
+                
+                const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
+                    let itemPriceForCalculation = item.price;
+                    if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                        itemPriceForCalculation = 35;
+                    } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
+                        itemPriceForCalculation = item.price * 0.90;
+                    } else if (packagesData.some(p => p.name === item.name) && appState.monthlyPackageDiscountActive) {
+                        itemPriceForCalculation = item.price * 0.90;
+                    }
+                    return sum + (itemPriceForCalculation * item.quantity);
+                }, 0);
+                const finalTotalPrice = totalItemsPrice + currentTransportFee;
+
+                // --- Construcción de la URL de JotForm con Parámetros ---
+                const jotformBaseUrl = 'https://form.jotform.com/251611549526054'; 
+                const params = new URLSearchParams();
+
+                params.append('fechaDelEvento[year]', year);   
+                params.append('fechaDelEvento[month]', month); 
+                params.append('fechaDelEvento[day]', day);     
+                
+                params.append('horaDelEvento', bookingTime); 
+                params.append('nombreDelCliente', customerName);
+                params.append('emailDelCliente', customerEmail);
+                params.append('telefonoDelCliente', customerPhone);
+                params.append('tipoDeEvento', eventType);
+                params.append('numeroEstimadoDeNinos', numKids);
+                params.append('ubicacionSeleccionada', selectedLocationName);
+                params.append('recargoPorTransporte', `$${currentTransportFee.toFixed(2)}`);
+                params.append('direccionExactaDelEvento', exactLocation);
+                params.append('serviciosPaquetesSeleccionados', selectedItemsString);
+                params.append('precioTotalEstimado', `$${finalTotalPrice.toFixed(2)}`);
+                params.append('idDeSesionVisitante', appState.userId);
+
+                const jotformUrl = `${jotformBaseUrl}?${params.toString()}`;
+
+                // Abrir en una nueva pestaña cuando el usuario haga clic en "¡Entendido!"
+                const newWindow = window.open(jotformUrl, '_blank');
+                if (newWindow) {
+                    newWindow.focus(); 
+                } else {
+                    console.warn('La nueva ventana no pudo abrirse (bloqueador de pop-ups). Intentando redirección en la misma pestaña como fallback.');
+                    window.location.href = jotformUrl; 
+                }
+            });
+        }
+
+        // --- Inicialización ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Carga el estado de la trivia desde localStorage al iniciar la página
+            if (localStorage.getItem('triviaPlayed') === 'true') {
+                appState.hasPlayedTrivia = true; 
+            }
+
+            // Carga los datos del formulario y del carrito al iniciar la página
+            loadBookingFormData(); 
+
+            // Asigna event listeners para los modales
+            document.getElementById('closeModalButton').onclick = closeModal;
+            document.getElementById('closePromoModalButton').onclick = closePromoModal;
+
+            // Asigna event listeners para los botones de navegación
+            document.getElementById('navHome').onclick = () => setActiveSection('home');
+            document.getElementById('navServices').onclick = () => setActiveSection('services');
+            document.getElementById('navPackages').onclick = () => setActiveSection('packages');
+            document.getElementById('navBooking').onclick = () => setActiveSection('booking');
+            document.getElementById('proceedToBookButton').onclick = () => setActiveSection('booking');
+
+            // Establece la sección de inicio por defecto
+            setActiveSection('home');
+            updateCartSummary(); // Asegura que el resumen del carrito se muestre correctamente al inicio
+
+            // La asignación del listener del formulario de reserva
+            // se hace dentro de renderBookingSection().
+        });
+    </script>
+</body>
+</html>
+
+
