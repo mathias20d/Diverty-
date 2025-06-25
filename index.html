@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Título optimizado para SEO: Incluye palabras clave principales y ubicación para mejorar la visibilidad en buscadores. -->
     <title>Diverty Eventos</title>
-    <!-- Descripción meta optimizada para SEO: Proporciona un resumen conciso y atractivo del contenido, con palabras clave relevantes y una llamada a la acción. -->
+    <!-- Descripción meta optimizada para SEO: Proporciona un resumen conciso y atractivo del contenido, con palabras clave relevantes y una llamada de acción. -->
     <meta name="description" content="Organizamos las mejores fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Expertos en animación, shows de burbujas, pintacaritas, globoflexia y paquetes de diversión. ¡Haz que la fiesta de tus hijos sea inolvidable con Diverty Eventos en todo Panamá!">
     
     <!-- Open Graph Tags para compartir en redes sociales y apps de mensajería (Facebook, WhatsApp, etc.). -->
@@ -297,11 +297,10 @@
             userId: 'guest_user_' + Math.random().toString(36).substring(2, 9), // ID único para el usuario visitante.
             selectedItems: [], // Array para almacenar los servicios/paquetes seleccionados en el carrito.
             triviaBubbleDiscountActive: false, // Flag para el descuento del show de burbujas por la trivia.
-            monthlyPackageDiscountActive: false, // Flag para el descuento mensual en paquetes.
+            promotedPackages: [], // Array to hold names of packages currently under promotion
             selectedLocation: 'Panamá Centro', // Ubicación seleccionada para calcular el recargo de transporte.
             triviaQuestionsShuffled: [], // Preguntas de la trivia mezcladas.
             currentTriviaQuestionIndex: 0, // Índice de la pregunta actual de la trivia.
-            triviaCorrectAnswers: 0, // Contador de respuestas correctas en la trivia.
             currentTriviaTimer: null, // ID del temporizador de la trivia.
             currentQuestionTimeout: null, // ID del timeout para la pregunta de la trivia.
             hasPlayedTrivia: false, // Indica si el usuario ya jugó la trivia (para evitar múltiples intentos).
@@ -326,33 +325,91 @@
             { id: '2', name: 'Pintacaritas 🎨👧👦', price: 40, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora.', color: 'bg-blue-100 border-blue-300 text-blue-800' },
             { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-green-100 border-green-300 text-green-800' },
             { id: '6', name: 'Show de Burbujas Gigantes 🫧', price: 135, description: '¡Burbujas enormes que los niños pueden atrapar y explotar! Servicio por 1 hora. ¡Un súper show único en Panamá!', color: 'bg-teal-100 border-teal-300 text-teal-800' },
-            { id: '7', name: 'Decoraciones Temáticas 🎈🎉', price: 120, description: 'Transforma cualquier espacio en un mundo mágico con nuestras decoraciones personalizadas.', color: 'bg-fuchsia-100 border-fuchsia-300 text-fuchsia-800' },
+            { 
+                id: '7', 
+                name: 'Decoraciones Temáticas', 
+                price: 100, // Precio actualizado a 100
+                description: 'Transforma cualquier espacio en un mundo mágico con nuestras decoraciones personalizadas. ¡Elige tu temática favorita!', 
+                color: 'bg-fuchsia-100 border-fuchsia-300 text-fuchsia-800',
+                type: 'theme_selection', // Nuevo tipo para manejar la selección de temática
+                themes: {
+                    ninas: [
+                        'Barbie', 'Sirenita', 'Cenicienta', 'Moana grande', 'Moana bebé', 'Abejita',
+                        'Luly Pampin', 'Stitch', 'Stitch y Ángela', 'Capivara', 'Minnie roja',
+                        'Plim Plim rosa', 'Sirenita otro modelo nuevo', 'Rosita fresita', 'Masha y el oso',
+                        'Unicornio', 'Frozen', 'Monster In', 'Granja rosa', 'Skay', 'Princesas bebé',
+                        'Princesa grande', 'Bluey', 'Minnie bebé', 'Mariposas', 'Bebé Llorones',
+                        'Minnie rosada', 'Gatita Marie', 'Pebells', 'Pollo Party', 'Abeja Maya',
+                        'Bely y Beto', 'La Bella y la Bestia', 'Hello Kitty', 'Peppa', 'Harley Kuin',
+                        'Merlina', 'Minnie Poll Party', 'Princesa Pich'
+                    ],
+                    ninos: [
+                        'Real Madrid', 'Plaza Sésamo', 'Hot Wheels', 'Bebe Fin', 'Sonic', 'Bomberos',
+                        'Legos', 'Dinosaurios', 'Dinosaurios animados', 'Plim Plim Safary',
+                        'Inter de Miami', 'Batman', 'Granja', 'Fútbol', 'Mickey Safary', 'Chuchugua',
+                        'Blippi', 'Minicraft', 'Plim Plim', 'Cars', 'Spiderman', 'Paw Patrol',
+                        'Jefes en Pañales', 'Bam Bam', 'Safary', 'La Granja de Zenón', 'Mario Bros',
+                        'Mickey Principe', 'Avengers', 'Cristiano', 'Coco Melón', 'Messi',
+                        'Plim Plim piscina', 'Carritos', 'Aeroman', 'Constructor', 'Free Fires',
+                        'Caballito', 'Rugrats', 'Barca'
+                    ]
+                }
+            },
             { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-lime-100 border-lime-300 text-lime-800' },
+            // Servicio de personajes temáticos (precio actualizado a 65)
+            {
+                id: '9',
+                name: 'Personajes Temáticos',
+                price: 65, // Precio base para un personaje, actualizado a $65
+                description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige entre Mickey, Minnie y Mario Bros. Servicio por 1 hora.',
+                color: 'bg-indigo-100 border-indigo-300 text-indigo-800',
+                type: 'character_selection', // Tipo especial para manejar la selección de personaje
+                characters: [
+                    { id: 'mickey', name: 'Mickey Mouse 🐭', image: 'https://i.imgur.com/CjWJdUO.png' },
+                    { id: 'minnie', name: 'Minnie Mouse 🎀', image: 'https://placehold.co/100x100/FF00FF/FFFFFF?text=Minnie' },
+                    { id: 'mario', name: 'Mario Bros. 🍄', image: 'https://placehold.co/100x100/FF0000/FFFFFF?text=Mario' }
+                ]
+            }
         ];
 
         const packagesData = [
-            { id: 'P1', name: 'Fiesta Mágica Express 🚀', price: 75, services: [
+            { id: 'P1', name: 'Plan Básico 🚀', price: 75, services: [ // Renombrado
                 'Payas@ o animad@r 🤡🎤',
                 'Animación infantil 🥳💃',
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: 'Diversión express de 1.5 horas: Animador, juegos, globos, piñata. ¡Ideal para fiestas rápidas y llenas de alegría! 🥳', color: 'bg-pink-100 border-pink-300 text-pink-800' },
-            { id: 'P2', name: 'Aventura de Ensueño 🌈', price: 100, services: [
+            ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-pink-100 border-pink-300 text-pink-800' },
+            { id: 'P2', name: 'Plan Recreativo 🌈', price: 100, services: [ // Renombrado
                 'Payas@ o animad@r 🤡🎤',
                 'Pintacaritas 🎨👧👦',
                 'Animación infantil 🥳💃',
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: 'Aventura completa de 2 horas: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Todo para una celebración inolvidable! 🌈', color: 'bg-indigo-100 border-indigo-300 text-indigo-800' },
-            { id: 'P3', name: 'Celebración Personalizada ✨', price: 135, services: [
+            ], description: '2h de aventura: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-indigo-100 border-indigo-300 text-indigo-800' },
+            { id: 'P3', name: 'Plan Magic ✨', price: 135, services: [ // Renombrado
                 'Payasit@ o animad@r 🤡🎤',
                 'Animación, juegos y concursos 🥳🎲',
                 'Pintacaritas 🎨👧👦',
                 'Show de magia cómica ✨🤣',
                 'Asistencia para la piñata 🍬🎉'
-            ], description: 'Celebración premium de 2.5 horas: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Diseña tu fiesta perfecta!💖', color: 'bg-orange-100 border-orange-300 text-orange-800' },
+            ], description: '2.5h premium: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-orange-100 border-orange-300 text-orange-800' },
+            { // Nuevo paquete "Plan Diverty"
+                id: 'P4', 
+                name: 'Plan Diverty 🥳', 
+                price: 165, 
+                services: [
+                    'Payasito o Animador 🤡🎤',
+                    'Juegos y concursos 🎲🏆',
+                    'Pintacaritas 🎨👧👦',
+                    'Globoflexia 🎈🐶',
+                    'Show de Burbujas o Magia Cómica 🫧✨',
+                    'Asistencia en la piñata 🍬🎉'
+                ], 
+                description: '3h de diversión completa: Payaso/animador, juegos, pintacaritas, globoflexia, show de burbujas o magia, y asistencia piñata. ¡La magia garantizada!', 
+                color: 'bg-purple-100 border-purple-300 text-purple-800' 
+            },
         ];
 
         // Recargos por transporte según la ubicación del evento.
@@ -461,7 +518,7 @@
                     itemPriceAdjusted = item.price * 0.90; // 10% de descuento.
                 }
                 // Lógica de descuento mensual para paquetes.
-                else if (appState.monthlyPackageDiscountActive && isPackage) {
+                else if (isPackage && appState.promotedPackages.includes(item.name)) {
                     itemPriceAdjusted = item.price * 0.90; // 10% de descuento.
                 }
                 
@@ -525,6 +582,69 @@
             updateCartSummary(); // Actualiza la barra flotante del carrito.
         }
 
+        /**
+         * Maneja la adición o el cambio de un personaje temático en el carrito.
+         * Permite añadir múltiples personajes, incrementando la cantidad si ya está en el carrito.
+         * @param {object} service - El objeto de servicio "Personajes Temáticos" (base).
+         * @param {object} character - El objeto del personaje seleccionado ({ id, name, image }).
+         * @param {string} action - 'add' para añadir o 'remove_all' para eliminar.
+         */
+        function updateCharacterInCart(service, character, action) {
+            const fullCharacterName = `${service.name}: ${character.name}`;
+            const existingItemIndex = appState.selectedItems.findIndex(selected => selected.name === fullCharacterName);
+
+            if (action === 'add') {
+                if (existingItemIndex > -1) {
+                    // Si el personaje ya existe, incrementa su cantidad
+                    appState.selectedItems[existingItemIndex].quantity++;
+                } else {
+                    // Añade un nuevo personaje con el precio base del servicio
+                    appState.selectedItems.push({
+                        id: `${service.id}-${character.id}`,
+                        name: fullCharacterName,
+                        price: service.price, // Usa el precio base del servicio de personajes
+                        quantity: 1
+                    });
+                }
+            } else if (action === 'remove_all') {
+                // Elimina todas las instancias de un personaje específico del carrito
+                appState.selectedItems = appState.selectedItems.filter(item => item.name !== fullCharacterName);
+            }
+            // Re-renderiza la sección de servicios y actualiza el resumen del carrito
+            renderServicesSection();
+            updateCartSummary();
+        }
+
+        /**
+         * Maneja la adición o el cambio de una temática en el carrito.
+         * Permite añadir múltiples temáticas, incrementando la cantidad si ya está en el carrito.
+         * @param {object} service - El objeto de servicio "Decoraciones Temáticas" (base).
+         * @param {string} themeName - El nombre de la temática seleccionada.
+         * @param {string} action - 'add' para añadir o 'remove_all' para eliminar.
+         */
+        function updateThemeInCart(service, themeName, action) {
+            const fullThemeName = `${service.name}: ${themeName}`;
+            const existingItemIndex = appState.selectedItems.findIndex(selected => selected.name === fullThemeName);
+
+            if (action === 'add') {
+                if (existingItemIndex > -1) {
+                    appState.selectedItems[existingItemIndex].quantity++;
+                } else {
+                    appState.selectedItems.push({
+                        id: `${service.id}-${themeName.replace(/\s+/g, '-')}`, // Genera un ID simple
+                        name: fullThemeName,
+                        price: service.price, // Usa el precio base del servicio de decoraciones
+                        quantity: 1
+                    });
+                }
+            } else if (action === 'remove_all') {
+                appState.selectedItems = appState.selectedItems.filter(item => item.name !== fullThemeName);
+            }
+            renderServicesSection();
+            updateCartSummary();
+        }
+
+
         // --- Funciones de Modales (Ventanas Emergentes) ---
         /**
          * Muestra un modal de información genérico.
@@ -556,7 +676,10 @@
         function showPromoInfoModal(message) {
             document.getElementById('promoMessage').textContent = message;
             document.getElementById('promoModal').classList.remove('hidden');
-            appState.monthlyPackageDiscountActive = true; 
+            
+            // Set specific packages for promotion
+            appState.promotedPackages = ['Plan Básico 🚀', 'Plan Recreativo 🌈', 'Plan Magic ✨'];
+
             updateCartSummary();
             // Re-renderiza las secciones si están activas para mostrar el descuento.
             if (appState.activeSection === 'services') renderServicesSection();
@@ -570,6 +693,9 @@
         function closePromoModal() {
             document.getElementById('promoModal').classList.add('hidden');
             document.getElementById('promoMessage').textContent = '';
+            // No se limpian los paquetes promocionados para que el descuento persista durante la sesión.
+            updateCartSummary();
+            if (appState.activeSection === 'packages') renderPackagesSection(); // Se refresca para asegurar la visualización del descuento.
         }
 
         /**
@@ -600,7 +726,7 @@
                             ¡La Magia Comienza Aquí! ✨
                         </h2>
                         <p class="text-base sm:text-lg lg:text-xl text-gray-700 mb-8 px-2">
-                            Diverty Eventos crea <strong>fiestas infantiles inolvidables en Panamá</strong>. Ofrecemos <strong>animación profesional</strong>, <strong>shows de burbujas</strong>, <strong>pintacaritas</strong> y <strong>globoflexia</strong>. Llevamos la magia a <strong>Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte</strong> para hacer la fiesta soñada de tus hijos una realidad.
+                            Diverty Eventos: <strong>fiestas infantiles inolvidables en Panamá</strong>. Animación, shows de burbujas, pintacaritas, globoflexia. ¡Hacemos tu fiesta soñada realidad!
                         </p>
                         <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
                             <button id="homeExploreServices" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg">
@@ -629,7 +755,7 @@
             document.getElementById('homeExploreServices').onclick = () => { setActiveSection('services'); };
             document.getElementById('homeExplorePackages').onclick = () => { setActiveSection('packages'); };
             document.getElementById('homePromoButton').onclick = () => {
-                showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en TODOS nuestros Paquetes! 📦');
+                showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en nuestros Planes Básico, Recreativo y Magic! 📦');
             };
             document.getElementById('homeTriviaButton').onclick = () => { setActiveSection('trivia'); };
         }
@@ -642,81 +768,200 @@
             const repeatableServices = ['Pintacaritas 🎨👧👦', 'Globoflexia 🎈💫', 'Show de Burbujas Gigantes 🫧'];
 
             const cardsHtml = servicesData.map(service => {
-                const isRepeatableService = repeatableServices.includes(service.name);
-                const selectedItemInCart = appState.selectedItems.find(selected => selected.name === service.name);
-                const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 0;
-                
-                let displayPriceForCard = service.price;
-                let originalPriceHtmlForCard = '';
+                // Modified imageHtml structure for centering and consistent rounding
+                let imageHtml = service.image ? `
+                    <div class="text-center mb-4">
+                        <img src="${service.image}" alt="[attachment_0](attachment)" class="mx-auto h-32 object-cover rounded-xl">
+                    </div>
+                ` : '';
+                // Remove imageHtml from the service cards
+                imageHtml = ''; // Set to empty string to effectively remove the image
 
-                // Lógica de descuento para "Pintacaritas" si se añaden más de 1.
-                if (service.name === 'Pintacaritas 🎨👧👦' && currentQuantity > 1) {
-                    originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
-                    displayPriceForCard = 35; // Precio con descuento por unidad si se añade más de 1.
-                } else if (appState.triviaBubbleDiscountActive && service.name === 'Show de Burbujas Gigantes 🫧') {
-                    originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
-                    displayPriceForCard = service.price * 0.90; // 10% de descuento por trivia.
-                }
+                // Lógica específica para el servicio de selección de personaje
+                if (service.type === 'character_selection') {
+                    // Encuentra el personaje actualmente seleccionado en el carrito (si existe alguno de este tipo)
+                    const selectedCharacterItems = appState.selectedItems.filter(item => item.name.startsWith(service.name + ':'));
 
-                let buttonsHtml;
-                if (isRepeatableService) {
-                    // Botones para servicios que se pueden añadir varias veces.
-                    buttonsHtml = `
-                        <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
-                            <button
-                                data-item-name="${service.name}"
-                                data-item-price="${service.price}"
-                                data-action-type="add"
-                                class="add-remove-button flex-grow bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300">
-                                Añadir ➕ ${currentQuantity > 0 ? `(x${currentQuantity})` : ''}
-                            </button>
-                            ${currentQuantity > 0 ? `
-                            <button
-                                data-item-name="${service.name}"
-                                data-item-price="${service.price}"
-                                data-action-type="remove_all"
-                                class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300">
-                                Quitar Todo 🗑️
-                            </button>
-                            ` : ''}
+                    const optionsHtml = service.characters.map(char => {
+                        const fullCharName = `${service.name}: ${char.name}`;
+                        const isCharacterAlreadyAdded = selectedCharacterItems.some(item => item.name === fullCharName);
+                        // Deshabilita la opción en el select si ya está en el carrito
+                        return `<option value="${char.id}" ${isCharacterAlreadyAdded ? 'disabled' : ''}>${char.name} ${isCharacterAlreadyAdded ? '(Añadido)' : ''}</option>`;
+                    }).join('');
+
+                    return `
+                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                            ${imageHtml}
+                            <div>
+                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${service.name}</h2>
+                                <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
+                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                                    $${service.price.toFixed(2)}
+                                </p>
+                                <div class="mb-4">
+                                    <label for="characterSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu personaje: ✨</label>
+                                    <select id="characterSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
+                                        <option value="">Selecciona un personaje</option>
+                                        ${optionsHtml}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
+                                <button
+                                    data-service-id="${service.id}"
+                                    data-action="add_character"
+                                    class="character-action-button flex-grow bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300"
+                                    disabled
+                                >
+                                    Añadir Seleccionado ➕
+                                </button>
+                            </div>
+                            <div id="selectedCharactersList-${service.id}" class="mt-4">
+                                ${selectedCharacterItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Personajes en tu carrito:</p>` : ''}
+                                ${selectedCharacterItems.map(item => `
+                                    <div class="flex justify-between items-center bg-blue-50 p-2 rounded-lg mb-2">
+                                        <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
+                                        <button class="remove-specific-character-button text-red-500 hover:text-red-700 font-bold ml-2"
+                                                data-full-name="${item.name}">🗑️</button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (service.type === 'theme_selection') {
+                    const selectedThemeItems = appState.selectedItems.filter(item => item.name.startsWith(service.name + ':'));
+
+                    let themeOptionsHtml = '<option value="">Selecciona una temática</option>';
+                    themeOptionsHtml += '<optgroup label="Niña">';
+                    service.themes.ninas.forEach(theme => {
+                        const fullThemeName = `${service.name}: ${theme}`;
+                        const isThemeAlreadyAdded = selectedThemeItems.some(item => item.name === fullThemeName);
+                        themeOptionsHtml += `<option value="${theme}" ${isThemeAlreadyAdded ? 'disabled' : ''}>${theme} ${isThemeAlreadyAdded ? '(Añadida)' : ''}</option>`;
+                    });
+                    themeOptionsHtml += '</optgroup>';
+                    themeOptionsHtml += '<optgroup label="Niño">';
+                    service.themes.ninos.forEach(theme => {
+                        const fullThemeName = `${service.name}: ${theme}`;
+                        const isThemeAlreadyAdded = selectedThemeItems.some(item => item.name === fullThemeName);
+                        themeOptionsHtml += `<option value="${theme}" ${isThemeAlreadyAdded ? 'disabled' : ''}>${theme} ${isThemeAlreadyAdded ? '(Añadida)' : ''}</option>`;
+                    });
+                    themeOptionsHtml += '</optgroup>';
+
+                    return `
+                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                            ${imageHtml}
+                            <div>
+                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-fuchsia-700">${service.name}</h2>
+                                <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
+                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                                    $${service.price.toFixed(2)}
+                                </p>
+                                <div class="mb-4">
+                                    <label for="themeSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu temática: 🎨</label>
+                                    <select id="themeSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-fuchsia-500 focus:border-fuchsia-500 text-sm sm:text-base">
+                                        ${themeOptionsHtml}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
+                                <button
+                                    data-service-id="${service.id}"
+                                    data-action="add_theme"
+                                    class="theme-action-button flex-grow bg-fuchsia-500 hover:bg-fuchsia-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300"
+                                    disabled
+                                >
+                                    Añadir Seleccionado ➕
+                                </button>
+                            </div>
+                            <div id="selectedThemesList-${service.id}" class="mt-4">
+                                ${selectedThemeItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Temáticas en tu carrito:</p>` : ''}
+                                ${selectedThemeItems.map(item => `
+                                    <div class="flex justify-between items-center bg-fuchsia-50 p-2 rounded-lg mb-2">
+                                        <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
+                                        <button class="remove-specific-theme-button text-red-500 hover:text-red-700 font-bold ml-2"
+                                                data-full-name="${item.name}">🗑️</button>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
                     `;
                 } else {
-                    // Botón para servicios no repetibles (añadir/quitar).
-                    const isSelected = selectedItemInCart ? true : false;
-                    const buttonText = isSelected ? 'Quitar del Carrito ➖' : 'Añadir al Carrito ➕';
-                    const buttonClassColor = isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-purple-500 hover:bg-purple-600';
-                    buttonsHtml = `
-                        <button
-                            data-item-name="${service.name}"
-                            data-item-price="${service.price}"
-                            data-action-type="toggle"
-                            class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white">
-                            ${buttonText}
-                        </button>
+                    const isRepeatableService = repeatableServices.includes(service.name);
+                    const selectedItemInCart = appState.selectedItems.find(selected => selected.name === service.name);
+                    const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 0;
+                    
+                    let displayPriceForCard = service.price;
+                    let originalPriceHtmlForCard = '';
+
+                    // Lógica de descuento para "Pintacaritas" si se añaden más de 1.
+                    if (service.name === 'Pintacaritas 🎨👧👦' && currentQuantity > 1) {
+                        originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
+                        displayPriceForCard = 35; // Precio con descuento por unidad si se añade más de 1.
+                    } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
+                        originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
+                        displayPriceForCard = service.price * 0.90; // 10% de descuento por trivia.
+                    }
+
+                    let buttonsHtml;
+                    if (isRepeatableService) {
+                        // Botones para servicios que se pueden añadir varias veces.
+                        buttonsHtml = `
+                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
+                                <button
+                                    data-item-name="${service.name}"
+                                    data-item-price="${service.price}"
+                                    data-action-type="add"
+                                    class="add-remove-button flex-grow bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300">
+                                    Añadir ➕ ${currentQuantity > 0 ? `(x${currentQuantity})` : ''}
+                                </button>
+                                ${currentQuantity > 0 ? `
+                                <button
+                                    data-item-name="${service.name}"
+                                    data-item-price="${service.price}"
+                                    data-action-type="remove_all"
+                                    class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300">
+                                    Quitar Todo 🗑️
+                                </button>
+                                ` : ''}
+                            </div>
+                        `;
+                    } else {
+                        // Botón para servicios no repetibles (añadir/quitar).
+                        const isSelected = selectedItemInCart ? true : false;
+                        const buttonText = isSelected ? 'Quitar del Carrito ➖' : 'Añadir al Carrito ➕';
+                        const buttonClassColor = isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-purple-500 hover:bg-purple-600';
+                        buttonsHtml = `
+                            <button
+                                data-item-name="${service.name}"
+                                data-item-price="${service.price}"
+                                data-action-type="toggle"
+                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white">
+                                ${buttonText}
+                            </button>
+                        `;
+                    }
+
+                    return `
+                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                            ${imageHtml}
+                            <div>
+                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2>
+                                <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
+                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                                    ${originalPriceHtmlForCard}$${displayPriceForCard.toFixed(2)}
+                                </p>
+                            </div>
+                            ${buttonsHtml}
+                        </div>
                     `;
                 }
-
-                return `
-                    <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
-                        <div>
-                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2>
-                            <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
-                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
-                                ${originalPriceHtmlForCard}$${displayPriceForCard.toFixed(2)}
-                            </p>
-                        </div>
-                        ${buttonsHtml}
-                    </div>
-                `;
             }).join('');
 
             const html = `
                 <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-green-400">
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Servicios 🎉</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
-                        Ofrecemos los mejores servicios de <strong>animación para fiestas</strong>, <strong>pintacaritas</strong>, <strong>globoflexia</strong> y <strong>shows de burbujas gigantes</strong> en Panamá.
-                        Son perfectos para hacer de tu evento un día mágico e inolvidable en cualquier rincón de Panamá.
+                        Servicios de animación para fiestas infantiles en Panamá. ¡Hacemos tu evento mágico e inolvidable!
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                         ${cardsHtml}
@@ -725,13 +970,130 @@
             `;
             renderSection(html);
 
-            // Asigna event listeners a todos los botones de añadir/quitar en la sección de servicios.
+            // Asigna event listeners a todos los botones de añadir/quitar para servicios regulares.
             document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
                 button.onclick = (event) => {
                     const itemName = event.target.dataset.itemName;
                     const itemPrice = parseFloat(event.target.dataset.itemPrice);
                     const actionType = event.target.dataset.actionType;
                     handleCartAction({ name: itemName, price: itemPrice }, actionType);
+                };
+            });
+
+            // Asigna event listeners para el botón de añadir/cambiar personaje
+            document.querySelectorAll('#mainContent .character-action-button').forEach(button => {
+                button.onclick = (event) => {
+                    const serviceId = event.target.dataset.serviceId;
+                    const selectElement = document.getElementById(`characterSelect-${serviceId}`);
+                    const selectedCharacterId = selectElement.value;
+
+                    if (selectedCharacterId) {
+                        const characterService = servicesData.find(s => s.id === serviceId);
+                        const selectedChar = characterService.characters.find(c => c.id === selectedCharacterId);
+                        if (selectedChar) {
+                            updateCharacterInCart(characterService, selectedChar, 'add');
+                            selectElement.value = ""; // Resetea el select después de añadir
+                        }
+                    } else {
+                        showInfoModal('Por favor, selecciona un personaje antes de añadirlo.');
+                    }
+                };
+            });
+
+            // Asigna event listeners para los botones de quitar personaje específico
+            document.querySelectorAll('#mainContent .remove-specific-character-button').forEach(button => {
+                button.onclick = (event) => {
+                    const fullCharacterName = event.target.dataset.fullName;
+                    // Encuentra el servicio base de personajes
+                    const characterService = servicesData.find(s => s.type === 'character_selection');
+                    // Extrae solo el nombre del personaje para buscarlo en la lista original
+                    const charNameOnly = fullCharacterName.replace(characterService.name + ': ', '');
+                    const characterToRemove = characterService.characters.find(c => c.name === charNameOnly);
+
+                    if (characterService && characterToRemove) {
+                        updateCharacterInCart(characterService, characterToRemove, 'remove_all');
+                    }
+                };
+            });
+
+            // Lógica para habilitar/deshabilitar el botón "Añadir Seleccionado" y actualizar su texto (para personajes)
+            document.querySelectorAll('#mainContent select[id^="characterSelect-"]').forEach(select => {
+                select.onchange = (event) => {
+                    const serviceId = event.target.id.split('-')[1];
+                    const selectedCharacterId = event.target.value;
+                    const addButton = document.querySelector(`.character-action-button[data-service-id="${serviceId}"]`);
+                    
+                    if (selectedCharacterId) {
+                        const characterService = servicesData.find(s => s.id === serviceId);
+                        const selectedChar = characterService.characters.find(c => c.id === selectedCharacterId);
+                        const fullCharName = `${characterService.name}: ${selectedChar.name}`;
+                        const existingInCart = appState.selectedItems.find(item => item.name === fullCharName);
+
+                        if (existingInCart) {
+                            addButton.textContent = `Añadir uno más de ${selectedChar.name} (x${existingInCart.quantity + 1})`;
+                            addButton.disabled = false;
+                        } else {
+                            addButton.textContent = `Añadir ${selectedChar.name} al Carrito ➕`;
+                            addButton.disabled = false;
+                        }
+                    } else {
+                        addButton.textContent = `Añadir Seleccionado ➕`;
+                        addButton.disabled = true;
+                    }
+                };
+            });
+
+            // Asigna event listeners para el botón de añadir temática
+            document.querySelectorAll('#mainContent .theme-action-button').forEach(button => {
+                button.onclick = (event) => {
+                    const serviceId = event.target.dataset.serviceId;
+                    const selectElement = document.getElementById(`themeSelect-${serviceId}`);
+                    const selectedThemeName = selectElement.value;
+
+                    if (selectedThemeName) {
+                        const themeService = servicesData.find(s => s.id === serviceId);
+                        updateThemeInCart(themeService, selectedThemeName, 'add');
+                        selectElement.value = ""; // Resetea el select después de añadir
+                    } else {
+                        showInfoModal('Por favor, selecciona una temática antes de añadirla.');
+                    }
+                };
+            });
+
+            // Asigna event listeners para los botones de quitar temática específica
+            document.querySelectorAll('#mainContent .remove-specific-theme-button').forEach(button => {
+                button.onclick = (event) => {
+                    const fullThemeName = event.target.dataset.fullName;
+                    const themeService = servicesData.find(s => s.type === 'theme_selection');
+                    // Extrae solo el nombre de la temática
+                    const themeNameOnly = fullThemeName.replace(themeService.name + ': ', '');
+                    updateThemeInCart(themeService, themeNameOnly, 'remove_all');
+                };
+            });
+
+            // Lógica para habilitar/deshabilitar el botón "Añadir Seleccionado" y actualizar su texto (para temáticas)
+            document.querySelectorAll('#mainContent select[id^="themeSelect-"]').forEach(select => {
+                select.onchange = (event) => {
+                    const serviceId = event.target.id.split('-')[1];
+                    const selectedThemeName = event.target.value;
+                    const addButton = document.querySelector(`.theme-action-button[data-service-id="${serviceId}"]`);
+                    
+                    if (selectedThemeName) {
+                        const themeService = servicesData.find(s => s.id === serviceId);
+                        const fullThemeName = `${themeService.name}: ${selectedThemeName}`;
+                        const existingInCart = appState.selectedItems.find(item => item.name === fullThemeName);
+
+                        if (existingInCart) {
+                            addButton.textContent = `Añadir una más de ${selectedThemeName} (x${existingInCart.quantity + 1})`;
+                            addButton.disabled = false;
+                        } else {
+                            addButton.textContent = `Añadir ${selectedThemeName} al Carrito ➕`;
+                            addButton.disabled = false;
+                        }
+                    } else {
+                        addButton.textContent = `Añadir Seleccionado ➕`;
+                        addButton.disabled = true;
+                    }
                 };
             });
         }
@@ -759,13 +1121,14 @@
                 let originalPriceHtml = '';
                 
                 // Lógica de descuento mensual para paquetes.
-                if (appState.monthlyPackageDiscountActive) {
+                if (appState.promotedPackages.includes(pkg.name)) {
                     originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
                     displayPrice = pkg.price * 0.90; // 10% de descuento.
                 }
 
                 return `
                     <div class="${pkg.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                        <!-- Removed image from package cards -->
                         <div>
                             <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${pkg.name}</h2>
                             <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
@@ -791,8 +1154,7 @@
                 <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-pink-400">
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Paquetes 📦</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
-                        Descubre nuestros paquetes completos de <strong>animación para cumpleaños</strong> y <strong>fiestas infantiles en Panamá</strong>, diseñados para cada tipo de celebración.
-                        Desde <strong>Fiestas Mágicas Express</strong> hasta <strong>Celebraciones Personalizadas</strong>, tenemos la opción perfecta para tu evento en <strong>Panamá</strong> o sus alrededores.
+                        Descubre nuestros paquetes de <strong>animación para fiestas infantiles en Panamá</strong>. ¡La opción perfecta para tu evento!
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                         ${cardsHtml}
@@ -833,7 +1195,7 @@
                         } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
                             originalItemPrice = item.price;
                             displayItemPrice = item.price * 0.90; // Descuento de trivia.
-                        } else if (appState.monthlyPackageDiscountActive && isPackage) {
+                        } else if (isPackage && appState.promotedPackages.includes(item.name)) {
                             originalItemPrice = item.price;
                             displayItemPrice = item.price * 0.90; // Descuento mensual de paquete.
                         }
@@ -844,7 +1206,7 @@
                                 ${originalItemPrice !== null ? `
                                     <span class="line-through text-gray-500">$${item.price.toFixed(2)}</span>{' '}
                                     <span class="text-green-700">$${displayItemPrice.toFixed(2)}</span>
-                                ` : `$${displayItemPrice.toFixed(2)}`}
+                                ` : `$${item.price.toFixed(2)}`}
                             </li>
                         `;
                     }).join('')}
@@ -864,7 +1226,7 @@
                     itemPriceForCalculation = 35;
                 } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
                     itemPriceForCalculation = item.price * 0.90;
-                } else if (packagesData.some(p => p.name === item.name) && appState.monthlyPackageDiscountActive) {
+                } else if (packagesData.some(p => p.name === item.name) && appState.promotedPackages.includes(item.name)) {
                     itemPriceForCalculation = item.price * 0.90;
                 }
                 return sum + (itemPriceForCalculation * item.quantity);
@@ -875,8 +1237,7 @@
                 <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-blue-400">
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Reserva tu Evento 🗓️</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
-                        ¡Planifica tu próxima <strong>fiesta infantil en Panamá</strong>! Completa nuestro formulario para asegurar la <strong>animación profesional</strong> y los <strong>shows de burbujas</strong> que tus hijos adorarán.
-                        Estamos listos para llevar la magia a tu evento en <strong>Panamá Centro, Arraiján, La Chorrera, Pacora o Panamá Norte</strong>.
+                        ¡Reserva tu <strong>fiesta infantil en Panamá</strong>! Completa este formulario para asegurar la magia de tu evento.
                     </p>
                     <div class="grid grid-cols-1 lg:grid-cols-1 gap-4 sm:gap-12">
                         <h3 class="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6">Completa los Detalles de Tu Reserva 📝</h3>
@@ -1445,7 +1806,7 @@
                         itemPriceForJotForm = 35;
                     } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
                         itemPriceForJotForm = item.price * 0.90;
-                    } else if (appState.monthlyPackageDiscountActive && isPackage) {
+                    } else if (isPackage && appState.promotedPackages.includes(item.name)) {
                         itemPriceForJotForm = item.price * 0.90;
                     }
                     
@@ -1458,7 +1819,7 @@
                         itemPriceForCalculation = 35;
                     } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
                         itemPriceForCalculation = item.price * 0.90;
-                    } else if (packagesData.some(p => p.name === item.name) && appState.monthlyPackageDiscountActive) {
+                    } else if (packagesData.some(p => p.name === item.name) && appState.promotedPackages.includes(item.name)) {
                         itemPriceForCalculation = item.price * 0.90;
                     }
                     return sum + (itemPriceForCalculation * item.quantity);
