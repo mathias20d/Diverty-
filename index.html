@@ -190,6 +190,15 @@
         .faq-question.active .faq-arrow {
             transform: rotate(180deg);
         }
+        /* Estilo para mensajes de error de validación en línea */
+        .error-message {
+            color: #ef4444; /* red-500 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.25rem;
+        }
+        .input-error {
+            border-color: #ef4444 !important; /* red-500 */
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-200 text-gray-800 flex flex-col">
@@ -293,17 +302,11 @@
         // --- Gestión del Estado Global de la Aplicación ---
         // 'appState' contiene todas las variables de estado que controlan el comportamiento de la aplicación.
         let appState = {
-            activeSection: 'home', // Sección actualmente visible ('home', 'services', 'packages', 'trivia', 'booking').
+            activeSection: 'home', // Sección actualmente visible ('home', 'services', 'packages', 'booking').
             userId: 'guest_user_' + Math.random().toString(36).substring(2, 9), // ID único para el usuario visitante.
             selectedItems: [], // Array para almacenar los servicios/paquetes seleccionados en el carrito.
-            triviaBubbleDiscountActive: false, // Flag para el descuento del show de burbujas por la trivia.
-            promotedPackages: [], // Array to hold names of packages currently under promotion
+            promotedPackages: [], // Array para almacenar los nombres de los paquetes en promoción.
             selectedLocation: 'Panamá Centro', // Ubicación seleccionada para calcular el recargo de transporte.
-            triviaQuestionsShuffled: [], // Preguntas de la trivia mezcladas.
-            currentTriviaQuestionIndex: 0, // Índice de la pregunta actual de la trivia.
-            currentTriviaTimer: null, // ID del temporizador de la trivia.
-            currentQuestionTimeout: null, // ID del timeout para la pregunta de la trivia.
-            hasPlayedTrivia: false, // Indica si el usuario ya jugó la trivia (para evitar múltiples intentos).
             hasShownBookingWarning: false, // Indica si el modal de advertencia de reserva ya se mostró en la sesión.
             infoModalCallback: null, // Callback para ejecutar una función al cerrar el modal de info.
             bookingFormData: { // Objeto para almacenar los datos del formulario de reservas, útil para persistencia.
@@ -324,7 +327,7 @@
         const servicesData = [
             { id: '2', name: 'Pintacaritas 🎨👧👦', price: 40, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora.', color: 'bg-blue-100 border-blue-300 text-blue-800' },
             { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-green-100 border-green-300 text-green-800' },
-            { id: '6', name: 'Show de Burbujas Gigantes 🫧', price: 135, description: '¡Burbujas enormes que los niños pueden atrapar y explotar! Servicio por 1 hora. ¡Un súper show único en Panamá!', color: 'bg-teal-100 border-teal-300 text-teal-800' },
+            { id: '6', name: 'Show de Burbujas Gigantes 🫧', price: 100, description: '¡Burbujas enormes que los niños pueden atrapar y explotar! Servicio por 1 hora. ¡Un súper show único en Panamá!', color: 'bg-teal-100 border-teal-300 text-teal-800' },
             { 
                 id: '7', 
                 name: 'Decoraciones Temáticas', 
@@ -365,9 +368,9 @@
                 color: 'bg-indigo-100 border-indigo-300 text-indigo-800',
                 type: 'character_selection', // Tipo especial para manejar la selección de personaje
                 characters: [
-                    { id: 'mickey', name: 'Mickey Mouse 🐭', image: 'https://i.imgur.com/CjWJdUO.png' },
-                    { id: 'minnie', name: 'Minnie Mouse 🎀', image: 'https://placehold.co/100x100/FF00FF/FFFFFF?text=Minnie' },
-                    { id: 'mario', name: 'Mario Bros. 🍄', image: 'https://placehold.co/100x100/FF0000/FFFFFF?text=Mario' }
+                    { id: 'mickey', name: 'Mickey Mouse 🐭' },
+                    { id: 'minnie', name: 'Minnie Mouse 🎀' },
+                    { id: 'mario', name: 'Mario Bros. 🍄' }
                 ]
             }
         ];
@@ -410,6 +413,20 @@
                 description: '3h de diversión completa: Payaso/animador, juegos, pintacaritas, globoflexia, show de burbujas o magia, y asistencia piñata. ¡La magia garantizada!', 
                 color: 'bg-purple-100 border-purple-300 text-purple-800' 
             },
+            { // Nuevo paquete "Plan Bubble"
+                id: 'P5',
+                name: 'Plan Bubble 🫧', // Nombre actualizado a "Plan Bubble"
+                price: 120, 
+                services: [
+                    'Animación infantil 🥳💃',
+                    'Juegos y concursos 🎲🏆',
+                    'Payasito o Animador 🤡🎤',
+                    'Show de Burbujas Gigantes 🫧',
+                    'Romper la piñata 🍬🎉' // Agregado "Romper la piñata"
+                ],
+                description: '2h de diversión con burbujas gigantes y piñata para una fiesta inolvidable!', // Descripción actualizada a 2 horas
+                color: 'bg-blue-200 border-blue-400 text-blue-900'
+            }
         ];
 
         // Recargos por transporte según la ubicación del evento.
@@ -421,65 +438,10 @@
             'Panamá Norte': 10,
         };
 
-        // Preguntas de la Trivia: Un array de objetos con preguntas, opciones y la respuesta correcta.
-        const triviaQuestions = [
-            {
-                question: "Soy una perrita azul, me encanta jugar con mi hermana Bingo y mis padres. ¿Quién soy?",
-                options: ["Bingo", "Chilli", "Bluey", "Bandit"],
-                answer: "Bluey"
-            },
-            {
-                question: "Uso lentes y un sombrero naranja, y me encanta explorar lugares divertidos para niños. ¿Quién soy?",
-                options: ["Elmo", "Mickey Mouse", "Blippi", "El Pato Donald"],
-                answer: "Blippi"
-            },
-            {
-                question: "Soy un payaso héroe con una nariz roja y un corazón grande, que siempre ayuda a los niños. ¿Quién soy?",
-                options: ["Bob Esponja", "Plim Plim", "Peppa Pig", "Pocoyó"],
-                answer: "Plim Plim"
-            },
-            {
-                question: "Soy la hermana de Bluey, y juntas hacemos muchas aventuras imaginarias. Mi color es naranja. ¿Quién soy?",
-                options: ["Bluey", "Chilli", "Bingo", "Bandit"],
-                answer: "Bingo"
-            },
-            {
-                question: "Me llamo Bandit, soy el papá de Bluey y Bingo. ¿Qué animal soy?",
-                options: ["Perro", "Gato", "Oso", "Conejo"],
-                answer: "Perro"
-            },
-            {
-                question: "Visto de naranja y azul, me encanta bailar y enseñar sobre el mundo. ¿Quién soy?",
-                options: ["Blippi", "Elmo", "JJ de Cocomelon", "Peppa Pig"],
-                answer: "Blippi"
-            },
-            {
-                question: "Mi canción es 'Un mundo mágico, un mundo de amor'. Soy un payaso que hace sonreír a todos. ¿Quién soy?",
-                options: ["Plim Plim", "Patylu", "El Chavo del 8", "Cantinflas"],
-                answer: "Plim Plim"
-            },
-            {
-                question: "Soy la mamá de Bluey y Bingo, y me llamo Chilli. ¿Qué animal soy?",
-                options: ["Perro", "Gato", "Pato", "Caballo"],
-                answer: "Perro"
-            },
-            {
-                question: "En el mundo de Blippi, soy un amigo peludo con una nariz de payaso. ¿Quién soy?",
-                options: ["Buddy", "Gilly", "Squeaky", "Pebbles"],
-                answer: "Squeaky"
-            },
-            {
-                question: "Siempre digo '¡Es hora de la aventura!' y tengo una mochila mágica. ¿Quién soy?",
-                options: ["Dora la Exploradora", "Mickey Mouse", "Blippi", "Paw Patrol"],
-                answer: "Blippi"
-            }
-        ];
-
         // --- Funciones de Ayuda ---
 
         /**
          * Baraja un array de forma aleatoria (Fisher-Yates shuffle).
-         * Utilizado para mezclar las preguntas de la trivia.
          * @param {Array} array - El array a barajar.
          * @returns {Array} El array barajado.
          */
@@ -500,29 +462,32 @@
         }
 
         /**
+         * Calcula el precio ajustado de un ítem, aplicando descuentos si corresponden.
+         * @param {object} item - El objeto del ítem (servicio o paquete) con propiedades como name, price, quantity.
+         * @returns {number} El precio ajustado del ítem por unidad.
+         */
+        function getAdjustedItemPrice(item) {
+            let adjustedPrice = item.price;
+            const isPackage = packagesData.some(p => p.name === item.name);
+
+            // Lógica de descuento para "Pintacaritas" si se añaden más de 1.
+            if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                adjustedPrice = 35; // Precio con descuento por unidad.
+            } 
+            // Lógica de descuento mensual para el "Plan Magic".
+            else if (item.name === 'Plan Magic ✨' && appState.promotedPackages.includes(item.name)) {
+                adjustedPrice = item.price * 0.90; // 10% de descuento.
+            }
+            return adjustedPrice;
+        }
+
+        /**
          * Actualiza el resumen del carrito flotante con el número de ítems y el precio total.
          * Aplica lógicas de descuento si están activas.
          */
         function updateCartSummary() {
             let currentTotalPrice = appState.selectedItems.reduce((sum, item) => {
-                let itemPriceAdjusted = item.price;
-                // Determina si el ítem es un paquete comparando con los nombres en packagesData.
-                const isPackage = packagesData.some(p => p.name === item.name);
-
-                // Lógica de descuento para "Pintacaritas" si se añaden más de 1.
-                if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
-                    itemPriceAdjusted = 35; // Precio con descuento por unidad.
-                }
-                // Lógica de descuento de trivia para "Show de Burbujas Gigantes".
-                if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
-                    itemPriceAdjusted = item.price * 0.90; // 10% de descuento.
-                }
-                // Lógica de descuento mensual para paquetes.
-                else if (isPackage && appState.promotedPackages.includes(item.name)) {
-                    itemPriceAdjusted = item.price * 0.90; // 10% de descuento.
-                }
-                
-                return sum + (itemPriceAdjusted * item.quantity);
+                return sum + (getAdjustedItemPrice(item) * item.quantity);
             }, 0);
 
             // Añadir recargo por transporte basado en la ubicación seleccionada.
@@ -586,7 +551,7 @@
          * Maneja la adición o el cambio de un personaje temático en el carrito.
          * Permite añadir múltiples personajes, incrementando la cantidad si ya está en el carrito.
          * @param {object} service - El objeto de servicio "Personajes Temáticos" (base).
-         * @param {object} character - El objeto del personaje seleccionado ({ id, name, image }).
+         * @param {object} character - El objeto del personaje seleccionado ({ id, name }).
          * @param {string} action - 'add' para añadir o 'remove_all' para eliminar.
          */
         function updateCharacterInCart(service, character, action) {
@@ -678,7 +643,7 @@
             document.getElementById('promoModal').classList.remove('hidden');
             
             // Set specific packages for promotion
-            appState.promotedPackages = ['Plan Básico 🚀', 'Plan Recreativo 🌈', 'Plan Magic ✨'];
+            appState.promotedPackages = ['Plan Magic ✨']; // Solo el Plan Magic está en promoción
 
             updateCartSummary();
             // Re-renderiza las secciones si están activas para mostrar el descuento.
@@ -740,11 +705,6 @@
                             <button id="homePromoButton" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg">
                                 🎉 Promoción del Mes 🎉
                             </button>
-                            <button id="homeTriviaButton" 
-                                class="bg-gradient-to-r from-green-400 to-teal-500 hover:from-green-500 hover:to-teal-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg ${appState.hasPlayedTrivia ? 'opacity-50 cursor-not-allowed' : ''}"
-                                ${appState.hasPlayedTrivia ? 'disabled' : ''}>
-                                ${appState.hasPlayedTrivia ? '¡Trivia Completada! 🏆' : '🚀 ¡Juega la Trivia y Gana un Descuento! 🧠'}
-                            </button>
                         </div>
                     </div>
                 </section>
@@ -755,9 +715,8 @@
             document.getElementById('homeExploreServices').onclick = () => { setActiveSection('services'); };
             document.getElementById('homeExplorePackages').onclick = () => { setActiveSection('packages'); };
             document.getElementById('homePromoButton').onclick = () => {
-                showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en nuestros Planes Básico, Recreativo y Magic! 📦');
+                showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en nuestro Plan Magic! ✨');
             };
-            document.getElementById('homeTriviaButton').onclick = () => { setActiveSection('trivia'); };
         }
 
         /**
@@ -765,18 +724,9 @@
          */
         function renderServicesSection() {
             // Servicios que pueden tener cantidades múltiples y, por lo tanto, botones de "Añadir" y "Quitar Todo".
-            const repeatableServices = ['Pintacaritas 🎨👧👦', 'Globoflexia 🎈💫', 'Show de Burbujas Gigantes 🫧'];
+            const repeatableServices = ['Pintacaritas 🎨👧👦', 'Globoflexia 🎈💫', 'Show de Burbujas Gigantes 🫧', 'Máquinas de Snack Algodón y Pop Corn 🍿🍭'];
 
             const cardsHtml = servicesData.map(service => {
-                // Modified imageHtml structure for centering and consistent rounding
-                let imageHtml = service.image ? `
-                    <div class="text-center mb-4">
-                        <img src="${service.image}" alt="[attachment_0](attachment)" class="mx-auto h-32 object-cover rounded-xl">
-                    </div>
-                ` : '';
-                // Remove imageHtml from the service cards
-                imageHtml = ''; // Set to empty string to effectively remove the image
-
                 // Lógica específica para el servicio de selección de personaje
                 if (service.type === 'character_selection') {
                     // Encuentra el personaje actualmente seleccionado en el carrito (si existe alguno de este tipo)
@@ -791,7 +741,6 @@
 
                     return `
                         <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
-                            ${imageHtml}
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
@@ -849,7 +798,6 @@
 
                     return `
                         <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
-                            ${imageHtml}
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-fuchsia-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
@@ -890,16 +838,12 @@
                     const selectedItemInCart = appState.selectedItems.find(selected => selected.name === service.name);
                     const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 0;
                     
-                    let displayPriceForCard = service.price;
+                    let displayPriceForCard = getAdjustedItemPrice({ ...service, quantity: currentQuantity });
                     let originalPriceHtmlForCard = '';
 
-                    // Lógica de descuento para "Pintacaritas" si se añaden más de 1.
-                    if (service.name === 'Pintacaritas 🎨👧👦' && currentQuantity > 1) {
+                    // Si el precio ajustado es diferente al precio original, muestra el precio original tachado.
+                    if (displayPriceForCard !== service.price) {
                         originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
-                        displayPriceForCard = 35; // Precio con descuento por unidad si se añade más de 1.
-                    } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
-                        originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
-                        displayPriceForCard = service.price * 0.90; // 10% de descuento por trivia.
                     }
 
                     let buttonsHtml;
@@ -943,7 +887,6 @@
 
                     return `
                         <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
-                            ${imageHtml}
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
@@ -1117,18 +1060,16 @@
                     buttonClassColor = 'bg-indigo-500 hover:bg-indigo-600';
                 }
 
-                let displayPrice = pkg.price;
+                let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 }); // Paquetes siempre tienen cantidad 1 para cálculo de precio en tarjeta.
                 let originalPriceHtml = '';
                 
-                // Lógica de descuento mensual para paquetes.
-                if (appState.promotedPackages.includes(pkg.name)) {
+                // Si el precio ajustado es diferente al precio original, muestra el precio original tachado.
+                if (displayPrice !== pkg.price) {
                     originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
-                    displayPrice = pkg.price * 0.90; // 10% de descuento.
                 }
 
                 return `
-                    <div class="${pkg.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
-                        <!-- Removed image from package cards -->
+                    <div class="${pkg.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity50">
                         <div>
                             <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${pkg.name}</h2>
                             <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
@@ -1184,29 +1125,16 @@
                 ? `<p class="text-red-600 text-sm sm:text-base">No has seleccionado ningún servicio. Por favor, vuelve a la sección de Servicios o Paquetes.</p>`
                 : `<ul class="list-disc list-inside text-gray-800 text-sm sm:text-base bg-blue-50 p-3 rounded-md border border-blue-200">
                     ${appState.selectedItems.map((item) => {
-                        let displayItemPrice = item.price;
-                        let originalItemPrice = null;
-                        const isPackage = packagesData.some(p => p.name === item.name); // Verifica si es un paquete.
-
-                        // Aplica lógicas de descuento para mostrar el precio en la lista.
-                        if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
-                            originalItemPrice = item.price;
-                            displayItemPrice = 35; // Precio con descuento por unidad.
-                        } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
-                            originalItemPrice = item.price;
-                            displayItemPrice = item.price * 0.90; // Descuento de trivia.
-                        } else if (isPackage && appState.promotedPackages.includes(item.name)) {
-                            originalItemPrice = item.price;
-                            displayItemPrice = item.price * 0.90; // Descuento mensual de paquete.
-                        }
-
+                        const originalPrice = item.price;
+                        const displayItemPrice = getAdjustedItemPrice(item);
+                        
                         return `
                             <li>
                                 ${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} -
-                                ${originalItemPrice !== null ? `
-                                    <span class="line-through text-gray-500">$${item.price.toFixed(2)}</span>{' '}
+                                ${displayItemPrice !== originalPrice ? `
+                                    <span class="line-through text-gray-500">$${originalPrice.toFixed(2)}</span>{' '}
                                     <span class="text-green-700">$${displayItemPrice.toFixed(2)}</span>
-                                ` : `$${item.price.toFixed(2)}`}
+                                ` : `$${displayItemPrice.toFixed(2)}`}
                             </li>
                         `;
                     }).join('')}
@@ -1220,16 +1148,7 @@
 
             // Calcula el precio total final incluyendo descuentos y recargos.
             const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
-                let itemPriceForCalculation = item.price;
-
-                if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
-                    itemPriceForCalculation = 35;
-                } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
-                    itemPriceForCalculation = item.price * 0.90;
-                } else if (packagesData.some(p => p.name === item.name) && appState.promotedPackages.includes(item.name)) {
-                    itemPriceForCalculation = item.price * 0.90;
-                }
-                return sum + (itemPriceForCalculation * item.quantity);
+                return sum + (getAdjustedItemPrice(item) * item.quantity);
             }, 0);
             const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
@@ -1281,6 +1200,7 @@
                                         value="${appState.bookingFormData.exactLocation || ''}"
                                         required
                                     />
+                                    <span id="error-exactLocation" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
 
                                 <div>
@@ -1294,6 +1214,7 @@
                                         value="${appState.bookingFormData.bookingDate || ''}"
                                         required
                                     />
+                                    <span id="error-bookingDate" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
                                     <label htmlFor="bookingTime" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Hora del Evento: ⏰</label>
@@ -1305,6 +1226,7 @@
                                         value="${appState.bookingFormData.bookingTime || ''}"
                                         required
                                     />
+                                    <span id="error-bookingTime" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
                                     <label htmlFor="customerName" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Nombre: 👤</label>
@@ -1317,6 +1239,7 @@
                                         value="${appState.bookingFormData.customerName || ''}"
                                         required
                                     />
+                                    <span id="error-customerName" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
                                     <label htmlFor="customerEmail" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Email: 📧</label>
@@ -1329,6 +1252,7 @@
                                         value="${appState.bookingFormData.customerEmail || ''}"
                                         required
                                     />
+                                    <span id="error-customerEmail" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
                                     <label htmlFor="customerPhone" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Teléfono:📞</label>
@@ -1341,6 +1265,7 @@
                                         value="${appState.bookingFormData.customerPhone || ''}"
                                         required
                                     />
+                                    <span id="error-customerPhone" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
                                     <label htmlFor="eventType" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tipo de Evento: 🎉</label>
@@ -1353,6 +1278,7 @@
                                         value="${appState.bookingFormData.eventType || ''}"
                                         required
                                     />
+                                    <span id="error-eventType" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
                                     <label htmlFor="numKids" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Número Estimado de Niños: 👧👦</label>
@@ -1366,6 +1292,7 @@
                                         value="${appState.bookingFormData.numKids || ''}"
                                         required
                                     />
+                                    <span id="error-numKids" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg text-base sm:text-lg mt-4">
                                     ¡Confirmar Reserva Mágica! ✨
@@ -1388,226 +1315,6 @@
                     renderBookingSection(); // Re-renderiza la sección para mostrar el recargo actualizado.
                 };
             }
-        }
-
-        // --- Funciones de Trivia ---
-
-        /**
-         * Inicia el juego de trivia.
-         * Verifica si el usuario ya jugó la trivia usando localStorage para evitar reintentos.
-         */
-        function startTrivia() {
-            // Limpia cualquier temporizador o timeout anterior para evitar solapamientos.
-            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
-            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
-
-            const triviaPlayedStatus = localStorage.getItem('triviaPlayed');
-            if (triviaPlayedStatus === 'true') {
-                appState.hasPlayedTrivia = true;
-                showInfoModal('¡Ya has participado en la trivia! Solo se permite una participación por cliente. 😊');
-                setActiveSection('home');
-                return;
-            }
-
-            // Marca la trivia como jugada en localStorage.
-            localStorage.setItem('triviaPlayed', 'true');
-            appState.hasPlayedTrivia = true; // Actualiza el estado local de la app.
-
-            // Baraja las preguntas y selecciona las primeras 10 (o menos si hay menos).
-            appState.triviaQuestionsShuffled = shuffleArray([...triviaQuestions]).slice(0, 10); 
-            appState.currentTriviaQuestionIndex = 0; // Reinicia el índice de la pregunta actual.
-            appState.triviaCorrectAnswers = 0; // Reinicia el contador de respuestas correctas.
-
-            showInfoModal('¡Completa 5 respuestas correctas y gana un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! 🫧');
-            
-            // Retrasa la visualización de la primera pregunta para que el usuario lea el modal.
-            setTimeout(() => {
-                displayTriviaQuestion();
-            }, 3000);
-        }
-
-        /**
-         * Muestra la pregunta de trivia actual en la pantalla.
-         * Configura un temporizador para cada pregunta.
-         */
-        function displayTriviaQuestion() {
-            // Limpia cualquier temporizador o timeout anterior al mostrar una nueva pregunta.
-            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
-            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
-
-            const currentQuestion = appState.triviaQuestionsShuffled[appState.currentTriviaQuestionIndex];
-            if (!currentQuestion) {
-                // Si no hay más preguntas, termina la trivia.
-                endTrivia(true);
-                return;
-            }
-
-            const optionsHtml = currentQuestion.options.map((option) => `
-                <button
-                    class="trivia-option-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-full shadow-md text-lg transition duration-300 w-full sm:w-auto flex-grow"
-                    data-option="${option}"
-                >
-                    ${option}
-                </button>
-            `).join('');
-
-            const html = `
-                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-purple-400">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-6 sm:mb-8">
-                        Trivia de Programas Infantiles 🧠
-                    </h2>
-                    <div class="bg-purple-50 p-6 rounded-2xl shadow-inner border-4 border-purple-300 text-center">
-                        <p class="text-xl sm:text-2xl font-semibold text-gray-800 mb-4">
-                            Pregunta ${appState.currentTriviaQuestionIndex + 1} para ganar el descuento:
-                        </p>
-                        <p class="text-2xl sm:text-3xl font-extrabold text-indigo-700 mb-8">
-                            ${currentQuestion.question}
-                        </p>
-                        <div id="triviaOptions" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            ${optionsHtml}
-                        </div>
-                        <p id="triviaFeedback" class="text-lg font-bold mt-6 hidden"></p>
-                        <p id="triviaTimer" class="text-xl font-bold text-red-600 mt-4">Tiempo restante: 20s</p>
-                    </div>
-                </section>
-            `;
-            renderSection(html);
-
-            // Asigna los event listeners a los botones de opción de la trivia.
-            document.querySelectorAll('#mainContent .trivia-option-button').forEach(button => {
-                button.onclick = (event) => checkTriviaAnswer(event.target.dataset.option);
-            });
-
-            // Inicia el temporizador de la pregunta.
-            let timeLeft = 20;
-            const timerDisplay = document.getElementById('triviaTimer');
-            timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-
-            appState.currentTriviaTimer = setInterval(() => {
-                timeLeft--;
-                timerDisplay.textContent = `Tiempo restante: ${timeLeft}s`;
-                if (timeLeft <= 0) {
-                    clearInterval(appState.currentTriviaTimer);
-                    handleTimeUp(); // Llama a la función de tiempo agotado.
-                }
-            }, 1000);
-
-            // Establece un timeout para la pregunta en caso de que el temporizador no se limpie (seguridad).
-            appState.currentQuestionTimeout = setTimeout(() => {
-                if (timeLeft > 0) { // Solo if el tiempo no se ha agotado ya por el intervalo.
-                     handleTimeUp();
-                }
-            }, 20000);
-        }
-
-        /**
-         * Maneja el evento de tiempo agotado en una pregunta de trivia.
-         * Finaliza la trivia si se acaba el tiempo.
-         */
-        function handleTimeUp() {
-            // Limpia ambos temporizadores para asegurar que no haya ejecuciones duplicadas.
-            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
-            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
-
-            document.getElementById('triviaFeedback').textContent = '¡Tiempo agotado! ⌛';
-            document.getElementById('triviaFeedback').classList.add('text-red-600');
-            document.getElementById('triviaFeedback').classList.remove('hidden');
-
-            // Deshabilita los botones de opción para evitar más interacciones.
-            document.querySelectorAll('.trivia-option-button').forEach(button => {
-                button.disabled = true;
-            });
-
-            // Después de un breve retraso, termina la trivia.
-            setTimeout(() => {
-                endTrivia(false); // Indica que no se ganó el descuento.
-            }, 2000);
-        }
-
-        /**
-         * Verifica la respuesta seleccionada por el usuario en la trivia.
-         * @param {string} selectedOption - La opción seleccionada por el usuario.
-         */
-        function checkTriviaAnswer(selectedOption) {
-            // Limpia ambos temporizadores al recibir una respuesta para evitar problemas.
-            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
-            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
-
-            const currentQuestion = appState.triviaQuestionsShuffled[appState.currentTriviaQuestionIndex];
-            const triviaFeedback = document.getElementById('triviaFeedback');
-            triviaFeedback.classList.remove('hidden', 'text-green-600', 'text-red-600');
-
-            // Deshabilita todos los botones de opción.
-            document.querySelectorAll('.trivia-option-button').forEach(button => {
-                button.disabled = true;
-                // Resalta la respuesta correcta en verde.
-                if (button.dataset.option === currentQuestion.answer) {
-                    button.classList.add('bg-green-600');
-                    button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-                }
-            });
-
-            if (selectedOption === currentQuestion.answer) {
-                appState.triviaCorrectAnswers++;
-                triviaFeedback.textContent = '¡Correcto! ✅';
-                triviaFeedback.classList.add('text-green-600');
-
-                // Verifica si ha ganado el descuento o si hay más preguntas.
-                if (appState.currentTriviaQuestionIndex + 1 === appState.triviaQuestionsShuffled.length || appState.triviaCorrectAnswers >= 5) {
-                    setTimeout(() => {
-                        endTrivia(true); // Termina la trivia, indicando que se pudo haber ganado.
-                    }, 2000);
-                } else {
-                    setTimeout(() => {
-                        appState.currentTriviaQuestionIndex++;
-                        displayTriviaQuestion(); // Muestra la siguiente pregunta.
-                    }, 2000);
-                }
-
-            } else {
-                triviaFeedback.textContent = `¡Incorrecto! ❌ La respuesta correcta era: ${currentQuestion.answer}`;
-                triviaFeedback.classList.add('text-red-600');
-                
-                // Resalta la opción incorrecta seleccionada por el usuario en rojo.
-                document.querySelectorAll('.trivia-option-button').forEach(button => {
-                    if (button.dataset.option === selectedOption) {
-                        button.classList.add('bg-red-600');
-                        button.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-                    }
-                });
-
-                setTimeout(() => {
-                    endTrivia(false); // Termina la trivia, indicando que no se ganó el descuento.
-                }, 2000);
-            }
-            triviaFeedback.classList.remove('hidden'); // Asegura que el feedback sea visible.
-        }
-
-        /**
-         * Finaliza la trivia y muestra el resultado.
-         * @param {boolean} won - True si el usuario ganó el descuento, False de lo contrario.
-         */
-        function endTrivia(won = false) {
-            // Asegura que los temporizadores se limpien al finalizar.
-            if (appState.currentTriviaTimer) clearInterval(appState.currentTriviaTimer);
-            if (appState.currentQuestionTimeout) clearTimeout(appState.currentQuestionTimeout);
-
-            let message = '';
-            // Aplica el descuento si se cumplen las condiciones de victoria.
-            if (won && appState.triviaCorrectAnswers >= 5) { 
-                appState.triviaBubbleDiscountActive = true; 
-                message = `¡Felicidades! 🎉 Respondiste ${appState.triviaCorrectAnswers} preguntas correctamente. ¡Has ganado un 10% de descuento EXCLUSIVO en el Show de Burbujas Gigantes! Este descuento se aplicará automáticamente en tu carrito. 🥳`;
-            } else {
-                message = `¡Fin del juego! Respondiste ${appState.triviaCorrectAnswers} preguntas correctamente. Necesitas 5 aciertos para ganar. Sigue practicando para la próxima vez. No te preocupes, aún puedes aprovechar nuestras otras promociones. 😊`;
-                appState.triviaBubbleDiscountActive = false; // Asegura que el descuento no esté activo si no se ganó.
-            }
-            showInfoModal(message); // Muestra el resultado al usuario.
-            
-            // Reinicia el estado de la trivia para futuras sesiones (aunque localStorage evita re-jugar).
-            appState.currentTriviaQuestionIndex = 0;
-            appState.triviaCorrectAnswers = 0;
-            
-            setActiveSection('home'); // Regresa a la sección de inicio.
         }
 
         // --- Funciones para guardar y cargar los datos del formulario de reserva ---
@@ -1657,7 +1364,7 @@
 
         /**
          * Establece la sección activa y actualiza la navegación, enviando un page_view a Google Analytics.
-         * @param {string} sectionName - El nombre de la sección a activar ('home', 'services', 'packages', 'trivia', 'booking').
+         * @param {string} sectionName - El nombre de la sección a activar ('home', 'services', 'packages', 'booking').
          */
         function setActiveSection(sectionName) {
             // Si la sección actual es 'booking' y vamos a otra sección, guarda los datos.
@@ -1698,10 +1405,6 @@
                     pagePath = '/paquetes';
                     pageTitle = 'Diverty Eventos | Paquetes'; // Título optimizado (más corto).
                     break;
-                case 'trivia':
-                    pagePath = '/trivia';
-                    pageTitle = 'Diverty Eventos | Trivia para Descuentos'; // Título optimizado.
-                    break;
                 case 'booking':
                     pagePath = '/reservar';
                     pageTitle = 'Diverty Eventos | Reservar'; // Título optimizado (más corto).
@@ -1734,9 +1437,6 @@
                 case 'packages':
                     renderPackagesSection();
                     break;
-                case 'trivia':
-                    startTrivia(); 
-                    break;
                 case 'booking':
                     renderBookingSection();
                     break;
@@ -1752,6 +1452,35 @@
             return "¡Espera! ¿Estás seguro de que quieres salir de la página? Tu información podría no guardarse.";
         };
 
+        /**
+         * Limpia los mensajes de error y los estilos de los campos del formulario.
+         */
+        function clearFormErrors() {
+            const errorMessages = document.querySelectorAll('.error-message');
+            errorMessages.forEach(span => {
+                span.classList.add('hidden');
+            });
+            const errorInputs = document.querySelectorAll('.input-error');
+            errorInputs.forEach(input => {
+                input.classList.remove('input-error');
+            });
+        }
+
+        /**
+         * Muestra un mensaje de error para un campo específico.
+         * @param {string} fieldId - El ID del campo que tiene el error.
+         * @param {string} message - El mensaje de error a mostrar.
+         */
+        function showFieldError(fieldId, message) {
+            const errorSpan = document.getElementById(`error-${fieldId}`);
+            const inputElement = document.getElementById(fieldId);
+            if (errorSpan && inputElement) {
+                errorSpan.textContent = message;
+                errorSpan.classList.remove('hidden');
+                inputElement.classList.add('input-error');
+            }
+        }
+
 
         // --- Envío del Formulario a JotForm ---
         /**
@@ -1762,6 +1491,8 @@
         async function handleBookingSubmit(event) {
             event.preventDefault(); // Evita el envío por defecto del formulario.
 
+            clearFormErrors(); // Limpia cualquier error anterior.
+
             // *** Validaciones se realizan primero ***
             if (appState.selectedItems.length === 0) {
                 showInfoModal('¡Por favor, añade al menos un servicio o paquete a tu reserva! 🛒');
@@ -1771,11 +1502,18 @@
                 'bookingDate', 'bookingTime', 'customerName', 'customerEmail',
                 'customerPhone', 'eventType', 'numKids', 'exactLocation'
             ];
+            let formIsValid = true;
             for (const fieldId of requiredFields) {
-                if (!document.getElementById(fieldId).value) {
-                    showInfoModal('¡Oops! Por favor, completa todos los campos para realizar la reserva. 📝');
-                    return;
+                const inputElement = document.getElementById(fieldId);
+                if (!inputElement.value) {
+                    showFieldError(fieldId, 'Este campo es obligatorio.');
+                    formIsValid = false;
                 }
+            }
+
+            if (!formIsValid) {
+                showInfoModal('¡Oops! Por favor, completa todos los campos requeridos para realizar la reserva. 📝');
+                return;
             }
 
             // Si todas las validaciones pasan, se guarda el formulario y se muestra el modal.
@@ -1799,30 +1537,12 @@
                 const currentTransportFee = transportFeesByLocation[selectedLocationName] || 0;
 
                 const selectedItemsString = appState.selectedItems.map(item => {
-                    let itemPriceForJotForm = item.price;
-                    const isPackage = packagesData.some(p => p.name === item.name);
-
-                    if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
-                        itemPriceForJotForm = 35;
-                    } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
-                        itemPriceForJotForm = item.price * 0.90;
-                    } else if (isPackage && appState.promotedPackages.includes(item.name)) {
-                        itemPriceForJotForm = item.price * 0.90;
-                    }
-                    
+                    const itemPriceForJotForm = getAdjustedItemPrice(item);
                     return `${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} ($${itemPriceForJotForm.toFixed(2)})`; 
                 }).join(', ');
                 
                 const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
-                    let itemPriceForCalculation = item.price;
-                    if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
-                        itemPriceForCalculation = 35;
-                    } else if (appState.triviaBubbleDiscountActive && item.name === 'Show de Burbujas Gigantes 🫧') {
-                        itemPriceForCalculation = item.price * 0.90;
-                    } else if (packagesData.some(p => p.name === item.name) && appState.promotedPackages.includes(item.name)) {
-                        itemPriceForCalculation = item.price * 0.90;
-                    }
-                    return sum + (itemPriceForCalculation * item.quantity);
+                    return sum + (getAdjustedItemPrice(item) * item.quantity);
                 }, 0);
                 const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
@@ -1865,10 +1585,7 @@
         // --- Inicialización de la Aplicación ---
         // Se ejecuta cuando el DOM está completamente cargado.
         document.addEventListener('DOMContentLoaded', () => {
-            // Carga el estado de la trivia desde localStorage al iniciar la página.
-            if (localStorage.getItem('triviaPlayed') === 'true') {
-                appState.hasPlayedTrivia = true; 
-            }
+            // No se carga el estado de la trivia ya que ha sido eliminada.
 
             // Carga los datos del formulario y del carrito al iniciar la página.
             loadBookingFormData(); 
