@@ -141,8 +141,8 @@
         /* Estilos personalizados para el hover de botones para consistencia visual. */
         .hover\:bg-purple-600:hover { background-color: #7c3aed; }
         .hover\:bg-pink-600:hover { background-color: #db2777; }
-        .hover\:bg-blue-600:hover { background-color: #2563eb; }
-        .hover\:bg-green-600:hover { background-color: #16a34a; }
+        .hover\:bg-blue-600:hover { background-color: #2563eb; } /* This will be overridden by JS for nav buttons */
+        .hover\:bg-green-600:hover { background-color: #16a34a; } /* This will be overridden by JS for nav buttons */
         .hover\:bg-indigo-600:hover { background-color: #4f46e5; }
         /* Estilo para tachar texto (precios anteriores), útil para mostrar descuentos. */
         .line-through { text-decoration: line-through; }
@@ -179,13 +179,13 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-200 text-gray-800 flex flex-col">
+<body class="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
 
     <!-- Modal de Información General: Se usa para mensajes al usuario (ej. éxito, error). -->
     <div id="infoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="modalMessage">
-        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-400 transform transition-all duration-300 scale-95 opacity-0" id="infoModalContent">
-            <p id="modalMessage" class="text-xl font-bold mb-4 text-purple-700"></p>
-            <button id="closeModalButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-5 rounded-full shadow-lg transition duration-300">
+        <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0" id="infoModalContent">
+            <p id="modalMessage" class="text-xl font-bold mb-4 text-white"></p>
+            <button id="closeModalButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white">
                 ¡Entendido! 🎉
             </button>
         </div>
@@ -193,10 +193,10 @@
 
     <!-- Modal de Promoción: Se usa para anunciar ofertas especiales. -->
     <div id="promoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="promoMessage">
-        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-green-400 transform transition-all duration-300 scale-95 opacity-0" id="promoModalContent">
-            <h2 class="text-3xl font-extrabold text-green-700 mb-4">¡Promoción del Mes! 🌟</h2>
-            <p id="promoMessage" class="text-lg text-gray-800 mb-4"></p>
-            <button id="closePromoModalButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-full shadow-lg transition duration-300">
+        <div class="bg-gradient-to-br from-pink-600 to-pink-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-pink-500 transform transition-all duration-300 scale-95 opacity-0" id="promoModalContent">
+            <h2 class="text-3xl font-extrabold text-white mb-4">¡Promoción del Mes! 🌟</h2>
+            <p id="promoMessage" class="text-lg text-gray-100 mb-4"></p>
+            <button id="closePromoModalButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white">
                 ¡Genial! 🎉
             </button>
         </div>
@@ -204,58 +204,86 @@
 
     <!-- Nuevo Modal de Advertencia de Reserva: Se muestra antes de rellenar el formulario de reserva. -->
     <div id="bookingWarningModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="bookingWarningTitle">
-        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-red-400 transform transition-all duration-300 scale-95 opacity-0" id="bookingWarningModalContent">
-            <h2 id="bookingWarningTitle" class="text-3xl font-extrabold text-red-700 mb-4">¡Importante antes de Reservar! 🚨</h2>
-            <p class="text-lg text-gray-800 mb-6">
+        <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0" id="bookingWarningModalContent">
+            <h2 id="bookingWarningTitle" class="text-3xl font-extrabold text-white mb-4">¡Importante antes de Reservar! 🚨</h2>
+            <p class="text-lg text-gray-100 mb-6">
                 Para asegurar la disponibilidad de la fecha y hora de tu evento, te recomendamos
-                <span class="font-bold text-red-600">verificar primero con nosotros vía WhatsApp</span>.
+                <span class="font-bold text-purple-200">verificar primero con nosotros vía WhatsApp</span>.
                 ¡Así garantizamos la magia de tu día! ✨
             </p>
             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <a href="https://wa.me/50766677965?text=¡Hola! Quiero consultar la disponibilidad de una fecha para un evento."
                    target="_blank"
-                   class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 flex items-center justify-center">
+                   class="bg-gradient-to-br from-green-500 via-green-400 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-full shadow-xl transition duration-300 flex items-center justify-center border-2 border-white">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon" class="w-6 h-6 mr-2">
                     Contactar por WhatsApp
                 </a>
-                <button id="closeBookingWarningModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
+                <button id="closeBookingWarningModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full shadow-md transition duration-300">
                     Continuar con el Formulario
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Mini-Carrito Modal (Revertido a su estado original) -->
+    <div id="miniCartModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="miniCartTitle">
+        <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0" id="miniCartModalContent">
+            <h2 id="miniCartTitle" class="text-2xl font-extrabold text-white mb-4">Tu Carrito de Diversión 🛒</h2>
+            <div id="miniCartItems" class="max-h-60 overflow-y-auto text-left mb-4 p-2 bg-purple-100 rounded-lg border border-purple-200 text-gray-800">
+                <!-- Los ítems del carrito se cargarán aquí dinámicamente -->
+            </div>
+            <div class="text-right font-bold text-white mb-4">
+                <!-- El recargo por transporte ya no se muestra aquí -->
+                <p class="text-xl text-pink-200">Total: <span id="miniCartTotalPrice">$0.00</span></p>
+            </div>
+            <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-3">
+                <button id="closeMiniCartModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full shadow-md transition duration-300">
+                    Cerrar
+                </button>
+                <button id="miniCartProceedToBookButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white">
+                    Reservar Ahora ✨
+                </button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Encabezado (Menú de Navegación Principal): Contiene el logo, el título y los botones de navegación. -->
-    <header class="bg-white bg-opacity-95 shadow-xl p-4 w-full rounded-b-xl sticky top-0 z-40">
+    <header class="bg-gradient-to-br from-purple-100 to-purple-200 text-purple-800 py-3 px-4 w-full rounded-b-3xl shadow-xl sticky top-0 z-40 border-b-4 border-purple-300">
         <nav class="container mx-auto flex flex-col sm:flex-row justify-between items-center" aria-label="Navegación Principal">
-            <!-- Contenedor para el logo y el título en dispositivos móviles y de escritorio. -->
+            <!-- Contenedor para el logo y el título -->
             <div class="flex items-center mb-4 sm:mb-0">
                 <!-- LOGO DE DIVERTY EVENTOS -->
-                <!-- ¡IMPORTANTE! La URL de la imagen ahora apunta a tu sitio de Netlify. -->
                 <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Logo de Diverty Eventos" class="w-16 h-16 mr-4 rounded-full object-cover border-2 border-pink-400 shadow-md">
                 
-                <!-- Título principal simplificado: Muestra el nombre de la marca. -->
-                <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center sm:text-left">
+                <!-- Título principal -->
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-900 text-center sm:text-left">
                     Diverty Eventos 
                 </h1>
             </div>
+            <!-- Lista de navegación con botones rediseñados -->
             <ul class="flex flex-wrap justify-center sm:space-x-4 space-x-2" role="menubar">
-                <li role="none"><button id="navHome" role="menuitem" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100 transition duration-300">Inicio 🏠</button></li>
-                <li role="none"><button id="navServices" role="menuitem" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100 transition duration-300">Servicios 📋</button></li>
-                <li role="none"><button id="navPackages" role="menuitem" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100 transition duration-300">Paquetes 📦</button></li>
-                <li role="none"><button id="navBooking" role="menuitem" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100 transition duration-300">Reservar 🗓️</button></li>
+                <li role="none"><button id="navHome" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md">Inicio 🏠</button></li>
+                <li role="none"><button id="navServices" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md">Servicios 📋</button></li>
+                <li role="none"><button id="navPackages" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md">Paquetes 📦</button></li>
+                <li role="none"><button id="navBooking" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md">Reservar 🗓️</button></li>
             </ul>
         </nav>
     </header>
 
     <!-- Resumen del Carrito de Compra (Barra Flotante): Muestra la cantidad de ítems y el total seleccionado. -->
-    <div id="cartSummary" class="bg-yellow-200 text-purple-800 font-extrabold p-6 text-center rounded-b-lg shadow-lg border-4 border-yellow-400 hidden sticky top-[100px] z-30 transition-all duration-300 ease-in-out">
-        <p class="text-2xl sm:text-3xl mb-3">
-            🛒 Ítems seleccionados: <span id="selectedItemsCount" class="text-purple-700">0</span> | Total: <span id="totalPriceDisplay" class="text-pink-700">$0.00</span>
+    <div id="cartSummary" class="bg-gradient-to-br from-purple-200 to-purple-300 text-purple-800 font-extrabold p-4 text-center rounded-b-3xl shadow-xl border-b-4 border-purple-400 hidden sticky top-[88px] z-30 transition-all duration-300 ease-in-out flex flex-col sm:flex-row justify-between items-center">
+        <p class="text-xl sm:text-2xl mb-2 sm:mb-0">
+            🛒 Ítems: <span id="selectedItemsCount" class="text-purple-700">0</span> | Total: <span id="totalPriceDisplay" class="text-pink-700">$0.00</span>
         </p>
-        <button id="proceedToBookButton" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full shadow-md text-base sm:text-lg transition duration-300">
-            Proceder a Reservar Ahora! ✨
-        </button>
+        <div class="flex space-x-3">
+            <button id="viewCartDetailsButton" class="bg-gradient-to-br from-purple-500 via-purple-400 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 border-2 border-white">
+                Ver Detalles 🛒
+            </button>
+            <button id="proceedToBookButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white">
+                Reservar ✨
+            </button>
+        </div>
     </div>
 
     <!-- Área de Contenido Principal: Aquí se cargará dinámicamente el contenido de cada sección (Inicio, Servicios, etc.). -->
@@ -307,15 +335,15 @@
         // --- Definición de Datos (Servicios y Paquetes) ---
         // Arrays de objetos que definen los servicios y paquetes disponibles, incluyendo precios y descripciones.
         const servicesData = [
-            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 40, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora.', color: 'bg-blue-100 border-blue-300 text-blue-800' },
-            { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-green-100 border-green-300 text-green-800' },
-            { id: '6', name: 'Show de Burbujas Gigantes 🫧', price: 100, description: '¡Burbujas enormes que los niños pueden atrapar y explotar! Servicio por 1 hora. ¡Un súper show único en Panamá!', color: 'bg-teal-100 border-teal-300 text-teal-800' },
+            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 40, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800' },
+            { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-300 text-pink-800' },
+            { id: '6', name: 'Show de Burbujas Gigantes 🫧', price: 100, description: '¡Burbujas enormes que los niños pueden atrapar y explotar! Servicio por 1 hora. ¡Un súper show único en Panamá!', color: 'bg-gradient-to-br from-indigo-100 to-indigo-200 border-indigo-300 text-indigo-800' },
             { 
                 id: '7', 
                 name: 'Decoraciones Temáticas', 
                 price: 100, // Precio actualizado a 100
                 description: 'Transforma cualquier espacio en un mundo mágico con nuestras decoraciones personalizadas. ¡Elige tu temática favorita!', 
-                color: 'bg-fuchsia-100 border-fuchsia-300 text-fuchsia-800',
+                color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800',
                 type: 'theme_selection', // Nuevo tipo para manejar la selección de temática
                 themes: {
                     ninas: [
@@ -340,14 +368,14 @@
                     ]
                 }
             },
-            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-lime-100 border-lime-300 text-lime-800' },
+            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800' },
             // Servicio de personajes temáticos (precio actualizado a 65)
             {
                 id: '9',
                 name: 'Personajes Temáticos',
                 price: 65, // Precio base para un personaje, actualizado a $65
                 description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige entre Mickey, Minnie y Mario Bros. Servicio por 1 hora.',
-                color: 'bg-indigo-100 border-indigo-300 text-indigo-800',
+                color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800',
                 type: 'character_selection', // Tipo especial para manejar la selección de personaje
                 characters: [
                     { id: 'mickey', name: 'Mickey Mouse 🐭' },
@@ -364,7 +392,7 @@
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-pink-100 border-pink-300 text-pink-800' },
+            ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800' },
             { id: 'P2', name: 'Plan Recreativo 🌈', price: 100, services: [ // Renombrado
                 'Payas@ o animad@r 🤡🎤',
                 'Pintacaritas 🎨👧👦',
@@ -372,14 +400,14 @@
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: '2h de aventura: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-indigo-100 border-indigo-300 text-indigo-800' },
+            ], description: '2h de aventura: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800' },
             { id: 'P3', name: 'Plan Magic ✨', price: 135, services: [ // Renombrado
                 'Payasit@ o animad@r 🤡🎤',
                 'Animación, juegos y concursos 🥳🎲',
                 'Pintacaritas 🎨👧👦',
                 'Show de magia cómica ✨🤣',
                 'Asistencia para la piñata 🍬🎉'
-            ], description: '2.5h premium: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-orange-100 border-orange-300 text-orange-800' },
+            ], description: '2.5h premium: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800' },
             { // Nuevo paquete "Plan Diverty"
                 id: 'P4', 
                 name: 'Plan Diverty 🥳', 
@@ -393,7 +421,7 @@
                     'Asistencia en la piñata 🍬🎉'
                 ], 
                 description: '3h de diversión completa: Payaso/animador, juegos, pintacaritas, globoflexia, show de burbujas o magia, y asistencia piñata. ¡La magia garantizada!', 
-                color: 'bg-purple-100 border-purple-300 text-purple-800' 
+                color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800' 
             },
             { // Nuevo paquete "Plan Bubble"
                 id: 'P5',
@@ -407,7 +435,7 @@
                     'Romper la piñata 🍬🎉' // Agregado "Romper la piñata"
                 ],
                 description: '2h de diversión con burbujas gigantes y piñata para una fiesta inolvidable!', // Descripción actualizada a 2 horas
-                color: 'bg-blue-200 border-blue-400 text-blue-900'
+                color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-900'
             }
         ];
 
@@ -466,6 +494,13 @@
          * Aplica lógicas de descuento si están activas.
          */
         function updateCartSummary() {
+            const cartSummaryDiv = document.getElementById('cartSummary');
+            // Si la sección activa es 'booking', asegura que el carrito esté oculto y no hagas nada más.
+            if (appState.activeSection === 'booking') {
+                if (cartSummaryDiv) cartSummaryDiv.classList.add('hidden');
+                return; 
+            }
+
             let currentTotalPrice = appState.selectedItems.reduce((sum, item) => {
                 return sum + (getAdjustedItemPrice(item) * item.quantity);
             }, 0);
@@ -473,18 +508,19 @@
             // Añadir recargo por transporte basado en la ubicación seleccionada.
             currentTotalPrice += transportFeesByLocation[appState.selectedLocation] || 0;
 
-            const cartSummaryDiv = document.getElementById('cartSummary');
             const selectedItemsCountSpan = document.getElementById('selectedItemsCount');
             const totalPriceDisplaySpan = document.getElementById('totalPriceDisplay');
 
             const totalItemsInCart = appState.selectedItems.reduce((total, item) => total + item.quantity, 0);
 
-            if (totalItemsInCart > 0 || currentTotalPrice > 0) {
-                cartSummaryDiv.classList.remove('hidden');
-                selectedItemsCountSpan.textContent = totalItemsInCart;
-                totalPriceDisplaySpan.textContent = `$${currentTotalPrice.toFixed(2)}`;
-            } else {
-                cartSummaryDiv.classList.add('hidden');
+            if (selectedItemsCountSpan && totalPriceDisplaySpan && cartSummaryDiv) {
+                if (totalItemsInCart > 0 || currentTotalPrice > 0) {
+                    cartSummaryDiv.classList.remove('hidden');
+                    selectedItemsCountSpan.textContent = totalItemsInCart;
+                    totalPriceDisplaySpan.textContent = `$${currentTotalPrice.toFixed(2)}`;
+                } else {
+                    cartSummaryDiv.classList.add('hidden');
+                }
             }
         }
 
@@ -525,6 +561,7 @@
                 renderBookingSection();
             }
             updateCartSummary(); // Actualiza la barra flotante del carrito.
+            saveBookingFormData(); // Guarda el estado del carrito después de cada acción.
         }
 
         /**
@@ -558,6 +595,7 @@
             // Re-renderiza la sección de servicios y actualiza el resumen del carrito
             renderServicesSection();
             updateCartSummary();
+            saveBookingFormData(); // Guarda el estado del carrito después de cada acción.
         }
 
         /**
@@ -587,6 +625,7 @@
             }
             renderServicesSection();
             updateCartSummary();
+            saveBookingFormData(); // Guarda el estado del carrito después de cada acción.
         }
 
 
@@ -597,16 +636,22 @@
          * @param {function} [callback] - Función a ejecutar cuando se cierra el modal.
          */
         function showInfoModal(message, callback = null) {
-            document.getElementById('modalMessage').textContent = message;
             const modal = document.getElementById('infoModal');
             const modalContent = document.getElementById('infoModalContent');
-            modal.classList.remove('hidden');
-            // Animar el modal para que aparezca suavemente
-            setTimeout(() => {
-                modalContent.classList.remove('scale-95', 'opacity-0');
-                modalContent.classList.add('scale-100', 'opacity-100');
-            }, 10); // Pequeño retraso para permitir que la clase 'hidden' se remueva primero
-            appState.infoModalCallback = callback; // Almacena el callback en el estado global.
+            const modalMessage = document.getElementById('modalMessage');
+
+            if (modal && modalContent && modalMessage) {
+                modalMessage.textContent = message;
+                modal.classList.remove('hidden');
+                // Animar el modal para que aparezca suavemente
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                }, 10); // Pequeño retraso para permitir que la clase 'hidden' se remueva primero
+                appState.infoModalCallback = callback; // Almacena el callback en el estado global.
+            } else {
+                console.error("Error: Elementos del modal de información no encontrados.");
+            }
         }
 
         /**
@@ -615,17 +660,21 @@
         function closeModal() {
             const modal = document.getElementById('infoModal');
             const modalContent = document.getElementById('infoModalContent');
-            modalContent.classList.remove('scale-100', 'opacity-100');
-            modalContent.classList.add('scale-95', 'opacity-0');
-            // Esperar a que la animación termine antes de ocultar completamente
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                document.getElementById('modalMessage').textContent = '';
-                if (appState.infoModalCallback) {
-                    appState.infoModalCallback(); // Ejecuta el callback.
-                    appState.infoModalCallback = null; // Limpia el callback después de usarlo.
-                }
-            }, 300); // Duración de la transición CSS
+            const modalMessage = document.getElementById('modalMessage');
+
+            if (modal && modalContent && modalMessage) {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                // Esperar a que la animación termine antes de ocultar completamente
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modalMessage.textContent = '';
+                    if (appState.infoModalCallback) {
+                        appState.infoModalCallback(); // Ejecuta el callback.
+                        appState.infoModalCallback = null; // Limpia el callback después de usarlo.
+                    }
+                }, 300); // Duración de la transición CSS
+            }
         }
 
         /**
@@ -633,23 +682,29 @@
          * @param {string} message - El mensaje de la promoción.
          */
         function showPromoInfoModal(message) {
-            document.getElementById('promoMessage').textContent = message;
-            const modal = document.getElementById('promoModal');
-            const modalContent = document.getElementById('promoModalContent');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modalContent.classList.remove('scale-95', 'opacity-0');
-                modalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-            
-            // Set specific packages for promotion
-            appState.promotedPackages = ['Plan Magic ✨']; // Solo el Plan Magic está en promoción
+            const promoModal = document.getElementById('promoModal');
+            const promoModalContent = document.getElementById('promoModalContent');
+            const promoMessage = document.getElementById('promoMessage');
 
-            updateCartSummary();
-            // Re-renderiza las secciones si están activas para mostrar el descuento.
-            if (appState.activeSection === 'services') renderServicesSection();
-            if (appState.activeSection === 'packages') renderPackagesSection();
-            if (appState.activeSection === 'booking') renderBookingSection();
+            if (promoModal && promoModalContent && promoMessage) {
+                promoMessage.textContent = message;
+                promoModal.classList.remove('hidden');
+                setTimeout(() => {
+                    promoModalContent.classList.remove('scale-95', 'opacity-0');
+                    promoModalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+                
+                // Set specific packages for promotion
+                appState.promotedPackages = ['Plan Magic ✨']; // Solo el Plan Magic está en promoción
+
+                updateCartSummary();
+                // Re-renderiza las secciones si están activas para mostrar el descuento.
+                if (appState.activeSection === 'services') renderServicesSection();
+                if (appState.activeSection === 'packages') renderPackagesSection();
+                if (appState.activeSection === 'booking') renderBookingSection();
+            } else {
+                console.error("Error: Elementos del modal de promoción no encontrados.");
+            }
         }
 
         /**
@@ -658,15 +713,19 @@
         function closePromoModal() {
             const modal = document.getElementById('promoModal');
             const modalContent = document.getElementById('promoModalContent');
-            modalContent.classList.remove('scale-100', 'opacity-100');
-            modalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                document.getElementById('promoMessage').textContent = '';
-                // No se limpian los paquetes promocionados para que el descuento persista durante la sesión.
-                updateCartSummary();
-                if (appState.activeSection === 'packages') renderPackagesSection(); // Se refresca para asegurar la visualización del descuento.
-            }, 300);
+            const promoMessage = document.getElementById('promoMessage');
+
+            if (modal && modalContent && promoMessage) {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    promoMessage.textContent = '';
+                    // No se limpian los paquetes promocionados para que el descuento persista durante la sesión.
+                    updateCartSummary();
+                    if (appState.activeSection === 'packages') renderPackagesSection(); // Se refresca para asegurar la visualización del descuento.
+                }, 300);
+            }
         }
 
         /**
@@ -675,11 +734,15 @@
         function showBookingWarningModal() {
             const modal = document.getElementById('bookingWarningModal');
             const modalContent = document.getElementById('bookingWarningModalContent');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modalContent.classList.remove('scale-95', 'opacity-0');
-                modalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
+            if (modal && modalContent) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            } else {
+                console.error("Error: Elementos del modal de advertencia de reserva no encontrados.");
+            }
         }
 
         /**
@@ -688,12 +751,90 @@
         function closeBookingWarningModal() {
             const modal = document.getElementById('bookingWarningModal');
             const modalContent = document.getElementById('bookingWarningModalContent');
-            modalContent.classList.remove('scale-100', 'opacity-100');
-            modalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
+            if (modal && modalContent) {
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
         }
+
+        /**
+         * Muestra el modal de mini-carrito con los detalles de los ítems seleccionados.
+         */
+        function showMiniCartModal() {
+            console.log("showMiniCartModal: Función llamada."); // Debugging: Confirmar que la función se llama
+            const miniCartModal = document.getElementById('miniCartModal');
+            const miniCartModalContent = document.getElementById('miniCartModalContent');
+            const miniCartItemsDiv = document.getElementById('miniCartItems');
+            const miniCartTotalPriceSpan = document.getElementById('miniCartTotalPrice');
+            const miniCartTransportFeeSpan = document.getElementById('miniCartTransportFee'); // Este elemento existe pero lo ocultaremos
+            const miniCartTransportFeeParent = miniCartTransportFeeSpan ? miniCartTransportFeeSpan.parentElement : null;
+
+            // Añadir comprobaciones de existencia de elementos para mayor robustez
+            if (!miniCartModal || !miniCartModalContent || !miniCartItemsDiv || !miniCartTotalPriceSpan) {
+                console.error("Error: Uno o más elementos esenciales del modal del mini-carrito no se encontraron. No se puede mostrar el modal.");
+                return; // Salir de la función si los elementos no existen
+            }
+
+            if (appState.selectedItems.length === 0) {
+                miniCartItemsDiv.innerHTML = '<p class="text-gray-600 text-center">Tu carrito está vacío. ¡Añade algo de magia!</p>';
+            } else {
+                miniCartItemsDiv.innerHTML = appState.selectedItems.map(item => {
+                    const originalPrice = item.price;
+                    const displayItemPrice = getAdjustedItemPrice(item);
+                    const itemTotalPrice = displayItemPrice * item.quantity;
+                    return `
+                        <div class="flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
+                            <span class="text-gray-700 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                            <span class="font-semibold text-pink-600 text-sm">
+                                ${displayItemPrice !== originalPrice ? `<span class="line-through text-gray-500 text-xs">$${originalPrice.toFixed(2)}</span> ` : ''}
+                                $${itemTotalPrice.toFixed(2)}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // El recargo por transporte no se muestra en este modal, por lo que se calcula el total sin él.
+            const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
+                return sum + (getAdjustedItemPrice(item) * item.quantity);
+            }, 0);
+            
+            miniCartTotalPriceSpan.textContent = `$${totalItemsPrice.toFixed(2)}`;
+
+            // Asegurar que la línea del recargo por transporte esté oculta en el mini-carrito
+            if (miniCartTransportFeeParent) {
+                miniCartTransportFeeParent.classList.add('hidden');
+            }
+
+            // Eliminar la clase 'hidden' y luego iniciar la transición
+            miniCartModal.classList.remove('hidden');
+            console.log("showMiniCartModal: Eliminada clase 'hidden' del modal."); // Debugging
+            
+            setTimeout(() => {
+                miniCartModalContent.classList.remove('scale-95', 'opacity-0');
+                miniCartModalContent.classList.add('scale-100', 'opacity-100');
+                console.log("showMiniCartModal: Aplicadas clases de animación al contenido del modal."); // Debugging
+            }, 50); // Aumentado ligeramente el retraso para asegurar que el DOM tenga tiempo de registrar el cambio de 'hidden'
+        }
+
+        /**
+         * Oculta el modal de mini-carrito.
+         */
+        function closeMiniCartModal() {
+            const modal = document.getElementById('miniCartModal');
+            const modalContent = document.getElementById('miniCartModalContent');
+            if (modal && modalContent) { // Añadir comprobación de existencia
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+        }
+
 
         // --- Funciones de Renderizado de Secciones ---
 
@@ -702,8 +843,8 @@
          */
         function renderHomeSection() {
             const html = `
-                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-yellow-400 flex items-center justify-center min-h-[60vh] animate-fade-in">
-                    <div class="bg-yellow-50 p-6 sm:p-10 rounded-2xl shadow-inner border-4 border-yellow-300 max-w-3xl mx-auto text-center">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-purple-400 flex items-center justify-center min-h-[60vh] animate-fade-in">
+                    <div class="bg-gradient-to-br from-purple-100 to-pink-100 p-6 sm:p-10 rounded-2xl shadow-xl border-4 border-purple-300 max-w-3xl mx-auto text-center">
                         
                         <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-800 mb-4 leading-tight text-center">
                             ¡La Magia Comienza Aquí! ✨
@@ -712,15 +853,15 @@
                             Diverty Eventos: <strong>fiestas infantiles inolvidables en Panamá</strong>. Animación, shows de burbujas, pintacaritas, globoflexia. ¡Hacemos tu fiesta soñada realidad!
                         </p>
                         <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                            <button id="homeExploreServices" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg transition duration-300 transform hover:scale-105">
+                            <button id="homeExploreServices" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 border-2 border-white">
                                 ¡Explora Nuestros Servicios! 🎉
                             </button>
-                            <button id="homeExplorePackages" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg transition duration-300 transform hover:scale-105">
+                            <button id="homeExplorePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 border-2 border-white">
                                 ¡Explora Nuestros Paquetes! 📦
                             </button>
                         </div>
                         <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                            <button id="homePromoButton" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg transition duration-300 transform hover:scale-105">
+                            <button id="homePromoButton" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-500 via-purple-400 to-purple-600 border-2 border-white">
                                 🎉 Promoción del Mes 🎉
                             </button>
                         </div>
@@ -730,9 +871,14 @@
             renderSection(html);
 
             // Asigna los event listeners a los botones de la sección de Inicio.
-            document.getElementById('homeExploreServices').onclick = () => { setActiveSection('services'); };
-            document.getElementById('homeExplorePackages').onclick = () => { setActiveSection('packages'); };
-            document.getElementById('homePromoButton').onclick = () => {
+            const homeExploreServicesBtn = document.getElementById('homeExploreServices');
+            if (homeExploreServicesBtn) homeExploreServicesBtn.onclick = () => { setActiveSection('services'); };
+            
+            const homeExplorePackagesBtn = document.getElementById('homeExplorePackages');
+            if (homeExplorePackagesBtn) homeExplorePackagesBtn.onclick = () => { setActiveSection('packages'); };
+            
+            const homePromoButton = document.getElementById('homePromoButton');
+            if (homePromoButton) homePromoButton.onclick = () => {
                 showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en nuestro Plan Magic! ✨');
             };
         }
@@ -758,7 +904,7 @@
                     }).join('');
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-xl">
+                        <div class="${service.color} rounded-2xl shadow-xl p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
@@ -767,7 +913,7 @@
                                 </p>
                                 <div class="mb-4">
                                     <label for="characterSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu personaje: ✨</label>
-                                    <select id="characterSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-sm sm:text-base">
+                                    <select id="characterSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base">
                                         <option value="">Selecciona un personaje</option>
                                         ${optionsHtml}
                                     </select>
@@ -777,7 +923,7 @@
                                 <button
                                     data-service-id="${service.id}"
                                     data-action="add_character"
-                                    class="character-action-button flex-grow bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="character-action-button flex-grow bg-gradient-to-br from-indigo-600 via-indigo-400 to-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white"
                                     disabled
                                 >
                                     Añadir Seleccionado ➕
@@ -786,7 +932,7 @@
                             <div id="selectedCharactersList-${service.id}" class="mt-4">
                                 ${selectedCharacterItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Personajes en tu carrito:</p>` : ''}
                                 ${selectedCharacterItems.map(item => `
-                                    <div class="flex justify-between items-center bg-blue-50 p-2 rounded-lg mb-2 shadow-sm">
+                                    <div class="flex justify-between items-center bg-purple-100 p-2 rounded-lg mb-2 shadow-sm border border-purple-200">
                                         <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
                                         <button class="remove-specific-character-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200"
                                                 data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
@@ -815,16 +961,16 @@
                     themeOptionsHtml += '</optgroup>';
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-xl">
+                        <div class="${service.color} rounded-2xl shadow-xl p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
                             <div>
-                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-fuchsia-700">${service.name}</h2>
+                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-pink-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
                                 <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
                                     $${service.price.toFixed(2)}
                                 </p>
                                 <div class="mb-4">
                                     <label for="themeSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu temática: 🎨</label>
-                                    <select id="themeSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-fuchsia-500 focus:border-fuchsia-500 text-sm sm:text-base">
+                                    <select id="themeSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-sm sm:text-base">
                                         ${themeOptionsHtml}
                                     </select>
                                 </div>
@@ -833,7 +979,7 @@
                                 <button
                                     data-service-id="${service.id}"
                                     data-action="add_theme"
-                                    class="theme-action-button flex-grow bg-fuchsia-500 hover:bg-fuchsia-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="theme-action-button flex-grow bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white"
                                     disabled
                                 >
                                     Añadir Seleccionado ➕
@@ -842,7 +988,7 @@
                             <div id="selectedThemesList-${service.id}" class="mt-4">
                                 ${selectedThemeItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Temáticas en tu carrito:</p>` : ''}
                                 ${selectedThemeItems.map(item => `
-                                    <div class="flex justify-between items-center bg-fuchsia-50 p-2 rounded-lg mb-2 shadow-sm">
+                                    <div class="flex justify-between items-center bg-pink-100 p-2 rounded-lg mb-2 shadow-sm border border-pink-200">
                                         <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
                                         <button class="remove-specific-theme-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200"
                                                 data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
@@ -873,7 +1019,7 @@
                                     data-item-name="${service.name}"
                                     data-item-price="${service.price}"
                                     data-action-type="add"
-                                    class="add-remove-button flex-grow bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105">
+                                    class="add-remove-button flex-grow bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white">
                                     Añadir ➕ ${currentQuantity > 0 ? `(x${currentQuantity})` : ''}
                                 </button>
                                 ${currentQuantity > 0 ? `
@@ -890,21 +1036,21 @@
                     } else {
                         // Botón para servicios no repetibles (añadir/quitar).
                         const isSelected = selectedItemInCart ? true : false;
-                        const buttonText = isSelected ? 'Quitar del Carrito ➖' : 'Añadir al Carrito ➕';
-                        const buttonClassColor = isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-purple-500 hover:bg-purple-600';
+                        const buttonClassColor = isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white border-2 border-white';
+                        const buttonShadow = isSelected ? 'shadow-md' : 'shadow-xl';
                         buttonsHtml = `
                             <button
                                 data-item-name="${service.name}"
                                 data-item-price="${service.price}"
                                 data-action-type="toggle"
-                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105">
-                                ${buttonText}
+                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105">
+                                ${isSelected ? 'Quitar del Carrito ➖' : 'Añadir al Carrito ➕'}
                             </button>
                         `;
                     }
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-xl">
+                        <div class="${service.color} rounded-2xl shadow-xl p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
@@ -919,7 +1065,7 @@
             }).join('');
 
             const html = `
-                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-green-400 animate-fade-in">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-purple-400 animate-fade-in">
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Servicios 🎉</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
                         Servicios de animación para fiestas infantiles en Panamá. ¡Hacemos tu evento mágico e inolvidable!
@@ -1069,13 +1215,19 @@
 
                 let buttonText;
                 let buttonClassColor;
+                let buttonShadow;
+                let buttonBorder;
 
                 if (isSelected) {
                     buttonText = 'Quitar del Carrito ➖';
                     buttonClassColor = 'bg-red-500 hover:bg-red-600';
+                    buttonShadow = 'shadow-md';
+                    buttonBorder = ''; // No border for remove state
                 } else {
                     buttonText = 'Añadir al Carrito ➕';
-                    buttonClassColor = 'bg-indigo-500 hover:bg-indigo-600';
+                    buttonClassColor = 'bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white';
+                    buttonShadow = 'shadow-xl';
+                    buttonBorder = 'border-2 border-white';
                 }
 
                 let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 }); // Paquetes siempre tienen cantidad 1 para cálculo de precio en tarjeta.
@@ -1087,14 +1239,14 @@
                 }
 
                 return `
-                    <div class="${pkg.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-xl">
+                    <div class="${pkg.color} rounded-2xl shadow-xl p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
                         <div>
                             <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${pkg.name}</h2>
                             <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
                             <ul class="list-disc list-inside text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
                                 ${pkg.services.map(service => `<li>${service}</li>`).join('')}
                             </ul>
-                            <p class="text-3xl sm:text-4xl font-extrabold text-purple-600 mb-3 sm:mb-4">
+                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
                                 ${originalPriceHtml}$${displayPrice.toFixed(2)}
                             </p>
                         </div>
@@ -1102,7 +1254,7 @@
                             data-item-name="${pkg.name}"
                             data-item-price="${pkg.price}"
                             data-action-type="toggle"
-                            class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105">
+                            class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder}">
                             ${buttonText}
                         </button>
                     </div>
@@ -1110,7 +1262,7 @@
             }).join('');
 
             const html = `
-                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-pink-400 animate-fade-in">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-pink-400 animate-fade-in">
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Paquetes 📦</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
                         Descubre nuestros paquetes de <strong>animación para fiestas infantiles en Panamá</strong>. ¡La opción perfecta para tu evento!
@@ -1141,22 +1293,23 @@
             // Genera la lista de ítems seleccionados para mostrar en la sección de reserva.
             const selectedItemsListHtml = appState.selectedItems.length === 0
                 ? `<p class="text-red-600 text-sm sm:text-base">No has seleccionado ningún servicio. Por favor, vuelve a la sección de Servicios o Paquetes.</p>`
-                : `<ul class="list-disc list-inside text-gray-800 text-sm sm:text-base bg-blue-50 p-3 rounded-md border border-blue-200">
+                : `<div class="space-y-2">
                     ${appState.selectedItems.map((item) => {
                         const originalPrice = item.price;
                         const displayItemPrice = getAdjustedItemPrice(item);
+                        const itemTotalPrice = displayItemPrice * item.quantity;
                         
                         return `
-                            <li>
-                                ${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} -
-                                ${displayItemPrice !== originalPrice ? `
-                                    <span class="line-through text-gray-500">$${originalPrice.toFixed(2)}</span>{' '}
-                                    <span class="text-green-700 font-semibold">$${displayItemPrice.toFixed(2)}</span>
-                                ` : `$${displayItemPrice.toFixed(2)}`}
-                            </li>
+                            <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm border border-gray-200">
+                                <span class="font-semibold text-gray-800 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                                <div class="flex items-center space-x-2">
+                                    ${displayItemPrice !== originalPrice ? `<span class="line-through text-gray-500 text-xs">$${originalPrice.toFixed(2)}</span> ` : ''}
+                                    <span class="font-bold text-pink-600 text-base">$${itemTotalPrice.toFixed(2)}</span>
+                                </div>
+                            </div>
                         `;
                     }).join('')}
-                </ul>`;
+                </div>`;
 
             // Calcula y muestra el recargo por transporte.
             const currentTransportFee = transportFeesByLocation[appState.selectedLocation] || 0;
@@ -1171,17 +1324,17 @@
             const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
             const html = `
-                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-blue-400 animate-fade-in">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-purple-400 animate-fade-in">
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Reserva tu Evento 🗓️</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
                         ¡Reserva tu <strong>fiesta infantil en Panamá</strong>! Completa este formulario para asegurar la magia de tu evento.
                     </p>
                     <div class="grid grid-cols-1 lg:grid-cols-1 gap-4 sm:gap-12">
-                        <h3 class="text-xl sm:text-2xl font-bold text-blue-700 mb-4 sm:mb-6">Completa los Detalles de Tu Reserva 📝</h3>
-                        <div class="bg-blue-100 p-4 sm:p-8 rounded-2xl shadow-lg border-4 border-blue-300">
+                        <h3 class="text-xl sm:text-2xl font-bold text-purple-700 mb-4 sm:mb-6">Completa los Detalles de Tu Reserva 📝</h3>
+                        <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-4 sm:p-8 rounded-3xl shadow-2xl border-4 border-purple-400">
                             <form id="bookingForm" class="space-y-4">
-                                <div>
-                                    <label for="selectedItemsDisplay" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Servicios/Paquetes Seleccionados:🎁</label>
+                                <div class="bg-gradient-to-br from-pink-50 to-pink-100 p-4 rounded-2xl shadow-xl border-4 border-pink-300 mb-4">
+                                    <h4 class="text-lg font-bold text-pink-700 mb-3">Tu Selección:</h4>
                                     ${selectedItemsListHtml}
                                     ${transportFeeDisplayHtml}
                                     <p class="text-lg font-bold text-purple-700 mt-3">Total a Pagar: <span class="text-pink-600">$${finalTotalPrice.toFixed(2)}</span></p>
@@ -1192,7 +1345,7 @@
                                     <select
                                         id="locationSelect"
                                         name="ubicacionEvento"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
                                     >
                                         <option value="Panamá Centro" ${appState.bookingFormData.selectedLocation === 'Panamá Centro' ? 'selected' : ''}>Panamá Centro</option>
                                         <option value="Arraiján" ${appState.bookingFormData.selectedLocation === 'Arraiján' ? 'selected' : ''}>Arraiján ($10 adicional)</option>
@@ -1208,7 +1361,7 @@
                                         type="text"
                                         id="exactLocation"
                                         name="direccionExacta"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
                                         placeholder="Ej: Calle Principal, Casa #15, Cerca de la escuela..."
                                         value="${appState.bookingFormData.exactLocation || ''}"
                                         required
@@ -1222,7 +1375,7 @@
                                         type="date"
                                         id="bookingDate"
                                         name="fechaEvento"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
                                         min="${new Date().toISOString().split('T')[0]}"
                                         value="${appState.bookingFormData.bookingDate || ''}"
                                         required
@@ -1235,7 +1388,7 @@
                                         type="time"
                                         id="bookingTime"
                                         name="horaEvento"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
                                         value="${appState.bookingFormData.bookingTime || ''}"
                                         required
                                     />
@@ -1247,7 +1400,7 @@
                                         type="text"
                                         id="customerName"
                                         name="nombreCliente"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
                                         placeholder="Ej: Juan Pérez"
                                         value="${appState.bookingFormData.customerName || ''}"
                                         required
@@ -1260,7 +1413,7 @@
                                         type="email"
                                         id="customerEmail"
                                         name="emailCliente"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
                                         placeholder="Ej: tu.email@example.com"
                                         value="${appState.bookingFormData.customerEmail || ''}"
                                         required
@@ -1273,7 +1426,7 @@
                                         type="tel"
                                         id="customerPhone"
                                         name="telefonoCliente"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
                                         placeholder="Ej: 555-1234567"
                                         value="${appState.bookingFormData.customerPhone || ''}"
                                         required
@@ -1286,7 +1439,7 @@
                                         type="text"
                                         id="eventType"
                                         name="tipoEvento"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
                                         placeholder="Ej: Cumpleaños, Graduación"
                                         value="${appState.bookingFormData.eventType || ''}"
                                         required
@@ -1299,7 +1452,7 @@
                                         type="number"
                                         id="numKids"
                                         name="numeroNinos"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
                                         placeholder="Ej: 20"
                                         min="1"
                                         value="${appState.bookingFormData.numKids || ''}"
@@ -1307,7 +1460,7 @@
                                     />
                                     <span id="error-numKids" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
-                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg text-base sm:text-lg mt-4 transition duration-300 transform hover:scale-105">
+                                <button type="submit" class="w-full bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-xl text-base sm:text-lg mt-4 transition duration-300 transform hover:scale-105 border-2 border-white">
                                     ¡Confirmar Reserva Mágica! ✨
                                 </button>
                             </form>
@@ -1321,41 +1474,44 @@
             if (bookingForm) {
                 bookingForm.onsubmit = handleBookingSubmit;
                 // Manejador de cambio para la selección de ubicación, actualiza el estado y el resumen del carrito.
-                document.getElementById('locationSelect').onchange = (e) => {
-                    appState.bookingFormData.selectedLocation = e.target.value; // Actualiza el estado al cambiar ubicación.
-                    appState.selectedLocation = e.target.value; // También actualiza el estado general de la ubicación.
-                    updateCartSummary(); 
-                    renderBookingSection(); // Re-renderiza la sección para mostrar el recargo actualizado.
-                };
+                const locationSelect = document.getElementById('locationSelect');
+                if (locationSelect) {
+                    locationSelect.onchange = (e) => {
+                        appState.bookingFormData.selectedLocation = e.target.value; // Actualiza el estado al cambiar ubicación.
+                        appState.selectedLocation = e.target.value; // También actualiza el estado general de la ubicación.
+                        updateCartSummary(); 
+                        renderBookingSection(); // Re-renderiza la sección para mostrar el recargo actualizado.
+                    };
+                }
             }
         }
 
         // --- Funciones para guardar y cargar los datos del formulario de reserva ---
         /**
-         * Guarda los datos actuales del formulario de reserva en appState y localStorage.
+         * Guarda los datos actuales del formulario de reserva y los ítems seleccionados en localStorage.
          */
         function saveBookingFormData() {
             const bookingForm = document.getElementById('bookingForm');
             if (bookingForm) {
-                appState.bookingFormData.bookingDate = bookingForm.elements.bookingDate.value;
-                appState.bookingFormData.bookingTime = bookingForm.elements.bookingTime.value;
-                appState.bookingFormData.customerName = bookingForm.elements.customerName.value;
-                appState.bookingFormData.customerEmail = bookingForm.elements.customerEmail.value;
-                appState.bookingFormData.customerPhone = bookingForm.elements.customerPhone.value;
-                appState.bookingFormData.eventType = bookingForm.elements.eventType.value;
-                appState.bookingFormData.numKids = bookingForm.elements.numKids.value;
-                appState.bookingFormData.exactLocation = bookingForm.elements.exactLocation.value;
-                appState.bookingFormData.selectedLocation = bookingForm.elements.locationSelect.value;
+                appState.bookingFormData.bookingDate = bookingForm.elements.bookingDate ? bookingForm.elements.bookingDate.value : '';
+                appState.bookingFormData.bookingTime = bookingForm.elements.bookingTime ? bookingForm.elements.bookingTime.value : '';
+                appState.bookingFormData.customerName = bookingForm.elements.customerName ? bookingForm.elements.customerName.value : '';
+                appState.bookingFormData.customerEmail = bookingForm.elements.customerEmail ? bookingForm.elements.customerEmail.value : '';
+                appState.bookingFormData.customerPhone = bookingForm.elements.customerPhone ? bookingForm.elements.customerPhone.value : '';
+                appState.bookingFormData.eventType = bookingForm.elements.eventType ? bookingForm.elements.eventType.value : '';
+                appState.bookingFormData.numKids = bookingForm.elements.numKids ? bookingForm.elements.numKids.value : '';
+                appState.bookingFormData.exactLocation = bookingForm.elements.exactLocation ? bookingForm.elements.exactLocation.value : '';
+                appState.bookingFormData.selectedLocation = bookingForm.elements.locationSelect ? bookingForm.elements.locationSelect.value : 'Panamá Centro';
                 
-                // Guardar también los ítems seleccionados del carrito.
-                localStorage.setItem('selectedItems', JSON.stringify(appState.selectedItems));
+                // Guarda los datos del formulario y los ítems seleccionados en localStorage.
                 localStorage.setItem('bookingFormData', JSON.stringify(appState.bookingFormData));
-                console.log('Datos del formulario guardados:', appState.bookingFormData); // Para depuración.
+                localStorage.setItem('selectedItems', JSON.stringify(appState.selectedItems));
+                console.log('Datos del formulario y carrito guardados:', appState.bookingFormData, appState.selectedItems); // Para depuración.
             }
         }
 
         /**
-         * Carga los datos del formulario de reserva desde localStorage a appState.
+         * Carga los datos del formulario de reserva y los ítems seleccionados desde localStorage a appState.
          */
         function loadBookingFormData() {
             try {
@@ -1396,15 +1552,24 @@
             // Actualiza los estilos de los botones de navegación para indicar la sección activa.
             document.querySelectorAll('header nav button').forEach(button => {
                 const buttonId = button.id;
-                if ((buttonId === 'navHome' && sectionName === 'home') ||
-                    (buttonId === 'navServices' && sectionName === 'services') ||
-                    (buttonId === 'navPackages' && sectionName === 'packages') ||
-                    (buttonId === 'navBooking' && sectionName === 'booking')) {
-                    button.classList.add('bg-purple-500', 'text-white', 'shadow-md');
-                    button.classList.remove('text-gray-700', 'hover:bg-purple-100');
-                } else {
-                    button.classList.remove('bg-purple-500', 'text-white', 'shadow-md');
-                    button.classList.add('text-gray-700', 'hover:bg-purple-100');
+                // Primero, restablece todos los botones a su estado inactivo por defecto
+                button.classList.remove('bg-purple-600', 'bg-blue-600', 'bg-pink-600', 'bg-green-600', 'shadow-xl', 'border-2', 'border-white', 'scale-105', 'bg-gradient-to-br', 'from-purple-600', 'via-purple-400', 'to-purple-700', 'from-blue-600', 'via-blue-400', 'to-blue-700', 'from-pink-600', 'via-pink-400', 'to-pink-700', 'from-green-600', 'via-green-400', 'to-green-700', 'text-white');
+                // Asegúrate de que los botones inactivos tengan el texto más resaltado
+                button.classList.add('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md', 'font-extrabold');
+
+                // Luego, aplica el estilo activo al botón de la sección actual
+                if (buttonId === 'navHome' && sectionName === 'home') {
+                    button.classList.add('bg-gradient-to-br', 'from-purple-600', 'via-purple-400', 'to-purple-700', 'text-white', 'shadow-xl', 'border-2', 'border-white', 'scale-105');
+                    button.classList.remove('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md');
+                } else if (buttonId === 'navServices' && sectionName === 'services') {
+                    button.classList.add('bg-gradient-to-br', 'from-pink-600', 'via-pink-400', 'to-pink-700', 'text-white', 'shadow-xl', 'border-2', 'border-white', 'scale-105');
+                    button.classList.remove('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md');
+                } else if (buttonId === 'navPackages' && sectionName === 'packages') {
+                    button.classList.add('bg-gradient-to-br', 'from-purple-600', 'via-purple-400', 'to-purple-700', 'text-white', 'shadow-xl', 'border-2', 'border-white', 'scale-105');
+                    button.classList.remove('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md');
+                } else if (buttonId === 'navBooking' && sectionName === 'booking') {
+                    button.classList.add('bg-gradient-to-br', 'from-pink-600', 'via-pink-400', 'to-pink-700', 'text-white', 'shadow-xl', 'border-2', 'border-white', 'scale-105');
+                    button.classList.remove('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md');
                 }
             });
 
@@ -1428,6 +1593,9 @@
                 case 'booking':
                     pagePath = '/reservar';
                     pageTitle = 'Diverty Eventos | Reservar'; 
+                    // Oculta la barra de resumen del carrito al entrar en la sección de reserva.
+                    const cartSummaryDiv = document.getElementById('cartSummary');
+                    if (cartSummaryDiv) cartSummaryDiv.classList.add('hidden');
                     // Muestra el modal de advertencia de reserva solo si no se ha mostrado antes.
                     if (!appState.hasShownBookingWarning) {
                         showBookingWarningModal();
@@ -1463,14 +1631,19 @@
                 default:
                     renderHomeSection(); // Fallback por defecto.
             }
-            updateCartSummary(); // Siempre actualiza el resumen del carrito al cambiar de sección.
+            // La actualización del resumen del carrito se maneja dentro de cada renderSection
+            // o se omite si la sección es 'booking' para mantenerla oculta.
+            if (sectionName !== 'booking') {
+                updateCartSummary(); 
+            }
         }
 
         // --- Evento para la advertencia al intentar salir de la página ---
         // Este mensaje suele ser genérico en navegadores modernos por motivos de seguridad.
         window.onbeforeunload = function() {
+            // Guarda el estado del carrito y el formulario antes de que el usuario abandone la página.
+            saveBookingFormData();
             // No se devuelve un string para evitar el mensaje de confirmación intrusivo en navegadores modernos.
-            // Si quieres guardar el estado antes de salir, hazlo aquí sin devolver nada.
         };
 
         /**
@@ -1528,7 +1701,7 @@
             for (const fieldId of requiredFields) {
                 const inputElement = document.getElementById(fieldId);
                 // Trim para eliminar espacios en blanco y asegurar que no sea solo espacios
-                if (!inputElement.value.trim()) {
+                if (inputElement && !inputElement.value.trim()) { // Añadido check para inputElement
                     showFieldError(fieldId, 'Este campo es obligatorio.');
                     formIsValid = false;
                 }
@@ -1553,17 +1726,17 @@
                 // Esto es lo que se ejecutará cuando el usuario haga clic en "¡Entendido!" en el modal.
 
                 // --- Recopilación de Datos para JotForm (se re-obtiene para asegurar los últimos valores) ---
-                const bookingDate = document.getElementById('bookingDate').value; 
-                const bookingTime = document.getElementById('bookingTime').value; 
+                const bookingDate = document.getElementById('bookingDate') ? document.getElementById('bookingDate').value : ''; 
+                const bookingTime = document.getElementById('bookingTime') ? document.getElementById('bookingTime').value : ''; 
 
                 const [year, month, day] = bookingDate.split('-'); 
 
-                const customerName = document.getElementById('customerName').value;
-                const customerEmail = document.getElementById('customerEmail').value;
-                const customerPhone = document.getElementById('customerPhone').value;
-                const eventType = document.getElementById('eventType').value;
-                const numKids = document.getElementById('numKids').value;
-                const exactLocation = document.getElementById('exactLocation').value;
+                const customerName = document.getElementById('customerName') ? document.getElementById('customerName').value : '';
+                const customerEmail = document.getElementById('customerEmail') ? document.getElementById('customerEmail').value : '';
+                const customerPhone = document.getElementById('customerPhone') ? document.getElementById('customerPhone').value : '';
+                const eventType = document.getElementById('eventType') ? document.getElementById('eventType').value : '';
+                const numKids = document.getElementById('numKids') ? document.getElementById('numKids').value : '';
+                const exactLocation = document.getElementById('exactLocation') ? document.getElementById('exactLocation').value : '';
                 const selectedLocationName = appState.selectedLocation;
                 const currentTransportFee = transportFeesByLocation[selectedLocationName] || 0;
 
@@ -1620,16 +1793,48 @@
             loadBookingFormData(); 
 
             // Asigna event listeners para los botones de cerrar los modales.
-            document.getElementById('closeModalButton').onclick = closeModal;
-            document.getElementById('closePromoModalButton').onclick = closePromoModal;
-            document.getElementById('closeBookingWarningModalButton').onclick = closeBookingWarningModal;
+            const closeModalBtn = document.getElementById('closeModalButton');
+            if (closeModalBtn) closeModalBtn.onclick = closeModal;
+
+            const closePromoModalBtn = document.getElementById('closePromoModalButton');
+            if (closePromoModalBtn) closePromoModalBtn.onclick = closePromoModal;
+
+            const closeBookingWarningModalBtn = document.getElementById('closeBookingWarningModalButton');
+            if (closeBookingWarningModalBtn) closeBookingWarningModalBtn.onclick = closeBookingWarningModal;
+            
+            // Asigna event listeners para los botones del mini-carrito modal.
+            const closeMiniCartModalBtn = document.getElementById('closeMiniCartModalButton');
+            if (closeMiniCartModalBtn) closeMiniCartModalBtn.onclick = closeMiniCartModal;
 
             // Asigna event listeners para los botones de navegación principal.
-            document.getElementById('navHome').onclick = () => setActiveSection('home');
-            document.getElementById('navServices').onclick = () => setActiveSection('services');
-            document.getElementById('navPackages').onclick = () => setActiveSection('packages');
-            document.getElementById('navBooking').onclick = () => setActiveSection('booking');
-            document.getElementById('proceedToBookButton').onclick = () => setActiveSection('booking');
+            const navHomeBtn = document.getElementById('navHome');
+            if (navHomeBtn) navHomeBtn.onclick = () => setActiveSection('home');
+            
+            const navServicesBtn = document.getElementById('navServices');
+            if (navServicesBtn) navServicesBtn.onclick = () => setActiveSection('services');
+            
+            const navPackagesBtn = document.getElementById('navPackages');
+            if (navPackagesBtn) navPackagesBtn.onclick = () => setActiveSection('packages');
+            
+            const navBookingBtn = document.getElementById('navBooking');
+            if (navBookingBtn) navBookingBtn.onclick = () => setActiveSection('booking');
+            
+            const proceedToBookBtn = document.getElementById('proceedToBookButton');
+            if (proceedToBookBtn) proceedToBookBtn.onclick = () => setActiveSection('booking');
+            
+            const miniCartProceedToBookBtn = document.getElementById('miniCartProceedToBookButton');
+            if (miniCartProceedToBookBtn) miniCartProceedToBookBtn.onclick = () => {
+                closeMiniCartModal(); // Cierra el modal antes de ir a reservar
+                setActiveSection('booking');
+            };
+            
+            const viewCartDetailsBtn = document.getElementById('viewCartDetailsButton');
+            if (viewCartDetailsBtn) {
+                viewCartDetailsBtn.onclick = () => {
+                    console.log("viewCartDetailsButton: Click detectado. Abriendo modal de carrito."); // Debugging
+                    showMiniCartModal();
+                };
+            }
 
             // Establece la sección de inicio por defecto al cargar la página.
             setActiveSection('home');
