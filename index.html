@@ -11,9 +11,9 @@
     <!-- Open Graph Tags para compartir en redes sociales y apps de mensajería (Facebook, WhatsApp, etc.). -->
     <meta property="og:title" content="Diverty Eventos | Fiestas Infantiles en Panamá">
     <meta property="og:description" content="Organizamos las mejores fiestas infantiles en Panamá. Animación, shows de burbujas, pintacaritas y más. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!">
-    <meta property="og:image" content="https://i.imgur.com/vR2Ipuv.png"> <!-- URL de la imagen que se mostrará al compartir. -->
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image" content="https://i.ibb.co/hJkkYs3L/android-chrome-512x512.png"> <!-- URL de la imagen que se mostrará al compartir. -->
+    <meta property="og:image:width" content="512"> <!-- Ancho actualizado para coincidir con la nueva imagen -->
+    <meta property="og:image:height" content="512"> <!-- Alto actualizado para coincidir con la nueva imagen -->
     <meta property="og:image:alt" content="Logo de Diverty Eventos, para fiestas infantiles en Panamá">
     <meta property="og:url" content="https://divertypanama.netlify.app/"> <!-- ¡IMPORTANTE! Reemplaza con la URL real de tu sitio web. -->
     <meta property="og:type" content="website">
@@ -33,7 +33,7 @@
       "@context": "https://schema.org",
       "@type": ["LocalBusiness", "Organization"],
       "name": "Diverty Eventos",
-      "image": "https://i.imgur.com/vR2Ipuv.png", <!-- URL de la imagen principal para Schema Markup. -->
+      "image": "https://i.ibb.co/hJkkYs3L/android-chrome-512x512.png", <!-- URL de la imagen principal para Schema Markup. -->
       "url": "https://divertypanama.netlify.app/", <!-- ¡IMPORTANT! Reemplaza con la URL real de tu sitio. -->
       "telephone": "+50766677965",
       "address": {
@@ -255,7 +255,7 @@
                 <!-- LOGO DE DIVERTY EVENTOS -->
                 <!-- Asegúrate de que la URL de 'src' es la dirección directa de tu imagen. -->
                 <!-- El atributo 'alt' es importante para la accesibilidad y el SEO. -->
-                <img src="https://i.ibb.co/zVqr5yPB/android-chrome-512x512.png" alt="Logo de Diverty Eventos" class="w-16 h-16 mr-4 rounded-full object-cover border-2 border-pink-400 shadow-md">
+                <img src="https://i.ibb.co/hJkkYs3L/android-chrome-512x512.png" alt="Logo de Diverty Eventos" class="w-16 h-16 mr-4 rounded-full object-cover border-2 border-pink-400 shadow-md">
                 
                 <!-- Título principal simplificado: Muestra el nombre de la marca. -->
                 <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center sm:text-left">
@@ -359,14 +359,14 @@
                 }
             },
             { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-lime-100 border-lime-300 text-lime-800' },
-            // Servicio de personajes temáticos (precio actualizado a 65)
+            <!-- Servicio de personajes temáticos (precio actualizado a 65) -->
             {
                 id: '9',
                 name: 'Personajes Temáticos',
-                price: 65, // Precio base para un personaje, actualizado a $65
+                price: 65, <!-- Precio base para un personaje, actualizado a $65 -->
                 description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige entre Mickey, Minnie y Mario Bros. Servicio por 1 hora.',
                 color: 'bg-indigo-100 border-indigo-300 text-indigo-800',
-                type: 'character_selection', // Tipo especial para manejar la selección de personaje
+                type: 'character_selection', <!-- Tipo especial para manejar la selección de personaje -->
                 characters: [
                     { id: 'mickey', name: 'Mickey Mouse 🐭' },
                     { id: 'minnie', name: 'Minnie Mouse 🎀' },
@@ -376,14 +376,14 @@
         ];
 
         const packagesData = [
-            { id: 'P1', name: 'Plan Básico 🚀', price: 75, services: [ // Renombrado
+            { id: 'P1', name: 'Plan Básico 🚀', price: 75, services: [ <!-- Renombrado -->
                 'Payas@ o animad@r 🤡🎤',
                 'Animación infantil 🥳💃',
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
             ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-pink-100 border-pink-300 text-pink-800' },
-            { id: 'P2', name: 'Plan Recreativo 🌈', price: 100, services: [ // Renombrado
+            { id: 'P2', name: 'Plan Recreativo 🌈', price: 100, services: [ <!-- Renombrado -->
                 'Payas@ o animad@r 🤡🎤',
                 'Pintacaritas 🎨👧👦',
                 'Animación infantil 🥳💃',
@@ -391,14 +391,14 @@
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
             ], description: '2h de aventura: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-indigo-100 border-indigo-300 text-indigo-800' },
-            { id: 'P3', name: 'Plan Magic ✨', price: 135, services: [ // Renombrado
+            { id: 'P3', name: 'Plan Magic ✨', price: 135, services: [ <!-- Renombrado -->
                 'Payasit@ o animad@r 🤡🎤',
                 'Animación, juegos y concursos 🥳🎲',
                 'Pintacaritas 🎨👧👦',
                 'Show de magia cómica ✨🤣',
                 'Asistencia para la piñata 🍬🎉'
             ], description: '2.5h premium: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-orange-100 border-orange-300 text-orange-800' },
-            { // Nuevo paquete "Plan Diverty"
+            { <!-- Nuevo paquete "Plan Diverty" -->
                 id: 'P4', 
                 name: 'Plan Diverty 🥳', 
                 price: 165, 
@@ -413,23 +413,23 @@
                 description: '3h de diversión completa: Payaso/animador, juegos, pintacaritas, globoflexia, show de burbujas o magia, y asistencia piñata. ¡La magia garantizada!', 
                 color: 'bg-purple-100 border-purple-300 text-purple-800' 
             },
-            { // Nuevo paquete "Plan Bubble"
+            { <!-- Nuevo paquete "Plan Bubble" -->
                 id: 'P5',
-                name: 'Plan Bubble 🫧', // Nombre actualizado a "Plan Bubble"
+                name: 'Plan Bubble 🫧', <!-- Nombre actualizado a "Plan Bubble" -->
                 price: 120, 
                 services: [
                     'Animación infantil 🥳💃',
                     'Juegos y concursos 🎲🏆',
                     'Payasito o Animador 🤡🎤',
                     'Show de Burbujas Gigantes 🫧',
-                    'Romper la piñata 🍬🎉' // Agregado "Romper la piñata"
+                    'Romper la piñata 🍬🎉' <!-- Agregado "Romper la piñata" -->
                 ],
-                description: '2h de diversión con burbujas gigantes y piñata para una fiesta inolvidable!', // Descripción actualizada a 2 horas
+                description: '2h de diversión con burbujas gigantes y piñata para una fiesta inolvidable!', <!-- Descripción actualizada a 2 horas -->
                 color: 'bg-blue-200 border-blue-400 text-blue-900'
             }
         ];
 
-        // Recargos por transporte según la ubicación del evento.
+        <!-- Recargos por transporte según la ubicación del evento. -->
         const transportFeesByLocation = {
             'Panamá Centro': 0,
             'Arraiján': 10,
@@ -438,7 +438,7 @@
             'Panamá Norte': 10,
         };
 
-        // --- Funciones de Ayuda ---
+        <!-- --- Funciones de Ayuda --- -->
 
         /**
          * Baraja un array de forma aleatoria (Fisher-Yates shuffle).
@@ -470,13 +470,13 @@
             let adjustedPrice = item.price;
             const isPackage = packagesData.some(p => p.name === item.name);
 
-            // Lógica de descuento para "Pintacaritas" si se añaden más de 1.
+            <!-- Lógica de descuento para "Pintacaritas" si se añaden más de 1. -->
             if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
-                adjustedPrice = 35; // Precio con descuento por unidad.
+                adjustedPrice = 35; <!-- Precio con descuento por unidad. -->
             } 
-            // Lógica de descuento mensual para el "Plan Magic".
+            <!-- Lógica de descuento mensual para el "Plan Magic". -->
             else if (item.name === 'Plan Magic ✨' && appState.promotedPackages.includes(item.name)) {
-                adjustedPrice = item.price * 0.90; // 10% de descuento.
+                adjustedPrice = item.price * 0.90; <!-- 10% de descuento. -->
             }
             return adjustedPrice;
         }
@@ -490,7 +490,7 @@
                 return sum + (getAdjustedItemPrice(item) * item.quantity);
             }, 0);
 
-            // Añadir recargo por transporte basado en la ubicación seleccionada.
+            <!-- Añadir recargo por transporte basado en la ubicación seleccionada. -->
             currentTotalPrice += transportFeesByLocation[appState.selectedLocation] || 0;
 
             const cartSummaryDiv = document.getElementById('cartSummary');
@@ -520,23 +520,23 @@
                 if (existingItemIndex > -1) {
                     appState.selectedItems[existingItemIndex].quantity++;
                 } else {
-                    // Si el ítem no existe, lo añade con cantidad 1.
+                    <!-- Si el ítem no existe, lo añade con cantidad 1. -->
                     appState.selectedItems.push({ ...item, quantity: 1 });
                 }
             } else if (actionType === 'remove_all') {
-                // Filtra el ítem para eliminar todas sus unidades.
+                <!-- Filtra el ítem para eliminar todas sus unidades. -->
                 appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
-            } else if (actionType === 'toggle') { // Para servicios no repetibles (ej: paquetes).
+            } else if (actionType === 'toggle') { <!-- Para servicios no repetibles (ej: paquetes). -->
                 if (existingItemIndex > -1) {
-                    // Si ya está seleccionado, lo quita.
+                    <!-- Si ya está seleccionado, lo quita. -->
                     appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
                 } else {
-                    // Si no está seleccionado, lo añade con cantidad 1.
+                    <!-- Si no está seleccionado, lo añade con cantidad 1. -->
                     appState.selectedItems.push({ ...item, quantity: 1 });
                 }
             }
 
-            // Volver a renderizar la sección activa para actualizar los botones y precios.
+            <!-- Volver a renderizar la sección activa para actualizar los botones y precios. -->
             if (appState.activeSection === 'services') {
                 renderServicesSection();
             } else if (appState.activeSection === 'packages') {
@@ -544,7 +544,7 @@
             } else if (appState.activeSection === 'booking') {
                 renderBookingSection();
             }
-            updateCartSummary(); // Actualiza la barra flotante del carrito.
+            updateCartSummary(); <!-- Actualiza la barra flotante del carrito. -->
         }
 
         /**
@@ -560,22 +560,22 @@
 
             if (action === 'add') {
                 if (existingItemIndex > -1) {
-                    // Si el personaje ya existe, incrementa su cantidad
+                    <!-- Si el personaje ya existe, incrementa su cantidad -->
                     appState.selectedItems[existingItemIndex].quantity++;
                 } else {
-                    // Añade un nuevo personaje con el precio base del servicio
+                    <!-- Añade un nuevo personaje con el precio base del servicio -->
                     appState.selectedItems.push({
                         id: `${service.id}-${character.id}`,
                         name: fullCharacterName,
-                        price: service.price, // Usa el precio base del servicio de personajes
+                        price: service.price, <!-- Usa el precio base del servicio de personajes -->
                         quantity: 1
                     });
                 }
             } else if (action === 'remove_all') {
-                // Elimina todas las instancias de un personaje específico del carrito
+                <!-- Elimina todas las instancias de un personaje específico del carrito -->
                 appState.selectedItems = appState.selectedItems.filter(item => item.name !== fullCharacterName);
             }
-            // Re-renderiza la sección de servicios y actualiza el resumen del carrito
+            <!-- Re-renderiza la sección de servicios y actualiza el resumen del carrito -->
             renderServicesSection();
             updateCartSummary();
         }
@@ -596,9 +596,9 @@
                     appState.selectedItems[existingItemIndex].quantity++;
                 } else {
                     appState.selectedItems.push({
-                        id: `${service.id}-${themeName.replace(/\s+/g, '-')}`, // Genera un ID simple
+                        id: `${service.id}-${themeName.replace(/\s+/g, '-')}`, <!-- Genera un ID simple -->
                         name: fullThemeName,
-                        price: service.price, // Usa el precio base del servicio de decoraciones
+                        price: service.price, <!-- Usa el precio base del servicio de decoraciones -->
                         quantity: 1
                     });
                 }
@@ -610,7 +610,7 @@
         }
 
 
-        // --- Funciones de Modales (Ventanas Emergentes) ---
+        <!-- --- Funciones de Modales (Ventanas Emergentes) --- -->
         /**
          * Muestra un modal de información genérico.
          * @param {string} message - El mensaje a mostrar en el modal.
@@ -619,7 +619,7 @@
         function showInfoModal(message, callback = null) {
             document.getElementById('modalMessage').textContent = message;
             document.getElementById('infoModal').classList.remove('hidden');
-            appState.infoModalCallback = callback; // Almacena el callback en el estado global.
+            appState.infoModalCallback = callback; <!-- Almacena el callback en el estado global. -->
         }
 
         /**
@@ -629,8 +629,8 @@
             document.getElementById('infoModal').classList.add('hidden');
             document.getElementById('modalMessage').textContent = '';
             if (appState.infoModalCallback) {
-                appState.infoModalCallback(); // Ejecuta el callback.
-                appState.infoModalCallback = null; // Limpia el callback después de usarlo.
+                appState.infoModalCallback(); <!-- Ejecuta el callback. -->
+                appState.infoModalCallback = null; <!-- Limpia el callback después de usarlo. -->
             }
         }
 
@@ -642,11 +642,11 @@
             document.getElementById('promoMessage').textContent = message;
             document.getElementById('promoModal').classList.remove('hidden');
             
-            // Set specific packages for promotion
-            appState.promotedPackages = ['Plan Magic ✨']; // Solo el Plan Magic está en promoción
+            <!-- Set specific packages for promotion -->
+            appState.promotedPackages = ['Plan Magic ✨']; <!-- Solo el Plan Magic está en promoción -->
 
             updateCartSummary();
-            // Re-renderiza las secciones si están activas para mostrar el descuento.
+            <!-- Re-renderiza las secciones si están activas para mostrar el descuento. -->
             if (appState.activeSection === 'services') renderServicesSection();
             if (appState.activeSection === 'packages') renderPackagesSection();
             if (appState.activeSection === 'booking') renderBookingSection();
@@ -658,9 +658,9 @@
         function closePromoModal() {
             document.getElementById('promoModal').classList.add('hidden');
             document.getElementById('promoMessage').textContent = '';
-            // No se limpian los paquetes promocionados para que el descuento persista durante la sesión.
+            <!-- No se limpian los paquetes promocionados para que el descuento persista durante la sesión. -->
             updateCartSummary();
-            if (appState.activeSection === 'packages') renderPackagesSection(); // Se refresca para asegurar la visualización del descuento.
+            if (appState.activeSection === 'packages') renderPackagesSection(); <!-- Se refresca para asegurar la visualización del descuento. -->
         }
 
         /**
@@ -677,7 +677,7 @@
             document.getElementById('bookingWarningModal').classList.add('hidden');
         }
 
-        // --- Funciones de Renderizado de Secciones ---
+        <!-- --- Funciones de Renderizado de Secciones --- -->
 
         /**
          * Renderiza la sección de Inicio.
@@ -711,7 +711,7 @@
             `;
             renderSection(html);
 
-            // Asigna los event listeners a los botones de la sección de Inicio.
+            <!-- Asigna los event listeners a los botones de la sección de Inicio. -->
             document.getElementById('homeExploreServices').onclick = () => { setActiveSection('services'); };
             document.getElementById('homeExplorePackages').onclick = () => { setActiveSection('packages'); };
             document.getElementById('homePromoButton').onclick = () => {
@@ -723,19 +723,19 @@
          * Renderiza la sección de Servicios Individuales.
          */
         function renderServicesSection() {
-            // Servicios que pueden tener cantidades múltiples y, por lo tanto, botones de "Añadir" y "Quitar Todo".
+            <!-- Servicios que pueden tener cantidades múltiples y, por lo tanto, botones de "Añadir" y "Quitar Todo". -->
             const repeatableServices = ['Pintacaritas 🎨👧👦', 'Globoflexia 🎈💫', 'Show de Burbujas Gigantes 🫧', 'Máquinas de Snack Algodón y Pop Corn 🍿🍭'];
 
             const cardsHtml = servicesData.map(service => {
-                // Lógica específica para el servicio de selección de personaje
+                <!-- Lógica específica para el servicio de selección de personaje -->
                 if (service.type === 'character_selection') {
-                    // Encuentra el personaje actualmente seleccionado en el carrito (si existe alguno de este tipo)
+                    <!-- Encuentra el personaje actualmente seleccionado en el carrito (si existe alguno de este tipo) -->
                     const selectedCharacterItems = appState.selectedItems.filter(item => item.name.startsWith(service.name + ':'));
 
                     const optionsHtml = service.characters.map(char => {
                         const fullCharName = `${service.name}: ${char.name}`;
                         const isCharacterAlreadyAdded = selectedCharacterItems.some(item => item.name === fullCharName);
-                        // Deshabilita la opción en el select si ya está en el carrito
+                        <!-- Deshabilita la opción en el select si ya está en el carrito -->
                         return `<option value="${char.id}" ${isCharacterAlreadyAdded ? 'disabled' : ''}>${char.name} ${isCharacterAlreadyAdded ? '(Añadido)' : ''}</option>`;
                     }).join('');
 
@@ -841,14 +841,14 @@
                     let displayPriceForCard = getAdjustedItemPrice({ ...service, quantity: currentQuantity });
                     let originalPriceHtmlForCard = '';
 
-                    // Si el precio ajustado es diferente al precio original, muestra el precio original tachado.
+                    <!-- Si el precio ajustado es diferente al precio original, muestra el precio original tachado. -->
                     if (displayPriceForCard !== service.price) {
                         originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
                     }
 
                     let buttonsHtml;
                     if (isRepeatableService) {
-                        // Botones para servicios que se pueden añadir varias veces.
+                        <!-- Botones para servicios que se pueden añadir varias veces. -->
                         buttonsHtml = `
                             <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
                                 <button
@@ -870,7 +870,7 @@
                             </div>
                         `;
                     } else {
-                        // Botón para servicios no repetibles (añadir/quitar).
+                        <!-- Botón para servicios no repetibles (añadir/quitar). -->
                         const isSelected = selectedItemInCart ? true : false;
                         const buttonText = isSelected ? 'Quitar del Carrito ➖' : 'Añadir al Carrito ➕';
                         const buttonClassColor = isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-purple-500 hover:bg-purple-600';
@@ -913,7 +913,7 @@
             `;
             renderSection(html);
 
-            // Asigna event listeners a todos los botones de añadir/quitar para servicios regulares.
+            <!-- Asigna event listeners a todos los botones de añadir/quitar para servicios regulares. -->
             document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
                 button.onclick = (event) => {
                     const itemName = event.target.dataset.itemName;
@@ -923,7 +923,7 @@
                 };
             });
 
-            // Asigna event listeners para el botón de añadir/cambiar personaje
+            <!-- Asigna event listeners para el botón de añadir/cambiar personaje -->
             document.querySelectorAll('#mainContent .character-action-button').forEach(button => {
                 button.onclick = (event) => {
                     const serviceId = event.target.dataset.serviceId;
@@ -935,7 +935,7 @@
                         const selectedChar = characterService.characters.find(c => c.id === selectedCharacterId);
                         if (selectedChar) {
                             updateCharacterInCart(characterService, selectedChar, 'add');
-                            selectElement.value = ""; // Resetea el select después de añadir
+                            selectElement.value = ""; <!-- Resetea el select después de añadir -->
                         }
                     } else {
                         showInfoModal('Por favor, selecciona un personaje antes de añadirlo.');
@@ -943,13 +943,13 @@
                 };
             });
 
-            // Asigna event listeners para los botones de quitar personaje específico
+            <!-- Asigna event listeners para los botones de quitar personaje específico -->
             document.querySelectorAll('#mainContent .remove-specific-character-button').forEach(button => {
                 button.onclick = (event) => {
                     const fullCharacterName = event.target.dataset.fullName;
-                    // Encuentra el servicio base de personajes
+                    <!-- Encuentra el servicio base de personajes -->
                     const characterService = servicesData.find(s => s.type === 'character_selection');
-                    // Extrae solo el nombre del personaje para buscarlo en la lista original
+                    <!-- Extrae solo el nombre del personaje para buscarlo en la lista original -->
                     const charNameOnly = fullCharacterName.replace(characterService.name + ': ', '');
                     const characterToRemove = characterService.characters.find(c => c.name === charNameOnly);
 
@@ -959,7 +959,7 @@
                 };
             });
 
-            // Lógica para habilitar/deshabilitar el botón "Añadir Seleccionado" y actualizar su texto (para personajes)
+            <!-- Lógica para habilitar/deshabilitar el botón "Añadir Seleccionado" y actualizar su texto (para personajes) -->
             document.querySelectorAll('#mainContent select[id^="characterSelect-"]').forEach(select => {
                 select.onchange = (event) => {
                     const serviceId = event.target.id.split('-')[1];
@@ -986,7 +986,7 @@
                 };
             });
 
-            // Asigna event listeners para el botón de añadir temática
+            <!-- Asigna event listeners para el botón de añadir temática -->
             document.querySelectorAll('#mainContent .theme-action-button').forEach(button => {
                 button.onclick = (event) => {
                     const serviceId = event.target.dataset.serviceId;
@@ -996,25 +996,25 @@
                     if (selectedThemeName) {
                         const themeService = servicesData.find(s => s.id === serviceId);
                         updateThemeInCart(themeService, selectedThemeName, 'add');
-                        selectElement.value = ""; // Resetea el select después de añadir
+                        selectElement.value = ""; <!-- Resetea el select después de añadir -->
                     } else {
                         showInfoModal('Por favor, selecciona una temática antes de añadirla.');
                     }
                 };
             });
 
-            // Asigna event listeners para los botones de quitar temática específica
+            <!-- Asigna event listeners para los botones de quitar temática específica -->
             document.querySelectorAll('#mainContent .remove-specific-theme-button').forEach(button => {
                 button.onclick = (event) => {
                     const fullThemeName = event.target.dataset.fullName;
                     const themeService = servicesData.find(s => s.type === 'theme_selection');
-                    // Extrae solo el nombre de la temática
+                    <!-- Extrae solo el nombre de la temática -->
                     const themeNameOnly = fullThemeName.replace(themeService.name + ': ', '');
                     updateThemeInCart(themeService, themeNameOnly, 'remove_all');
                 };
             });
 
-            // Lógica para habilitar/deshabilitar el botón "Añadir Seleccionado" y actualizar su texto (para temáticas)
+            <!-- Lógica para habilitar/deshabilitar el botón "Añadir Seleccionado" y actualizar su texto (para temáticas) -->
             document.querySelectorAll('#mainContent select[id^="themeSelect-"]').forEach(select => {
                 select.onchange = (event) => {
                     const serviceId = event.target.id.split('-')[1];
@@ -1060,10 +1060,10 @@
                     buttonClassColor = 'bg-indigo-500 hover:bg-indigo-600';
                 }
 
-                let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 }); // Paquetes siempre tienen cantidad 1 para cálculo de precio en tarjeta.
+                let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 }); <!-- Paquetes siempre tienen cantidad 1 para cálculo de precio en tarjeta. -->
                 let originalPriceHtml = '';
                 
-                // Si el precio ajustado es diferente al precio original, muestra el precio original tachado.
+                <!-- Si el precio ajustado es diferente al precio original, muestra el precio original tachado. -->
                 if (displayPrice !== pkg.price) {
                     originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
                 }
@@ -1104,7 +1104,7 @@
             `;
             renderSection(html);
 
-            // Asigna event listeners a todos los botones de añadir/quitar en la sección de paquetes.
+            <!-- Asigna event listeners a todos los botones de añadir/quitar en la sección de paquetes. -->
             document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
                 button.onclick = (event) => {
                     const itemName = event.target.dataset.itemName;
@@ -1120,7 +1120,7 @@
          * Calcula y muestra el precio total, incluyendo descuentos y recargos por transporte.
          */
         function renderBookingSection() {
-            // Genera la lista de ítems seleccionados para mostrar en la sección de reserva.
+            <!-- Genera la lista de ítems seleccionados para mostrar en la sección de reserva. -->
             const selectedItemsListHtml = appState.selectedItems.length === 0
                 ? `<p class="text-red-600 text-sm sm:text-base">No has seleccionado ningún servicio. Por favor, vuelve a la sección de Servicios o Paquetes.</p>`
                 : `<ul class="list-disc list-inside text-gray-800 text-sm sm:text-base bg-blue-50 p-3 rounded-md border border-blue-200">
@@ -1140,13 +1140,13 @@
                     }).join('')}
                 </ul>`;
 
-            // Calcula y muestra el recargo por transporte.
+            <!-- Calcula y muestra el recargo por transporte. -->
             const currentTransportFee = transportFeesByLocation[appState.selectedLocation] || 0;
             const transportFeeDisplayHtml = currentTransportFee > 0
                 ? `<p class="text-lg font-bold text-gray-700 mt-2">Recargo por Transporte (${appState.selectedLocation}): <span class="text-orange-600">$${currentTransportFee.toFixed(2)}</span></p>`
                 : `<p class="text-lg font-bold text-gray-700 mt-2">Recargo por Transporte: <span class="text-green-600">¡Gratis en Panamá Centro!</span></p>`;
 
-            // Calcula el precio total final incluyendo descuentos y recargos.
+            <!-- Calcula el precio total final incluyendo descuentos y recargos. -->
             const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
                 return sum + (getAdjustedItemPrice(item) * item.quantity);
             }, 0);
@@ -1302,17 +1302,17 @@
             const bookingForm = document.getElementById('bookingForm');
             if (bookingForm) {
                 bookingForm.onsubmit = handleBookingSubmit;
-                // Manejador de cambio para la selección de ubicación, actualiza el estado y el resumen del carrito.
+                <!-- Manejador de cambio para la selección de ubicación, actualiza el estado y el resumen del carrito. -->
                 document.getElementById('locationSelect').onchange = (e) => {
-                    appState.bookingFormData.selectedLocation = e.target.value; // Actualiza el estado al cambiar ubicación.
-                    appState.selectedLocation = e.target.value; // También actualiza el estado general de la ubicación.
+                    appState.bookingFormData.selectedLocation = e.target.value; <!-- Actualiza el estado al cambiar ubicación. -->
+                    appState.selectedLocation = e.target.value; <!-- También actualiza el estado general de la ubicación. -->
                     updateCartSummary(); 
-                    renderBookingSection(); // Re-renderiza la sección para mostrar el recargo actualizado.
+                    renderBookingSection(); <!-- Re-renderiza la sección para mostrar el recargo actualizado. -->
                 };
             }
         }
 
-        // --- Funciones para guardar y cargar los datos del formulario de reserva ---
+        <!-- --- Funciones para guardar y cargar los datos del formulario de reserva --- -->
         /**
          * Guarda los datos actuales del formulario de reserva en appState y localStorage.
          */
@@ -1329,10 +1329,10 @@
                 appState.bookingFormData.exactLocation = bookingForm.elements.exactLocation.value;
                 appState.bookingFormData.selectedLocation = bookingForm.elements.locationSelect.value;
                 
-                // Guardar también los ítems seleccionados del carrito.
+                <!-- Guardar también los ítems seleccionados del carrito. -->
                 localStorage.setItem('selectedItems', JSON.stringify(appState.selectedItems));
                 localStorage.setItem('bookingFormData', JSON.stringify(appState.bookingFormData));
-                console.log('Datos del formulario guardados:', appState.bookingFormData); // Para depuración.
+                console.log('Datos del formulario guardados:', appState.bookingFormData); <!-- Para depuración. -->
             }
         }
 
@@ -1343,32 +1343,32 @@
             const savedFormData = localStorage.getItem('bookingFormData');
             if (savedFormData) {
                 appState.bookingFormData = JSON.parse(savedFormData);
-                // Asegúrate de que selectedLocation también se actualice en el estado general si se cargan datos.
+                <!-- Asegúrate de que selectedLocation también se actualice en el estado general si se cargan datos. -->
                 appState.selectedLocation = appState.bookingFormData.selectedLocation;
-                console.log('Datos del formulario cargados:', appState.bookingFormData); // Para depuración.
+                console.log('Datos del formulario cargados:', appState.bookingFormData); <!-- Para depuración. -->
             }
             const savedSelectedItems = localStorage.getItem('selectedItems');
             if (savedSelectedItems) {
                 appState.selectedItems = JSON.parse(savedSelectedItems);
-                console.log('Ítems del carrito cargados:', appState.selectedItems); // Para depuración.
+                console.log('Ítems del carrito cargados:', appState.selectedItems); <!-- Para depuración. -->
             }
         }
 
 
-        // --- Lógica Principal de la Aplicación ---
+        <!-- --- Lógica Principal de la Aplicación --- -->
 
         /**
          * Establece la sección activa y actualiza la navegación, enviando un page_view a Google Analytics.
          * @param {string} sectionName - El nombre de la sección a activar ('home', 'services', 'packages', 'booking').
          */
         function setActiveSection(sectionName) {
-            // Si la sección actual es 'booking' y vamos a otra sección, guarda los datos.
+            <!-- Si la sección actual es 'booking' y vamos a otra sección, guarda los datos. -->
             if (appState.activeSection === 'booking') {
                 saveBookingFormData();
             }
 
             appState.activeSection = sectionName;
-            // Actualiza los estilos de los botones de navegación para indicar la sección activa.
+            <!-- Actualiza los estilos de los botones de navegación para indicar la sección activa. -->
             document.querySelectorAll('header nav button').forEach(button => {
                 const buttonId = button.id;
                 if ((buttonId === 'navHome' && sectionName === 'home') ||
@@ -1383,27 +1383,27 @@
                 }
             });
 
-            let pagePath = '/'; // Ruta por defecto para la página de inicio.
-            let pageTitle = 'Diverty Eventos'; // Título por defecto (modificado).
+            let pagePath = '/'; <!-- Ruta por defecto para la página de inicio. -->
+            let pageTitle = 'Diverty Eventos'; <!-- Título por defecto (modificado). -->
 
-            // Determina la ruta y el título de la página virtual para Google Analytics.
+            <!-- Determina la ruta y el título de la página virtual para Google Analytics. -->
             switch (sectionName) {
                 case 'home':
                     pagePath = '/inicio';
-                    pageTitle = 'Diverty Eventos'; // Título optimizado (modificado).
+                    pageTitle = 'Diverty Eventos'; <!-- Título optimizado (modificado). -->
                     break;
                 case 'services':
                     pagePath = '/servicios';
-                    pageTitle = 'Diverty Eventos | Servicios'; // Título optimizado (más corto).
+                    pageTitle = 'Diverty Eventos | Servicios'; <!-- Título optimizado (más corto). -->
                     break;
                 case 'packages':
                     pagePath = '/paquetes';
-                    pageTitle = 'Diverty Eventos | Paquetes'; // Título optimizado (más corto).
+                    pageTitle = 'Diverty Eventos | Paquetes'; <!-- Título optimizado (más corto). -->
                     break;
                 case 'booking':
                     pagePath = '/reservar';
-                    pageTitle = 'Diverty Eventos | Reservar'; // Título optimizado (más corto).
-                    // Muestra el modal de advertencia de reserva solo si no se ha mostrado antes.
+                    pageTitle = 'Diverty Eventos | Reservar'; <!-- Título optimizado (más corto). -->
+                    <!-- Muestra el modal de advertencia de reserva solo si no se ha mostrado antes. -->
                     if (!appState.hasShownBookingWarning) {
                         showBookingWarningModal();
                         appState.hasShownBookingWarning = true;
@@ -1411,7 +1411,7 @@
                     break;
             }
 
-            // Envía el evento de vista de página virtual a Google Analytics.
+            <!-- Envía el evento de vista de página virtual a Google Analytics. -->
             if (typeof gtag === 'function') {
                 gtag('event', 'page_view', {
                     page_path: pagePath,
@@ -1421,7 +1421,7 @@
                 console.warn('gtag is not defined. Google Analytics might not be loaded.');
             }
 
-            // Renderiza la sección correspondiente.
+            <!-- Renderiza la sección correspondiente. -->
             switch (sectionName) {
                 case 'home':
                     renderHomeSection();
@@ -1436,13 +1436,13 @@
                     renderBookingSection();
                     break;
                 default:
-                    renderHomeSection(); // Fallback por defecto.
+                    renderHomeSection(); <!-- Fallback por defecto. -->
             }
-            updateCartSummary(); // Siempre actualiza el resumen del carrito al cambiar de sección.
+            updateCartSummary(); <!-- Siempre actualiza el resumen del carrito al cambiar de sección. -->
         }
 
-        // --- Evento para la advertencia al intentar salir de la página ---
-        // Este mensaje suele ser genérico en navegadores modernos por motivos de seguridad.
+        <!-- --- Evento para la advertencia al intentar salir de la página --- -->
+        <!-- Este mensaje suele ser genérico en navegadores modernos por motivos de seguridad. -->
         window.onbeforeunload = function() {
             return "¡Espera! ¿Estás seguro de que quieres salir de la página? Tu información podría no guardarse.";
         };
@@ -1477,18 +1477,18 @@
         }
 
 
-        // --- Envío del Formulario a JotForm ---
+        <!-- --- Envío del Formulario a JotForm --- -->
         /**
          * Maneja el envío del formulario de reserva.
          * Realiza validaciones básicas y luego redirige a JotForm con los datos precargados.
          * @param {Event} event - El evento de envío del formulario.
          */
         async function handleBookingSubmit(event) {
-            event.preventDefault(); // Evita el envío por defecto del formulario.
+            event.preventDefault(); <!-- Evita el envío por defecto del formulario. -->
 
-            clearFormErrors(); // Limpia cualquier error anterior.
+            clearFormErrors(); <!-- Limpia cualquier error anterior. -->
 
-            // *** Validaciones se realizan primero ***
+            <!-- *** Validaciones se realizan primero *** -->
             if (appState.selectedItems.length === 0) {
                 showInfoModal('¡Por favor, añade al menos un servicio o paquete a tu reserva! 🛒');
                 return;
@@ -1511,12 +1511,12 @@
                 return;
             }
 
-            // Si todas las validaciones pasan, se guarda el formulario y se muestra el modal.
-            saveBookingFormData(); // Guarda los datos antes de la redirección.
+            <!-- Si todas las validaciones pasan, se guarda el formulario y se muestra el modal. -->
+            saveBookingFormData(); <!-- Guarda los datos antes de la redirección. -->
             showInfoModal('¡Redirigiendo a JotForm para finalizar tu reserva! 🎉 Haz clic en "¡Entendido!" para continuar.', () => {
-                // Esto es lo que se ejecutará cuando el usuario haga clic en "¡Entendido!" en el modal.
+                <!-- Esto es lo que se ejecutará cuando el usuario haga clic en "¡Entendido!" en el modal. -->
 
-                // --- Recopilación de Datos para JotForm (se re-obtiene para asegurar los últimos valores) ---
+                <!-- --- Recopilación de Datos para JotForm (se re-obtiene para asegurar los últimos valores) --- -->
                 const bookingDate = document.getElementById('bookingDate').value; 
                 const bookingTime = document.getElementById('bookingTime').value; 
 
@@ -1541,8 +1541,8 @@
                 }, 0);
                 const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
-                // --- Construcción de la URL de JotForm con Parámetros ---
-                // Los parámetros se codifican en la URL para precargar el formulario de JotForm.
+                <!-- --- Construcción de la URL de JotForm con Parámetros --- -->
+                <!-- Los parámetros se codifican en la URL para precargar el formulario de JotForm. -->
                 const jotformBaseUrl = 'https://form.jotform.com/251611549526054'; 
                 const params = new URLSearchParams();
 
@@ -1565,8 +1565,8 @@
 
                 const jotformUrl = `${jotformBaseUrl}?${params.toString()}`;
 
-                // Abrir en una nueva pestaña cuando el usuario haga clic en "¡Entendido!".
-                // Se incluye un fallback para redirección en la misma pestaña si la nueva ventana es bloqueada.
+                <!-- Abrir en una nueva pestaña cuando el usuario haga clic en "¡Entendido!". -->
+                <!-- Se incluye un fallback para redirección en la misma pestaña si la nueva ventana es bloqueada. -->
                 const newWindow = window.open(jotformUrl, '_blank');
                 if (newWindow) {
                     newWindow.focus(); 
@@ -1577,29 +1577,29 @@
             });
         }
 
-        // --- Inicialización de la Aplicación ---
-        // Se ejecuta cuando el DOM está completamente cargado.
+        <!-- --- Inicialización de la Aplicación --- -->
+        <!-- Se ejecuta cuando el DOM está completamente cargado. -->
         document.addEventListener('DOMContentLoaded', () => {
-            // No se carga el estado de la trivia ya que ha sido eliminada.
+            <!-- No se carga el estado de la trivia ya que ha sido eliminada. -->
 
-            // Carga los datos del formulario y del carrito al iniciar la página.
+            <!-- Carga los datos del formulario y del carrito al iniciar la página. -->
             loadBookingFormData(); 
 
-            // Asigna event listeners para los botones de cerrar los modales.
+            <!-- Asigna event listeners para los botones de cerrar los modales. -->
             document.getElementById('closeModalButton').onclick = closeModal;
             document.getElementById('closePromoModalButton').onclick = closePromoModal;
             document.getElementById('closeBookingWarningModalButton').onclick = closeBookingWarningModal;
 
-            // Asigna event listeners para los botones de navegación principal.
+            <!-- Asigna event listeners para los botones de navegación principal. -->
             document.getElementById('navHome').onclick = () => setActiveSection('home');
             document.getElementById('navServices').onclick = () => setActiveSection('services');
             document.getElementById('navPackages').onclick = () => setActiveSection('packages');
             document.getElementById('navBooking').onclick = () => setActiveSection('booking');
             document.getElementById('proceedToBookButton').onclick = () => setActiveSection('booking');
 
-            // Establece la sección de inicio por defecto al cargar la página.
+            <!-- Establece la sección de inicio por defecto al cargar la página. -->
             setActiveSection('home');
-            updateCartSummary(); // Asegura que el resumen del carrito se muestre correctamente al inicio.
+            updateCartSummary(); <!-- Asegura que el resumen del carrito se muestre correctamente al inicio. -->
         });
     </script>
 </body>
