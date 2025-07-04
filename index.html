@@ -260,7 +260,16 @@
 
     <!-- Área de Contenido Principal: Aquí se cargará dinámicamente el contenido de cada sección (Inicio, Servicios, etc.). -->
     <main id="mainContent" class="container mx-auto p-4 flex-grow">
-        <!-- El contenido de las secciones (Inicio, Servicios, etc.) será inyectado aquí por JavaScript. -->
+        <!-- Mensaje de carga o fallback si JavaScript no funciona -->
+        <noscript>
+            <div class="text-center text-red-600 bg-red-100 p-4 rounded-lg shadow-md mt-8">
+                <p class="font-bold text-xl">¡Parece que JavaScript está deshabilitado o hay un problema!</p>
+                <p>Por favor, asegúrate de que JavaScript esté habilitado en tu navegador para ver el contenido completo de esta página.</p>
+            </div>
+        </noscript>
+        <div id="loadingMessage" class="text-center text-gray-500 text-lg mt-8">
+            Cargando contenido... Si esto no desaparece, puede haber un problema.
+        </div>
     </main>
 
     <!-- Botón Flotante de WhatsApp: Acceso rápido para contactar por WhatsApp. -->
@@ -1611,24 +1620,46 @@
         // --- Inicialización de la Aplicación ---
         // Se ejecuta cuando el DOM está completamente cargado.
         document.addEventListener('DOMContentLoaded', () => {
-            // Carga los datos del formulario y del carrito al iniciar la página.
-            loadBookingFormData(); 
+            try {
+                // Ocultar el mensaje de carga si JavaScript se está ejecutando
+                const loadingMessage = document.getElementById('loadingMessage');
+                if (loadingMessage) {
+                    loadingMessage.remove(); // Eliminar el mensaje de carga
+                }
 
-            // Asigna event listeners para los botones de cerrar los modales.
-            document.getElementById('closeModalButton').onclick = closeModal;
-            document.getElementById('closePromoModalButton').onclick = closePromoModal;
-            document.getElementById('closeBookingWarningModalButton').onclick = closeBookingWarningModal;
+                // Carga los datos del formulario y del carrito al iniciar la página.
+                loadBookingFormData(); 
 
-            // Asigna event listeners para los botones de navegación principal.
-            document.getElementById('navHome').onclick = () => setActiveSection('home');
-            document.getElementById('navServices').onclick = () => setActiveSection('services');
-            document.getElementById('navPackages').onclick = () => setActiveSection('packages');
-            document.getElementById('navBooking').onclick = () => setActiveSection('booking');
-            document.getElementById('proceedToBookButton').onclick = () => setActiveSection('booking');
+                // Asigna event listeners para los botones de cerrar los modales.
+                document.getElementById('closeModalButton').onclick = closeModal;
+                document.getElementById('closePromoModalButton').onclick = closePromoModal;
+                document.getElementById('closeBookingWarningModalButton').onclick = closeBookingWarningModal;
 
-            // Establece la sección de inicio por defecto al cargar la página.
-            setActiveSection('home');
-            updateCartSummary(); // Asegura que el resumen del carrito se muestre correctamente al inicio.
+                // Asigna event listeners para los botones de navegación principal.
+                document.getElementById('navHome').onclick = () => setActiveSection('home');
+                document.getElementById('navServices').onclick = () => setActiveSection('services');
+                document.getElementById('navPackages').onclick = () => setActiveSection('packages');
+                document.getElementById('navBooking').onclick = () => setActiveSection('booking');
+                document.getElementById('proceedToBookButton').onclick = () => setActiveSection('booking');
+
+                // Establece la sección de inicio por defecto al cargar la página.
+                setActiveSection('home');
+                updateCartSummary(); // Asegura que el resumen del carrito se muestre correctamente al inicio.
+            } catch (error) {
+                // Si ocurre un error crítico durante la inicialización de JS
+                console.error("Error crítico al inicializar la aplicación:", error);
+                // Mostrar un mensaje de error visible al usuario si la página está en blanco
+                const mainContent = document.getElementById('mainContent');
+                if (mainContent) {
+                    mainContent.innerHTML = `
+                        <div class="text-center text-red-600 bg-red-100 p-4 rounded-lg shadow-md mt-8">
+                            <p class="font-bold text-xl">¡Lo sentimos, ha ocurrido un error!</p>
+                            <p>No pudimos cargar el contenido de la página. Por favor, intenta de nuevo o contacta al soporte.</p>
+                            <p class="text-sm mt-2">Detalles técnicos: ${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
         });
     </script>
 </body>
