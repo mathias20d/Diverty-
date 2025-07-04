@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Título optimizado para SEO: Incluye palabras clave principales y ubicación para mejorar la visibilidad en buscadores. -->
-    <title>Diverty Eventos</title>
+    <title>Diverty Eventos | Fiestas Infantiles en Panamá</title>
     <!-- Descripción meta optimizada para SEO: Proporciona un resumen conciso y atractivo del contenido, con palabras clave relevantes y una llamada de acción. -->
     <meta name="description" content="Organizamos las mejores fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Expertos en animación, shows de burbujas, pintacaritas, globoflexia y paquetes de diversión. ¡Haz que la fiesta de tus hijos sea inolvidable con Diverty Eventos en todo Panamá!">
     
     <!-- Open Graph Tags para compartir en redes sociales y apps de mensajería (Facebook, WhatsApp, etc.). -->
     <meta property="og:title" content="Diverty Eventos | Fiestas Infantiles en Panamá">
     <meta property="og:description" content="Organizamos las mejores fiestas infantiles en Panamá. Animación, shows de burbujas, pintacaritas y más. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!">
-    <meta property="og:image" content="https://i.imgur.com/vR2Ipuv.png"> <!-- URL de la imagen que se mostrará al compartir. -->
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <!-- ¡IMPORTANTE! URL de la imagen corregida para Netlify. -->
+    <meta property="og:image" content="https://i.ibb.co/L95tF2X/android-chrome-512x512.png"> 
+    <meta property="og:image:width" content="512"> 
+    <meta property="og:image:height" content="512"> 
     <meta property="og:image:alt" content="Logo de Diverty Eventos, para fiestas infantiles en Panamá">
-    <meta property="og:url" content="https://divertypanama.netlify.app/"> <!-- ¡IMPORTANTE! Reemplaza con la URL real de tu sitio web. -->
+    <meta property="og:url" content="https://divertypanama.netlify.app/"> <!-- URL real de tu sitio web. -->
     <meta property="og:type" content="website">
 
     <!-- Google tag (gtag.js) para Google Analytics: Permite el seguimiento de visitas y comportamiento de los usuarios. -->
@@ -33,8 +34,8 @@
       "@context": "https://schema.org",
       "@type": ["LocalBusiness", "Organization"],
       "name": "Diverty Eventos",
-      "image": "https://i.imgur.com/vR2Ipuv.png", <!-- URL de la imagen principal para Schema Markup. -->
-      "url": "https://divertypanama.netlify.app/", <!-- ¡IMPORTANT! Reemplaza con la URL real de tu sitio. -->
+      "image": "https://i.ibb.co/L95tF2X/android-chrome-512x512.png", <!-- URL de la imagen principal para Schema Markup corregida. -->
+      "url": "https://divertypanama.netlify.app/", <!-- URL real de tu sitio. -->
       "telephone": "+50766677965",
       "address": {
         "@type": "PostalAddress",
@@ -167,29 +168,6 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Sombra aún más pronunciada en hover. */
         }
 
-        /* Estilos para el FAQ (Aunque no se usan directamente en el HTML actual, se mantienen por si se añaden). */
-        .faq-question {
-            cursor: pointer;
-            padding: 1rem;
-            background-color: #f3f4f6; /* bg-gray-100 */
-            border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
-            font-weight: 600; /* font-semibold */
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .faq-answer {
-            padding: 1rem;
-            background-color: #ffffff; /* bg-white */
-            border-bottom: 1px solid #e5e7eb; /* border-gray-200 */
-            display: none; /* Oculto por defecto */
-        }
-        .faq-arrow {
-            transition: transform 0.3s ease;
-        }
-        .faq-question.active .faq-arrow {
-            transform: rotate(180deg);
-        }
         /* Estilo para mensajes de error de validación en línea */
         .error-message {
             color: #ef4444; /* red-500 */
@@ -204,8 +182,8 @@
 <body class="min-h-screen bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-200 text-gray-800 flex flex-col">
 
     <!-- Modal de Información General: Se usa para mensajes al usuario (ej. éxito, error). -->
-    <div id="infoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden">
-        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-400">
+    <div id="infoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="modalMessage">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-400 transform transition-all duration-300 scale-95 opacity-0" id="infoModalContent">
             <p id="modalMessage" class="text-xl font-bold mb-4 text-purple-700"></p>
             <button id="closeModalButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-5 rounded-full shadow-lg transition duration-300">
                 ¡Entendido! 🎉
@@ -214,8 +192,8 @@
     </div>
 
     <!-- Modal de Promoción: Se usa para anunciar ofertas especiales. -->
-    <div id="promoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden">
-        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-green-400">
+    <div id="promoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="promoMessage">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-green-400 transform transition-all duration-300 scale-95 opacity-0" id="promoModalContent">
             <h2 class="text-3xl font-extrabold text-green-700 mb-4">¡Promoción del Mes! 🌟</h2>
             <p id="promoMessage" class="text-lg text-gray-800 mb-4"></p>
             <button id="closePromoModalButton" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-full shadow-lg transition duration-300">
@@ -225,9 +203,9 @@
     </div>
 
     <!-- Nuevo Modal de Advertencia de Reserva: Se muestra antes de rellenar el formulario de reserva. -->
-    <div id="bookingWarningModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden">
-        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-red-400">
-            <h2 class="text-3xl font-extrabold text-red-700 mb-4">¡Importante antes de Reservar! 🚨</h2>
+    <div id="bookingWarningModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="bookingWarningTitle">
+        <div class="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-red-400 transform transition-all duration-300 scale-95 opacity-0" id="bookingWarningModalContent">
+            <h2 id="bookingWarningTitle" class="text-3xl font-extrabold text-red-700 mb-4">¡Importante antes de Reservar! 🚨</h2>
             <p class="text-lg text-gray-800 mb-6">
                 Para asegurar la disponibilidad de la fecha y hora de tu evento, te recomendamos
                 <span class="font-bold text-red-600">verificar primero con nosotros vía WhatsApp</span>.
@@ -248,35 +226,34 @@
     </div>
 
     <!-- Encabezado (Menú de Navegación Principal): Contiene el logo, el título y los botones de navegación. -->
-    <header class="bg-white bg-opacity-95 shadow-xl p-4 w-full rounded-b-xl">
-        <nav class="container mx-auto flex flex-col sm:flex-row justify-between items-center">
+    <header class="bg-white bg-opacity-95 shadow-xl p-4 w-full rounded-b-xl sticky top-0 z-40">
+        <nav class="container mx-auto flex flex-col sm:flex-row justify-between items-center" aria-label="Navegación Principal">
             <!-- Contenedor para el logo y el título en dispositivos móviles y de escritorio. -->
             <div class="flex items-center mb-4 sm:mb-0">
                 <!-- LOGO DE DIVERTY EVENTOS -->
-                <!-- Asegúrate de que la URL de 'src' es la dirección directa de tu imagen. -->
-                <!-- El atributo 'alt' es importante para la accesibilidad y el SEO. -->
-                <img src="https://i.ibb.co/zVqr5yPB/android-chrome-512x512.png" alt="Logo de Diverty Eventos" class="w-16 h-16 mr-4 rounded-full object-cover border-2 border-pink-400 shadow-md">
+                <!-- ¡IMPORTANTE! La URL de la imagen en la versión inicial apuntaba a ibb.co -->
+                <img src="https://i.ibb.co/L95tF2X/android-chrome-512x512.png" alt="Logo de Diverty Eventos" class="w-16 h-16 mr-4 rounded-full object-cover border-2 border-pink-400 shadow-md">
                 
                 <!-- Título principal simplificado: Muestra el nombre de la marca. -->
                 <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center sm:text-left">
                     Diverty Eventos 
                 </h1>
             </div>
-            <ul class="flex flex-wrap justify-center sm:space-x-4 space-x-2">
-                <li><button id="navHome" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Inicio 🏠</button></li>
-                <li><button id="navServices" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Servicios 📋</button></li>
-                <li><button id="navPackages" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Paquetes 📦</button></li>
-                <li><button id="navBooking" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100">Reservar 🗓️</button></li>
+            <ul class="flex flex-wrap justify-center sm:space-x-4 space-x-2" role="menubar">
+                <li role="none"><button id="navHome" role="menuitem" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100 transition duration-300">Inicio 🏠</button></li>
+                <li role="none"><button id="navServices" role="menuitem" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100 transition duration-300">Servicios 📋</button></li>
+                <li role="none"><button id="navPackages" role="menuitem" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100 transition duration-300">Paquetes 📦</button></li>
+                <li role="none"><button id="navBooking" role="menuitem" class="text-base font-bold py-1 px-3 rounded-full text-gray-700 hover:bg-purple-100 transition duration-300">Reservar 🗓️</button></li>
             </ul>
         </nav>
     </header>
 
     <!-- Resumen del Carrito de Compra (Barra Flotante): Muestra la cantidad de ítems y el total seleccionado. -->
-    <div id="cartSummary" class="bg-yellow-200 text-purple-800 font-extrabold p-6 text-center rounded-b-lg shadow-lg border-4 border-yellow-400 hidden">
+    <div id="cartSummary" class="bg-yellow-200 text-purple-800 font-extrabold p-6 text-center rounded-b-lg shadow-lg border-4 border-yellow-400 hidden sticky top-[100px] z-30 transition-all duration-300 ease-in-out">
         <p class="text-2xl sm:text-3xl mb-3">
             🛒 Ítems seleccionados: <span id="selectedItemsCount" class="text-purple-700">0</span> | Total: <span id="totalPriceDisplay" class="text-pink-700">$0.00</span>
         </p>
-        <button id="proceedToBookButton" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full shadow-md text-base sm:text-lg">
+        <button id="proceedToBookButton" class="mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-full shadow-md text-base sm:text-lg transition duration-300">
             Proceder a Reservar Ahora! ✨
         </button>
     </div>
@@ -287,8 +264,8 @@
     </main>
 
     <!-- Botón Flotante de WhatsApp: Acceso rápido para contactar por WhatsApp. -->
-    <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon" class="w-6 h-6 mr-2">
+    <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank" aria-label="Contactar por WhatsApp">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon" class="w-6 h-6">
     </a>
 
     <!-- Pie de Página: Información de derechos de autor y eslogan. -->
@@ -468,8 +445,6 @@
          */
         function getAdjustedItemPrice(item) {
             let adjustedPrice = item.price;
-            const isPackage = packagesData.some(p => p.name === item.name);
-
             // Lógica de descuento para "Pintacaritas" si se añaden más de 1.
             if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
                 adjustedPrice = 35; // Precio con descuento por unidad.
@@ -618,7 +593,14 @@
          */
         function showInfoModal(message, callback = null) {
             document.getElementById('modalMessage').textContent = message;
-            document.getElementById('infoModal').classList.remove('hidden');
+            const modal = document.getElementById('infoModal');
+            const modalContent = document.getElementById('infoModalContent');
+            modal.classList.remove('hidden');
+            // Animar el modal para que aparezca suavemente
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10); // Pequeño retraso para permitir que la clase 'hidden' se remueva primero
             appState.infoModalCallback = callback; // Almacena el callback en el estado global.
         }
 
@@ -626,12 +608,19 @@
          * Oculta el modal de información genérico y ejecuta el callback si existe.
          */
         function closeModal() {
-            document.getElementById('infoModal').classList.add('hidden');
-            document.getElementById('modalMessage').textContent = '';
-            if (appState.infoModalCallback) {
-                appState.infoModalCallback(); // Ejecuta el callback.
-                appState.infoModalCallback = null; // Limpia el callback después de usarlo.
-            }
+            const modal = document.getElementById('infoModal');
+            const modalContent = document.getElementById('infoModalContent');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            // Esperar a que la animación termine antes de ocultar completamente
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('modalMessage').textContent = '';
+                if (appState.infoModalCallback) {
+                    appState.infoModalCallback(); // Ejecuta el callback.
+                    appState.infoModalCallback = null; // Limpia el callback después de usarlo.
+                }
+            }, 300); // Duración de la transición CSS
         }
 
         /**
@@ -640,7 +629,13 @@
          */
         function showPromoInfoModal(message) {
             document.getElementById('promoMessage').textContent = message;
-            document.getElementById('promoModal').classList.remove('hidden');
+            const modal = document.getElementById('promoModal');
+            const modalContent = document.getElementById('promoModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
             
             // Set specific packages for promotion
             appState.promotedPackages = ['Plan Magic ✨']; // Solo el Plan Magic está en promoción
@@ -656,25 +651,43 @@
          * Oculta el modal de promoción.
          */
         function closePromoModal() {
-            document.getElementById('promoModal').classList.add('hidden');
-            document.getElementById('promoMessage').textContent = '';
-            // No se limpian los paquetes promocionados para que el descuento persista durante la sesión.
-            updateCartSummary();
-            if (appState.activeSection === 'packages') renderPackagesSection(); // Se refresca para asegurar la visualización del descuento.
+            const modal = document.getElementById('promoModal');
+            const modalContent = document.getElementById('promoModalContent');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('promoMessage').textContent = '';
+                // No se limpian los paquetes promocionados para que el descuento persista durante la sesión.
+                updateCartSummary();
+                if (appState.activeSection === 'packages') renderPackagesSection(); // Se refresca para asegurar la visualización del descuento.
+            }, 300);
         }
 
         /**
          * Muestra el modal de advertencia de reserva.
          */
         function showBookingWarningModal() {
-            document.getElementById('bookingWarningModal').classList.remove('hidden');
+            const modal = document.getElementById('bookingWarningModal');
+            const modalContent = document.getElementById('bookingWarningModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
         }
 
         /**
          * Oculta el modal de advertencia de reserva.
          */
         function closeBookingWarningModal() {
-            document.getElementById('bookingWarningModal').classList.add('hidden');
+            const modal = document.getElementById('bookingWarningModal');
+            const modalContent = document.getElementById('bookingWarningModalContent');
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
 
         // --- Funciones de Renderizado de Secciones ---
@@ -684,7 +697,7 @@
          */
         function renderHomeSection() {
             const html = `
-                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-yellow-400 flex items-center justify-center min-h-[60vh]">
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-yellow-400 flex items-center justify-center min-h-[60vh] animate-fade-in">
                     <div class="bg-yellow-50 p-6 sm:p-10 rounded-2xl shadow-inner border-4 border-yellow-300 max-w-3xl mx-auto text-center">
                         
                         <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-800 mb-4 leading-tight text-center">
@@ -694,15 +707,15 @@
                             Diverty Eventos: <strong>fiestas infantiles inolvidables en Panamá</strong>. Animación, shows de burbujas, pintacaritas, globoflexia. ¡Hacemos tu fiesta soñada realidad!
                         </p>
                         <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                            <button id="homeExploreServices" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg">
+                            <button id="homeExploreServices" class="bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg transition duration-300 transform hover:scale-105">
                                 ¡Explora Nuestros Servicios! 🎉
                             </button>
-                            <button id="homeExplorePackages" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg">
+                            <button id="homeExplorePackages" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg transition duration-300 transform hover:scale-105">
                                 ¡Explora Nuestros Paquetes! 📦
                             </button>
                         </div>
                         <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                            <button id="homePromoButton" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg">
+                            <button id="homePromoButton" class="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white font-bold py-3 px-8 rounded-full shadow-lg text-base sm:text-lg transition duration-300 transform hover:scale-105">
                                 🎉 Promoción del Mes 🎉
                             </button>
                         </div>
@@ -740,7 +753,7 @@
                     }).join('');
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-xl">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
@@ -759,7 +772,7 @@
                                 <button
                                     data-service-id="${service.id}"
                                     data-action="add_character"
-                                    class="character-action-button flex-grow bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300"
+                                    class="character-action-button flex-grow bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled
                                 >
                                     Añadir Seleccionado ➕
@@ -768,10 +781,10 @@
                             <div id="selectedCharactersList-${service.id}" class="mt-4">
                                 ${selectedCharacterItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Personajes en tu carrito:</p>` : ''}
                                 ${selectedCharacterItems.map(item => `
-                                    <div class="flex justify-between items-center bg-blue-50 p-2 rounded-lg mb-2">
+                                    <div class="flex justify-between items-center bg-blue-50 p-2 rounded-lg mb-2 shadow-sm">
                                         <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
-                                        <button class="remove-specific-character-button text-red-500 hover:text-red-700 font-bold ml-2"
-                                                data-full-name="${item.name}">🗑️</button>
+                                        <button class="remove-specific-character-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200"
+                                                data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
                                     </div>
                                 `).join('')}
                             </div>
@@ -797,7 +810,7 @@
                     themeOptionsHtml += '</optgroup>';
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-xl">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-fuchsia-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
@@ -815,7 +828,7 @@
                                 <button
                                     data-service-id="${service.id}"
                                     data-action="add_theme"
-                                    class="theme-action-button flex-grow bg-fuchsia-500 hover:bg-fuchsia-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300"
+                                    class="theme-action-button flex-grow bg-fuchsia-500 hover:bg-fuchsia-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                                     disabled
                                 >
                                     Añadir Seleccionado ➕
@@ -824,10 +837,10 @@
                             <div id="selectedThemesList-${service.id}" class="mt-4">
                                 ${selectedThemeItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Temáticas en tu carrito:</p>` : ''}
                                 ${selectedThemeItems.map(item => `
-                                    <div class="flex justify-between items-center bg-fuchsia-50 p-2 rounded-lg mb-2">
+                                    <div class="flex justify-between items-center bg-fuchsia-50 p-2 rounded-lg mb-2 shadow-sm">
                                         <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
-                                        <button class="remove-specific-theme-button text-red-500 hover:text-red-700 font-bold ml-2"
-                                                data-full-name="${item.name}">🗑️</button>
+                                        <button class="remove-specific-theme-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200"
+                                                data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
                                     </div>
                                 `).join('')}
                             </div>
@@ -855,7 +868,7 @@
                                     data-item-name="${service.name}"
                                     data-item-price="${service.price}"
                                     data-action-type="add"
-                                    class="add-remove-button flex-grow bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300">
+                                    class="add-remove-button flex-grow bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105">
                                     Añadir ➕ ${currentQuantity > 0 ? `(x${currentQuantity})` : ''}
                                 </button>
                                 ${currentQuantity > 0 ? `
@@ -863,7 +876,7 @@
                                     data-item-name="${service.name}"
                                     data-item-price="${service.price}"
                                     data-action-type="remove_all"
-                                    class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300">
+                                    class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105">
                                     Quitar Todo 🗑️
                                 </button>
                                 ` : ''}
@@ -879,14 +892,14 @@
                                 data-item-name="${service.name}"
                                 data-item-price="${service.price}"
                                 data-action-type="toggle"
-                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white">
+                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105">
                                 ${buttonText}
                             </button>
                         `;
                     }
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50">
+                        <div class="${service.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-xl">
                             <div>
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
@@ -901,7 +914,7 @@
             }).join('');
 
             const html = `
-                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-green-400">
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-green-400 animate-fade-in">
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Servicios 🎉</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
                         Servicios de animación para fiestas infantiles en Panamá. ¡Hacemos tu evento mágico e inolvidable!
@@ -1069,7 +1082,7 @@
                 }
 
                 return `
-                    <div class="${pkg.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity50">
+                    <div class="${pkg.color} rounded-2xl shadow-lg p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-xl">
                         <div>
                             <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${pkg.name}</h2>
                             <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
@@ -1084,7 +1097,7 @@
                             data-item-name="${pkg.name}"
                             data-item-price="${pkg.price}"
                             data-action-type="toggle"
-                            class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white">
+                            class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full shadow-md text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105">
                             ${buttonText}
                         </button>
                     </div>
@@ -1092,7 +1105,7 @@
             }).join('');
 
             const html = `
-                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-pink-400">
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-pink-400 animate-fade-in">
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Paquetes 📦</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
                         Descubre nuestros paquetes de <strong>animación para fiestas infantiles en Panamá</strong>. ¡La opción perfecta para tu evento!
@@ -1133,7 +1146,7 @@
                                 ${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} -
                                 ${displayItemPrice !== originalPrice ? `
                                     <span class="line-through text-gray-500">$${originalPrice.toFixed(2)}</span>{' '}
-                                    <span class="text-green-700">$${displayItemPrice.toFixed(2)}</span>
+                                    <span class="text-green-700 font-semibold">$${displayItemPrice.toFixed(2)}</span>
                                 ` : `$${displayItemPrice.toFixed(2)}`}
                             </li>
                         `;
@@ -1153,7 +1166,7 @@
             const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
             const html = `
-                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-blue-400">
+                <section class="bg-white rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-8 border-blue-400 animate-fade-in">
                     <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Reserva tu Evento 🗓️</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
                         ¡Reserva tu <strong>fiesta infantil en Panamá</strong>! Completa este formulario para asegurar la magia de tu evento.
@@ -1163,14 +1176,14 @@
                         <div class="bg-blue-100 p-4 sm:p-8 rounded-2xl shadow-lg border-4 border-blue-300">
                             <form id="bookingForm" class="space-y-4">
                                 <div>
-                                    <label htmlFor="selectedItemsDisplay" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Servicios/Paquetes Seleccionados:🎁</label>
+                                    <label for="selectedItemsDisplay" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Servicios/Paquetes Seleccionados:🎁</label>
                                     ${selectedItemsListHtml}
                                     ${transportFeeDisplayHtml}
                                     <p class="text-lg font-bold text-purple-700 mt-3">Total a Pagar: <span class="text-pink-600">$${finalTotalPrice.toFixed(2)}</span></p>
                                 </div>
                                 
                                 <div>
-                                    <label htmlFor="locationSelect" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Ubicación del Evento (Provincia/Zona):📍</label>
+                                    <label for="locationSelect" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Ubicación del Evento (Provincia/Zona):📍</label>
                                     <select
                                         id="locationSelect"
                                         name="ubicacionEvento"
@@ -1185,7 +1198,7 @@
                                 </div>
 
                                 <div>
-                                    <label htmlFor="exactLocation" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Dirección Exacta del Evento: 🗺️</label>
+                                    <label for="exactLocation" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Dirección Exacta del Evento: 🗺️</label>
                                     <input
                                         type="text"
                                         id="exactLocation"
@@ -1199,7 +1212,7 @@
                                 </div>
 
                                 <div>
-                                    <label htmlFor="bookingDate" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Fecha del Evento: 📆</label>
+                                    <label for="bookingDate" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Fecha del Evento: 📆</label>
                                     <input
                                         type="date"
                                         id="bookingDate"
@@ -1212,7 +1225,7 @@
                                     <span id="error-bookingDate" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label htmlFor="bookingTime" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Hora del Evento: ⏰</label>
+                                    <label for="bookingTime" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Hora del Evento: ⏰</label>
                                     <input
                                         type="time"
                                         id="bookingTime"
@@ -1224,7 +1237,7 @@
                                     <span id="error-bookingTime" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label htmlFor="customerName" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Nombre: 👤</label>
+                                    <label for="customerName" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Nombre: 👤</label>
                                     <input
                                         type="text"
                                         id="customerName"
@@ -1237,7 +1250,7 @@
                                     <span id="error-customerName" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label htmlFor="customerEmail" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Email: 📧</label>
+                                    <label for="customerEmail" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Email: 📧</label>
                                     <input
                                         type="email"
                                         id="customerEmail"
@@ -1250,7 +1263,7 @@
                                     <span id="error-customerEmail" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label htmlFor="customerPhone" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Teléfono:📞</label>
+                                    <label for="customerPhone" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Teléfono:📞</label>
                                     <input
                                         type="tel"
                                         id="customerPhone"
@@ -1263,7 +1276,7 @@
                                     <span id="error-customerPhone" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label htmlFor="eventType" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tipo de Evento: 🎉</label>
+                                    <label for="eventType" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tipo de Evento: 🎉</label>
                                     <input
                                         type="text"
                                         id="eventType"
@@ -1276,7 +1289,7 @@
                                     <span id="error-eventType" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label htmlFor="numKids" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Número Estimado de Niños: 👧👦</label>
+                                    <label for="numKids" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Número Estimado de Niños: 👧👦</label>
                                     <input
                                         type="number"
                                         id="numKids"
@@ -1289,7 +1302,7 @@
                                     />
                                     <span id="error-numKids" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
-                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg text-base sm:text-lg mt-4">
+                                <button type="submit" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-lg text-base sm:text-lg mt-4 transition duration-300 transform hover:scale-105">
                                     ¡Confirmar Reserva Mágica! ✨
                                 </button>
                             </form>
@@ -1340,17 +1353,24 @@
          * Carga los datos del formulario de reserva desde localStorage a appState.
          */
         function loadBookingFormData() {
-            const savedFormData = localStorage.getItem('bookingFormData');
-            if (savedFormData) {
-                appState.bookingFormData = JSON.parse(savedFormData);
-                // Asegúrate de que selectedLocation también se actualice en el estado general si se cargan datos.
-                appState.selectedLocation = appState.bookingFormData.selectedLocation;
-                console.log('Datos del formulario cargados:', appState.bookingFormData); // Para depuración.
-            }
-            const savedSelectedItems = localStorage.getItem('selectedItems');
-            if (savedSelectedItems) {
-                appState.selectedItems = JSON.parse(savedSelectedItems);
-                console.log('Ítems del carrito cargados:', appState.selectedItems); // Para depuración.
+            try {
+                const savedFormData = localStorage.getItem('bookingFormData');
+                if (savedFormData) {
+                    appState.bookingFormData = JSON.parse(savedFormData);
+                    // Asegúrate de que selectedLocation también se actualice en el estado general si se cargan datos.
+                    appState.selectedLocation = appState.bookingFormData.selectedLocation;
+                    console.log('Datos del formulario cargados:', appState.bookingFormData); // Para depuración.
+                }
+                const savedSelectedItems = localStorage.getItem('selectedItems');
+                if (savedSelectedItems) {
+                    appState.selectedItems = JSON.parse(savedSelectedItems);
+                    console.log('Ítems del carrito cargados:', appState.selectedItems); // Para depuración.
+                }
+            } catch (e) {
+                console.error("Error al cargar datos de localStorage:", e);
+                // Limpiar localStorage si hay un error de parseo para evitar bucles
+                localStorage.removeItem('bookingFormData');
+                localStorage.removeItem('selectedItems');
             }
         }
 
@@ -1390,19 +1410,19 @@
             switch (sectionName) {
                 case 'home':
                     pagePath = '/inicio';
-                    pageTitle = 'Diverty Eventos'; // Título optimizado (modificado).
+                    pageTitle = 'Diverty Eventos | Inicio'; 
                     break;
                 case 'services':
                     pagePath = '/servicios';
-                    pageTitle = 'Diverty Eventos | Servicios'; // Título optimizado (más corto).
+                    pageTitle = 'Diverty Eventos | Servicios'; 
                     break;
                 case 'packages':
                     pagePath = '/paquetes';
-                    pageTitle = 'Diverty Eventos | Paquetes'; // Título optimizado (más corto).
+                    pageTitle = 'Diverty Eventos | Paquetes'; 
                     break;
                 case 'booking':
                     pagePath = '/reservar';
-                    pageTitle = 'Diverty Eventos | Reservar'; // Título optimizado (más corto).
+                    pageTitle = 'Diverty Eventos | Reservar'; 
                     // Muestra el modal de advertencia de reserva solo si no se ha mostrado antes.
                     if (!appState.hasShownBookingWarning) {
                         showBookingWarningModal();
@@ -1444,7 +1464,8 @@
         // --- Evento para la advertencia al intentar salir de la página ---
         // Este mensaje suele ser genérico en navegadores modernos por motivos de seguridad.
         window.onbeforeunload = function() {
-            return "¡Espera! ¿Estás seguro de que quieres salir de la página? Tu información podría no guardarse.";
+            // No se devuelve un string para evitar el mensaje de confirmación intrusivo en navegadores modernos.
+            // Si quieres guardar el estado antes de salir, hazlo aquí sin devolver nada.
         };
 
         /**
@@ -1454,6 +1475,7 @@
             const errorMessages = document.querySelectorAll('.error-message');
             errorMessages.forEach(span => {
                 span.classList.add('hidden');
+                span.textContent = ''; // Limpiar el texto del error
             });
             const errorInputs = document.querySelectorAll('.input-error');
             errorInputs.forEach(input => {
@@ -1500,14 +1522,23 @@
             let formIsValid = true;
             for (const fieldId of requiredFields) {
                 const inputElement = document.getElementById(fieldId);
-                if (!inputElement.value) {
+                // Trim para eliminar espacios en blanco y asegurar que no sea solo espacios
+                if (!inputElement.value.trim()) {
                     showFieldError(fieldId, 'Este campo es obligatorio.');
                     formIsValid = false;
                 }
             }
 
+            // Validación específica para el formato de email
+            const emailInput = document.getElementById('customerEmail');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailInput && !emailRegex.test(emailInput.value.trim())) {
+                showFieldError('customerEmail', 'Por favor, introduce un email válido.');
+                formIsValid = false;
+            }
+
             if (!formIsValid) {
-                showInfoModal('¡Oops! Por favor, completa todos los campos requeridos para realizar la reserva. 📝');
+                showInfoModal('¡Oops! Por favor, completa todos los campos requeridos correctamente para realizar la reserva. 📝');
                 return;
             }
 
@@ -1580,8 +1611,6 @@
         // --- Inicialización de la Aplicación ---
         // Se ejecuta cuando el DOM está completamente cargado.
         document.addEventListener('DOMContentLoaded', () => {
-            // No se carga el estado de la trivia ya que ha sido eliminada.
-
             // Carga los datos del formulario y del carrito al iniciar la página.
             loadBookingFormData(); 
 
@@ -1604,3 +1633,4 @@
     </script>
 </body>
 </html>
+
