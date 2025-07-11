@@ -118,9 +118,9 @@
             "itemOffered": {
               "@type": "Service",
               "name": "Paquete Celebración Personalizada para eventos infantiles en Panamá",
-              "description": "Servicio premium con payaso, animación, pintacaritas, show de magia cómica y asistencia para piñata, diseñado para tu fiesta perfecta en Panamá."
-            }
+            "description": "Servicio premium con payaso, animación, pintacaritas, show de magia cómica y asistencia para piñata, diseñado para tu fiesta perfecta en Panamá."
           }
+        }
         ]
       },
       "slogan": "¡Hacemos magia en tu fiesta infantil en Panamá!",
@@ -248,6 +248,16 @@
         </div>
     </div>
 
+    <!-- Image Modal: Displays a larger version of an image when clicked. -->
+    <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="imageModalTitle">
+        <div class="relative bg-white rounded-lg shadow-2xl p-2 max-w-full max-h-full overflow-hidden flex flex-col items-center justify-center transform transition-all duration-300 scale-95 opacity-0" id="imageModalContent">
+            <button id="closeImageModalButton" class="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white rounded-full p-2 text-lg font-bold transition duration-300 z-10 w-8 h-8 flex items-center justify-center" aria-label="Cerrar imagen">
+                &times;
+            </button>
+            <img id="modalImage" src="" alt="Imagen ampliada del servicio" class="max-w-full max-h-[80vh] object-contain rounded-lg">
+        </div>
+    </div>
+
 
     <!-- Header (Main Navigation Menu): Contains the logo, title, and navigation buttons. -->
     <header class="bg-gradient-to-br from-purple-100 to-purple-200 text-purple-800 py-3 px-4 w-full rounded-b-3xl shadow-xl sticky top-0 z-40 border-b-4 border-purple-300">
@@ -342,8 +352,8 @@
         // --- Data Definition (Services and Packages) ---
         // Arrays of objects defining available services and packages, including prices and descriptions.
         const servicesData = [
-            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 45, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora, incluye mesa de maquillaje y silla profesional.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://divertypanama.netlify.app/assets/images/pintacaritas.jpg' },
-            { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-300 text-pink-800', imageUrl: 'https://divertypanama.netlify.app/assets/images/globoflexia.jpg' },
+            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 45, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora, incluye mesa de maquillaje y silla profesional.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://i.ibb.co/gLbjzL5n/3eb6eb2f-a6fb-4e9e-b8e4-2849b948ca7e-20250629-221512-0000.jpg' },
+            { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-300 text-pink-800', imageUrl: 'https://i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg' },
             { 
                 id: '7', 
                 name: 'Decoraciones Temáticas', 
@@ -351,7 +361,7 @@
                 description: 'Transforma cualquier espacio en un mundo mágico con nuestras decoraciones personalizadas. ¡Elige tu temática favorita!', 
                 color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800',
                 type: 'theme_selection', // New type to handle theme selection
-                imageUrl: 'https://divertypanama.netlify.app/assets/images/decoraciones-tematicas.jpg',
+                imageUrl: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg', // Updated image URL here
                 themes: {
                     ninas: [
                         'Barbie', 'Sirenita', 'Cenicienta', 'Moana grande', 'Moana bebé', 'Abejita',
@@ -375,7 +385,6 @@
                     ]
                 }
             },
-            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://divertypanama.netlify.app/assets/images/maquinas-snacks.jpg' },
             // Thematic characters service (price updated to 65)
             {
                 id: '9',
@@ -384,7 +393,7 @@
                 description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige entre Mickey, Minnie y Mario Bros. Servicio por 1 hora.',
                 color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800',
                 type: 'character_selection', // Special type to handle character selection
-                imageUrl: 'https://divertypanama.netlify.app/assets/images/personajes-tematicos.jpg',
+                imageUrl: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg', 
                 characters: [
                     { id: 'mickey', name: 'Mickey Mouse 🐭' },
                     { id: 'minnie', name: 'Minnie Mouse 🎀' },
@@ -398,8 +407,9 @@
                 description: 'Taller creativo con 2 manualidades, mobiliario (mesas y sillas), 1 recreadora encargada del taller, materiales, música y figuras con globos. ¡Diversión garantizada por niño!', 
                 color: 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-300 text-yellow-800',
                 type: 'manualidades_workshop', // New type for this specific service
-                imageUrl: 'https://divertypanama.netlify.app/assets/images/IMG_20250709_164443.jpg'
-            }
+                imageUrl: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg' 
+            },
+            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: '' }
         ];
 
         const packagesData = [
@@ -460,28 +470,19 @@
             },
             {
                 id: 'BS1',
-                name: 'Show Básico 🫧',
+                name: 'Show de Burbujas Premium 🫧', // Renamed from "Show Básico 🫧"
                 price: 150,
                 services: [
                     'Burbujas gigantes',
                     'Humo',
                     'Burbujas LED',
-                    'Interacción con el público'
+                    'Interacción con el público',
+                    'Fotos dentro de la burbuja gigante', // New service
+                    'Trucos con burbujas', // New service
+                    'Burbujas de espuma' // New service
                 ],
-                description: '1 hora de show con burbujas gigantes, humo, burbujas LED e interacción con el público.',
+                description: '1 hora de show con burbujas gigantes, humo, burbujas LED, interacción con el público, fotos dentro de la burbuja gigante, trucos con burbujas y burbujas de espuma.', // Updated description
                 color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', imageUrl: ''
-            },
-            {
-                id: 'BS2',
-                name: 'Show Premium 🌟',
-                price: 170,
-                services: [
-                    'Todo lo del Show Básico',
-                    'Encapsulados de personas',
-                    'Efectos extra'
-                ],
-                description: '1 hora y 20 minutos de show que incluye todo lo del Show Básico, más encapsulados de personas y efectos extra.',
-                color: 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-300 text-yellow-800', imageUrl: ''
             },
             {
                 id: 'BS3',
@@ -910,6 +911,45 @@
             }
         }
 
+        /**
+         * Displays the image modal with a specific image.
+         * @param {string} imageUrl - The URL of the image to display.
+         * @param {string} altText - The alt text for the image.
+         */
+        function showImageModal(imageUrl, altText) {
+            const imageModal = document.getElementById('imageModal');
+            const modalImage = document.getElementById('modalImage');
+            const imageModalContent = document.getElementById('imageModalContent');
+
+            if (imageModal && modalImage && imageModalContent) {
+                modalImage.src = imageUrl;
+                modalImage.alt = altText;
+                imageModal.classList.remove('hidden');
+                setTimeout(() => {
+                    imageModalContent.classList.remove('scale-95', 'opacity-0');
+                    imageModalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            } else {
+                console.error("Error: Image modal elements not found.");
+            }
+        }
+
+        /**
+         * Hides the image modal.
+         */
+        function closeImageModal() {
+            const imageModal = document.getElementById('imageModal');
+            const imageModalContent = document.getElementById('imageModalContent'); // Added this line
+            if (imageModal && imageModalContent) {
+                imageModalContent.classList.remove('scale-100', 'opacity-100');
+                imageModalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    imageModal.classList.add('hidden');
+                    document.getElementById('modalImage').src = ''; // Clear image source
+                }, 300);
+            }
+        }
+
 
         // --- Section Rendering Functions ---
 
@@ -975,7 +1015,8 @@
             const cardsHtml = servicesData.map(service => {
                 // Image for the service card
                 // If imageUrl is empty, it will not render the <img> tag.
-                const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm">` : '';
+                // Added 'service-image' class for click event.
+                const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="Imagen de ${service.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">` : '';
 
                 // Specific logic for the character selection service
                 if (service.type === 'character_selection') {
@@ -1384,6 +1425,13 @@
                     }
                 };
             });
+
+            // Add event listeners for image clicks
+            document.querySelectorAll('.service-image').forEach(img => {
+                img.onclick = (event) => {
+                    showImageModal(event.target.src, event.target.alt);
+                };
+            });
         }
 
         /**
@@ -1420,7 +1468,8 @@
                 }
 
                 // Image for the package card - now empty
-                const packageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm">` : '';
+                // Added 'service-image' class for click event.
+                const packageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">` : '';
 
                 return `
                     <div class="${pkg.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
@@ -1468,6 +1517,13 @@
                     handleCartAction({ name: itemName, price: itemPrice }, actionType);
                 };
             });
+
+            // Add event listeners for image clicks
+            document.querySelectorAll('.service-image').forEach(img => {
+                img.onclick = (event) => {
+                    showImageModal(event.target.src, event.target.alt);
+                };
+            });
         }
 
         /**
@@ -1504,7 +1560,8 @@
                 }
 
                 // Image for the bubble package card - now empty
-                const bubblePackageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm">` : '';
+                // Added 'service-image' class for click event.
+                const bubblePackageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">` : '';
 
 
                 return `
@@ -1551,6 +1608,13 @@
                     const itemPrice = parseFloat(event.target.dataset.itemPrice);
                     const actionType = event.target.dataset.actionType;
                     handleCartAction({ name: itemName, price: itemPrice }, actionType);
+                };
+            });
+
+            // Add event listeners for image clicks
+            document.querySelectorAll('.service-image').forEach(img => {
+                img.onclick = (event) => {
+                    showImageModal(event.target.src, event.target.alt);
                 };
             });
         }
@@ -2119,6 +2183,11 @@
             const closeMiniCartModalBtn = document.getElementById('closeMiniCartModalButton');
             if (closeMiniCartModalBtn) closeMiniCartModalBtn.onclick = closeMiniCartModal;
 
+            // Assign event listeners for image modal.
+            const closeImageModalBtn = document.getElementById('closeImageModalButton');
+            if (closeImageModalBtn) closeImageModalBtn.onclick = closeImageModal;
+
+
             // Assign event listeners for mobile menu toggle.
             const mobileMenuToggle = document.getElementById('mobileMenuToggle');
             const mobileMenu = document.getElementById('mobileMenu');
@@ -2183,3 +2252,4 @@
     </script>
 </body>
 </html>
+
