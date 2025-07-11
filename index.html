@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Título optimizado para SEO: Incluye palabras clave principales y ubicación para mejorar la visibilidad en buscadores. -->
+    <!-- SEO optimized title: Includes main keywords and location to improve search engine visibility. -->
     <title>Diverty Eventos | Fiestas Infantiles en Panamá</title>
-    <!-- Descripción meta optimizada para SEO: Proporciona un resumen conciso y atractivo del contenido, con palabras clave relevantes y una llamada de acción. -->
+    <!-- SEO optimized meta description: Provides a concise and attractive summary of the content, with relevant keywords and a call to action. -->
     <meta name="description" content="Organizamos las mejores fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Expertos en animación, shows de burbujas, pintacaritas, globoflexia y paquetes de diversión. ¡Haz que la fiesta de tus hijos sea inolvidable con Diverty Eventos en todo Panamá!">
     
-    <!-- Open Graph Tags para compartir en redes sociales y apps de mensajería (Facebook, WhatsApp, etc.). -->
+    <!-- Open Graph Tags for social media and messaging apps (Facebook, WhatsApp, etc.). -->
     <meta property="og:title" content="Diverty Eventos | Fiestas Infantiles en Panamá">
     <meta property="og:description" content="Organizamos las mejores fiestas infantiles en Panamá. Animación, shows de burbujas, pintacaritas y más. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!">
-    <!-- ¡IMPORTANTE! URL de la imagen corregida para Netlify. -->
+    <!-- IMPORTANT! Corrected image URL for Netlify. -->
     <meta property="og:image" content="https://divertypanama.netlify.app/android-chrome-512x512.png"> 
     <meta property="og:image:width" content="512"> 
     <meta property="og:image:height" content="512"> 
     <meta property="og:image:alt" content="Logo de Diverty Eventos, para fiestas infantiles en Panamá">
-    <meta property="og:url" content="https://divertypanama.netlify.app/"> <!-- URL real de tu sitio web. -->
+    <meta property="og:url" content="https://divertypanama.netlify.app/"> <!-- Your actual website URL. -->
     <meta property="og:type" content="website">
 
-    <!-- Google tag (gtag.js) para Google Analytics: Permite el seguimiento de visitas y comportamiento de los usuarios. -->
+    <!-- Google tag (gtag.js) for Google Analytics: Allows tracking of user visits and behavior. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R3G3Y0FLVN"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -28,21 +28,21 @@
         gtag('config', 'G-R3G3Y0FLVN');
     </script>
 
-    <!-- Schema Markup (Datos Estructurados) para LocalBusiness y Organization - SEO: Ayuda a los motores de búsqueda a entender el contenido de tu negocio. -->
+    <!-- Schema Markup (Structured Data) for LocalBusiness and Organization - SEO: Helps search engines understand your business content. -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": ["LocalBusiness", "Organization"],
       "name": "Diverty Eventos",
-      "image": "https://divertypanama.netlify.app/android-chrome-512x512.png", <!-- URL de la imagen principal para Schema Markup corregida. -->
-      "url": "https://divertypanama.netlify.app/", <!-- URL real de tu sitio. -->
+      "image": "https://divertypanama.netlify.app/android-chrome-512x512.png", <!-- Main image URL for Schema Markup corrected. -->
+      "url": "https://divertypanama.netlify.app/", <!-- Your actual site URL. -->
       "telephone": "+50766677965",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "Tu Dirección Exacta Aquí (Ej: Calle 50, Edificio XYZ)", <!-- ¡IMPORTANT! Reemplaza con tu dirección física. -->
+        "streetAddress": "Tu Dirección Exacta Aquí (Ej: Calle 50, Edificio XYZ)", <!-- IMPORTANT! Replace with your physical address. -->
         "addressLocality": "Panamá Centro",
         "addressRegion": "Panamá",
-        "postalCode": "Tu Código Postal Aquí", <!-- Opcional, pero recomendado si lo tienes. -->
+        "postalCode": "Tu Código Postal Aquí", <!-- Optional, but recommended if you have it. -->
         "addressCountry": "PA"
       },
       "priceRange": "$$",
@@ -127,48 +127,49 @@
       "description": "Diverty Eventos ofrece la mejor animación y shows para fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Especialistas en shows de burbujas, pintacaritas y paquetes de diversión inolvidable. ¡Organiza la fiesta soñada de tus hijos!"
     }
     </script>
-    <!-- Tailwind CSS CDN para estilos: Permite un desarrollo rápido y un diseño responsivo. -->
+    <!-- Tailwind CSS CDN for styles: Allows fast development and responsive design. -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter para la tipografía: Proporciona una fuente moderna y legible. -->
+    <!-- Google Fonts - Inter for typography: Provides a modern and readable font. -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Estilos base para el cuerpo de la página */
+        /* Base styles for the page body */
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
         }
-        /* Estilos personalizados para el hover de botones para consistencia visual. */
+        /* Custom styles for button hover for visual consistency. */
         .hover\:bg-purple-600:hover { background-color: #7c3aed; }
         .hover\:bg-pink-600:hover { background-color: #db2777; }
         .hover\:bg-blue-600:hover { background-color: #2563eb; } /* This will be overridden by JS for nav buttons */
         .hover\:bg-green-600:hover { background-color: #16a34a; } /* This will be overridden by JS for nav buttons */
         .hover\:bg-indigo-600:hover { background-color: #4f46e5; }
-        /* Estilo para tachar texto (precios anteriores), útil para mostrar descuentos. */
+        /* Style for strikethrough text (previous prices), useful for showing discounts. */
         .line-through { text-decoration: line-through; }
 
-        /* Estilo para el botón flotante de WhatsApp: Permite un acceso rápido al contacto. */
+        /* Style for the floating WhatsApp button: Allows quick access to contact. */
         .whatsapp-float-button {
             position: fixed;
-            bottom: 80px; /* Ajusta la posición vertical del botón. */
+            bottom: 80px; /* Adjusts the vertical position of the button. */
             right: 20px;
-            z-index: 1000; /* Asegura que el botón esté por encima de otros elementos. */
-            width: 56px; /* Ajuste para que el botón sea cuadrado. */
+            z-index: 1000; /* Ensures the button is above other elements. */
+            width: 56px; /* Adjustment for the button to be square. */
             height: 56px;
-            display: flex; /* Usar flexbox para centrar contenido. */
-            justify-content: center; /* Centra el icono horizontalmente. */
-            align-items: center; /* Centra el icono verticalmente. */
-            border-radius: 9999px; /* Redondo completo. */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Sombra más pronunciada. */
-            transition: all 0.3s ease; /* Transiciones suaves para hover. */
-            background-color: #25D366; /* Color de fondo de WhatsApp. */
+            display: flex; /* Use flexbox to center content. */
+            justify-content: center; /* Centers the icon horizontally. */
+            align-items: center; /* Centers the icon vertically. */
+            border-radius: 9999px; /* Fully round. */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* More pronounced shadow. */
+            transition: all 0.3s ease; /* Smooth transitions for hover. */
+            background-color: #25D366; /* WhatsApp background color. */
+            cursor: pointer; /* Add cursor pointer */
         }
         .whatsapp-float-button:hover {
-            transform: scale(1.1); /* Ligero aumento de tamaño al pasar el ratón. */
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Sombra aún más pronunciada en hover. */
+            transform: scale(1.1); /* Slight increase in size on hover. */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Even more pronounced shadow on hover. */
         }
 
-        /* Estilo para mensajes de error de validación en línea */
+        /* Style for inline validation error messages */
         .error-message {
             color: #ef4444; /* red-500 */
             font-size: 0.875rem; /* text-sm */
@@ -181,28 +182,28 @@
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
 
-    <!-- Modal de Información General: Se usa para mensajes al usuario (ej. éxito, error). -->
+    <!-- General Info Modal: Used for user messages (e.g., success, error). -->
     <div id="infoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="modalMessage">
         <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0" id="infoModalContent">
             <p id="modalMessage" class="text-xl font-bold mb-4 text-white"></p>
-            <button id="closeModalButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white">
+            <button id="closeModalButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer">
                 ¡Entendido! 🎉
             </button>
         </div>
     </div>
 
-    <!-- Modal de Promoción: Se usa para anunciar ofertas especiales. -->
+    <!-- Promotion Modal: Used to announce special offers. -->
     <div id="promoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="promoMessage">
         <div class="bg-gradient-to-br from-pink-600 to-pink-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-pink-500 transform transition-all duration-300 scale-95 opacity-0" id="promoModalContent">
             <h2 class="text-3xl font-extrabold text-white mb-4">¡Promoción del Mes! 🌟</h2>
             <p id="promoMessage" class="text-lg text-gray-100 mb-4"></p>
-            <button id="closePromoModalButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white">
+            <button id="closePromoModalButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer">
                 ¡Genial! 🎉
             </button>
         </div>
     </div>
 
-    <!-- Nuevo Modal de Advertencia de Reserva: Se muestra antes de rellenar el formulario de reserva. -->
+    <!-- New Booking Warning Modal: Shown before filling out the booking form. -->
     <div id="bookingWarningModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="bookingWarningTitle">
         <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0" id="bookingWarningModalContent">
             <h2 id="bookingWarningTitle" class="text-3xl font-extrabold text-white mb-4">¡Importante antes de Reservar! 🚨</h2>
@@ -214,33 +215,33 @@
             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <a href="https://wa.me/50766677965?text=¡Hola! Quiero consultar la disponibilidad de una fecha para un evento."
                    target="_blank"
-                   class="bg-gradient-to-br from-green-500 via-green-400 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-full shadow-xl transition duration-300 flex items-center justify-center border-2 border-white">
+                   class="bg-gradient-to-br from-green-500 via-green-400 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-full shadow-xl transition duration-300 flex items-center justify-center border-2 border-white cursor-pointer">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon" class="w-6 h-6 mr-2">
                     Contactar por WhatsApp
                 </a>
-                <button id="closeBookingWarningModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full shadow-md transition duration-300">
+                <button id="closeBookingWarningModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 cursor-pointer">
                     Continuar con el Formulario
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Mini-Carrito Modal (Revertido a su estado original) -->
+    <!-- Mini-Cart Modal (Reverted to its original state) -->
     <div id="miniCartModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="miniCartTitle">
         <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0" id="miniCartModalContent">
             <h2 id="miniCartTitle" class="text-2xl font-extrabold text-white mb-4">Tu Carrito de Diversión 🛒</h2>
             <div id="miniCartItems" class="max-h-60 overflow-y-auto text-left mb-4 p-2 bg-purple-100 rounded-lg border border-purple-200 text-gray-800">
-                <!-- Los ítems del carrito se cargarán aquí dinámicamente -->
+                <!-- Cart items will be loaded here dynamically -->
             </div>
             <div class="text-right font-bold text-white mb-4">
-                <!-- El recargo por transporte ya no se muestra aquí -->
+                <!-- Transport surcharge is no longer displayed here -->
                 <p class="text-xl text-pink-200">Total: <span id="miniCartTotalPrice">$0.00</span></p>
             </div>
             <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-3">
-                <button id="closeMiniCartModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full shadow-md transition duration-300">
+                <button id="closeMiniCartModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full shadow-md transition duration-300 cursor-pointer">
                     Cerrar
                 </button>
-                <button id="miniCartProceedToBookButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white">
+                <button id="miniCartProceedToBookButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer">
                     Reservar Ahora ✨
                 </button>
             </div>
@@ -248,78 +249,84 @@
     </div>
 
 
-    <!-- Encabezado (Menú de Navegación Principal): Contiene el logo, el título y los botones de navegación. -->
+    <!-- Header (Main Navigation Menu): Contains the logo, title, and navigation buttons. -->
     <header class="bg-gradient-to-br from-purple-100 to-purple-200 text-purple-800 py-3 px-4 w-full rounded-b-3xl shadow-xl sticky top-0 z-40 border-b-4 border-purple-300">
         <nav class="container mx-auto flex flex-col sm:flex-row justify-between items-center" aria-label="Navegación Principal">
-            <!-- Contenedor para el logo y el título -->
+            <!-- Container for logo and title -->
             <div class="flex items-center mb-4 sm:mb-0">
-                <!-- LOGO DE DIVERTY EVENTOS -->
+                <!-- DIVERTY EVENTOS LOGO -->
                 <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Logo de Diverty Eventos" class="w-16 h-16 mr-4 rounded-full object-cover border-2 border-pink-400 shadow-md">
                 
-                <!-- Título principal -->
+                <!-- Main title -->
                 <h1 class="text-3xl sm:text-4xl font-extrabold text-purple-900 text-center sm:text-left">
                     Diverty Eventos 
                 </h1>
             </div>
-            <!-- Lista de navegación con botones rediseñados -->
-            <ul class="flex flex-wrap justify-center sm:space-x-4 space-x-2" role="menubar">
-                <li role="none"><button id="navHome" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md">Inicio 🏠</button></li>
-                <li role="none"><button id="navServices" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md">Servicios 📋</button></li>
-                <li role="none"><button id="navPackages" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md">Paquetes 📦</button></li>
-                <li role="none"><button id="navBooking" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md">Reservar 🗓️</button></li>
-            </ul>
+
+            <!-- Mobile menu toggle button (Hamburger) -->
+            <button id="mobileMenuToggle" class="sm:hidden p-2 rounded-md text-purple-800 hover:bg-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer" aria-controls="mobileMenu" aria-expanded="false">
+                <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+
+            <!-- Navigation list (hidden on mobile by default, shown on larger screens) -->
+            <div id="mobileMenu" class="hidden sm:flex flex-col sm:flex-row flex-grow justify-center sm:justify-end items-center mt-4 sm:mt-0 space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+                <ul class="flex flex-col sm:flex-row justify-center sm:space-x-4 space-y-2 sm:space-y-0" role="menubar">
+                    <li role="none"><button id="navHome" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Inicio 🏠</button></li>
+                    <li role="none"><button id="navServices" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Servicios 📋</button></li>
+                    <li role="none"><button id="navPackages" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Planes de Cumpleaños 🎂</button></li>
+                    <li role="none"><button id="navBubblePackages" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Paquetes de Burbujas 🫧</button></li>
+                    <li role="none"><button id="navBooking" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Reservar 🗓️</button></li>
+                </ul>
+            </div>
         </nav>
     </header>
 
-    <!-- Resumen del Carrito de Compra (Barra Flotante): Muestra la cantidad de ítems y el total seleccionado. -->
+    <!-- Shopping Cart Summary (Floating Bar): Displays the number of items and the selected total. -->
     <div id="cartSummary" class="bg-gradient-to-br from-purple-200 to-purple-300 text-purple-800 font-extrabold p-4 text-center rounded-b-3xl shadow-xl border-b-4 border-purple-400 hidden sticky top-[88px] z-30 transition-all duration-300 ease-in-out flex flex-col sm:flex-row justify-between items-center">
         <p class="text-xl sm:text-2xl mb-2 sm:mb-0">
             🛒 Ítems: <span id="selectedItemsCount" class="text-purple-700">0</span> | Total: <span id="totalPriceDisplay" class="text-pink-700">$0.00</span>
         </p>
         <div class="flex space-x-3">
-            <button id="viewCartDetailsButton" class="bg-gradient-to-br from-purple-500 via-purple-400 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 border-2 border-white">
+            <button id="viewCartDetailsButton" class="bg-gradient-to-br from-purple-500 via-purple-400 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 border-2 border-white cursor-pointer">
                 Ver Detalles 🛒
             </button>
-            <button id="proceedToBookButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white">
+            <button id="proceedToBookButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white cursor-pointer">
                 Reservar ✨
             </button>
         </div>
     </div>
 
-    <!-- Área de Contenido Principal: Aquí se cargará dinámicamente el contenido de cada sección (Inicio, Servicios, etc.). -->
+    <!-- Main Content Area: Section content (Home, Services, etc.) will be dynamically loaded here. -->
     <main id="mainContent" class="container mx-auto p-4 flex-grow">
-        <!-- Mensaje de prueba HTML para diagnóstico -->
-        <div class="text-center text-red-600 bg-red-100 p-4 rounded-lg shadow-md mt-8">
-            <p class="font-bold text-xl">¡Mensaje de prueba! Si ves esto, el HTML se está cargando correctamente.</p>
-            <p>Si la página sigue en blanco, el problema es con Netlify.</p>
-        </div>
-        <!-- El contenido de las secciones (Inicio, Servicios, etc.) será inyectado aquí por JavaScript. -->
+        <!-- Section content (Home, Services, etc.) will be injected here by JavaScript. -->
     </main>
 
-    <!-- Botón Flotante de WhatsApp: Acceso rápido para contactar por WhatsApp. -->
+    <!-- Floating WhatsApp Button: Quick access to contact via WhatsApp. -->
     <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank" aria-label="Contactar por WhatsApp">
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon" class="w-6 h-6">
     </a>
 
-    <!-- Pie de Página: Información de derechos de autor y eslogan. -->
+    <!-- Footer: Copyright information and slogan. -->
     <footer class="bg-purple-700 text-white py-8 px-4 text-center mt-8 rounded-t-xl shadow-inner w-full">
         <p class="text-lg font-semibold">&copy; 2023 Diverty Eventos. ¡Hacemos magia en cada fiesta infantil en Panamá! ✨</p>
         <p class="text-sm">Todos los derechos reservados. Servicios de <strong>animación infantil</strong> y <strong>shows para fiestas</strong> en todo Panamá.</p>
     </footer>
 
-    <!-- Script de JavaScript para la funcionalidad de la página. -->
+    <!-- JavaScript script for page functionality. -->
     <script>
-        // --- Gestión del Estado Global de la Aplicación ---
-        // 'appState' contiene todas las variables de estado que controlan el comportamiento de la aplicación.
+        // --- Global Application State Management ---
+        // 'appState' contains all state variables that control application behavior.
         let appState = {
-            activeSection: 'home', // Sección actualmente visible ('home', 'services', 'packages', 'booking').
-            userId: 'guest_user_' + Math.random().toString(36).substring(2, 9), // ID único para el usuario visitante.
-            selectedItems: [], // Array para almacenar los servicios/paquetes seleccionados en el carrito.
-            promotedPackages: [], // Array para almacenar los nombres de los paquetes en promoción.
-            selectedLocation: 'Panamá Centro', // Ubicación seleccionada para calcular el recargo de transporte.
-            hasShownBookingWarning: false, // Indica si el modal de advertencia de reserva ya se mostró en la sesión.
-            infoModalCallback: null, // Callback para ejecutar una función al cerrar el modal de info.
-            bookingFormData: { // Objeto para almacenar los datos del formulario de reservas, útil para persistencia.
+            activeSection: 'home', // Currently visible section ('home', 'services', 'packages', 'bubblePackages', 'booking').
+            userId: 'guest_user_' + Math.random().toString(36).substring(2, 9), // Unique ID for the guest user.
+            selectedItems: [], // Array to store selected services/packages in the cart.
+            promotedPackages: [], // Array to store the names of packages on promotion.
+            selectedLocation: 'Panamá Centro', // Selected location for calculating transport surcharge.
+            hasShownBookingWarning: false, // Indicates if the booking warning modal has already been shown in the session.
+            infoModalCallback: null, // Callback to execute a function when the info modal closes.
+            bookingFormData: { // Object to store booking form data, useful for persistence.
                 bookingDate: '',
                 bookingTime: '',
                 customerName: '',
@@ -332,19 +339,19 @@
             },
         };
 
-        // --- Definición de Datos (Servicios y Paquetes) ---
-        // Arrays de objetos que definen los servicios y paquetes disponibles, incluyendo precios y descripciones.
+        // --- Data Definition (Services and Packages) ---
+        // Arrays of objects defining available services and packages, including prices and descriptions.
         const servicesData = [
-            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 40, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800' },
-            { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-300 text-pink-800' },
-            { id: '6', name: 'Show de Burbujas Gigantes 🫧', price: 100, description: '¡Burbujas enormes que los niños pueden atrapar y explotar! Servicio por 1 hora. ¡Un súper show único en Panamá!', color: 'bg-gradient-to-br from-indigo-100 to-indigo-200 border-indigo-300 text-indigo-800' },
+            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 45, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora, incluye mesa de maquillaje y silla profesional.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://divertypanama.netlify.app/assets/images/pintacaritas.jpg' },
+            { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-300 text-pink-800', imageUrl: 'https://divertypanama.netlify.app/assets/images/globoflexia.jpg' },
             { 
                 id: '7', 
                 name: 'Decoraciones Temáticas', 
-                price: 100, // Precio actualizado a 100
+                price: 100, // Price updated to 100
                 description: 'Transforma cualquier espacio en un mundo mágico con nuestras decoraciones personalizadas. ¡Elige tu temática favorita!', 
                 color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800',
-                type: 'theme_selection', // Nuevo tipo para manejar la selección de temática
+                type: 'theme_selection', // New type to handle theme selection
+                imageUrl: 'https://divertypanama.netlify.app/assets/images/decoraciones-tematicas.jpg',
                 themes: {
                     ninas: [
                         'Barbie', 'Sirenita', 'Cenicienta', 'Moana grande', 'Moana bebé', 'Abejita',
@@ -368,50 +375,60 @@
                     ]
                 }
             },
-            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800' },
-            // Servicio de personajes temáticos (precio actualizado a 65)
+            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://divertypanama.netlify.app/assets/images/maquinas-snacks.jpg' },
+            // Thematic characters service (price updated to 65)
             {
                 id: '9',
                 name: 'Personajes Temáticos',
-                price: 65, // Precio base para un personaje, actualizado a $65
+                price: 65, // Base price for one character, updated to $65
                 description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige entre Mickey, Minnie y Mario Bros. Servicio por 1 hora.',
                 color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800',
-                type: 'character_selection', // Tipo especial para manejar la selección de personaje
+                type: 'character_selection', // Special type to handle character selection
+                imageUrl: 'https://divertypanama.netlify.app/assets/images/personajes-tematicos.jpg',
                 characters: [
                     { id: 'mickey', name: 'Mickey Mouse 🐭' },
                     { id: 'minnie', name: 'Minnie Mouse 🎀' },
                     { id: 'mario', name: 'Mario Bros. 🍄' }
                 ]
+            },
+            { 
+                id: '10', 
+                name: 'Mini Taller de Manualidades 🎨✂️', 
+                price: 12.50, // Price per child, updated to $12.50
+                description: 'Taller creativo con 2 manualidades, mobiliario (mesas y sillas), 1 recreadora encargada del taller, materiales, música y figuras con globos. ¡Diversión garantizada por niño!', 
+                color: 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-300 text-yellow-800',
+                type: 'manualidades_workshop', // New type for this specific service
+                imageUrl: 'https://divertypanama.netlify.app/assets/images/IMG_20250709_164443.jpg'
             }
         ];
 
         const packagesData = [
-            { id: 'P1', name: 'Plan Básico 🚀', price: 75, services: [ // Renombrado
+            { id: 'P1', name: 'Plan Básico 🚀', price: 80, services: [ // Precio cambiado a 80
                 'Payas@ o animad@r 🤡🎤',
                 'Animación infantil 🥳💃',
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800' },
-            { id: 'P2', name: 'Plan Recreativo 🌈', price: 100, services: [ // Renombrado
+            ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', imageUrl: '' },
+            { id: 'P2', name: 'Plan Recreativo 🌈', price: 100, services: [
                 'Payas@ o animad@r 🤡🎤',
-                'Pintacaritas 🎨👧👦',
-                'Animación infantil 🥳💃',
+                'Pintacaritas (1 hora) 🎨👧👦', // Updated to specify 1 hour
+                'Animación infantil (1 hora) 🥳💃', // Updated to specify 1 hour
                 'Juegos y concursos 🎲🏆',
                 'Figuras con globos 🎈🐶',
                 'Romper la piñata 🍬🎉'
-            ], description: '2h de aventura: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800' },
-            { id: 'P3', name: 'Plan Magic ✨', price: 135, services: [ // Renombrado
+            ], description: '2h de aventura: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', imageUrl: '' },
+            { id: 'P3', name: 'Plan Magic ✨', price: 135, services: [
                 'Payasit@ o animad@r 🤡🎤',
-                'Animación, juegos y concursos 🥳🎲',
-                'Pintacaritas 🎨👧👦',
+                'Animación, juegos y concursos (1.5 horas) 🥳🎲', // Updated to 1.5 hours
+                'Pintacaritas (1 hora) 🎨👧👦', // Updated to 1 hour
                 'Show de magia cómica ✨🤣',
                 'Asistencia para la piñata 🍬🎉'
-            ], description: '2.5h premium: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800' },
-            { // Nuevo paquete "Plan Diverty"
+            ], description: '2.5h premium: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800', imageUrl: '' },
+            { 
                 id: 'P4', 
                 name: 'Plan Diverty 🥳', 
-                price: 165, 
+                price: 210, 
                 services: [
                     'Payasito o Animador 🤡🎤',
                     'Juegos y concursos 🎲🏆',
@@ -421,25 +438,66 @@
                     'Asistencia en la piñata 🍬🎉'
                 ], 
                 description: '3h de diversión completa: Payaso/animador, juegos, pintacaritas, globoflexia, show de burbujas o magia, y asistencia piñata. ¡La magia garantizada!', 
-                color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800' 
-            },
-            { // Nuevo paquete "Plan Bubble"
-                id: 'P5',
-                name: 'Plan Bubble 🫧', // Nombre actualizado a "Plan Bubble"
-                price: 120, 
+                color: 'bg-gradient-to-br from-green-200 to-green-300 border-green-400 text-green-800', imageUrl: ''
+            }
+        ];
+
+        // New array for Bubble Packages
+        const bubblePackagesData = [
+            {
+                id: 'B2',
+                name: 'Paquete Fiesta Burbuja Completa ✨',
+                price: 190, 
                 services: [
                     'Animación infantil 🥳💃',
                     'Juegos y concursos 🎲🏆',
                     'Payasito o Animador 🤡🎤',
                     'Show de Burbujas Gigantes 🫧',
-                    'Romper la piñata 🍬🎉' // Agregado "Romper la piñata"
+                    'Romper la piñata 🍬🎉'
                 ],
-                description: '2h de diversión con burbujas gigantes y piñata para una fiesta inolvidable!', // Descripción actualizada a 2 horas
-                color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-900'
+                description: '2 horas de diversión completa con animación, juegos, payasito, show de burbujas gigantes y asistencia en la piñata. ¡La fiesta burbuja soñada!',
+                color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-900', imageUrl: ''
+            },
+            {
+                id: 'BS1',
+                name: 'Show Básico 🫧',
+                price: 150,
+                services: [
+                    'Burbujas gigantes',
+                    'Humo',
+                    'Burbujas LED',
+                    'Interacción con el público'
+                ],
+                description: '1 hora de show con burbujas gigantes, humo, burbujas LED e interacción con el público.',
+                color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', imageUrl: ''
+            },
+            {
+                id: 'BS2',
+                name: 'Show Premium 🌟',
+                price: 170,
+                services: [
+                    'Todo lo del Show Básico',
+                    'Encapsulados de personas',
+                    'Efectos extra'
+                ],
+                description: '1 hora y 20 minutos de show que incluye todo lo del Show Básico, más encapsulados de personas y efectos extra.',
+                color: 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-300 text-yellow-800', imageUrl: ''
+            },
+            {
+                id: 'BS3',
+                name: 'Show Corporativo/Especial 🏢',
+                price: 220, // "Desde $220" implies a base price, using 220 as the base.
+                services: [
+                    'Show personalizado para centros comerciales, colegios o eventos grandes',
+                    'Luces especiales'
+                ],
+                description: '1 hora de show personalizable (ajustable) para eventos corporativos, centros comerciales, colegios o eventos grandes, con luces especiales.',
+                color: 'bg-gradient-to-br from-red-100 to-red-200 border-red-300 text-red-800', imageUrl: ''
             }
         ];
 
-        // Recargos por transporte según la ubicación del evento.
+
+        // Transport surcharges by event location.
         const transportFeesByLocation = {
             'Panamá Centro': 0,
             'Arraiján': 10,
@@ -448,64 +506,61 @@
             'Panamá Norte': 10,
         };
 
-        // --- Funciones de Ayuda ---
+        // --- Helper Functions ---
 
         /**
-         * Baraja un array de forma aleatoria (Fisher-Yates shuffle).
-         * @param {Array} array - El array a barajar.
-         * @returns {Array} El array barajado.
-         */
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        /**
-         * Inyecta el HTML de una sección en el área de contenido principal.
-         * @param {string} sectionHtml - El HTML de la sección a renderizar.
+         * Injects the HTML of a section into the main content area.
+         * @param {string} sectionHtml - The HTML of the section to render.
          */
         function renderSection(sectionHtml) {
             document.getElementById('mainContent').innerHTML = sectionHtml;
         }
 
         /**
-         * Calcula el precio ajustado de un ítem, aplicando descuentos si corresponden.
-         * @param {object} item - El objeto del ítem (servicio o paquete) con propiedades como name, price, quantity.
-         * @returns {number} El precio ajustado del ítem por unidad.
+         * Calculates the total cost for a given item's quantity, applying special pricing logic.
+         * For 'Pintacaritas', the first hour is $45, subsequent hours are $40.
+         * @param {object} item - The item object (service or package) with properties like name, price, quantity.
+         * @returns {number} The total cost of the item for the given quantity.
          */
         function getAdjustedItemPrice(item) {
-            let adjustedPrice = item.price;
-            // Lógica de descuento para "Pintacaritas" si se añaden más de 1.
-            if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
-                adjustedPrice = 35; // Precio con descuento por unidad.
-            } 
-            // Lógica de descuento mensual para el "Plan Magic".
-            else if (item.name === 'Plan Magic ✨' && appState.promotedPackages.includes(item.name)) {
-                adjustedPrice = item.price * 0.90; // 10% de descuento.
+            if (item.quantity <= 0) {
+                return 0; // If quantity is 0 or less, the total cost for this item is 0.
             }
-            return adjustedPrice;
+
+            if (item.name === 'Pintacaritas 🎨👧👦') {
+                if (item.quantity === 1) {
+                    return 45; // First hour is $45.
+                } else {
+                    // Calculate total cost: first hour at $45, subsequent hours at $40.
+                    return 45 + (item.quantity - 1) * 40;
+                }
+            }
+            // Monthly discount logic for promoted packages.
+            else if (appState.promotedPackages.includes(item.name)) {
+                return item.price * item.quantity * 0.90; // 10% discount on total.
+            }
+            // For all other services/packages, calculate total based on unit price * quantity.
+            return item.price * item.quantity;
         }
 
         /**
-         * Actualiza el resumen del carrito flotante con el número de ítems y el precio total.
-         * Aplica lógicas de descuento si están activas.
+         * Updates the floating cart summary with the number of items and total price.
+         * Applies discount logic if active.
          */
         function updateCartSummary() {
             const cartSummaryDiv = document.getElementById('cartSummary');
-            // Si la sección activa es 'booking', asegura que el carrito esté oculto y no hagas nada más.
+            // If the active section is 'booking', ensure the cart is hidden and do nothing else.
             if (appState.activeSection === 'booking') {
                 if (cartSummaryDiv) cartSummaryDiv.classList.add('hidden');
                 return; 
             }
 
             let currentTotalPrice = appState.selectedItems.reduce((sum, item) => {
-                return sum + (getAdjustedItemPrice(item) * item.quantity);
+                // Sum the total price of each item (calculated by getAdjustedItemPrice).
+                return sum + getAdjustedItemPrice(item);
             }, 0);
 
-            // Añadir recargo por transporte basado en la ubicación seleccionada.
+            // Add transport surcharge based on the selected location.
             currentTotalPrice += transportFeesByLocation[appState.selectedLocation] || 0;
 
             const selectedItemsCountSpan = document.getElementById('selectedItemsCount');
@@ -525,51 +580,61 @@
         }
 
         /**
-         * Maneja la adición/eliminación/decremento de ítems en el carrito.
-         * @param {object} item - El objeto del servicio/paquete a añadir/quitar. Debe contener { name, price }.
-         * @param {string} actionType - 'add' para añadir/incrementar, 'remove_all' para quitar todas las unidades, 'toggle' para alternar (usado en no-repetibles).
+         * Handles adding/removing/decrementing items in the cart.
+         * @param {object} item - The service/package object to add/remove. Must contain { name, price }.
+         * @param {string} actionType - 'add' to add/increment, 'remove_all' to remove all units, 'toggle' to toggle (used for non-repeatable items).
+         * @param {number} [quantity=1] - The quantity to add or set.
          */
-        function handleCartAction(item, actionType) {
+        function handleCartAction(item, actionType, quantity = 1) {
             const existingItemIndex = appState.selectedItems.findIndex(selected => selected.name === item.name);
 
             if (actionType === 'add') {
                 if (existingItemIndex > -1) {
-                    appState.selectedItems[existingItemIndex].quantity++;
+                    appState.selectedItems[existingItemIndex].quantity += quantity;
                 } else {
-                    // Si el ítem no existe, lo añade con cantidad 1.
-                    appState.selectedItems.push({ ...item, quantity: 1 });
+                    appState.selectedItems.push({ ...item, quantity: quantity });
+                }
+            } else if (actionType === 'set_quantity') { // New action type for direct quantity setting
+                if (quantity <= 0) { // If quantity is 0 or less, remove item
+                    appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
+                } else if (existingItemIndex > -1) {
+                    appState.selectedItems[existingItemIndex].quantity = quantity;
+                } else {
+                    appState.selectedItems.push({ ...item, quantity: quantity });
                 }
             } else if (actionType === 'remove_all') {
-                // Filtra el ítem para eliminar todas sus unidades.
+                // Filter out the item to remove all its units.
                 appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
-            } else if (actionType === 'toggle') { // Para servicios no repetibles (ej: paquetes).
+            } else if (actionType === 'toggle') { // For non-repeatable services (e.g., packages).
                 if (existingItemIndex > -1) {
-                    // Si ya está seleccionado, lo quita.
+                    // If already selected, remove it.
                     appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
                 } else {
-                    // Si no está seleccionado, lo añade con cantidad 1.
+                    // If not selected, add it with quantity 1.
                     appState.selectedItems.push({ ...item, quantity: 1 });
                 }
             }
 
-            // Volver a renderizar la sección activa para actualizar los botones y precios.
+            // Re-render the active section to update buttons and prices.
             if (appState.activeSection === 'services') {
                 renderServicesSection();
             } else if (appState.activeSection === 'packages') {
                 renderPackagesSection();
+            } else if (appState.activeSection === 'bubblePackages') { // New section
+                renderBubblePackagesSection();
             } else if (appState.activeSection === 'booking') {
                 renderBookingSection();
             }
-            updateCartSummary(); // Actualiza la barra flotante del carrito.
-            saveBookingFormData(); // Guarda el estado del carrito después de cada acción.
+            updateCartSummary(); // Update the floating cart bar.
+            saveBookingFormData(); // Save cart state after each action.
         }
 
         /**
-         * Maneja la adición o el cambio de un personaje temático en el carrito.
-         * Permite añadir múltiples personajes, incrementando la cantidad si ya está en el carrito.
-         * @param {object} service - El objeto de servicio "Personajes Temáticos" (base).
-         * @param {object} character - El objeto del personaje seleccionado ({ id, name }).
-         * @param {string} action - 'add' para añadir o 'remove_all' para eliminar.
+         * Handles adding or changing a thematic character in the cart.
+         * Allows adding multiple characters, incrementing the quantity if already in the cart.
+         * @param {object} service - The "Thematic Characters" service object (base).
+         * @param {object} character - The selected character object ({ id, name }).
+         * @param {string} action - 'add' to add or 'remove_all' to remove.
          */
         function updateCharacterInCart(service, character, action) {
             const fullCharacterName = `${service.name}: ${character.name}`;
@@ -577,33 +642,33 @@
 
             if (action === 'add') {
                 if (existingItemIndex > -1) {
-                    // Si el personaje ya existe, incrementa su cantidad
+                    // If the character already exists, increment its quantity
                     appState.selectedItems[existingItemIndex].quantity++;
                 } else {
-                    // Añade un nuevo personaje con el precio base del servicio
+                    // Add a new character with the base price of the service
                     appState.selectedItems.push({
                         id: `${service.id}-${character.id}`,
                         name: fullCharacterName,
-                        price: service.price, // Usa el precio base del servicio de personajes
+                        price: service.price, // Use the base price of the character service
                         quantity: 1
                     });
                 }
             } else if (action === 'remove_all') {
-                // Elimina todas las instancias de un personaje específico del carrito
+                // Remove all instances of a specific character from the cart
                 appState.selectedItems = appState.selectedItems.filter(item => item.name !== fullCharacterName);
             }
-            // Re-renderiza la sección de servicios y actualiza el resumen del carrito
+            // Re-render the services section and update the cart summary
             renderServicesSection();
             updateCartSummary();
-            saveBookingFormData(); // Guarda el estado del carrito después de cada acción.
+            saveBookingFormData(); // Save cart state after each action.
         }
 
         /**
-         * Maneja la adición o el cambio de una temática en el carrito.
-         * Permite añadir múltiples temáticas, incrementando la cantidad si ya está en el carrito.
-         * @param {object} service - El objeto de servicio "Decoraciones Temáticas" (base).
-         * @param {string} themeName - El nombre de la temática seleccionada.
-         * @param {string} action - 'add' para añadir o 'remove_all' para eliminar.
+         * Handles adding or changing a theme in the cart.
+         * Allows adding multiple themes, incrementing the quantity if already in the cart.
+         * @param {object} service - The "Thematic Decorations" service object (base).
+         * @param {string} themeName - The name of the selected theme.
+         * @param {string} action - 'add' to add or 'remove_all' to remove.
          */
         function updateThemeInCart(service, themeName, action) {
             const fullThemeName = `${service.name}: ${themeName}`;
@@ -614,9 +679,9 @@
                     appState.selectedItems[existingItemIndex].quantity++;
                 } else {
                     appState.selectedItems.push({
-                        id: `${service.id}-${themeName.replace(/\s+/g, '-')}`, // Genera un ID simple
+                        id: `${service.id}-${themeName.replace(/\s+/g, '-')}`, // Generate a simple ID
                         name: fullThemeName,
-                        price: service.price, // Usa el precio base del servicio de decoraciones
+                        price: service.price, // Use the base price of the decoration service
                         quantity: 1
                     });
                 }
@@ -625,15 +690,15 @@
             }
             renderServicesSection();
             updateCartSummary();
-            saveBookingFormData(); // Guarda el estado del carrito después de cada acción.
+            saveBookingFormData(); // Save cart state after each action.
         }
 
 
-        // --- Funciones de Modales (Ventanas Emergentes) ---
+        // --- Modal Functions (Pop-up Windows) ---
         /**
-         * Muestra un modal de información genérico.
-         * @param {string} message - El mensaje a mostrar en el modal.
-         * @param {function} [callback] - Función a ejecutar cuando se cierra el modal.
+         * Displays a generic information modal.
+         * @param {string} message - The message to display in the modal.
+         * @param {function} [callback] - Function to execute when the modal closes.
          */
         function showInfoModal(message, callback = null) {
             const modal = document.getElementById('infoModal');
@@ -643,19 +708,19 @@
             if (modal && modalContent && modalMessage) {
                 modalMessage.textContent = message;
                 modal.classList.remove('hidden');
-                // Animar el modal para que aparezca suavemente
+                // Animate the modal to appear smoothly
                 setTimeout(() => {
                     modalContent.classList.remove('scale-95', 'opacity-0');
                     modalContent.classList.add('scale-100', 'opacity-100');
-                }, 10); // Pequeño retraso para permitir que la clase 'hidden' se remueva primero
-                appState.infoModalCallback = callback; // Almacena el callback en el estado global.
+                }, 10); // Small delay to allow 'hidden' class to be removed first
+                appState.infoModalCallback = callback; // Store the callback in the global state.
             } else {
-                console.error("Error: Elementos del modal de información no encontrados.");
+                console.error("Error: Info modal elements not found.");
             }
         }
 
         /**
-         * Oculta el modal de información genérico y ejecuta el callback si existe.
+         * Hides the generic information modal and executes the callback if it exists.
          */
         function closeModal() {
             const modal = document.getElementById('infoModal');
@@ -665,21 +730,21 @@
             if (modal && modalContent && modalMessage) {
                 modalContent.classList.remove('scale-100', 'opacity-100');
                 modalContent.classList.add('scale-95', 'opacity-0');
-                // Esperar a que la animación termine antes de ocultar completamente
+                // Wait for the animation to finish before completely hiding
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     modalMessage.textContent = '';
                     if (appState.infoModalCallback) {
-                        appState.infoModalCallback(); // Ejecuta el callback.
-                        appState.infoModalCallback = null; // Limpia el callback después de usarlo.
+                        appState.infoModalCallback(); // Execute the callback.
+                        appState.infoModalCallback = null; // Clear the callback after use.
                     }
-                }, 300); // Duración de la transición CSS
+                }, 300); // Duration of the CSS transition
             }
         }
 
         /**
-         * Muestra el modal de promoción y activa el descuento mensual.
-         * @param {string} message - El mensaje de la promoción.
+         * Displays the promotion modal and activates the monthly discount.
+         * @param {string} message - The promotion message.
          */
         function showPromoInfoModal(message) {
             const promoModal = document.getElementById('promoModal');
@@ -694,21 +759,22 @@
                     promoModalContent.classList.add('scale-100', 'opacity-100');
                 }, 10);
                 
-                // Set specific packages for promotion
-                appState.promotedPackages = ['Plan Magic ✨']; // Solo el Plan Magic está en promoción
+                // Set all bubble packages for promotion
+                appState.promotedPackages = bubblePackagesData.map(pkg => pkg.name);
 
                 updateCartSummary();
-                // Re-renderiza las secciones si están activas para mostrar el descuento.
+                // Re-render sections if active to show the discount.
                 if (appState.activeSection === 'services') renderServicesSection();
                 if (appState.activeSection === 'packages') renderPackagesSection();
+                if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection(); // New section
                 if (appState.activeSection === 'booking') renderBookingSection();
             } else {
-                console.error("Error: Elementos del modal de promoción no encontrados.");
+                console.error("Error: Promotion modal elements not found.");
             }
         }
 
         /**
-         * Oculta el modal de promoción.
+         * Hides the promotion modal.
          */
         function closePromoModal() {
             const modal = document.getElementById('promoModal');
@@ -721,15 +787,16 @@
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     promoMessage.textContent = '';
-                    // No se limpian los paquetes promocionados para que el descuento persista durante la sesión.
+                    // Promoted packages are not cleared so the discount persists during the session.
                     updateCartSummary();
-                    if (appState.activeSection === 'packages') renderPackagesSection(); // Se refresca para asegurar la visualización del descuento.
+                    if (appState.activeSection === 'packages') renderPackagesSection(); // Refresh to ensure discount display.
+                    if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection(); // New section
                 }, 300);
             }
         }
 
         /**
-         * Muestra el modal de advertencia de reserva.
+         * Displays the booking warning modal.
          */
         function showBookingWarningModal() {
             const modal = document.getElementById('bookingWarningModal');
@@ -741,12 +808,12 @@
                     modalContent.classList.add('scale-100', 'opacity-100');
                 }, 10);
             } else {
-                console.error("Error: Elementos del modal de advertencia de reserva no encontrados.");
+                console.error("Error: Booking warning modal elements not found.");
             }
         }
 
         /**
-         * Oculta el modal de advertencia de reserva.
+         * Hides the booking warning modal.
          */
         function closeBookingWarningModal() {
             const modal = document.getElementById('bookingWarningModal');
@@ -761,35 +828,45 @@
         }
 
         /**
-         * Muestra el modal de mini-carrito con los detalles de los ítems seleccionados.
+         * Displays the mini-cart modal with details of selected items.
          */
         function showMiniCartModal() {
-            console.log("showMiniCartModal: Función llamada."); // Debugging: Confirmar que la función se llama
             const miniCartModal = document.getElementById('miniCartModal');
             const miniCartModalContent = document.getElementById('miniCartModalContent');
             const miniCartItemsDiv = document.getElementById('miniCartItems');
             const miniCartTotalPriceSpan = document.getElementById('miniCartTotalPrice');
-            const miniCartTransportFeeSpan = document.getElementById('miniCartTransportFee'); // Este elemento existe pero lo ocultaremos
+            // The miniCartTransportFeeSpan and its parent are no longer used for display in this modal,
+            // but keeping the reference for completeness if needed elsewhere.
+            const miniCartTransportFeeSpan = document.getElementById('miniCartTransportFee'); 
             const miniCartTransportFeeParent = miniCartTransportFeeSpan ? miniCartTransportFeeSpan.parentElement : null;
 
-            // Añadir comprobaciones de existencia de elementos para mayor robustez
+            // Add element existence checks for robustness
             if (!miniCartModal || !miniCartModalContent || !miniCartItemsDiv || !miniCartTotalPriceSpan) {
-                console.error("Error: Uno o más elementos esenciales del modal del mini-carrito no se encontraron. No se puede mostrar el modal.");
-                return; // Salir de la función si los elementos no existen
+                console.error("Error: One or more essential mini-cart modal elements not found. Cannot display modal.");
+                return; // Exit function if elements do not exist
             }
 
             if (appState.selectedItems.length === 0) {
                 miniCartItemsDiv.innerHTML = '<p class="text-gray-600 text-center">Tu carrito está vacío. ¡Añade algo de magia!</p>';
             } else {
                 miniCartItemsDiv.innerHTML = appState.selectedItems.map(item => {
-                    const originalPrice = item.price;
-                    const displayItemPrice = getAdjustedItemPrice(item);
-                    const itemTotalPrice = displayItemPrice * item.quantity;
+                    const itemTotalPrice = getAdjustedItemPrice(item); // Get total price for this item
+                    
+                    // Determine if a strikethrough price should be shown in the mini-cart.
+                    // For Pintacaritas, if quantity > 1, show $45 strikethrough as the "original" single-hour price.
+                    // For other items, show strikethrough if a promotion applies.
+                    let strikethroughHtml = '';
+                    if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                        strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
+                    } else if (item.name !== 'Pintacaritas 🎨👧👦' && appState.promotedPackages.includes(item.name)) {
+                        strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
+                    }
+
                     return `
                         <div class="flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
                             <span class="text-gray-700 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
                             <span class="font-semibold text-pink-600 text-sm">
-                                ${displayItemPrice !== originalPrice ? `<span class="line-through text-gray-500 text-xs">$${originalPrice.toFixed(2)}</span> ` : ''}
+                                ${strikethroughHtml}
                                 $${itemTotalPrice.toFixed(2)}
                             </span>
                         </div>
@@ -797,36 +874,34 @@
                 }).join('');
             }
 
-            // El recargo por transporte no se muestra en este modal, por lo que se calcula el total sin él.
+            // Transport surcharge is not shown in this modal, so calculate total without it.
             const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
-                return sum + (getAdjustedItemPrice(item) * item.quantity);
+                return sum + getAdjustedItemPrice(item);
             }, 0);
             
             miniCartTotalPriceSpan.textContent = `$${totalItemsPrice.toFixed(2)}`;
 
-            // Asegurar que la línea del recargo por transporte esté oculta en el mini-carrito
+            // Ensure the transport surcharge line is hidden in the mini-cart
             if (miniCartTransportFeeParent) {
                 miniCartTransportFeeParent.classList.add('hidden');
             }
 
-            // Eliminar la clase 'hidden' y luego iniciar la transición
+            // Remove 'hidden' class and then start the transition
             miniCartModal.classList.remove('hidden');
-            console.log("showMiniCartModal: Eliminada clase 'hidden' del modal."); // Debugging
             
             setTimeout(() => {
                 miniCartModalContent.classList.remove('scale-95', 'opacity-0');
                 miniCartModalContent.classList.add('scale-100', 'opacity-100');
-                console.log("showMiniCartModal: Aplicadas clases de animación al contenido del modal."); // Debugging
-            }, 50); // Aumentado ligeramente el retraso para asegurar que el DOM tenga tiempo de registrar el cambio de 'hidden'
+            }, 50); // Slightly increased delay to ensure DOM has time to register 'hidden' removal
         }
 
         /**
-         * Oculta el modal de mini-carrito.
+         * Hides the mini-cart modal.
          */
         function closeMiniCartModal() {
             const modal = document.getElementById('miniCartModal');
             const modalContent = document.getElementById('miniCartModalContent');
-            if (modal && modalContent) { // Añadir comprobación de existencia
+            if (modal && modalContent) { // Add existence check
                 modalContent.classList.remove('scale-100', 'opacity-100');
                 modalContent.classList.add('scale-95', 'opacity-0');
                 setTimeout(() => {
@@ -836,10 +911,10 @@
         }
 
 
-        // --- Funciones de Renderizado de Secciones ---
+        // --- Section Rendering Functions ---
 
         /**
-         * Renderiza la sección de Inicio.
+         * Renders the Home section.
          */
         function renderHomeSection() {
             const html = `
@@ -853,15 +928,18 @@
                             Diverty Eventos: <strong>fiestas infantiles inolvidables en Panamá</strong>. Animación, shows de burbujas, pintacaritas, globoflexia. ¡Hacemos tu fiesta soñada realidad!
                         </p>
                         <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                            <button id="homeExploreServices" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 border-2 border-white">
+                            <button id="homeExploreServices" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 border-2 border-white cursor-pointer">
                                 ¡Explora Nuestros Servicios! 🎉
                             </button>
-                            <button id="homeExplorePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 border-2 border-white">
-                                ¡Explora Nuestros Paquetes! 📦
+                            <button id="homeExplorePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 border-2 border-white cursor-pointer">
+                                ¡Explora Nuestros Planes de Cumpleaños! 🎂
                             </button>
                         </div>
                         <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                            <button id="homePromoButton" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-500 via-purple-400 to-purple-600 border-2 border-white">
+                            <button id="homeExploreBubblePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 border-2 border-white cursor-pointer">
+                                ¡Paquetes de Burbujas! 🫧
+                            </button>
+                            <button id="homePromoButton" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-500 via-purple-400 to-purple-600 border-2 border-white cursor-pointer">
                                 🎉 Promoción del Mes 🎉
                             </button>
                         </div>
@@ -870,42 +948,51 @@
             `;
             renderSection(html);
 
-            // Asigna los event listeners a los botones de la sección de Inicio.
+            // Assign event listeners to the Home section buttons.
             const homeExploreServicesBtn = document.getElementById('homeExploreServices');
             if (homeExploreServicesBtn) homeExploreServicesBtn.onclick = () => { setActiveSection('services'); };
             
             const homeExplorePackagesBtn = document.getElementById('homeExplorePackages');
             if (homeExplorePackagesBtn) homeExplorePackagesBtn.onclick = () => { setActiveSection('packages'); };
             
+            // New: Assign event listener for the "Paquetes de Burbujas" button
+            const homeExploreBubblePackagesBtn = document.getElementById('homeExploreBubblePackages');
+            if (homeExploreBubblePackagesBtn) homeExploreBubblePackagesBtn.onclick = () => { setActiveSection('bubblePackages'); };
+
             const homePromoButton = document.getElementById('homePromoButton');
             if (homePromoButton) homePromoButton.onclick = () => {
-                showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en nuestro Plan Magic! ✨');
+                showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en todos nuestros paquetes de burbujas! 🫧');
             };
         }
 
         /**
-         * Renderiza la sección de Servicios Individuales.
+         * Renders the Individual Services section.
          */
         function renderServicesSection() {
-            // Servicios que pueden tener cantidades múltiples y, por lo tanto, botones de "Añadir" y "Quitar Todo".
-            const repeatableServices = ['Pintacaritas 🎨👧👦', 'Globoflexia 🎈💫', 'Show de Burbujas Gigantes 🫧', 'Máquinas de Snack Algodón y Pop Corn 🍿🍭'];
-
+            // Services that can have multiple quantities and, therefore, "Add" and "Remove All" buttons.
+            const repeatableServices = ['Pintacaritas 🎨👧👦', 'Globoflexia 🎈💫', 'Máquinas de Snack Algodón y Pop Corn 🍿🍭'];
+            
             const cardsHtml = servicesData.map(service => {
-                // Lógica específica para el servicio de selección de personaje
+                // Image for the service card
+                // If imageUrl is empty, it will not render the <img> tag.
+                const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm">` : '';
+
+                // Specific logic for the character selection service
                 if (service.type === 'character_selection') {
-                    // Encuentra el personaje actualmente seleccionado en el carrito (si existe alguno de este tipo)
+                    // Find the currently selected character in the cart (if any of this type)
                     const selectedCharacterItems = appState.selectedItems.filter(item => item.name.startsWith(service.name + ':'));
 
                     const optionsHtml = service.characters.map(char => {
                         const fullCharName = `${service.name}: ${char.name}`;
                         const isCharacterAlreadyAdded = selectedCharacterItems.some(item => item.name === fullCharName);
-                        // Deshabilita la opción en el select si ya está en el carrito
+                        // Disable the option in the select if already in the cart
                         return `<option value="${char.id}" ${isCharacterAlreadyAdded ? 'disabled' : ''}>${char.name} ${isCharacterAlreadyAdded ? '(Añadido)' : ''}</option>`;
                     }).join('');
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-xl p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
-                            <div>
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                            ${serviceImageHtml}
+                            <div class="p-4 sm:p-6 flex flex-col flex-grow">
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
                                 <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
@@ -913,31 +1000,31 @@
                                 </p>
                                 <div class="mb-4">
                                     <label for="characterSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu personaje: ✨</label>
-                                    <select id="characterSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base">
+                                    <select id="characterSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base cursor-pointer">
                                         <option value="">Selecciona un personaje</option>
                                         ${optionsHtml}
                                     </select>
                                 </div>
-                            </div>
-                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
-                                <button
-                                    data-service-id="${service.id}"
-                                    data-action="add_character"
-                                    class="character-action-button flex-grow bg-gradient-to-br from-indigo-600 via-indigo-400 to-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white"
-                                    disabled
-                                >
-                                    Añadir Seleccionado ➕
-                                </button>
-                            </div>
-                            <div id="selectedCharactersList-${service.id}" class="mt-4">
-                                ${selectedCharacterItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Personajes en tu carrito:</p>` : ''}
-                                ${selectedCharacterItems.map(item => `
-                                    <div class="flex justify-between items-center bg-purple-100 p-2 rounded-lg mb-2 shadow-sm border border-purple-200">
-                                        <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
-                                        <button class="remove-specific-character-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200"
-                                                data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
-                                    </div>
-                                `).join('')}
+                                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
+                                    <button
+                                        data-service-id="${service.id}"
+                                        data-action="add_character"
+                                        class="character-action-button flex-grow bg-gradient-to-br from-indigo-600 via-indigo-400 to-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white cursor-pointer"
+                                        disabled
+                                    >
+                                        Añadir Seleccionado ➕
+                                    </button>
+                                </div>
+                                <div id="selectedCharactersList-${service.id}" class="mt-4">
+                                    ${selectedCharacterItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Personajes en tu carrito:</p>` : ''}
+                                    ${selectedCharacterItems.map(item => `
+                                        <div class="flex justify-between items-center bg-purple-100 p-2 rounded-lg mb-2 shadow-sm border border-purple-200">
+                                            <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
+                                            <button class="remove-specific-character-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200 cursor-pointer"
+                                                    data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
                         </div>
                     `;
@@ -961,8 +1048,9 @@
                     themeOptionsHtml += '</optgroup>';
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-xl p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
-                            <div>
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                            ${serviceImageHtml}
+                            <div class="p-4 sm:p-6 flex flex-col flex-grow">
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-pink-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
                                 <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
@@ -970,30 +1058,76 @@
                                 </p>
                                 <div class="mb-4">
                                     <label for="themeSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu temática: 🎨</label>
-                                    <select id="themeSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-sm sm:text-base">
+                                    <select id="themeSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-sm sm:text-base cursor-pointer">
                                         ${themeOptionsHtml}
                                     </select>
                                 </div>
+                                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
+                                    <button
+                                        data-service-id="${service.id}"
+                                        data-action="add_theme"
+                                        class="theme-action-button flex-grow bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white cursor-pointer"
+                                        disabled
+                                    >
+                                        Añadir Seleccionado ➕
+                                    </button>
+                                </div>
+                                <div id="selectedThemesList-${service.id}" class="mt-4">
+                                    ${selectedThemeItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Temáticas en tu carrito:</p>` : ''}
+                                    ${selectedThemeItems.map(item => `
+                                        <div class="flex justify-between items-center bg-pink-100 p-2 rounded-lg mb-2 shadow-sm border border-pink-200">
+                                            <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
+                                            <button class="remove-specific-theme-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200 cursor-pointer"
+                                                    data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
+                                        </div>
+                                    `).join('')}
+                                </div>
                             </div>
-                            <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
-                                <button
-                                    data-service-id="${service.id}"
-                                    data-action="add_theme"
-                                    class="theme-action-button flex-grow bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white"
-                                    disabled
-                                >
-                                    Añadir Seleccionado ➕
-                                </button>
-                            </div>
-                            <div id="selectedThemesList-${service.id}" class="mt-4">
-                                ${selectedThemeItems.length > 0 ? `<p class="font-semibold text-gray-700 mb-2">Temáticas en tu carrito:</p>` : ''}
-                                ${selectedThemeItems.map(item => `
-                                    <div class="flex justify-between items-center bg-pink-100 p-2 rounded-lg mb-2 shadow-sm border border-pink-200">
-                                        <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
-                                        <button class="remove-specific-theme-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200"
-                                                data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
-                                    </div>
-                                `).join('')}
+                        </div>
+                    `;
+                } else if (service.type === 'manualidades_workshop') {
+                    const selectedItemInCart = appState.selectedItems.find(selected => selected.name === service.name);
+                    // If the item is in the cart, use its quantity, otherwise default to 10 (minimum)
+                    const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 10; 
+
+                    return `
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:hover:shadow-2xl">
+                            ${serviceImageHtml}
+                            <div class="p-4 sm:p-6 flex flex-col flex-grow">
+                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-yellow-700">${service.name}</h2>
+                                <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
+                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                                    $${service.price.toFixed(2)} <span class="text-lg text-gray-600">/ niño</span>
+                                </p>
+                                <div class="mb-4">
+                                    <label for="manualidadesQuantity-${service.id}" class="block text-gray-700 font-bold mb-2">Cantidad de Niños (Mín. 10):</label>
+                                    <input
+                                        type="number"
+                                        id="manualidadesQuantity-${service.id}"
+                                        class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 text-sm sm:text-base"
+                                        value="${currentQuantity}"
+                                        min="10"
+                                    />
+                                </div>
+                                <p class="text-lg font-semibold text-gray-700">Subtotal: <span id="manualidadesSubtotal-${service.id}">$${(service.price * currentQuantity).toFixed(2)}</span></p>
+                                <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
+                                    <button
+                                        data-service-id="${service.id}"
+                                        data-service-name="${service.name}"
+                                        data-service-price="${service.price}"
+                                        class="update-manualidades-quantity-button flex-grow bg-gradient-to-br from-yellow-600 via-yellow-400 to-yellow-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer">
+                                        Actualizar Cantidad 🔄
+                                    </button>
+                                    ${selectedItemInCart ? `
+                                    <button
+                                        data-service-id="${service.id}"
+                                        data-service-name="${service.name}"
+                                        data-action-type="remove_all"
+                                        class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105 cursor-pointer">
+                                        Quitar Taller 🗑️
+                                    </button>
+                                    ` : ''}
+                                </div>
                             </div>
                         </div>
                     `;
@@ -1002,24 +1136,38 @@
                     const selectedItemInCart = appState.selectedItems.find(selected => selected.name === service.name);
                     const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 0;
                     
-                    let displayPriceForCard = getAdjustedItemPrice({ ...service, quantity: currentQuantity });
-                    let originalPriceHtmlForCard = '';
+                    let displayPriceHtml;
+                    if (service.name === 'Pintacaritas 🎨👧👦') {
+                        // Special display for Pintacaritas on the card
+                        displayPriceHtml = `<p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                            $${service.price.toFixed(2)} <span class="text-lg text-gray-600">x 1 Hora</span><br>
+                            <span class="text-xl text-gray-700">Horas adicionales: $40</span>
+                        </p>`;
+                    } else {
+                        let displayPriceForCard = service.price; // Base price for display
+                        let originalPriceHtmlForCard = '';
 
-                    // Si el precio ajustado es diferente al precio original, muestra el precio original tachado.
-                    if (displayPriceForCard !== service.price) {
-                        originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
+                        // If there's a promotion on this service
+                        if (appState.promotedPackages.includes(service.name)) {
+                            originalPriceHtmlForCard = `<span class="line-through text-gray-500 text-2xl">$${service.price.toFixed(2)}</span> `;
+                            displayPriceForCard = service.price * 0.90; // Show discounted price on card
+                        }
+
+                        displayPriceHtml = `<p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                            ${originalPriceHtmlForCard}$${displayPriceForCard.toFixed(2)}
+                        </p>`;
                     }
 
                     let buttonsHtml;
                     if (isRepeatableService) {
-                        // Botones para servicios que se pueden añadir varias veces.
+                        // Buttons for services that can be added multiple times.
                         buttonsHtml = `
                             <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
                                 <button
                                     data-item-name="${service.name}"
                                     data-item-price="${service.price}"
                                     data-action-type="add"
-                                    class="add-remove-button flex-grow bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white">
+                                    class="add-remove-button flex-grow bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer">
                                     Añadir ➕ ${currentQuantity > 0 ? `(x${currentQuantity})` : ''}
                                 </button>
                                 ${currentQuantity > 0 ? `
@@ -1027,14 +1175,14 @@
                                     data-item-name="${service.name}"
                                     data-item-price="${service.price}"
                                     data-action-type="remove_all"
-                                    class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105">
+                                    class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105 cursor-pointer">
                                     Quitar Todo 🗑️
                                 </button>
                                 ` : ''}
                             </div>
                         `;
                     } else {
-                        // Botón para servicios no repetibles (añadir/quitar).
+                        // Button for non-repeatable services (add/remove).
                         const isSelected = selectedItemInCart ? true : false;
                         const buttonClassColor = isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white border-2 border-white';
                         const buttonShadow = isSelected ? 'shadow-md' : 'shadow-xl';
@@ -1043,20 +1191,19 @@
                                 data-item-name="${service.name}"
                                 data-item-price="${service.price}"
                                 data-action-type="toggle"
-                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105">
+                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 cursor-pointer">
                                 ${isSelected ? 'Quitar del Carrito ➖' : 'Añadir al Carrito ➕'}
                             </button>
                         `;
                     }
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-xl p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
-                            <div>
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                            ${serviceImageHtml}
+                            <div class="p-4 sm:p-6 flex flex-col flex-grow">
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
-                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
-                                    ${originalPriceHtmlForCard}$${displayPriceForCard.toFixed(2)}
-                                </p>
+                                ${displayPriceHtml}
                             </div>
                             ${buttonsHtml}
                         </div>
@@ -1077,7 +1224,7 @@
             `;
             renderSection(html);
 
-            // Asigna event listeners a todos los botones de añadir/quitar para servicios regulares.
+            // Assign event listeners to all add/remove buttons for regular services.
             document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
                 button.onclick = (event) => {
                     const itemName = event.target.dataset.itemName;
@@ -1087,7 +1234,7 @@
                 };
             });
 
-            // Asigna event listeners para el botón de añadir/cambiar personaje
+            // Assign event listeners for the add/change character button
             document.querySelectorAll('#mainContent .character-action-button').forEach(button => {
                 button.onclick = (event) => {
                     const serviceId = event.target.dataset.serviceId;
@@ -1099,7 +1246,7 @@
                         const selectedChar = characterService.characters.find(c => c.id === selectedCharacterId);
                         if (selectedChar) {
                             updateCharacterInCart(characterService, selectedChar, 'add');
-                            selectElement.value = ""; // Resetea el select después de añadir
+                            selectElement.value = ""; // Reset the select after adding
                         }
                     } else {
                         showInfoModal('Por favor, selecciona un personaje antes de añadirlo.');
@@ -1107,13 +1254,13 @@
                 };
             });
 
-            // Asigna event listeners para los botones de quitar personaje específico
+            // Assign event listeners for the remove specific character buttons
             document.querySelectorAll('#mainContent .remove-specific-character-button').forEach(button => {
                 button.onclick = (event) => {
                     const fullCharacterName = event.target.dataset.fullName;
-                    // Encuentra el servicio base de personajes
+                    // Find the base character service
                     const characterService = servicesData.find(s => s.type === 'character_selection');
-                    // Extrae solo el nombre del personaje para buscarlo en la lista original
+                    // Extract only the character name to find it in the original list
                     const charNameOnly = fullCharacterName.replace(characterService.name + ': ', '');
                     const characterToRemove = characterService.characters.find(c => c.name === charNameOnly);
 
@@ -1123,7 +1270,7 @@
                 };
             });
 
-            // Lógica para habilitar/deshabilitar el botón "Añadir Seleccionado" y actualizar su texto (para personajes)
+            // Logic to enable/disable the "Add Selected" button and update its text (for characters)
             document.querySelectorAll('#mainContent select[id^="characterSelect-"]').forEach(select => {
                 select.onchange = (event) => {
                     const serviceId = event.target.id.split('-')[1];
@@ -1150,7 +1297,7 @@
                 };
             });
 
-            // Asigna event listeners para el botón de añadir temática
+            // Assign event listeners for the add theme button
             document.querySelectorAll('#mainContent .theme-action-button').forEach(button => {
                 button.onclick = (event) => {
                     const serviceId = event.target.dataset.serviceId;
@@ -1160,25 +1307,25 @@
                     if (selectedThemeName) {
                         const themeService = servicesData.find(s => s.id === serviceId);
                         updateThemeInCart(themeService, selectedThemeName, 'add');
-                        selectElement.value = ""; // Resetea el select después de añadir
+                        selectElement.value = ""; // Reset the select after adding
                     } else {
                         showInfoModal('Por favor, selecciona una temática antes de añadirla.');
                     }
                 };
             });
 
-            // Asigna event listeners para los botones de quitar temática específica
+            // Assign event listeners for the remove specific theme buttons
             document.querySelectorAll('#mainContent .remove-specific-theme-button').forEach(button => {
                 button.onclick = (event) => {
                     const fullThemeName = event.target.dataset.fullName;
                     const themeService = servicesData.find(s => s.type === 'theme_selection');
-                    // Extrae solo el nombre de la temática
+                    // Extract only the theme name
                     const themeNameOnly = fullThemeName.replace(themeService.name + ': ', '');
                     updateThemeInCart(themeService, themeNameOnly, 'remove_all');
                 };
             });
 
-            // Lógica para habilitar/deshabilitar el botón "Añadir Seleccionado" y actualizar su texto (para temáticas)
+            // Logic to enable/disable the "Add Selected" button and update its text (for themes)
             document.querySelectorAll('#mainContent select[id^="themeSelect-"]').forEach(select => {
                 select.onchange = (event) => {
                     const serviceId = event.target.id.split('-')[1];
@@ -1203,10 +1350,44 @@
                     }
                 };
             });
+
+            // Event listeners for Mini Taller de Manualidades quantity input and button
+            document.querySelectorAll('#mainContent .update-manualidades-quantity-button').forEach(button => {
+                button.onclick = (event) => {
+                    const serviceId = event.target.dataset.serviceId;
+                    const serviceName = event.target.dataset.serviceName;
+                    const servicePrice = parseFloat(event.target.dataset.servicePrice);
+                    const quantityInput = document.getElementById(`manualidadesQuantity-${serviceId}`);
+                    let quantity = parseInt(quantityInput.value, 10);
+
+                    if (isNaN(quantity) || quantity < 10) {
+                        showInfoModal('La cantidad mínima para el Mini Taller de Manualidades es 10 niños.');
+                        quantityInput.value = 10; // Reset to minimum
+                        quantity = 10;
+                    }
+
+                    handleCartAction({ id: serviceId, name: serviceName, price: servicePrice }, 'set_quantity', quantity);
+                };
+            });
+
+            document.querySelectorAll('#mainContent input[id^="manualidadesQuantity-"]').forEach(input => {
+                input.oninput = (event) => {
+                    const serviceId = event.target.id.split('-')[1];
+                    const service = servicesData.find(s => s.id === serviceId);
+                    if (!service) return; // Guard clause if service not found
+                    
+                    const servicePrice = service.price;
+                    const quantity = parseInt(event.target.value, 10);
+                    const subtotalSpan = document.getElementById(`manualidadesSubtotal-${serviceId}`);
+                    if (subtotalSpan && !isNaN(quantity) && quantity >= 0) {
+                        subtotalSpan.textContent = `$${(servicePrice * quantity).toFixed(2)}`;
+                    }
+                };
+            });
         }
 
         /**
-         * Renderiza la sección de Paquetes.
+         * Renders the Packages section.
          */
         function renderPackagesSection() {
             const cardsHtml = packagesData.map(pkg => {
@@ -1230,17 +1411,21 @@
                     buttonBorder = 'border-2 border-white';
                 }
 
-                let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 }); // Paquetes siempre tienen cantidad 1 para cálculo de precio en tarjeta.
+                let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 }); // Packages always have quantity 1 for price calculation on card.
                 let originalPriceHtml = '';
                 
-                // Si el precio ajustado es diferente al precio original, muestra el precio original tachado.
-                if (displayPrice !== pkg.price) {
+                // If the adjusted price is different from the original price, show the original price strikethrough.
+                if (Math.abs(displayPrice - pkg.price) > 0.001) { // Use epsilon for float comparison
                     originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
                 }
 
+                // Image for the package card - now empty
+                const packageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm">` : '';
+
                 return `
-                    <div class="${pkg.color} rounded-2xl shadow-xl p-4 sm:p-6 flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
-                        <div>
+                    <div class="${pkg.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                        ${packageImageHtml}
+                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
                             <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${pkg.name}</h2>
                             <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
                             <ul class="list-disc list-inside text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
@@ -1249,23 +1434,23 @@
                             <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
                                 ${originalPriceHtml}$${displayPrice.toFixed(2)}
                             </p>
+                            <button
+                                data-item-name="${pkg.name}"
+                                data-item-price="${pkg.price}"
+                                data-action-type="toggle"
+                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder} cursor-pointer">
+                                ${buttonText}
+                            </button>
                         </div>
-                        <button
-                            data-item-name="${pkg.name}"
-                            data-item-price="${pkg.price}"
-                            data-action-type="toggle"
-                            class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder}">
-                            ${buttonText}
-                        </button>
                     </div>
                 `;
             }).join('');
 
             const html = `
                 <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-pink-400 animate-fade-in">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Paquetes 📦</h2>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Planes de Cumpleaños 🎂</h2>
                     <p class="text-lg text-gray-700 text-center mb-8">
-                        Descubre nuestros paquetes de <strong>animación para fiestas infantiles en Panamá</strong>. ¡La opción perfecta para tu evento!
+                        Descubre nuestros planes de <strong>cumpleaños para eventos infantiles en Panamá</strong>. ¡La opción perfecta para tu celebración!
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                         ${cardsHtml}
@@ -1274,7 +1459,7 @@
             `;
             renderSection(html);
 
-            // Asigna event listeners a todos los botones de añadir/quitar en la sección de paquetes.
+            // Assign event listeners to all add/remove buttons in the packages section.
             document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
                 button.onclick = (event) => {
                     const itemName = event.target.dataset.itemName;
@@ -1286,24 +1471,118 @@
         }
 
         /**
-         * Renderiza la sección de Reservas, mostrando los ítems seleccionados y el formulario.
-         * Calcula y muestra el precio total, incluyendo descuentos y recargos por transporte.
+         * Renders the Bubble Packages section.
+         */
+        function renderBubblePackagesSection() {
+            const cardsHtml = bubblePackagesData.map(pkg => {
+                const selectedItemInCart = appState.selectedItems.find(item => item.name === pkg.name);
+                const isSelected = selectedItemInCart ? true : false;
+
+                let buttonText;
+                let buttonClassColor;
+                let buttonShadow;
+                let buttonBorder;
+
+                if (isSelected) {
+                    buttonText = 'Quitar del Carrito ➖';
+                    buttonClassColor = 'bg-red-500 hover:bg-red-600';
+                    buttonShadow = 'shadow-md';
+                    buttonBorder = ''; // No border for remove state
+                } else {
+                    buttonText = 'Añadir al Carrito ➕';
+                    buttonClassColor = 'bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 text-white';
+                    buttonShadow = 'shadow-xl';
+                    buttonBorder = 'border-2 border-white';
+                }
+
+                let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 }); // Packages always have quantity 1 for price calculation on card.
+                let originalPriceHtml = '';
+                
+                // If the adjusted price is different from the original price, show the original price strikethrough.
+                if (Math.abs(displayPrice - pkg.price) > 0.001) { // Use epsilon for float comparison
+                    originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
+                }
+
+                // Image for the bubble package card - now empty
+                const bubblePackageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm">` : '';
+
+
+                return `
+                    <div class="${pkg.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                        ${bubblePackageImageHtml}
+                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
+                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-blue-700">${pkg.name}</h2>
+                            <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
+                            <ul class="list-disc list-inside text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
+                                ${pkg.services.map(service => `<li>${service}</li>`).join('')}
+                            </ul>
+                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                                ${originalPriceHtml}$${displayPrice.toFixed(2)}
+                            </p>
+                            <button
+                                data-item-name="${pkg.name}"
+                                data-item-price="${pkg.price}"
+                                data-action-type="toggle"
+                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder} cursor-pointer">
+                                ${buttonText}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            const html = `
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-blue-400 animate-fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-blue-700 text-center mb-8 sm:mb-10">Nuestros Paquetes de Burbujas 🫧</h2>
+                    <p class="text-lg text-gray-700 text-center mb-8">
+                        ¡Sumérgete en la diversión con nuestros increíbles paquetes de shows de burbujas gigantes en Panamá!
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                        ${cardsHtml}
+                    </div>
+                </section>
+            `;
+            renderSection(html);
+
+            // Assign event listeners to all add/remove buttons in the bubble packages section.
+            document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
+                button.onclick = (event) => {
+                    const itemName = event.target.dataset.itemName;
+                    const itemPrice = parseFloat(event.target.dataset.itemPrice);
+                    const actionType = event.target.dataset.actionType;
+                    handleCartAction({ name: itemName, price: itemPrice }, actionType);
+                };
+            });
+        }
+
+
+        /**
+         * Renders the Booking section, displaying selected items and the form.
+         * Calculates and displays the total price, including discounts and transport surcharges.
          */
         function renderBookingSection() {
-            // Genera la lista de ítems seleccionados para mostrar en la sección de reserva.
+            // Generate the list of selected items to display in the booking section.
             const selectedItemsListHtml = appState.selectedItems.length === 0
                 ? `<p class="text-red-600 text-sm sm:text-base">No has seleccionado ningún servicio. Por favor, vuelve a la sección de Servicios o Paquetes.</p>`
                 : `<div class="space-y-2">
                     ${appState.selectedItems.map((item) => {
-                        const originalPrice = item.price;
-                        const displayItemPrice = getAdjustedItemPrice(item);
-                        const itemTotalPrice = displayItemPrice * item.quantity;
+                        const itemTotalPrice = getAdjustedItemPrice(item); // Get total price for this item
+
+                        // Determine if a strikethrough price should be shown in the booking summary.
+                        // For Pintacaritas, if quantity > 1, show $45 strikethrough as the "original" single-hour price.
+                        // For other items, show strikethrough if a promotion applies.
+                        let strikethroughHtml = '';
+                        if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                            strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
+                        } else if (item.name !== 'Pintacaritas 🎨👧👦' && appState.promotedPackages.includes(item.name)) {
+                            strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
+                        }
                         
                         return `
                             <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm border border-gray-200">
                                 <span class="font-semibold text-gray-800 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
                                 <div class="flex items-center space-x-2">
-                                    ${displayItemPrice !== originalPrice ? `<span class="line-through text-gray-500 text-xs">$${originalPrice.toFixed(2)}</span> ` : ''}
+                                    ${strikethroughHtml}
                                     <span class="font-bold text-pink-600 text-base">$${itemTotalPrice.toFixed(2)}</span>
                                 </div>
                             </div>
@@ -1311,15 +1590,15 @@
                     }).join('')}
                 </div>`;
 
-            // Calcula y muestra el recargo por transporte.
+            // Calculate and display the transport surcharge.
             const currentTransportFee = transportFeesByLocation[appState.selectedLocation] || 0;
             const transportFeeDisplayHtml = currentTransportFee > 0
                 ? `<p class="text-lg font-bold text-gray-700 mt-2">Recargo por Transporte (${appState.selectedLocation}): <span class="text-orange-600">$${currentTransportFee.toFixed(2)}</span></p>`
                 : `<p class="text-lg font-bold text-gray-700 mt-2">Recargo por Transporte: <span class="text-green-600">¡Gratis en Panamá Centro!</span></p>`;
 
-            // Calcula el precio total final incluyendo descuentos y recargos.
+            // Calculate the final total price including discounts and surcharges.
             const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
-                return sum + (getAdjustedItemPrice(item) * item.quantity);
+                return sum + getAdjustedItemPrice(item);
             }, 0);
             const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
@@ -1345,7 +1624,7 @@
                                     <select
                                         id="locationSelect"
                                         name="ubicacionEvento"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base cursor-pointer"
                                     >
                                         <option value="Panamá Centro" ${appState.bookingFormData.selectedLocation === 'Panamá Centro' ? 'selected' : ''}>Panamá Centro</option>
                                         <option value="Arraiján" ${appState.bookingFormData.selectedLocation === 'Arraiján' ? 'selected' : ''}>Arraiján ($10 adicional)</option>
@@ -1460,7 +1739,7 @@
                                     />
                                     <span id="error-numKids" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
-                                <button type="submit" class="w-full bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-xl text-base sm:text-lg mt-4 transition duration-300 transform hover:scale-105 border-2 border-white">
+                                <button type="submit" class="w-full bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-xl text-base sm:text-lg mt-4 transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer">
                                     ¡Confirmar Reserva Mágica! ✨
                                 </button>
                             </form>
@@ -1473,22 +1752,22 @@
             const bookingForm = document.getElementById('bookingForm');
             if (bookingForm) {
                 bookingForm.onsubmit = handleBookingSubmit;
-                // Manejador de cambio para la selección de ubicación, actualiza el estado y el resumen del carrito.
+                // Change handler for location selection, updates state and cart summary.
                 const locationSelect = document.getElementById('locationSelect');
                 if (locationSelect) {
                     locationSelect.onchange = (e) => {
-                        appState.bookingFormData.selectedLocation = e.target.value; // Actualiza el estado al cambiar ubicación.
-                        appState.selectedLocation = e.target.value; // También actualiza el estado general de la ubicación.
+                        appState.bookingFormData.selectedLocation = e.target.value; // Update state when location changes.
+                        appState.selectedLocation = e.target.value; // Also update general location state.
                         updateCartSummary(); 
-                        renderBookingSection(); // Re-renderiza la sección para mostrar el recargo actualizado.
+                        renderBookingSection(); // Re-render the section to display the updated surcharge.
                     };
                 }
             }
         }
 
-        // --- Funciones para guardar y cargar los datos del formulario de reserva ---
+        // --- Functions to save and load booking form data ---
         /**
-         * Guarda los datos actuales del formulario de reserva y los ítems seleccionados en localStorage.
+         * Saves current booking form data and selected items to localStorage.
          */
         function saveBookingFormData() {
             const bookingForm = document.getElementById('bookingForm');
@@ -1503,61 +1782,61 @@
                 appState.bookingFormData.exactLocation = bookingForm.elements.exactLocation ? bookingForm.elements.exactLocation.value : '';
                 appState.bookingFormData.selectedLocation = bookingForm.elements.locationSelect ? bookingForm.elements.locationSelect.value : 'Panamá Centro';
                 
-                // Guarda los datos del formulario y los ítems seleccionados en localStorage.
+                // Save form data and selected items to localStorage.
                 localStorage.setItem('bookingFormData', JSON.stringify(appState.bookingFormData));
                 localStorage.setItem('selectedItems', JSON.stringify(appState.selectedItems));
-                console.log('Datos del formulario y carrito guardados:', appState.bookingFormData, appState.selectedItems); // Para depuración.
+                console.log('Form data and cart saved:', appState.bookingFormData, appState.selectedItems); // For debugging.
             }
         }
 
         /**
-         * Carga los datos del formulario de reserva y los ítems seleccionados desde localStorage a appState.
+         * Loads booking form data and selected items from localStorage to appState.
          */
         function loadBookingFormData() {
             try {
                 const savedFormData = localStorage.getItem('bookingFormData');
                 if (savedFormData) {
                     appState.bookingFormData = JSON.parse(savedFormData);
-                    // Asegúrate de que selectedLocation también se actualice en el estado general si se cargan datos.
+                    // Ensure selectedLocation is also updated in the general state if data is loaded.
                     appState.selectedLocation = appState.bookingFormData.selectedLocation;
-                    console.log('Datos del formulario cargados:', appState.bookingFormData); // Para depuración.
+                    console.log('Form data loaded:', appState.bookingFormData); // For debugging.
                 }
                 const savedSelectedItems = localStorage.getItem('selectedItems');
                 if (savedSelectedItems) {
                     appState.selectedItems = JSON.parse(savedSelectedItems);
-                    console.log('Ítems del carrito cargados:', appState.selectedItems); // Para depuración.
+                    console.log('Cart items loaded:', appState.selectedItems); // For debugging.
                 }
             } catch (e) {
-                console.error("Error al cargar datos de localStorage:", e);
-                // Limpiar localStorage si hay un error de parseo para evitar bucles
+                console.error("Error loading data from localStorage:", e);
+                // Clear localStorage if there's a parsing error to avoid loops
                 localStorage.removeItem('bookingFormData');
                 localStorage.removeItem('selectedItems');
             }
         }
 
 
-        // --- Lógica Principal de la Aplicación ---
+        // --- Main Application Logic ---
 
         /**
-         * Establece la sección activa y actualiza la navegación, enviando un page_view a Google Analytics.
-         * @param {string} sectionName - El nombre de la sección a activar ('home', 'services', 'packages', 'booking').
+         * Sets the active section and updates navigation, sending a page_view to Google Analytics.
+         * @param {string} sectionName - The name of the section to activate ('home', 'services', 'packages', 'bubblePackages', 'booking').
          */
         function setActiveSection(sectionName) {
-            // Si la sección actual es 'booking' y vamos a otra sección, guarda los datos.
+            // If the current section is 'booking' and we are going to another section, save the data.
             if (appState.activeSection === 'booking') {
                 saveBookingFormData();
             }
 
             appState.activeSection = sectionName;
-            // Actualiza los estilos de los botones de navegación para indicar la sección activa.
+            // Update navigation button styles to indicate the active section.
             document.querySelectorAll('header nav button').forEach(button => {
                 const buttonId = button.id;
-                // Primero, restablece todos los botones a su estado inactivo por defecto
-                button.classList.remove('bg-purple-600', 'bg-blue-600', 'bg-pink-600', 'bg-green-600', 'shadow-xl', 'border-2', 'border-white', 'scale-105', 'bg-gradient-to-br', 'from-purple-600', 'via-purple-400', 'to-purple-700', 'from-blue-600', 'via-blue-400', 'to-blue-700', 'from-pink-600', 'via-pink-400', 'to-pink-700', 'from-green-600', 'via-green-400', 'to-green-700', 'text-white');
-                // Asegúrate de que los botones inactivos tengan el texto más resaltado
-                button.classList.add('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md', 'font-extrabold');
+                // First, reset all buttons to their default inactive state
+                button.classList.remove('bg-gradient-to-br', 'from-purple-600', 'via-purple-400', 'to-purple-700', 'from-blue-600', 'via-blue-400', 'to-blue-700', 'from-pink-600', 'via-pink-400', 'to-pink-700', 'from-green-600', 'via-green-400', 'to-green-700', 'text-white', 'shadow-xl', 'border-2', 'border-white', 'scale-105');
+                // Ensure inactive buttons have more highlighted text
+                button.classList.add('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md');
 
-                // Luego, aplica el estilo activo al botón de la sección actual
+                // Then, apply active style to the button of the current section
                 if (buttonId === 'navHome' && sectionName === 'home') {
                     button.classList.add('bg-gradient-to-br', 'from-purple-600', 'via-purple-400', 'to-purple-700', 'text-white', 'shadow-xl', 'border-2', 'border-white', 'scale-105');
                     button.classList.remove('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md');
@@ -1567,16 +1846,20 @@
                 } else if (buttonId === 'navPackages' && sectionName === 'packages') {
                     button.classList.add('bg-gradient-to-br', 'from-purple-600', 'via-purple-400', 'to-purple-700', 'text-white', 'shadow-xl', 'border-2', 'border-white', 'scale-105');
                     button.classList.remove('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md');
-                } else if (buttonId === 'navBooking' && sectionName === 'booking') {
+                } else if (buttonId === 'navBubblePackages' && sectionName === 'bubblePackages') { // New section
+                    button.classList.add('bg-gradient-to-br', 'from-blue-600', 'via-blue-400', 'to-blue-700', 'text-white', 'shadow-xl', 'border-2', 'border-white', 'scale-105');
+                    button.classList.remove('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md');
+                }
+                else if (buttonId === 'navBooking' && sectionName === 'booking') {
                     button.classList.add('bg-gradient-to-br', 'from-pink-600', 'via-pink-400', 'to-pink-700', 'text-white', 'shadow-xl', 'border-2', 'border-white', 'scale-105');
                     button.classList.remove('bg-purple-200', 'text-purple-900', 'hover:bg-purple-300', 'shadow-md');
                 }
             });
 
-            let pagePath = '/'; // Ruta por defecto para la página de inicio.
-            let pageTitle = 'Diverty Eventos'; // Título por defecto (modificado).
+            let pagePath = '/'; // Default path for the home page.
+            let pageTitle = 'Diverty Eventos'; // Default title (modified).
 
-            // Determina la ruta y el título de la página virtual para Google Analytics.
+            // Determine the virtual page path and title for Google Analytics.
             switch (sectionName) {
                 case 'home':
                     pagePath = '/inicio';
@@ -1587,16 +1870,20 @@
                     pageTitle = 'Diverty Eventos | Servicios'; 
                     break;
                 case 'packages':
-                    pagePath = '/paquetes';
-                    pageTitle = 'Diverty Eventos | Paquetes'; 
+                    pagePath = '/planes-cumpleanos';
+                    pageTitle = 'Diverty Eventos | Planes de Cumpleaños'; // Updated page title
+                    break;
+                case 'bubblePackages': // New section
+                    pagePath = '/paquetes-burbujas';
+                    pageTitle = 'Diverty Eventos | Paquetes de Burbujas';
                     break;
                 case 'booking':
                     pagePath = '/reservar';
                     pageTitle = 'Diverty Eventos | Reservar'; 
-                    // Oculta la barra de resumen del carrito al entrar en la sección de reserva.
+                    // Hide the cart summary bar when entering the booking section.
                     const cartSummaryDiv = document.getElementById('cartSummary');
                     if (cartSummaryDiv) cartSummaryDiv.classList.add('hidden');
-                    // Muestra el modal de advertencia de reserva solo si no se ha mostrado antes.
+                    // Show the booking warning modal only if it's the first time in the session.
                     if (!appState.hasShownBookingWarning) {
                         showBookingWarningModal();
                         appState.hasShownBookingWarning = true;
@@ -1604,7 +1891,7 @@
                     break;
             }
 
-            // Envía el evento de vista de página virtual a Google Analytics.
+            // Send the virtual page view event to Google Analytics.
             if (typeof gtag === 'function') {
                 gtag('event', 'page_view', {
                     page_path: pagePath,
@@ -1614,7 +1901,7 @@
                 console.warn('gtag is not defined. Google Analytics might not be loaded.');
             }
 
-            // Renderiza la sección correspondiente.
+            // Render the corresponding section.
             switch (sectionName) {
                 case 'home':
                     renderHomeSection();
@@ -1625,35 +1912,51 @@
                 case 'packages':
                     renderPackagesSection();
                     break;
+                case 'bubblePackages': // New section
+                    renderBubblePackagesSection();
+                    break;
                 case 'booking':
                     renderBookingSection();
                     break;
                 default:
-                    renderHomeSection(); // Fallback por defecto.
+                    renderHomeSection(); // Default fallback.
             }
-            // La actualización del resumen del carrito se maneja dentro de cada renderSection
-            // o se omite si la sección es 'booking' para mantenerla oculta.
+            // The cart summary update is handled within each renderSection
+            // or skipped if the section is 'booking' to keep it hidden.
             if (sectionName !== 'booking') {
                 updateCartSummary(); 
             }
+
+            // Close the mobile menu after a selection
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) { // Check if menu is open
+                mobileMenu.classList.add('hidden');
+                mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                mobileMenuToggle.innerHTML = `
+                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        `;
+            }
         }
 
-        // --- Evento para la advertencia al intentar salir de la página ---
-        // Este mensaje suele ser genérico en navegadores modernos por motivos de seguridad.
+        // --- Event for warning when trying to leave the page ---
+        // This message is usually generic in modern browsers for security reasons.
         window.onbeforeunload = function() {
-            // Guarda el estado del carrito y el formulario antes de que el usuario abandone la página.
+            // Save cart and form state before the user leaves the page.
             saveBookingFormData();
-            // No se devuelve un string para evitar el mensaje de confirmación intrusivo en navegadores modernos.
+            // Do not return a string to avoid intrusive confirmation message in modern browsers.
         };
 
         /**
-         * Limpia los mensajes de error y los estilos de los campos del formulario.
+         * Clears error messages and input styles from the form fields.
          */
         function clearFormErrors() {
             const errorMessages = document.querySelectorAll('.error-message');
             errorMessages.forEach(span => {
                 span.classList.add('hidden');
-                span.textContent = ''; // Limpiar el texto del error
+                span.textContent = ''; // Clear error text
             });
             const errorInputs = document.querySelectorAll('.input-error');
             errorInputs.forEach(input => {
@@ -1662,9 +1965,9 @@
         }
 
         /**
-         * Muestra un mensaje de error para un campo específico.
-         * @param {string} fieldId - El ID del campo que tiene el error.
-         * @param {string} message - El mensaje de error a mostrar.
+         * Displays an error message for a specific field.
+         * @param {string} fieldId - The ID of the field with the error.
+         * @param {string} message - The error message to display.
          */
         function showFieldError(fieldId, message) {
             const errorSpan = document.getElementById(`error-${fieldId}`);
@@ -1677,22 +1980,30 @@
         }
 
 
-        // --- Envío del Formulario a JotForm ---
+        // --- Form Submission to JotForm ---
         /**
-         * Maneja el envío del formulario de reserva.
-         * Realiza validaciones básicas y luego redirige a JotForm con los datos precargados.
-         * @param {Event} event - El evento de envío del formulario.
+         * Handles the submission of the booking form.
+         * Performs basic validations and then redirects to JotForm with pre-filled data.
+         * @param {Event} event - The form submission event.
          */
         async function handleBookingSubmit(event) {
-            event.preventDefault(); // Evita el envío por defecto del formulario.
+            event.preventDefault(); // Prevents default form submission.
 
-            clearFormErrors(); // Limpia cualquier error anterior.
+            clearFormErrors(); // Clear any previous errors.
 
-            // *** Validaciones se realizan primero ***
+            // *** Validations are performed first ***
             if (appState.selectedItems.length === 0) {
                 showInfoModal('¡Por favor, añade al menos un servicio o paquete a tu reserva! 🛒');
                 return;
             }
+
+            // Validate minimum quantity for "Mini Taller de Manualidades"
+            const miniTallerItem = appState.selectedItems.find(item => item.name === 'Mini Taller de Manualidades 🎨✂️');
+            if (miniTallerItem && miniTallerItem.quantity < 10) {
+                showInfoModal('El "Mini Taller de Manualidades" requiere un mínimo de 10 niños. Por favor, ajusta la cantidad. 🧑‍🎨');
+                return;
+            }
+
             const requiredFields = [
                 'bookingDate', 'bookingTime', 'customerName', 'customerEmail',
                 'customerPhone', 'eventType', 'numKids', 'exactLocation'
@@ -1700,14 +2011,14 @@
             let formIsValid = true;
             for (const fieldId of requiredFields) {
                 const inputElement = document.getElementById(fieldId);
-                // Trim para eliminar espacios en blanco y asegurar que no sea solo espacios
-                if (inputElement && !inputElement.value.trim()) { // Añadido check para inputElement
+                // Trim to remove whitespace and ensure it's not just spaces
+                if (inputElement && !inputElement.value.trim()) { // Added check for inputElement
                     showFieldError(fieldId, 'Este campo es obligatorio.');
                     formIsValid = false;
                 }
             }
 
-            // Validación específica para el formato de email
+            // Specific validation for email format
             const emailInput = document.getElementById('customerEmail');
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (emailInput && !emailRegex.test(emailInput.value.trim())) {
@@ -1720,12 +2031,12 @@
                 return;
             }
 
-            // Si todas las validaciones pasan, se guarda el formulario y se muestra el modal.
-            saveBookingFormData(); // Guarda los datos antes de la redirección.
+            // If all validations pass, save the form and show the modal.
+            saveBookingFormData(); // Save data before redirection.
             showInfoModal('¡Redirigiendo a JotForm para finalizar tu reserva! 🎉 Haz clic en "¡Entendido!" para continuar.', () => {
-                // Esto es lo que se ejecutará cuando el usuario haga clic en "¡Entendido!" en el modal.
+                // This is what will execute when the user clicks "¡Entendido!" in the modal.
 
-                // --- Recopilación de Datos para JotForm (se re-obtiene para asegurar los últimos valores) ---
+                // --- Data Collection for JotForm (re-obtained to ensure latest values) ---
                 const bookingDate = document.getElementById('bookingDate') ? document.getElementById('bookingDate').value : ''; 
                 const bookingTime = document.getElementById('bookingTime') ? document.getElementById('bookingTime').value : ''; 
 
@@ -1741,17 +2052,17 @@
                 const currentTransportFee = transportFeesByLocation[selectedLocationName] || 0;
 
                 const selectedItemsString = appState.selectedItems.map(item => {
-                    const itemPriceForJotForm = getAdjustedItemPrice(item);
-                    return `${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''} ($${itemPriceForJotForm.toFixed(2)})`; 
+                    const itemTotalForJotForm = getAdjustedItemPrice(item); // This now returns the total for the item
+                    return `${item.name} ${item.quantity > 0 ? `(x${item.quantity})` : ''} ($${itemTotalForJotForm.toFixed(2)})`; 
                 }).join(', ');
                 
                 const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
-                    return sum + (getAdjustedItemPrice(item) * item.quantity);
+                    return sum + getAdjustedItemPrice(item);
                 }, 0);
                 const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
-                // --- Construcción de la URL de JotForm con Parámetros ---
-                // Los parámetros se codifican en la URL para precargar el formulario de JotForm.
+                // --- Construction of JotForm URL with Parameters ---
+                // Parameters are encoded in the URL to pre-fill the JotForm form.
                 const jotformBaseUrl = 'https://form.jotform.com/251611549526054'; 
                 const params = new URLSearchParams();
 
@@ -1774,25 +2085,27 @@
 
                 const jotformUrl = `${jotformBaseUrl}?${params.toString()}`;
 
-                // Abrir en una nueva pestaña cuando el usuario haga clic en "¡Entendido!".
-                // Se incluye un fallback para redirección en la misma pestaña si la nueva ventana es bloqueada.
+                // Open in a new tab when the user clicks "¡Entendido!".
+                // Includes a fallback for redirection in the same tab if the new window is blocked.
                 const newWindow = window.open(jotformUrl, '_blank');
                 if (newWindow) {
                     newWindow.focus(); 
                 } else {
-                    console.warn('La nueva ventana no pudo abrirse (bloqueador de pop-ups). Intentando redirección en la misma pestaña como fallback.');
+                    console.warn('The new window could not be opened (pop-up blocker). Attempting redirection in the same tab as fallback.');
                     window.location.href = jotformUrl; 
                 }
             });
         }
 
-        // --- Inicialización de la Aplicación ---
-        // Se ejecuta cuando el DOM está completamente cargado.
+        // --- Application Initialization ---
+        // Executes when the DOM is fully loaded.
         document.addEventListener('DOMContentLoaded', () => {
-            // Carga los datos del formulario y del carrito al iniciar la página.
+            console.log('DOM Content Loaded. Initializing app.'); // Debug log
+
+            // Load form data and cart when the page loads.
             loadBookingFormData(); 
 
-            // Asigna event listeners para los botones de cerrar los modales.
+            // Assign event listeners for closing modals.
             const closeModalBtn = document.getElementById('closeModalButton');
             if (closeModalBtn) closeModalBtn.onclick = closeModal;
 
@@ -1802,11 +2115,35 @@
             const closeBookingWarningModalBtn = document.getElementById('closeBookingWarningModalButton');
             if (closeBookingWarningModalBtn) closeBookingWarningModalBtn.onclick = closeBookingWarningModal;
             
-            // Asigna event listeners para los botones del mini-carrito modal.
+            // Assign event listeners for mini-cart modal buttons.
             const closeMiniCartModalBtn = document.getElementById('closeMiniCartModalButton');
             if (closeMiniCartModalBtn) closeMiniCartModalBtn.onclick = closeMiniCartModal;
 
-            // Asigna event listeners para los botones de navegación principal.
+            // Assign event listeners for mobile menu toggle.
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenuToggle && mobileMenu) {
+                mobileMenuToggle.onclick = () => {
+                    const isHidden = mobileMenu.classList.toggle('hidden');
+                    mobileMenuToggle.setAttribute('aria-expanded', !isHidden);
+                    // Change hamburger icon to close icon and vice versa
+                    if (isHidden) {
+                        mobileMenuToggle.innerHTML = `
+                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        `;
+                    } else {
+                        mobileMenuToggle.innerHTML = `
+                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        `;
+                    }
+                }; 
+            }
+
+            // Assign event listeners for main navigation buttons.
             const navHomeBtn = document.getElementById('navHome');
             if (navHomeBtn) navHomeBtn.onclick = () => setActiveSection('home');
             
@@ -1816,6 +2153,9 @@
             const navPackagesBtn = document.getElementById('navPackages');
             if (navPackagesBtn) navPackagesBtn.onclick = () => setActiveSection('packages');
             
+            const navBubblePackagesBtn = document.getElementById('navBubblePackages'); // New button
+            if (navBubblePackagesBtn) navBubblePackagesBtn.onclick = () => setActiveSection('bubblePackages'); // New section
+            
             const navBookingBtn = document.getElementById('navBooking');
             if (navBookingBtn) navBookingBtn.onclick = () => setActiveSection('booking');
             
@@ -1824,23 +2164,22 @@
             
             const miniCartProceedToBookBtn = document.getElementById('miniCartProceedToBookButton');
             if (miniCartProceedToBookBtn) miniCartProceedToBookBtn.onclick = () => {
-                closeMiniCartModal(); // Cierra el modal antes de ir a reservar
+                closeMiniCartModal(); // Close modal before going to booking
                 setActiveSection('booking');
             };
             
             const viewCartDetailsBtn = document.getElementById('viewCartDetailsButton');
             if (viewCartDetailsBtn) {
                 viewCartDetailsBtn.onclick = () => {
-                    console.log("viewCartDetailsButton: Click detectado. Abriendo modal de carrito."); // Debugging
                     showMiniCartModal();
                 };
             }
 
-            // Establece la sección de inicio por defecto al cargar la página.
+            console.log('Calling setActiveSection("home")'); // Debug log
+            // Set home section as default when page loads.
             setActiveSection('home');
-            updateCartSummary(); // Asegura que el resumen del carrito se muestre correctamente al inicio.
+            updateCartSummary(); // Ensure cart summary is displayed correctly on startup.
         });
     </script>
 </body>
 </html>
-
