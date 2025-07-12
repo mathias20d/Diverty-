@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- SEO optimized title: Includes main keywords and location to improve search engine visibility. -->
     <title>Diverty Eventos | Fiestas Infantiles en Panamá</title>
-    <!-- SEO optimized meta description: Provides a concise and attractive summary of the content, with relevant keywords and a call to action. -->
     <meta name="description" content="Organizamos las mejores fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Expertos en animación, shows de burbujas, pintacaritas, globoflexia y paquetes de diversión. ¡Haz que la fiesta de tus hijos sea inolvidable con Diverty Eventos en todo Panamá!">
     
     <!-- Open Graph Tags for social media and messaging apps (Facebook, WhatsApp, etc.). -->
@@ -352,7 +351,7 @@
         // --- Data Definition (Services and Packages) ---
         // Arrays of objects defining available services and packages, including prices and descriptions.
         const servicesData = [
-            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 45, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora, incluye mesa de maquillaje y silla profesional.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://i.ibb.co/gLbjzL5n/3eb6eb2f-a6fb-4e9e-b8e4-2849b948ca7e-20250629-221512-0000.jpg' },
+            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 45, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora, incluye mesa de maquillaje y silla profesional.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg' },
             { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-300 text-pink-800', imageUrl: 'https://i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg' },
             { 
                 id: '7', 
@@ -466,7 +465,8 @@
                     'Romper la piñata 🍬🎉'
                 ],
                 description: '2 horas de diversión completa con animación, juegos, payasito, show de burbujas gigantes y asistencia en la piñata. ¡La fiesta burbuja soñada!',
-                color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-900', imageUrl: ''
+                color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-900', 
+                imageUrl: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg' // Updated image URL
             },
             {
                 id: 'BS1',
@@ -482,7 +482,8 @@
                     'Burbujas de espuma' // New service
                 ],
                 description: '1 hora de show con burbujas gigantes, humo, burbujas LED, interacción con el público, fotos dentro de la burbuja gigante, trucos con burbujas y burbujas de espuma.', // Updated description
-                color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', imageUrl: ''
+                color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', 
+                imageUrl: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg' // Updated image URL
             },
             {
                 id: 'BS3',
@@ -493,8 +494,18 @@
                     'Luces especiales'
                 ],
                 description: '1 hora de show personalizable (ajustable) para eventos corporativos, centros comerciales, colegios o eventos grandes, con luces especiales.',
-                color: 'bg-gradient-to-br from-red-100 to-red-200 border-red-300 text-red-800', imageUrl: ''
+                color: 'bg-gradient-to-br from-red-100 to-red-200 border-red-300 text-red-800', 
+                imageUrl: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg' // Updated image URL
             }
+        ];
+
+        // New data for company references
+        const companyReferencesData = [
+            { name: 'Royal Decameron', imageUrl: 'https://i.ibb.co/dFHJR2p/Burbujas-gigantes-en-el-royal-decameron-fyp-espect-culos-showdeburbujas-burbujas-parati-payasitos-an.jpg' },
+            { name: 'Hotel Westin Playa Bonita', imageUrl: 'https://i.ibb.co/BHwfMchP/IMG-20250710-125312-157.jpg' },
+            { name: 'Feria del Bebé 2025', imageUrl: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg' },
+            { name: 'Canal de Panamá', imageUrl: 'https://i.ibb.co/5g1gk7jM/Show-de-burbujas-gigantes-en-el-canal-de-panama-JPG.jpg' },
+            { name: 'Santa María', imageUrl: 'https://i.ibb.co/8gFr1NqL/smcountryclub-3604355087222851995-JPG.jpg' }
         ];
 
 
@@ -938,13 +949,13 @@
          * Hides the image modal.
          */
         function closeImageModal() {
-            const imageModal = document.getElementById('imageModal');
-            const imageModalContent = document.getElementById('imageModalContent'); // Added this line
+            const imageModal = document.getElementById('imageModal'); // Get the modal element itself
+            const imageModalContent = document.getElementById('imageModalContent');
             if (imageModal && imageModalContent) {
-                imageModalContent.classList.remove('scale-100', 'opacity-100');
-                imageModalContent.classList.add('scale-95', 'opacity-0');
+                imageModalContent.classList.remove('scale-100', 'opacity-100'); 
+                imageModalContent.classList.add('scale-95', 'opacity-0'); 
                 setTimeout(() => {
-                    imageModal.classList.add('hidden');
+                    imageModal.classList.add('hidden'); 
                     document.getElementById('modalImage').src = ''; // Clear image source
                 }, 300);
             }
@@ -1089,7 +1100,7 @@
                     themeOptionsHtml += '</optgroup>';
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
                             ${serviceImageHtml}
                             <div class="p-4 sm:p-6 flex flex-col flex-grow">
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-pink-700">${service.name}</h2>
@@ -1132,7 +1143,7 @@
                     const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 10; 
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:hover:shadow-2xl">
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:hover:shadow-2xl">
                             ${serviceImageHtml}
                             <div class="p-4 sm:p-6 flex flex-col flex-grow">
                                 <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-yellow-700">${service.name}</h2>
@@ -1559,9 +1570,9 @@
                     originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
                 }
 
-                // Image for the bubble package card - now empty
+                // Image for the bubble package card
                 // Added 'service-image' class for click event.
-                const bubblePackageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">` : '';
+                const bubblePackageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-lg mt-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">` : '';
 
 
                 return `
@@ -1613,6 +1624,43 @@
 
             // Add event listeners for image clicks
             document.querySelectorAll('.service-image').forEach(img => {
+                img.onclick = (event) => {
+                    showImageModal(event.target.src, event.target.alt);
+                };
+            });
+        }
+
+        /**
+         * Renders the Company References section.
+         */
+        function renderCompanyReferencesSection() {
+            const cardsHtml = companyReferencesData.map(company => `
+                <div class="bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center p-4 border-4 border-gray-200 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                    <img src="${company.imageUrl}" alt="Logo de ${company.name}" class="w-full h-32 object-cover rounded-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">
+                    <h3 class="text-lg sm:text-xl font-bold text-gray-800 text-center">${company.name}</h3>
+                </div>
+            `).join('');
+
+            const html = `
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-green-400 animate-fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-green-700 text-center mb-8 sm:mb-10">Nuestros Clientes Corporativos 🤝</h2>
+                    <p class="text-lg text-gray-700 text-center mb-8">
+                        Hemos llevado la magia de las burbujas gigantes a eventos de grandes empresas y organizaciones en Panamá. ¡Confía en nuestra experiencia!
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-8">
+                        ${cardsHtml}
+                    </div>
+                </section>
+            `;
+            // Append the new section to the main content area, instead of overwriting it.
+            // This is a temporary solution for demonstration. A more robust approach would be to manage sections better.
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                mainContent.insertAdjacentHTML('beforeend', html);
+            }
+
+            // Add event listeners for image clicks in this new section
+            document.querySelectorAll('#mainContent .service-image').forEach(img => {
                 img.onclick = (event) => {
                     showImageModal(event.target.src, event.target.alt);
                 };
@@ -1966,6 +2014,12 @@
             }
 
             // Render the corresponding section.
+            // Clear mainContent first to ensure only the active section is visible.
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                mainContent.innerHTML = ''; // Clear previous content
+            }
+
             switch (sectionName) {
                 case 'home':
                     renderHomeSection();
@@ -1978,6 +2032,7 @@
                     break;
                 case 'bubblePackages': // New section
                     renderBubblePackagesSection();
+                    renderCompanyReferencesSection(); // Call the new function here
                     break;
                 case 'booking':
                     renderBookingSection();
@@ -2252,4 +2307,3 @@
     </script>
 </body>
 </html>
-
