@@ -130,12 +130,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts - Inter for typography: Provides a modern and readable font. -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Montserrat for headings: Provides a strong, geometric sans-serif font. -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons CDN for professional SVG icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <style>
         /* Base styles for the page body */
         body {
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
+            /* Subtle background pattern for aesthetic appeal */
+            background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M0 0h3v3H0V0zm3 3h3v3H3V3z'/%3E%3C/g%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 6px 6px;
+            background-attachment: fixed; /* Optional: for a subtle parallax effect */
+        }
+        /* Headings using Montserrat for a professional touch */
+        h1, h2, h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800; /* Extra bold for impact */
+            letter-spacing: -0.02em; /* Slightly tighter letter spacing for headings */
         }
         /* Custom styles for button hover for visual consistency. */
         .hover\:bg-purple-600:hover { background-color: #7c3aed; }
@@ -177,39 +192,117 @@
         .input-error {
             border-color: #ef4444 !important; /* red-500 */
         }
+        /* Style for Lucide icons to ensure consistent sizing and alignment */
+        .lucide {
+            width: 1.25em; /* Adjust as needed */
+            height: 1.25em;
+            vertical-align: middle; /* Align with text */
+            margin-right: 0.5em; /* Space between icon and text */
+            flex-shrink: 0; /* Prevent icon from shrinking */
+        }
+        /* Specific adjustments for icons within buttons for better alignment */
+        button .lucide {
+            margin-right: 0.5rem; /* Consistent spacing */
+        }
+        .whatsapp-float-button img {
+            width: 1.5rem; /* Larger icon for float button */
+            height: 1.5rem;
+        }
+
+        /* General principle: Use ample white space to improve readability and perceived professionalism. */
+        /* This means generous padding within elements and margins between them. */
+
+        /* Animations for elements appearing on screen */
+        @keyframes slideUpFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-slide-up-fade-in {
+            animation: slideUpFadeIn 0.6s ease-out forwards;
+            opacity: 0; /* Start hidden for animation */
+        }
+
+        /* Toast Notification Styles */
+        #toastNotification {
+            position: fixed;
+            top: 20px; /* Position from the top */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000; /* Ensure it's on top of everything */
+            padding: 12px 20px;
+            border-radius: 9999px; /* Fully rounded */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            color: white;
+            font-weight: 600;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, transform 0.3s ease-in-out;
+            display: flex;
+            align-items: center;
+            gap: 8px; /* Space between icon and text */
+        }
+
+        #toastNotification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0); /* Ensure it slides in if needed */
+        }
+
+        /* Toast types */
+        #toastNotification.success {
+            background-color: #10B981; /* Green-500 */
+        }
+        #toastNotification.info {
+            background-color: #3B82F6; /* Blue-500 */
+        }
+        #toastNotification.error {
+            background-color: #EF4444; /* Red-500 */
+        }
+
+        #toastNotification .lucide {
+            width: 1.2em; /* Smaller icon for toast */
+            height: 1.2em;
+            margin-right: 0; /* No margin here, gap handles it */
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
 
     <!-- General Info Modal: Used for user messages (e.g., success, error). -->
     <div id="infoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="modalMessage">
-        <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0" id="infoModalContent">
+        <div id="infoModalContent" tabindex="-1" class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0">
             <p id="modalMessage" class="text-xl font-bold mb-4 text-white"></p>
-            <button id="closeModalButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer">
-                ¡Entendido! 🎉
+            <button id="closeModalButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto">
+                ¡Entendido! <i data-lucide="check-circle" class="lucide"></i>
             </button>
         </div>
     </div>
 
     <!-- Promotion Modal: Used to announce special offers. -->
     <div id="promoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="promoMessage">
-        <div class="bg-gradient-to-br from-pink-600 to-pink-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-pink-500 transform transition-all duration-300 scale-95 opacity-0" id="promoModalContent">
-            <h2 class="text-3xl font-extrabold text-white mb-4">¡Promoción del Mes! 🌟</h2>
+        <div id="promoModalContent" tabindex="-1" class="bg-gradient-to-br from-pink-600 to-pink-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-pink-500 transform transition-all duration-300 scale-95 opacity-0">
+            <h2 class="text-3xl font-extrabold text-white mb-4">¡Promoción del Mes! <i data-lucide="star" class="lucide inline-block"></i></h2>
             <p id="promoMessage" class="text-lg text-gray-100 mb-4"></p>
-            <button id="closePromoModalButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer">
-                ¡Genial! 🎉
+            <button id="closePromoModalButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto">
+                ¡Genial! <i data-lucide="party-popper" class="lucide"></i>
             </button>
         </div>
     </div>
 
     <!-- New Booking Warning Modal: Shown before filling out the booking form. -->
     <div id="bookingWarningModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="bookingWarningTitle">
-        <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0" id="bookingWarningModalContent">
-            <h2 id="bookingWarningTitle" class="text-3xl font-extrabold text-white mb-4">¡Importante antes de Reservar! 🚨</h2>
+        <div id="bookingWarningModalContent" tabindex="-1" class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0">
+            <h2 id="bookingWarningTitle" class="text-3xl font-extrabold text-white mb-4">¡Importante antes de Reservar! <i data-lucide="alert-triangle" class="lucide inline-block"></i></h2>
             <p class="text-lg text-gray-100 mb-6">
                 Para asegurar la disponibilidad de la fecha y hora de tu evento, te recomendamos
                 <span class="font-bold text-purple-200">verificar primero con nosotros vía WhatsApp</span>.
-                ¡Así garantizamos la magia de tu día! ✨
+                ¡Así garantizamos la magia de tu día! <i data-lucide="sparkles" class="lucide inline-block"></i>
             </p>
             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <a href="https://wa.me/50766677965?text=¡Hola! Quiero consultar la disponibilidad de una fecha para un evento."
@@ -227,8 +320,8 @@
 
     <!-- Mini-Cart Modal (Reverted to its original state) -->
     <div id="miniCartModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="miniCartTitle">
-        <div class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0" id="miniCartModalContent">
-            <h2 id="miniCartTitle" class="text-2xl font-extrabold text-white mb-4">Tu Carrito de Diversión 🛒</h2>
+        <div id="miniCartModalContent" tabindex="-1" class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0">
+            <h2 id="miniCartTitle" class="text-2xl font-extrabold text-white mb-4">Tu Carrito de Diversión <i data-lucide="shopping-cart" class="lucide inline-block"></i></h2>
             <div id="miniCartItems" class="max-h-60 overflow-y-auto text-left mb-4 p-2 bg-purple-100 rounded-lg border border-purple-200 text-gray-800">
                 <!-- Cart items will be loaded here dynamically -->
             </div>
@@ -237,11 +330,11 @@
                 <p class="text-xl text-pink-200">Total: <span id="miniCartTotalPrice">$0.00</span></p>
             </div>
             <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-3">
-                <button id="closeMiniCartModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full shadow-md transition duration-300 cursor-pointer">
+                <button id="closeMiniCartModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full shadow-md transition duration-300 cursor-pointer flex items-center justify-center">
                     Cerrar
                 </button>
-                <button id="miniCartProceedToBookButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer">
-                    Reservar Ahora ✨
+                <button id="miniCartProceedToBookButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center">
+                    Reservar Ahora <i data-lucide="sparkles" class="lucide"></i>
                 </button>
             </div>
         </div>
@@ -249,7 +342,7 @@
 
     <!-- Image Modal: Displays a larger version of an image when clicked. -->
     <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="imageModalTitle">
-        <div class="relative bg-white rounded-lg shadow-2xl p-2 max-w-full max-h-full overflow-hidden flex flex-col items-center justify-center transform transition-all duration-300 scale-95 opacity-0" id="imageModalContent">
+        <div id="imageModalContent" tabindex="-1" class="relative bg-white rounded-lg shadow-2xl p-2 max-w-full max-h-full overflow-hidden flex flex-col items-center justify-center transform transition-all duration-300 scale-95 opacity-0">
             <button id="closeImageModalButton" class="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white rounded-full p-2 text-lg font-bold transition duration-300 z-10 w-8 h-8 flex items-center justify-center" aria-label="Cerrar imagen">
                 &times;
             </button>
@@ -282,11 +375,11 @@
             <!-- Navigation list (hidden on mobile by default, shown on larger screens) -->
             <div id="mobileMenu" class="hidden sm:flex flex-col sm:flex-row flex-grow justify-center sm:justify-end items-center mt-4 sm:mt-0 space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
                 <ul class="flex flex-col sm:flex-row justify-center sm:space-x-4 space-y-2 sm:space-y-0" role="menubar">
-                    <li role="none"><button id="navHome" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Inicio 🏠</button></li>
-                    <li role="none"><button id="navServices" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Servicios 📋</button></li>
-                    <li role="none"><button id="navPackages" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Planes de Cumpleaños 🎂</button></li>
-                    <li role="none"><button id="navBubblePackages" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Paquetes de Burbujas 🫧</button></li>
-                    <li role="none"><button id="navBooking" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer">Reservar 🗓️</button></li>
+                    <li role="none"><button id="navHome" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer flex items-center justify-center"><i data-lucide="home" class="lucide"></i> Inicio</button></li>
+                    <li role="none"><button id="navServices" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer flex items-center justify-center"><i data-lucide="sparkles" class="lucide"></i> Servicios</button></li>
+                    <li role="none"><button id="navPackages" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer flex items-center justify-center"><i data-lucide="cake" class="lucide"></i> Planes de Cumpleaños</button></li>
+                    <li role="none"><button id="navBubblePackages" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer flex items-center justify-center"><i data-lucide="cloud-rain" class="lucide"></i> Paquetes de Burbujas</button></li>
+                    <li role="none"><button id="navBooking" role="menuitem" class="text-base font-extrabold py-2 px-5 rounded-full text-purple-900 bg-purple-200 hover:bg-purple-300 transition duration-300 transform hover:scale-105 shadow-md cursor-pointer flex items-center justify-center"><i data-lucide="calendar-check" class="lucide"></i> Reservar</button></li>
                 </ul>
             </div>
         </nav>
@@ -294,15 +387,15 @@
 
     <!-- Shopping Cart Summary (Floating Bar): Displays the number of items and the selected total. -->
     <div id="cartSummary" class="bg-gradient-to-br from-purple-200 to-purple-300 text-purple-800 font-extrabold p-4 text-center rounded-b-3xl shadow-xl border-b-4 border-purple-400 hidden sticky top-[88px] z-30 transition-all duration-300 ease-in-out flex flex-col sm:flex-row justify-between items-center">
-        <p class="text-xl sm:text-2xl mb-2 sm:mb-0">
-            🛒 Ítems: <span id="selectedItemsCount" class="text-purple-700">0</span> | Total: <span id="totalPriceDisplay" class="text-pink-700">$0.00</span>
+        <p class="text-xl sm:text-2xl mb-2 sm:mb-0 flex items-center">
+            <i data-lucide="shopping-cart" class="lucide mr-2"></i> Ítems: <span id="selectedItemsCount" class="text-purple-700">0</span> | Total: <span id="totalPriceDisplay" class="text-pink-700">$0.00</span>
         </p>
         <div class="flex space-x-3">
-            <button id="viewCartDetailsButton" class="bg-gradient-to-br from-purple-500 via-purple-400 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 border-2 border-white cursor-pointer">
-                Ver Detalles 🛒
+            <button id="viewCartDetailsButton" class="bg-gradient-to-br from-purple-500 via-purple-400 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center">
+                Ver Detalles <i data-lucide="shopping-cart" class="lucide"></i>
             </button>
-            <button id="proceedToBookButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white cursor-pointer">
-                Reservar ✨
+            <button id="proceedToBookButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center">
+                Reservar <i data-lucide="sparkles" class="lucide"></i>
             </button>
         </div>
     </div>
@@ -319,9 +412,12 @@
 
     <!-- Footer: Copyright information and slogan. -->
     <footer class="bg-purple-700 text-white py-8 px-4 text-center mt-8 rounded-t-xl shadow-inner w-full">
-        <p class="text-lg font-semibold">&copy; 2023 Diverty Eventos. ¡Hacemos magia en cada fiesta infantil en Panamá! ✨</p>
+        <p class="text-lg font-semibold">&copy; 2023 Diverty Eventos. ¡Hacemos magia en cada fiesta infantil en Panamá! <i data-lucide="sparkles" class="lucide inline-block"></i></p>
         <p class="text-sm">Todos los derechos reservados. Servicios de <strong>animación infantil</strong> y <strong>shows para fiestas</strong> en todo Panamá.</p>
     </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toastNotification" role="status" aria-live="polite"></div>
 
     <!-- JavaScript script for page functionality. -->
     <script>
@@ -346,13 +442,14 @@
                 exactLocation: '',
                 selectedLocation: 'Panamá Centro' 
             },
+            lastFocusedElement: null // To store the element that had focus before a modal opened.
         };
 
         // --- Data Definition (Services and Packages) ---
         // Arrays of objects defining available services and packages, including prices and descriptions.
         const servicesData = [
-            { id: '2', name: 'Pintacaritas 🎨👧👦', price: 45, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora, incluye mesa de maquillaje y silla profesional.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg' },
-            { id: '3', name: 'Globoflexia 🎈💫', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-300 text-pink-800', imageUrl: 'https://i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg' },
+            { id: '2', name: 'Pintacaritas', price: 45, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora, incluye mesa de maquillaje y silla profesional.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', icon: 'palette' },
+            { id: '3', name: 'Globoflexia', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-300 text-pink-800', imageUrl: 'https://i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg', icon: 'balloon' },
             { 
                 id: '7', 
                 name: 'Decoraciones Temáticas', 
@@ -361,6 +458,7 @@
                 color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800',
                 type: 'theme_selection', // New type to handle theme selection
                 imageUrl: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg', // Updated image URL here
+                icon: 'sparkles',
                 themes: {
                     ninas: [
                         'Barbie', 'Sirenita', 'Cenicienta', 'Moana grande', 'Moana bebé', 'Abejita',
@@ -393,61 +491,63 @@
                 color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800',
                 type: 'character_selection', // Special type to handle character selection
                 imageUrl: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg', 
+                icon: 'users',
                 characters: [
-                    { id: 'mickey', name: 'Mickey Mouse 🐭' },
-                    { id: 'minnie', name: 'Minnie Mouse 🎀' },
-                    { id: 'mario', name: 'Mario Bros. 🍄' }
+                    { id: 'mickey', name: 'Mickey Mouse' },
+                    { id: 'minnie', name: 'Minnie Mouse' },
+                    { id: 'mario', name: 'Mario Bros.' }
                 ]
             },
             { 
                 id: '10', 
-                name: 'Mini Taller de Manualidades 🎨✂️', 
+                name: 'Mini Taller de Manualidades', 
                 price: 12.50, // Price per child, updated to $12.50
                 description: 'Taller creativo con 2 manualidades, mobiliario (mesas y sillas), 1 recreadora encargada del taller, materiales, música y figuras con globos. ¡Diversión garantizada por niño!', 
                 color: 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-300 text-yellow-800',
                 type: 'manualidades_workshop', // New type for this specific service
-                imageUrl: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg' 
+                imageUrl: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg',
+                icon: 'scissors'
             },
-            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn 🍿🍭', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: '' }
+            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: '', icon: 'popcorn' }
         ];
 
         const packagesData = [
-            { id: 'P1', name: 'Plan Básico 🚀', price: 80, services: [ // Precio cambiado a 80
-                'Payas@ o animad@r 🤡🎤',
-                'Animación infantil 🥳💃',
-                'Juegos y concursos 🎲🏆',
-                'Figuras con globos 🎈🐶',
-                'Romper la piñata 🍬🎉'
-            ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', imageUrl: '' },
-            { id: 'P2', name: 'Plan Recreativo 🌈', price: 100, services: [
-                'Payas@ o animad@r 🤡🎤',
-                'Pintacaritas (1 hora) 🎨👧👦', // Updated to specify 1 hour
-                'Animación infantil (1 hora) 🥳💃', // Updated to specify 1 hour
-                'Juegos y concursos 🎲🏆',
-                'Figuras con globos 🎈🐶',
-                'Romper la piñata 🍬🎉'
-            ], description: '2h de aventura: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', imageUrl: '' },
-            { id: 'P3', name: 'Plan Magic ✨', price: 135, services: [
-                'Payasit@ o animad@r 🤡🎤',
-                'Animación, juegos y concursos (1.5 horas) 🥳🎲', // Updated to 1.5 hours
-                'Pintacaritas (1 hora) 🎨👧👦', // Updated to 1 hour
-                'Show de magia cómica ✨🤣',
-                'Asistencia para la piñata 🍬🎉'
-            ], description: '2.5h premium: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800', imageUrl: '' },
+            { id: 'P1', name: 'Plan Básico', price: 80, services: [ // Precio cambiado a 80
+                'Payas@ o animad@r',
+                'Animación infantil',
+                'Juegos y concursos',
+                'Figuras con globos',
+                'Romper la piñata'
+            ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', imageUrl: '', icon: 'rocket' },
+            { id: 'P2', name: 'Plan Recreativo', price: 100, services: [
+                'Payas@ o animad@r',
+                'Pintacaritas (1 hora)', // Updated to specify 1 hour
+                'Animación infantil (1 hora)', // Updated to specify 1 hour
+                'Juegos y concursos',
+                'Figuras con globos',
+                'Romper la piñata'
+            ], description: '2h de aventura: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', imageUrl: '', icon: 'rainbow' },
+            { id: 'P3', name: 'Plan Magic', price: 135, services: [
+                'Payasit@ o animad@r',
+                'Animación, juegos y concursos (1.5 horas)', // Updated to 1.5 hours
+                'Pintacaritas (1 hora)', // Updated to 1 hour
+                'Show de magia cómica',
+                'Asistencia para la piñata'
+            ], description: '2.5h premium: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800', imageUrl: '', icon: 'magic-wand' },
             { 
                 id: 'P4', 
-                name: 'Plan Diverty 🥳', 
+                name: 'Plan Diverty', 
                 price: 210, 
                 services: [
-                    'Payasito o Animador 🤡🎤',
-                    'Juegos y concursos 🎲🏆',
-                    'Pintacaritas 🎨👧👦',
-                    'Globoflexia 🎈🐶',
-                    'Show de Burbujas o Magia Cómica 🫧✨',
-                    'Asistencia en la piñata 🍬🎉'
+                    'Payasito o Animador',
+                    'Juegos y concursos',
+                    'Pintacaritas',
+                    'Globoflexia',
+                    'Show de Burbujas o Magia Cómica',
+                    'Asistencia en la piñata'
                 ], 
                 description: '3h de diversión completa: Payaso/animador, juegos, pintacaritas, globoflexia, show de burbujas o magia, y asistencia piñata. ¡La magia garantizada!', 
-                color: 'bg-gradient-to-br from-green-200 to-green-300 border-green-400 text-green-800', imageUrl: ''
+                color: 'bg-gradient-to-br from-green-200 to-green-300 border-green-400 text-green-800', imageUrl: '', icon: 'party-popper'
             }
         ];
 
@@ -455,22 +555,23 @@
         const bubblePackagesData = [
             {
                 id: 'B2',
-                name: 'Paquete Fiesta Burbuja Completa ✨',
+                name: 'Paquete Fiesta Burbuja Completa',
                 price: 190, 
                 services: [
-                    'Animación infantil 🥳💃',
-                    'Juegos y concursos 🎲🏆',
-                    'Payasito o Animador 🤡🎤',
-                    'Show de Burbujas Gigantes 🫧',
-                    'Romper la piñata 🍬🎉'
+                    'Animación infantil',
+                    'Juegos y concursos',
+                    'Payasito o Animador',
+                    'Show de Burbujas Gigantes',
+                    'Romper la piñata'
                 ],
                 description: '2 horas de diversión completa con animación, juegos, payasito, show de burbujas gigantes y asistencia en la piñata. ¡La fiesta burbuja soñada!',
                 color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-900', 
-                imageUrl: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg' // Updated image URL
+                imageUrl: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg',
+                icon: 'sparkles'
             },
             {
                 id: 'BS1',
-                name: 'Show de Burbujas Premium 🫧', // Renamed from "Show Básico 🫧"
+                name: 'Show de Burbujas Premium', // Renamed from "Show Básico 🫧"
                 price: 150,
                 services: [
                     'Burbujas gigantes',
@@ -483,11 +584,12 @@
                 ],
                 description: '1 hora de show con burbujas gigantes, humo, burbujas LED, interacción con el público, fotos dentro de la burbuja gigante, trucos con burbujas y burbujas de espuma.', // Updated description
                 color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', 
-                imageUrl: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg' // Updated image URL
+                imageUrl: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg',
+                icon: 'droplets'
             },
             {
                 id: 'BS3',
-                name: 'Show Corporativo/Especial 🏢',
+                name: 'Show Corporativo/Especial',
                 price: 220, // "Desde $220" implies a base price, using 220 as the base.
                 services: [
                     'Show personalizado para centros comerciales, colegios o eventos grandes',
@@ -495,7 +597,8 @@
                 ],
                 description: '1 hora de show personalizable (ajustable) para eventos corporativos, centros comerciales, colegios o eventos grandes, con luces especiales.',
                 color: 'bg-gradient-to-br from-red-100 to-red-200 border-red-300 text-red-800', 
-                imageUrl: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg' // Updated image URL
+                imageUrl: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg',
+                icon: 'building'
             }
         ];
 
@@ -526,6 +629,8 @@
          */
         function renderSection(sectionHtml) {
             document.getElementById('mainContent').innerHTML = sectionHtml;
+            // After rendering, ensure Lucide icons are created
+            lucide.createIcons();
         }
 
         /**
@@ -539,7 +644,7 @@
                 return 0; // If quantity is 0 or less, the total cost for this item is 0.
             }
 
-            if (item.name === 'Pintacaritas 🎨👧👦') {
+            if (item.name === 'Pintacaritas') { // Changed name to match data
                 if (item.quantity === 1) {
                     return 45; // First hour is $45.
                 } else {
@@ -599,31 +704,48 @@
          */
         function handleCartAction(item, actionType, quantity = 1) {
             const existingItemIndex = appState.selectedItems.findIndex(selected => selected.name === item.name);
+            let message = '';
+            let toastType = 'info';
 
             if (actionType === 'add') {
                 if (existingItemIndex > -1) {
                     appState.selectedItems[existingItemIndex].quantity += quantity;
+                    message = `Se añadió 1 unidad más de "${item.name}".`;
                 } else {
                     appState.selectedItems.push({ ...item, quantity: quantity });
+                    message = `"${item.name}" añadido al carrito.`;
                 }
+                toastType = 'success';
             } else if (actionType === 'set_quantity') { // New action type for direct quantity setting
                 if (quantity <= 0) { // If quantity is 0 or less, remove item
                     appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
+                    message = `"${item.name}" eliminado del carrito.`;
+                    toastType = 'info';
                 } else if (existingItemIndex > -1) {
                     appState.selectedItems[existingItemIndex].quantity = quantity;
+                    message = `Cantidad de "${item.name}" actualizada a ${quantity}.`;
+                    toastType = 'success';
                 } else {
                     appState.selectedItems.push({ ...item, quantity: quantity });
+                    message = `"${item.name}" añadido al carrito (x${quantity}).`;
+                    toastType = 'success';
                 }
             } else if (actionType === 'remove_all') {
                 // Filter out the item to remove all its units.
                 appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
+                message = `"${item.name}" eliminado del carrito.`;
+                toastType = 'info';
             } else if (actionType === 'toggle') { // For non-repeatable services (e.g., packages).
                 if (existingItemIndex > -1) {
                     // If already selected, remove it.
                     appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
+                    message = `"${item.name}" eliminado del carrito.`;
+                    toastType = 'info';
                 } else {
                     // If not selected, add it with quantity 1.
                     appState.selectedItems.push({ ...item, quantity: 1 });
+                    message = `"${item.name}" añadido al carrito.`;
+                    toastType = 'success';
                 }
             }
 
@@ -639,6 +761,9 @@
             }
             updateCartSummary(); // Update the floating cart bar.
             saveBookingFormData(); // Save cart state after each action.
+
+            // Show toast notification
+            showToast(message, toastType);
         }
 
         /**
@@ -651,11 +776,14 @@
         function updateCharacterInCart(service, character, action) {
             const fullCharacterName = `${service.name}: ${character.name}`;
             const existingItemIndex = appState.selectedItems.findIndex(selected => selected.name === fullCharacterName);
+            let message = '';
+            let toastType = 'info';
 
             if (action === 'add') {
                 if (existingItemIndex > -1) {
                     // If the character already exists, increment its quantity
                     appState.selectedItems[existingItemIndex].quantity++;
+                    message = `Se añadió 1 unidad más de "${character.name}".`;
                 } else {
                     // Add a new character with the base price of the service
                     appState.selectedItems.push({
@@ -664,15 +792,20 @@
                         price: service.price, // Use the base price of the character service
                         quantity: 1
                     });
+                    message = `"${character.name}" añadido al carrito.`;
                 }
+                toastType = 'success';
             } else if (action === 'remove_all') {
                 // Remove all instances of a specific character from the cart
                 appState.selectedItems = appState.selectedItems.filter(item => item.name !== fullCharacterName);
+                message = `"${character.name}" eliminado del carrito.`;
+                toastType = 'info';
             }
             // Re-render the services section and update the cart summary
             renderServicesSection();
             updateCartSummary();
             saveBookingFormData(); // Save cart state after each action.
+            showToast(message, toastType);
         }
 
         /**
@@ -685,10 +818,13 @@
         function updateThemeInCart(service, themeName, action) {
             const fullThemeName = `${service.name}: ${themeName}`;
             const existingItemIndex = appState.selectedItems.findIndex(selected => selected.name === fullThemeName);
+            let message = '';
+            let toastType = 'info';
 
             if (action === 'add') {
                 if (existingItemIndex > -1) {
                     appState.selectedItems[existingItemIndex].quantity++;
+                    message = `Se añadió 1 unidad más de "${themeName}".`;
                 } else {
                     appState.selectedItems.push({
                         id: `${service.id}-${themeName.replace(/\s+/g, '-')}`, // Generate a simple ID
@@ -696,17 +832,97 @@
                         price: service.price, // Use the base price of the decoration service
                         quantity: 1
                     });
+                    message = `"${themeName}" añadido al carrito.`;
                 }
+                toastType = 'success';
             } else if (action === 'remove_all') {
                 appState.selectedItems = appState.selectedItems.filter(item => item.name !== fullThemeName);
+                message = `"${themeName}" eliminado del carrito.`;
+                toastType = 'info';
             }
             renderServicesSection();
             updateCartSummary();
             saveBookingFormData(); // Save cart state after each action.
+            showToast(message, toastType);
         }
 
 
         // --- Modal Functions (Pop-up Windows) ---
+        /**
+         * Manages modal visibility and accessibility.
+         * @param {HTMLElement} modalElement - The main modal container element.
+         * @param {HTMLElement} modalContentElement - The modal content element (with tabindex="-1").
+         * @param {boolean} show - True to show, false to hide.
+         * @param {function} [callback] - Optional callback for when the modal closes.
+         */
+        function toggleModal(modalElement, modalContentElement, show, callback = null) {
+            if (!modalElement || !modalContentElement) {
+                console.error("Error: Modal elements not found.");
+                return;
+            }
+
+            if (show) {
+                appState.lastFocusedElement = document.activeElement; // Store the currently focused element
+                modalElement.classList.remove('hidden');
+                modalElement.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling background
+                setTimeout(() => {
+                    modalContentElement.classList.remove('scale-95', 'opacity-0');
+                    modalContentElement.classList.add('scale-100', 'opacity-100');
+                    modalContentElement.focus(); // Set focus to the modal content
+                }, 10);
+                // Add event listener for Escape key
+                document.addEventListener('keydown', handleEscapeKey);
+                appState.infoModalCallback = callback; // For infoModal specific callback
+            } else {
+                modalContentElement.classList.remove('scale-100', 'opacity-100');
+                modalContentElement.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modalElement.classList.add('hidden');
+                    modalElement.setAttribute('aria-hidden', 'true');
+                    document.body.style.overflow = ''; // Restore scrolling
+                    if (appState.lastFocusedElement) {
+                        appState.lastFocusedElement.focus(); // Return focus to the previously focused element
+                        appState.lastFocusedElement = null;
+                    }
+                    document.removeEventListener('keydown', handleEscapeKey); // Remove Escape key listener
+                    if (callback) { // For general modal callbacks
+                        callback();
+                    }
+                    if (appState.infoModalCallback) { // For infoModal specific callback
+                        appState.infoModalCallback();
+                        appState.infoModalCallback = null;
+                    }
+                }, 300); // Duration of the CSS transition
+            }
+        }
+
+        /**
+         * Handles the Escape key press to close the active modal.
+         * @param {KeyboardEvent} event - The keyboard event.
+         */
+        function handleEscapeKey(event) {
+            if (event.key === 'Escape') {
+                const infoModal = document.getElementById('infoModal');
+                const promoModal = document.getElementById('promoModal');
+                const bookingWarningModal = document.getElementById('bookingWarningModal');
+                const miniCartModal = document.getElementById('miniCartModal');
+                const imageModal = document.getElementById('imageModal');
+
+                if (!infoModal.classList.contains('hidden')) {
+                    closeModal();
+                } else if (!promoModal.classList.contains('hidden')) {
+                    closePromoModal();
+                } else if (!bookingWarningModal.classList.contains('hidden')) {
+                    closeBookingWarningModal();
+                } else if (!miniCartModal.classList.contains('hidden')) {
+                    closeMiniCartModal();
+                } else if (!imageModal.classList.contains('hidden')) {
+                    closeImageModal();
+                }
+            }
+        }
+
         /**
          * Displays a generic information modal.
          * @param {string} message - The message to display in the modal.
@@ -716,42 +932,19 @@
             const modal = document.getElementById('infoModal');
             const modalContent = document.getElementById('infoModalContent');
             const modalMessage = document.getElementById('modalMessage');
-
-            if (modal && modalContent && modalMessage) {
-                modalMessage.textContent = message;
-                modal.classList.remove('hidden');
-                // Animate the modal to appear smoothly
-                setTimeout(() => {
-                    modalContent.classList.remove('scale-95', 'opacity-0');
-                    modalContent.classList.add('scale-100', 'opacity-100');
-                }, 10); // Small delay to allow 'hidden' class to be removed first
-                appState.infoModalCallback = callback; // Store the callback in the global state.
-            } else {
-                console.error("Error: Info modal elements not found.");
-            }
+            if (modalMessage) modalMessage.textContent = message;
+            toggleModal(modal, modalContent, true, callback);
         }
 
         /**
-         * Hides the generic information modal and executes the callback if it exists.
+         * Hides the generic information modal.
          */
         function closeModal() {
             const modal = document.getElementById('infoModal');
             const modalContent = document.getElementById('infoModalContent');
             const modalMessage = document.getElementById('modalMessage');
-
-            if (modal && modalContent && modalMessage) {
-                modalContent.classList.remove('scale-100', 'opacity-100');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                // Wait for the animation to finish before completely hiding
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    modalMessage.textContent = '';
-                    if (appState.infoModalCallback) {
-                        appState.infoModalCallback(); // Execute the callback.
-                        appState.infoModalCallback = null; // Clear the callback after use.
-                    }
-                }, 300); // Duration of the CSS transition
-            }
+            if (modalMessage) modalMessage.textContent = ''; // Clear message on close
+            toggleModal(modal, modalContent, false);
         }
 
         /**
@@ -762,27 +955,18 @@
             const promoModal = document.getElementById('promoModal');
             const promoModalContent = document.getElementById('promoModalContent');
             const promoMessage = document.getElementById('promoMessage');
+            if (promoMessage) promoMessage.textContent = message;
+            toggleModal(promoModal, promoModalContent, true);
+            
+            // Set all bubble packages for promotion
+            appState.promotedPackages = bubblePackagesData.map(pkg => pkg.name);
 
-            if (promoModal && promoModalContent && promoMessage) {
-                promoMessage.textContent = message;
-                promoModal.classList.remove('hidden');
-                setTimeout(() => {
-                    promoModalContent.classList.remove('scale-95', 'opacity-0');
-                    promoModalContent.classList.add('scale-100', 'opacity-100');
-                }, 10);
-                
-                // Set all bubble packages for promotion
-                appState.promotedPackages = bubblePackagesData.map(pkg => pkg.name);
-
-                updateCartSummary();
-                // Re-render sections if active to show the discount.
-                if (appState.activeSection === 'services') renderServicesSection();
-                if (appState.activeSection === 'packages') renderPackagesSection();
-                if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection(); // New section
-                if (appState.activeSection === 'booking') renderBookingSection();
-            } else {
-                console.error("Error: Promotion modal elements not found.");
-            }
+            updateCartSummary();
+            // Re-render sections if active to show the discount.
+            if (appState.activeSection === 'services') renderServicesSection();
+            if (appState.activeSection === 'packages') renderPackagesSection();
+            if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection(); // New section
+            if (appState.activeSection === 'booking') renderBookingSection();
         }
 
         /**
@@ -792,19 +976,12 @@
             const modal = document.getElementById('promoModal');
             const modalContent = document.getElementById('promoModalContent');
             const promoMessage = document.getElementById('promoMessage');
-
-            if (modal && modalContent && promoMessage) {
-                modalContent.classList.remove('scale-100', 'opacity-100');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    promoMessage.textContent = '';
-                    // Promoted packages are not cleared so the discount persists during the session.
-                    updateCartSummary();
-                    if (appState.activeSection === 'packages') renderPackagesSection(); // Refresh to ensure discount display.
-                    if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection(); // New section
-                }, 300);
-            }
+            if (promoMessage) promoMessage.textContent = ''; // Clear message on close
+            toggleModal(modal, modalContent, false);
+            // Promoted packages are not cleared so the discount persists during the session.
+            updateCartSummary();
+            if (appState.activeSection === 'packages') renderPackagesSection(); // Refresh to ensure discount display.
+            if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection(); // New section
         }
 
         /**
@@ -813,15 +990,7 @@
         function showBookingWarningModal() {
             const modal = document.getElementById('bookingWarningModal');
             const modalContent = document.getElementById('bookingWarningModalContent');
-            if (modal && modalContent) {
-                modal.classList.remove('hidden');
-                setTimeout(() => {
-                    modalContent.classList.remove('scale-95', 'opacity-0');
-                    modalContent.classList.add('scale-100', 'opacity-100');
-                }, 10);
-            } else {
-                console.error("Error: Booking warning modal elements not found.");
-            }
+            toggleModal(modal, modalContent, true);
         }
 
         /**
@@ -830,13 +999,7 @@
         function closeBookingWarningModal() {
             const modal = document.getElementById('bookingWarningModal');
             const modalContent = document.getElementById('bookingWarningModalContent');
-            if (modal && modalContent) {
-                modalContent.classList.remove('scale-100', 'opacity-100');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                }, 300);
-            }
+            toggleModal(modal, modalContent, false);
         }
 
         /**
@@ -868,19 +1031,19 @@
                     // For Pintacaritas, if quantity > 1, show $45 strikethrough as the "original" single-hour price.
                     // For other items, show strikethrough if a promotion applies.
                     let strikethroughHtml = '';
-                    if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                    if (item.name === 'Pintacaritas' && item.quantity > 1) { // Changed name to match data
                         strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
-                    } else if (item.name !== 'Pintacaritas 🎨👧👦' && appState.promotedPackages.includes(item.name)) {
+                    } else if (item.name !== 'Pintacaritas' && appState.promotedPackages.includes(item.name)) { // Changed name to match data
                         strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
                     }
 
                     return `
                         <div class="flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
-                            <span class="text-gray-700 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
-                            <span class="font-semibold text-pink-600 text-sm">
+                            <span class="font-semibold text-gray-800 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                            <div class="flex items-center space-x-2">
                                 ${strikethroughHtml}
-                                $${itemTotalPrice.toFixed(2)}
-                            </span>
+                                <span class="font-bold text-pink-600 text-base">$${itemTotalPrice.toFixed(2)}</span>
+                            </div>
                         </div>
                     `;
                 }).join('');
@@ -898,13 +1061,7 @@
                 miniCartTransportFeeParent.classList.add('hidden');
             }
 
-            // Remove 'hidden' class and then start the transition
-            miniCartModal.classList.remove('hidden');
-            
-            setTimeout(() => {
-                miniCartModalContent.classList.remove('scale-95', 'opacity-0');
-                miniCartModalContent.classList.add('scale-100', 'opacity-100');
-            }, 50); // Slightly increased delay to ensure DOM has time to register 'hidden' removal
+            toggleModal(miniCartModal, miniCartModalContent, true);
         }
 
         /**
@@ -913,13 +1070,7 @@
         function closeMiniCartModal() {
             const modal = document.getElementById('miniCartModal');
             const modalContent = document.getElementById('miniCartModalContent');
-            if (modal && modalContent) { // Add existence check
-                modalContent.classList.remove('scale-100', 'opacity-100');
-                modalContent.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                }, 300);
-            }
+            toggleModal(modal, modalContent, false);
         }
 
         /**
@@ -932,33 +1083,58 @@
             const modalImage = document.getElementById('modalImage');
             const imageModalContent = document.getElementById('imageModalContent');
 
-            if (imageModal && modalImage && imageModalContent) {
+            if (modalImage) {
                 modalImage.src = imageUrl;
                 modalImage.alt = altText;
-                imageModal.classList.remove('hidden');
-                setTimeout(() => {
-                    imageModalContent.classList.remove('scale-95', 'opacity-0');
-                    imageModalContent.classList.add('scale-100', 'opacity-100');
-                }, 10);
-            } else {
-                console.error("Error: Image modal elements not found.");
             }
+            toggleModal(imageModal, imageModalContent, true);
         }
 
         /**
          * Hides the image modal.
          */
         function closeImageModal() {
-            const imageModal = document.getElementById('imageModal'); // Get the modal element itself
+            const imageModal = document.getElementById('imageModal');
             const imageModalContent = document.getElementById('imageModalContent');
-            if (imageModal && imageModalContent) {
-                imageModalContent.classList.remove('scale-100', 'opacity-100'); 
-                imageModalContent.classList.add('scale-95', 'opacity-0'); 
-                setTimeout(() => {
-                    imageModal.classList.add('hidden'); 
-                    document.getElementById('modalImage').src = ''; // Clear image source
-                }, 300);
-            }
+            toggleModal(imageModal, imageModalContent, false, () => {
+                const modalImage = document.getElementById('modalImage');
+                if (modalImage) modalImage.src = ''; // Clear image source after closing
+            });
+        }
+
+        /**
+         * Displays a toast notification.
+         * @param {string} message - The message to display.
+         * @param {'success'|'info'|'error'} type - The type of toast (for styling).
+         */
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toastNotification');
+            if (!toast) return;
+
+            // Clear previous classes and content
+            toast.className = ''; // Reset all classes
+            toast.classList.add(type); // Add type class
+            toast.innerHTML = ''; // Clear previous content
+
+            // Create icon element
+            const iconElement = document.createElement('i');
+            iconElement.classList.add('lucide');
+            iconElement.setAttribute('data-lucide', type === 'success' ? 'check-circle' : (type === 'error' ? 'x-circle' : 'info'));
+            toast.appendChild(iconElement);
+
+            // Create text node for message
+            const textNode = document.createTextNode(message);
+            toast.appendChild(textNode);
+
+            // Re-create lucide icons for the new icon
+            lucide.createIcons();
+
+            toast.classList.add('show');
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
 
 
@@ -969,29 +1145,29 @@
          */
         function renderHomeSection() {
             const html = `
-                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-purple-400 flex items-center justify-center min-h-[60vh] animate-fade-in">
-                    <div class="bg-gradient-to-br from-purple-100 to-pink-100 p-6 sm:p-10 rounded-2xl shadow-xl border-4 border-purple-300 max-w-3xl mx-auto text-center">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 flex items-center justify-center min-h-[60vh] animate-fade-in">
+                    <div class="bg-gradient-to-br from-purple-100 to-pink-100 p-8 sm:p-12 rounded-2xl shadow-xl border-4 border-purple-300 max-w-3xl mx-auto text-center">
                         
-                        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-800 mb-4 leading-tight text-center">
-                            ¡La Magia Comienza Aquí! ✨
+                        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-800 mb-6 leading-tight text-center">
+                            ¡La Magia Comienza Aquí! <i data-lucide="sparkles" class="lucide inline-block"></i>
                         </h2>
-                        <p class="text-base sm:text-lg lg:text-xl text-gray-700 mb-8 px-2">
+                        <p class="text-base sm:text-lg lg:text-xl text-gray-700 mb-10 px-2">
                             Diverty Eventos: <strong>fiestas infantiles inolvidables en Panamá</strong>. Animación, shows de burbujas, pintacaritas, globoflexia. ¡Hacemos tu fiesta soñada realidad!
                         </p>
-                        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                            <button id="homeExploreServices" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 border-2 border-white cursor-pointer">
-                                ¡Explora Nuestros Servicios! 🎉
+                        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mt-10">
+                            <button id="homeExploreServices" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 border-2 border-white cursor-pointer flex items-center justify-center">
+                                ¡Explora Nuestros Servicios! <i data-lucide="sparkles" class="lucide"></i>
                             </button>
-                            <button id="homeExplorePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 border-2 border-white cursor-pointer">
-                                ¡Explora Nuestros Planes de Cumpleaños! 🎂
+                            <button id="homeExplorePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 border-2 border-white cursor-pointer flex items-center justify-center">
+                                ¡Explora Nuestros Planes de Cumpleaños! <i data-lucide="cake" class="lucide"></i>
                             </button>
                         </div>
-                        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-8">
-                            <button id="homeExploreBubblePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 border-2 border-white cursor-pointer">
-                                ¡Paquetes de Burbujas! 🫧
+                        <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mt-6">
+                            <button id="homeExploreBubblePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 border-2 border-white cursor-pointer flex items-center justify-center">
+                                ¡Paquetes de Burbujas! <i data-lucide="cloud-rain" class="lucide"></i>
                             </button>
-                            <button id="homePromoButton" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-500 via-purple-400 to-purple-600 border-2 border-white cursor-pointer">
-                                🎉 Promoción del Mes 🎉
+                            <button id="homePromoButton" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-500 via-purple-400 to-purple-600 border-2 border-white cursor-pointer flex items-center justify-center">
+                                <i data-lucide="award" class="lucide"></i> Promoción del Mes <i data-lucide="award" class="lucide"></i>
                             </button>
                         </div>
                     </div>
@@ -1021,9 +1197,9 @@
          */
         function renderServicesSection() {
             // Services that can have multiple quantities and, therefore, "Add" and "Remove All" buttons.
-            const repeatableServices = ['Pintacaritas 🎨👧👦', 'Globoflexia 🎈💫', 'Máquinas de Snack Algodón y Pop Corn 🍿🍭'];
+            const repeatableServices = ['Pintacaritas', 'Globoflexia', 'Máquinas de Snack Algodón y Pop Corn']; // Names adjusted
             
-            const cardsHtml = servicesData.map(service => {
+            const cardsHtml = servicesData.map((service, index) => {
                 // Image for the service card
                 // If imageUrl is empty, it will not render the <img> tag.
                 // Added 'service-image' class for click event.
@@ -1042,17 +1218,17 @@
                     }).join('');
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                             ${serviceImageHtml}
-                            <div class="p-4 sm:p-6 flex flex-col flex-grow">
-                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${service.name}</h2>
-                                <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
-                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                            <div class="p-6 sm:p-8 flex flex-col flex-grow">
+                                <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-indigo-700">${service.name} <i data-lucide="${service.icon}" class="lucide inline-block"></i></h2>
+                                <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5">${service.description}</p>
+                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
                                     $${service.price.toFixed(2)}
                                 </p>
                                 <div class="mb-4">
-                                    <label for="characterSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu personaje: ✨</label>
-                                    <select id="characterSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base cursor-pointer">
+                                    <label for="characterSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu personaje: <i data-lucide="sparkles" class="lucide inline-block"></i></label>
+                                    <select id="characterSelect-${service.id}" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base cursor-pointer transition duration-150 ease-in-out">
                                         <option value="">Selecciona un personaje</option>
                                         ${optionsHtml}
                                     </select>
@@ -1061,10 +1237,10 @@
                                     <button
                                         data-service-id="${service.id}"
                                         data-action="add_character"
-                                        class="character-action-button flex-grow bg-gradient-to-br from-indigo-600 via-indigo-400 to-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white cursor-pointer"
+                                        class="character-action-button flex-grow bg-gradient-to-br from-indigo-600 via-indigo-400 to-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white cursor-pointer flex items-center justify-center"
                                         disabled
                                     >
-                                        Añadir Seleccionado ➕
+                                        Añadir Seleccionado <i data-lucide="plus" class="lucide"></i>
                                     </button>
                                 </div>
                                 <div id="selectedCharactersList-${service.id}" class="mt-4">
@@ -1073,7 +1249,7 @@
                                         <div class="flex justify-between items-center bg-purple-100 p-2 rounded-lg mb-2 shadow-sm border border-purple-200">
                                             <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
                                             <button class="remove-specific-character-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200 cursor-pointer"
-                                                    data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
+                                                    data-full-name="${item.name}" aria-label="Quitar ${item.name}"><i data-lucide="trash-2" class="lucide"></i></button>
                                         </div>
                                     `).join('')}
                                 </div>
@@ -1100,17 +1276,17 @@
                     themeOptionsHtml += '</optgroup>';
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                             ${serviceImageHtml}
-                            <div class="p-4 sm:p-6 flex flex-col flex-grow">
-                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-pink-700">${service.name}</h2>
-                                <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
-                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                            <div class="p-6 sm:p-8 flex flex-col flex-grow">
+                                <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-pink-700">${service.name} <i data-lucide="${service.icon}" class="lucide inline-block"></i></h2>
+                                <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5">${service.description}</p>
+                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
                                     $${service.price.toFixed(2)}
                                 </p>
                                 <div class="mb-4">
-                                    <label for="themeSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu temática: 🎨</label>
-                                    <select id="themeSelect-${service.id}" class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-sm sm:text-base cursor-pointer">
+                                    <label for="themeSelect-${service.id}" class="block text-gray-700 font-bold mb-2">Elige tu temática: <i data-lucide="palette" class="lucide inline-block"></i></label>
+                                    <select id="themeSelect-${service.id}" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-sm sm:text-base cursor-pointer transition duration-150 ease-in-out">
                                         ${themeOptionsHtml}
                                     </select>
                                 </div>
@@ -1118,10 +1294,10 @@
                                     <button
                                         data-service-id="${service.id}"
                                         data-action="add_theme"
-                                        class="theme-action-button flex-grow bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white cursor-pointer"
+                                        class="theme-action-button flex-grow bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white cursor-pointer flex items-center justify-center"
                                         disabled
                                     >
-                                        Añadir Seleccionado ➕
+                                        Añadir Seleccionado <i data-lucide="plus" class="lucide"></i>
                                     </button>
                                 </div>
                                 <div id="selectedThemesList-${service.id}" class="mt-4">
@@ -1130,7 +1306,7 @@
                                         <div class="flex justify-between items-center bg-pink-100 p-2 rounded-lg mb-2 shadow-sm border border-pink-200">
                                             <span>${item.name.replace(service.name + ': ', '')} (x${item.quantity})</span>
                                             <button class="remove-specific-theme-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200 cursor-pointer"
-                                                    data-full-name="${item.name}" aria-label="Quitar ${item.name}">🗑️</button>
+                                                    data-full-name="${item.name}" aria-label="Quitar ${item.name}"><i data-lucide="trash-2" class="lucide"></i></button>
                                         </div>
                                     `).join('')}
                                 </div>
@@ -1143,12 +1319,12 @@
                     const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 10; 
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:hover:shadow-2xl">
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                             ${serviceImageHtml}
-                            <div class="p-4 sm:p-6 flex flex-col flex-grow">
-                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-yellow-700">${service.name}</h2>
-                                <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
-                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                            <div class="p-6 sm:p-8 flex flex-col flex-grow">
+                                <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-yellow-700">${service.name} <i data-lucide="${service.icon}" class="lucide inline-block"></i></h2>
+                                <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5">${service.description}</p>
+                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
                                     $${service.price.toFixed(2)} <span class="text-lg text-gray-600">/ niño</span>
                                 </p>
                                 <div class="mb-4">
@@ -1156,7 +1332,8 @@
                                     <input
                                         type="number"
                                         id="manualidadesQuantity-${service.id}"
-                                        class="w-full p-2 border-2 border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 text-sm sm:text-base"
+                                        name="manualidadesQuantity-${service.id}"
+                                        class="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 text-sm sm:text-base transition duration-150 ease-in-out"
                                         value="${currentQuantity}"
                                         min="10"
                                     />
@@ -1167,16 +1344,16 @@
                                         data-service-id="${service.id}"
                                         data-service-name="${service.name}"
                                         data-service-price="${service.price}"
-                                        class="update-manualidades-quantity-button flex-grow bg-gradient-to-br from-yellow-600 via-yellow-400 to-yellow-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer">
-                                        Actualizar Cantidad 🔄
+                                        class="update-manualidades-quantity-button flex-grow bg-gradient-to-br from-yellow-600 via-yellow-400 to-yellow-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer flex items-center justify-center">
+                                        Actualizar Cantidad <i data-lucide="refresh-ccw" class="lucide"></i>
                                     </button>
                                     ${selectedItemInCart ? `
                                     <button
                                         data-service-id="${service.id}"
                                         data-service-name="${service.name}"
                                         data-action-type="remove_all"
-                                        class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105 cursor-pointer">
-                                        Quitar Taller 🗑️
+                                        class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105 cursor-pointer flex items-center justify-center">
+                                        Quitar Taller <i data-lucide="trash-2" class="lucide"></i>
                                     </button>
                                     ` : ''}
                                 </div>
@@ -1189,9 +1366,9 @@
                     const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 0;
                     
                     let displayPriceHtml;
-                    if (service.name === 'Pintacaritas 🎨👧👦') {
+                    if (service.name === 'Pintacaritas') { // Name adjusted
                         // Special display for Pintacaritas on the card
-                        displayPriceHtml = `<p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                        displayPriceHtml = `<p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
                             $${service.price.toFixed(2)} <span class="text-lg text-gray-600">x 1 Hora</span><br>
                             <span class="text-xl text-gray-700">Horas adicionales: $40</span>
                         </p>`;
@@ -1205,7 +1382,7 @@
                             displayPriceForCard = service.price * 0.90; // Show discounted price on card
                         }
 
-                        displayPriceHtml = `<p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                        displayPriceHtml = `<p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
                             ${originalPriceHtmlForCard}$${displayPriceForCard.toFixed(2)}
                         </p>`;
                     }
@@ -1219,16 +1396,16 @@
                                     data-item-name="${service.name}"
                                     data-item-price="${service.price}"
                                     data-action-type="add"
-                                    class="add-remove-button flex-grow bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer">
-                                    Añadir ➕ ${currentQuantity > 0 ? `(x${currentQuantity})` : ''}
+                                    class="add-remove-button flex-grow bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer flex items-center justify-center">
+                                    Añadir <i data-lucide="plus" class="lucide"></i> ${currentQuantity > 0 ? `(x${currentQuantity})` : ''}
                                 </button>
                                 ${currentQuantity > 0 ? `
                                 <button
                                     data-item-name="${service.name}"
                                     data-item-price="${service.price}"
                                     data-action-type="remove_all"
-                                    class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105 cursor-pointer">
-                                    Quitar Todo 🗑️
+                                    class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105 cursor-pointer flex items-center justify-center">
+                                    Quitar Todo <i data-lucide="trash-2" class="lucide"></i>
                                 </button>
                                 ` : ''}
                             </div>
@@ -1243,18 +1420,18 @@
                                 data-item-name="${service.name}"
                                 data-item-price="${service.price}"
                                 data-action-type="toggle"
-                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 cursor-pointer">
-                                ${isSelected ? 'Quitar del Carrito ➖' : 'Añadir al Carrito ➕'}
+                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 cursor-pointer flex items-center justify-center">
+                                ${isSelected ? 'Quitar del Carrito <i data-lucide="minus" class="lucide"></i>' : 'Añadir al Carrito <i data-lucide="plus" class="lucide"></i>'}
                             </button>
                         `;
                     }
 
                     return `
-                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                        <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                             ${serviceImageHtml}
-                            <div class="p-4 sm:p-6 flex flex-col flex-grow">
-                                <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-purple-700">${service.name}</h2>
-                                <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${service.description}</p>
+                            <div class="p-6 sm:p-8 flex flex-col flex-grow">
+                                <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-purple-700">${service.name} <i data-lucide="${service.icon}" class="lucide inline-block"></i></h2>
+                                <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5">${service.description}</p>
                                 ${displayPriceHtml}
                             </div>
                             ${buttonsHtml}
@@ -1264,12 +1441,12 @@
             }).join('');
 
             const html = `
-                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-purple-400 animate-fade-in">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Servicios 🎉</h2>
-                    <p class="text-lg text-gray-700 text-center mb-8">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-10 sm:mb-12">Nuestros Servicios <i data-lucide="sparkles" class="lucide inline-block"></i></h2>
+                    <p class="text-lg text-gray-700 text-center mb-10">
                         Servicios de animación para fiestas infantiles en Panamá. ¡Hacemos tu evento mágico e inolvidable!
                     </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
                         ${cardsHtml}
                     </div>
                 </section>
@@ -1336,16 +1513,17 @@
                         const existingInCart = appState.selectedItems.find(item => item.name === fullCharName);
 
                         if (existingInCart) {
-                            addButton.textContent = `Añadir uno más de ${selectedChar.name} (x${existingInCart.quantity + 1})`;
+                            addButton.innerHTML = `Añadir uno más de ${selectedChar.name} <i data-lucide="plus" class="lucide"></i> (x${existingInCart.quantity + 1})`;
                             addButton.disabled = false;
                         } else {
-                            addButton.textContent = `Añadir ${selectedChar.name} al Carrito ➕`;
+                            addButton.innerHTML = `Añadir ${selectedChar.name} al Carrito <i data-lucide="plus" class="lucide"></i>`;
                             addButton.disabled = false;
                         }
                     } else {
-                        addButton.textContent = `Añadir Seleccionado ➕`;
+                        addButton.innerHTML = `Añadir Seleccionado <i data-lucide="plus" class="lucide"></i>`;
                         addButton.disabled = true;
                     }
+                    lucide.createIcons(); // Re-create icons after updating innerHTML
                 };
             });
 
@@ -1390,16 +1568,17 @@
                         const existingInCart = appState.selectedItems.find(item => item.name === fullThemeName);
 
                         if (existingInCart) {
-                            addButton.textContent = `Añadir una más de ${selectedThemeName} (x${existingInCart.quantity + 1})`;
+                            addButton.innerHTML = `Añadir una más de ${selectedThemeName} <i data-lucide="plus" class="lucide"></i> (x${existingInCart.quantity + 1})`;
                             addButton.disabled = false;
                         } else {
-                            addButton.textContent = `Añadir ${selectedThemeName} al Carrito ➕`;
+                            addButton.innerHTML = `Añadir ${selectedThemeName} al Carrito <i data-lucide="plus" class="lucide"></i>`;
                             addButton.disabled = false;
                         }
                     } else {
-                        addButton.textContent = `Añadir Seleccionado ➕`;
+                        addButton.innerHTML = `Añadir Seleccionado <i data-lucide="plus" class="lucide"></i>`;
                         addButton.disabled = true;
                     }
+                    lucide.createIcons(); // Re-create icons after updating innerHTML
                 };
             });
 
@@ -1430,7 +1609,7 @@
                     
                     const servicePrice = service.price;
                     const quantity = parseInt(event.target.value, 10);
-                    const subtotalSpan = document.getElementById(`manualidadesSubtotal-${serviceId}`);
+                    const subtotalSpan = document.getElementById(`manualidadesSubtotal-${service.id}`);
                     if (subtotalSpan && !isNaN(quantity) && quantity >= 0) {
                         subtotalSpan.textContent = `$${(servicePrice * quantity).toFixed(2)}`;
                     }
@@ -1449,7 +1628,7 @@
          * Renders the Packages section.
          */
         function renderPackagesSection() {
-            const cardsHtml = packagesData.map(pkg => {
+            const cardsHtml = packagesData.map((pkg, index) => {
                 const selectedItemInCart = appState.selectedItems.find(item => item.name === pkg.name);
                 const isSelected = selectedItemInCart ? true : false;
 
@@ -1459,12 +1638,12 @@
                 let buttonBorder;
 
                 if (isSelected) {
-                    buttonText = 'Quitar del Carrito ➖';
+                    buttonText = 'Quitar del Carrito <i data-lucide="minus" class="lucide"></i>';
                     buttonClassColor = 'bg-red-500 hover:bg-red-600';
                     buttonShadow = 'shadow-md';
                     buttonBorder = ''; // No border for remove state
                 } else {
-                    buttonText = 'Añadir al Carrito ➕';
+                    buttonText = 'Añadir al Carrito <i data-lucide="plus" class="lucide"></i>';
                     buttonClassColor = 'bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white';
                     buttonShadow = 'shadow-xl';
                     buttonBorder = 'border-2 border-white';
@@ -1483,22 +1662,22 @@
                 const packageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">` : '';
 
                 return `
-                    <div class="${pkg.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                    <div class="${pkg.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                         ${packageImageHtml}
-                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
-                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-indigo-700">${pkg.name}</h2>
-                            <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
-                            <ul class="list-disc list-inside text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
+                        <div class="p-6 sm:p-8 flex flex-col flex-grow">
+                            <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-indigo-700">${pkg.name} <i data-lucide="${pkg.icon}" class="lucide inline-block"></i></h2>
+                            <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5">${pkg.description}</p>
+                            <ul class="list-disc list-inside text-gray-600 mb-4 sm:mb-5 text-sm sm:text-base">
                                 ${pkg.services.map(service => `<li>${service}</li>`).join('')}
                             </ul>
-                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
                                 ${originalPriceHtml}$${displayPrice.toFixed(2)}
                             </p>
                             <button
                                 data-item-name="${pkg.name}"
                                 data-item-price="${pkg.price}"
                                 data-action-type="toggle"
-                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder} cursor-pointer">
+                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder} cursor-pointer flex items-center justify-center">
                                 ${buttonText}
                             </button>
                         </div>
@@ -1507,12 +1686,12 @@
             }).join('');
 
             const html = `
-                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-pink-400 animate-fade-in">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Nuestros Planes de Cumpleaños 🎂</h2>
-                    <p class="text-lg text-gray-700 text-center mb-8">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-pink-400 animate-fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-10 sm:mb-12">Nuestros Planes de Cumpleaños <i data-lucide="cake" class="lucide inline-block"></i></h2>
+                    <p class="text-lg text-gray-700 text-center mb-10">
                         Descubre nuestros planes de <strong>cumpleaños para eventos infantiles en Panamá</strong>. ¡La opción perfecta para tu celebración!
                     </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
                         ${cardsHtml}
                     </div>
                 </section>
@@ -1541,7 +1720,7 @@
          * Renders the Bubble Packages section.
          */
         function renderBubblePackagesSection() {
-            const cardsHtml = bubblePackagesData.map(pkg => {
+            const cardsHtml = bubblePackagesData.map((pkg, index) => {
                 const selectedItemInCart = appState.selectedItems.find(item => item.name === pkg.name);
                 const isSelected = selectedItemInCart ? true : false;
 
@@ -1551,12 +1730,12 @@
                 let buttonBorder;
 
                 if (isSelected) {
-                    buttonText = 'Quitar del Carrito ➖';
+                    buttonText = 'Quitar del Carrito <i data-lucide="minus" class="lucide"></i>';
                     buttonClassColor = 'bg-red-500 hover:bg-red-600';
                     buttonShadow = 'shadow-md';
                     buttonBorder = ''; // No border for remove state
                 } else {
-                    buttonText = 'Añadir al Carrito ➕';
+                    buttonText = 'Añadir al Carrito <i data-lucide="plus" class="lucide"></i>';
                     buttonClassColor = 'bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 text-white';
                     buttonShadow = 'shadow-xl';
                     buttonBorder = 'border-2 border-white';
@@ -1576,22 +1755,22 @@
 
 
                 return `
-                    <div class="${pkg.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+                    <div class="${pkg.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                         ${bubblePackageImageHtml}
-                        <div class="p-4 sm:p-6 flex flex-col flex-grow">
-                            <h2 class="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 text-blue-700">${pkg.name}</h2>
-                            <p class="text-sm sm:text-base text-gray-700 mb-3 sm:mb-4">${pkg.description}</p>
-                            <ul class="list-disc list-inside text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
+                        <div class="p-6 sm:p-8 flex flex-col flex-grow">
+                            <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-blue-700">${pkg.name} <i data-lucide="${pkg.icon}" class="lucide inline-block"></i></h2>
+                            <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5">${pkg.description}</p>
+                            <ul class="list-disc list-inside text-gray-600 mb-4 sm:mb-5 text-sm sm:text-base">
                                 ${pkg.services.map(service => `<li>${service}</li>`).join('')}
                             </ul>
-                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-3 sm:mb-4">
+                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
                                 ${originalPriceHtml}$${displayPrice.toFixed(2)}
                             </p>
                             <button
                                 data-item-name="${pkg.name}"
                                 data-item-price="${pkg.price}"
                                 data-action-type="toggle"
-                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder} cursor-pointer">
+                                class="add-remove-button mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder} cursor-pointer flex items-center justify-center">
                                 ${buttonText}
                             </button>
                         </div>
@@ -1600,12 +1779,12 @@
             }).join('');
 
             const html = `
-                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-blue-400 animate-fade-in">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-blue-700 text-center mb-8 sm:mb-10">Nuestros Paquetes de Burbujas 🫧</h2>
-                    <p class="text-lg text-gray-700 text-center mb-8">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-blue-400 animate-fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-blue-700 text-center mb-10 sm:mb-12">Nuestros Paquetes de Burbujas <i data-lucide="cloud-rain" class="lucide inline-block"></i></h2>
+                    <p class="text-lg text-gray-700 text-center mb-10">
                         ¡Sumérgete en la diversión con nuestros increíbles paquetes de shows de burbujas gigantes en Panamá!
                     </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
                         ${cardsHtml}
                     </div>
                 </section>
@@ -1634,20 +1813,20 @@
          * Renders the Company References section.
          */
         function renderCompanyReferencesSection() {
-            const cardsHtml = companyReferencesData.map(company => `
-                <div class="bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center p-4 border-4 border-gray-200 transition duration-300 hover:scale-[1.02] hover:shadow-2xl">
+            const cardsHtml = companyReferencesData.map((company, index) => `
+                <div class="bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center p-6 border-4 border-gray-200 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                     <img src="${company.imageUrl}" alt="Logo de ${company.name}" class="w-full h-32 object-cover rounded-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">
                     <h3 class="text-lg sm:text-xl font-bold text-gray-800 text-center">${company.name}</h3>
                 </div>
             `).join('');
 
             const html = `
-                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-green-400 animate-fade-in">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-green-700 text-center mb-8 sm:mb-10">Nuestros Clientes Corporativos 🤝</h2>
-                    <p class="text-lg text-gray-700 text-center mb-8">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-green-400 animate-fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-green-700 text-center mb-10 sm:mb-12">Nuestros Clientes Corporativos <i data-lucide="building" class="lucide inline-block"></i></h2>
+                    <p class="text-lg text-gray-700 text-center mb-10">
                         Hemos llevado la magia de las burbujas gigantes a eventos de grandes empresas y organizaciones en Panamá. ¡Confía en nuestra experiencia!
                     </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-8">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-10">
                         ${cardsHtml}
                     </div>
                 </section>
@@ -1676,26 +1855,26 @@
             // Generate the list of selected items to display in the booking section.
             const selectedItemsListHtml = appState.selectedItems.length === 0
                 ? `<p class="text-red-600 text-sm sm:text-base">No has seleccionado ningún servicio. Por favor, vuelve a la sección de Servicios o Paquetes.</p>`
-                : `<div class="space-y-2">
+                : `<div class="space-y-3">
                     ${appState.selectedItems.map((item) => {
-                        const itemTotalPrice = getAdjustedItemPrice(item); // Get total price for this item
+                        const itemTotalForJotForm = getAdjustedItemPrice(item); // This now returns the total for the item
 
                         // Determine if a strikethrough price should be shown in the booking summary.
                         // For Pintacaritas, if quantity > 1, show $45 strikethrough as the "original" single-hour price.
                         // For other items, show strikethrough if a promotion applies.
                         let strikethroughHtml = '';
-                        if (item.name === 'Pintacaritas 🎨👧👦' && item.quantity > 1) {
+                        if (item.name === 'Pintacaritas' && item.quantity > 1) { // Name adjusted
                             strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
-                        } else if (item.name !== 'Pintacaritas 🎨👧👦' && appState.promotedPackages.includes(item.name)) {
+                        } else if (item.name !== 'Pintacaritas' && appState.promotedPackages.includes(item.name)) { // Name adjusted
                             strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
                         }
                         
                         return `
-                            <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-                                <span class="font-semibold text-gray-800 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                            <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                                <span class="font-semibold text-gray-800 text-base">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
                                 <div class="flex items-center space-x-2">
                                     ${strikethroughHtml}
-                                    <span class="font-bold text-pink-600 text-base">$${itemTotalPrice.toFixed(2)}</span>
+                                    <span class="font-bold text-pink-600 text-lg">$${itemTotalForJotForm.toFixed(2)}</span>
                                 </div>
                             </div>
                         `;
@@ -1705,8 +1884,8 @@
             // Calculate and display the transport surcharge.
             const currentTransportFee = transportFeesByLocation[appState.selectedLocation] || 0;
             const transportFeeDisplayHtml = currentTransportFee > 0
-                ? `<p class="text-lg font-bold text-gray-700 mt-2">Recargo por Transporte (${appState.selectedLocation}): <span class="text-orange-600">$${currentTransportFee.toFixed(2)}</span></p>`
-                : `<p class="text-lg font-bold text-gray-700 mt-2">Recargo por Transporte: <span class="text-green-600">¡Gratis en Panamá Centro!</span></p>`;
+                ? `<p class="text-lg font-bold text-gray-700 mt-4">Recargo por Transporte (${appState.selectedLocation}): <span class="text-orange-600">$${currentTransportFee.toFixed(2)}</span></p>`
+                : `<p class="text-lg font-bold text-gray-700 mt-4">Recargo por Transporte: <span class="text-green-600">¡Gratis en Panamá Centro!</span></p>`;
 
             // Calculate the final total price including discounts and surcharges.
             const totalItemsPrice = appState.selectedItems.reduce((sum, item) => {
@@ -1715,28 +1894,28 @@
             const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
             const html = `
-                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-4 sm:p-8 my-8 border-4 border-purple-400 animate-fade-in">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-8 sm:mb-10">Reserva tu Evento 🗓️</h2>
-                    <p class="text-lg text-gray-700 text-center mb-8">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-10 sm:mb-12">Reserva tu Evento <i data-lucide="calendar-check" class="lucide inline-block"></i></h2>
+                    <p class="text-lg text-gray-700 text-center mb-10">
                         ¡Reserva tu <strong>fiesta infantil en Panamá</strong>! Completa este formulario para asegurar la magia de tu evento.
                     </p>
-                    <div class="grid grid-cols-1 lg:grid-cols-1 gap-4 sm:gap-12">
-                        <h3 class="text-xl sm:text-2xl font-bold text-purple-700 mb-4 sm:mb-6">Completa los Detalles de Tu Reserva 📝</h3>
-                        <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-4 sm:p-8 rounded-3xl shadow-2xl border-4 border-purple-400">
-                            <form id="bookingForm" class="space-y-4">
-                                <div class="bg-gradient-to-br from-pink-50 to-pink-100 p-4 rounded-2xl shadow-xl border-4 border-pink-300 mb-4">
-                                    <h4 class="text-lg font-bold text-pink-700 mb-3">Tu Selección:</h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 sm:gap-16">
+                        <h3 class="text-xl sm:text-2xl font-bold text-purple-700 mb-6 sm:mb-8">Completa los Detalles de Tu Reserva <i data-lucide="clipboard-list" class="lucide inline-block"></i></h3>
+                        <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-6 sm:p-10 rounded-3xl shadow-2xl border-4 border-purple-400">
+                            <form id="bookingForm" class="space-y-6">
+                                <div class="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-2xl shadow-xl border-4 border-pink-300 mb-6">
+                                    <h4 class="text-lg font-bold text-pink-700 mb-4">Tu Selección:</h4>
                                     ${selectedItemsListHtml}
                                     ${transportFeeDisplayHtml}
-                                    <p class="text-lg font-bold text-purple-700 mt-3">Total a Pagar: <span class="text-pink-600">$${finalTotalPrice.toFixed(2)}</span></p>
+                                    <p class="text-xl font-bold text-purple-700 mt-4">Total a Pagar: <span class="text-pink-600">$${finalTotalPrice.toFixed(2)}</span></p>
                                 </div>
                                 
                                 <div>
-                                    <label for="locationSelect" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Ubicación del Evento (Provincia/Zona):📍</label>
+                                    <label for="locationSelect" class="block text-gray-700 font-bold mb-2 sm:mb-3 text-sm sm:text-base">Ubicación del Evento (Provincia/Zona):<i data-lucide="map-pin" class="lucide inline-block"></i></label>
                                     <select
                                         id="locationSelect"
                                         name="ubicacionEvento"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base cursor-pointer"
+                                        class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base cursor-pointer transition duration-150 ease-in-out"
                                     >
                                         <option value="Panamá Centro" ${appState.bookingFormData.selectedLocation === 'Panamá Centro' ? 'selected' : ''}>Panamá Centro</option>
                                         <option value="Arraiján" ${appState.bookingFormData.selectedLocation === 'Arraiján' ? 'selected' : ''}>Arraiján ($10 adicional)</option>
@@ -1747,12 +1926,12 @@
                                 </div>
 
                                 <div>
-                                    <label for="exactLocation" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Dirección Exacta del Evento: 🗺️</label>
+                                    <label for="exactLocation" class="block text-gray-700 font-bold mb-2 sm:mb-3 text-sm sm:text-base">Dirección Exacta del Evento: <i data-lucide="map" class="lucide inline-block"></i></label>
                                     <input
                                         type="text"
                                         id="exactLocation"
                                         name="direccionExacta"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+                                        class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base transition duration-150 ease-in-out"
                                         placeholder="Ej: Calle Principal, Casa #15, Cerca de la escuela..."
                                         value="${appState.bookingFormData.exactLocation || ''}"
                                         required
@@ -1761,12 +1940,12 @@
                                 </div>
 
                                 <div>
-                                    <label for="bookingDate" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Fecha del Evento: 📆</label>
+                                    <label for="bookingDate" class="block text-gray-700 font-bold mb-2 sm:mb-3 text-sm sm:text-base">Fecha del Evento: <i data-lucide="calendar" class="lucide inline-block"></i></label>
                                     <input
                                         type="date"
                                         id="bookingDate"
                                         name="fechaEvento"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+                                        class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base transition duration-150 ease-in-out"
                                         min="${new Date().toISOString().split('T')[0]}"
                                         value="${appState.bookingFormData.bookingDate || ''}"
                                         required
@@ -1774,24 +1953,24 @@
                                     <span id="error-bookingDate" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label for="bookingTime" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Hora del Evento: ⏰</label>
+                                    <label for="bookingTime" class="block text-gray-700 font-bold mb-2 sm:mb-3 text-sm sm:text-base">Hora del Evento: <i data-lucide="clock" class="lucide inline-block"></i></label>
                                     <input
                                         type="time"
                                         id="bookingTime"
                                         name="horaEvento"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+                                        class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base transition duration-150 ease-in-out"
                                         value="${appState.bookingFormData.bookingTime || ''}"
                                         required
                                     />
                                     <span id="error-bookingTime" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label for="customerName" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Nombre: 👤</label>
+                                    <label for="customerName" class="block text-gray-700 font-bold mb-2 sm:mb-3 text-sm sm:text-base">Tu Nombre: <i data-lucide="user" class="lucide inline-block"></i></label>
                                     <input
                                         type="text"
                                         id="customerName"
                                         name="nombreCliente"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+                                        class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base transition duration-150 ease-in-out"
                                         placeholder="Ej: Juan Pérez"
                                         value="${appState.bookingFormData.customerName || ''}"
                                         required
@@ -1799,12 +1978,12 @@
                                     <span id="error-customerName" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label for="customerEmail" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Email: 📧</label>
+                                    <label for="customerEmail" class="block text-gray-700 font-bold mb-2 sm:mb-3 text-sm sm:text-base">Tu Email: <i data-lucide="mail" class="lucide inline-block"></i></label>
                                     <input
                                         type="email"
                                         id="customerEmail"
                                         name="emailCliente"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+                                        class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base transition duration-150 ease-in-out"
                                         placeholder="Ej: tu.email@example.com"
                                         value="${appState.bookingFormData.customerEmail || ''}"
                                         required
@@ -1812,12 +1991,12 @@
                                     <span id="error-customerEmail" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label for="customerPhone" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tu Teléfono:📞</label>
+                                    <label for="customerPhone" class="block text-gray-700 font-bold mb-2 sm:mb-3 text-sm sm:text-base">Tu Teléfono:<i data-lucide="phone" class="lucide inline-block"></i></label>
                                     <input
                                         type="tel"
                                         id="customerPhone"
                                         name="telefonoCliente"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+                                        class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base transition duration-150 ease-in-out"
                                         placeholder="Ej: 555-1234567"
                                         value="${appState.bookingFormData.customerPhone || ''}"
                                         required
@@ -1825,12 +2004,12 @@
                                     <span id="error-customerPhone" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label for="eventType" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Tipo de Evento: 🎉</label>
+                                    <label for="eventType" class="block text-gray-700 font-bold mb-2 sm:mb-3 text-sm sm:text-base">Tipo de Evento: <i data-lucide="party-popper" class="lucide inline-block"></i></label>
                                     <input
                                         type="text"
                                         id="eventType"
                                         name="tipoEvento"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+                                        class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base transition duration-150 ease-in-out"
                                         placeholder="Ej: Cumpleaños, Graduación"
                                         value="${appState.bookingFormData.eventType || ''}"
                                         required
@@ -1838,12 +2017,12 @@
                                     <span id="error-eventType" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
                                 <div>
-                                    <label for="numKids" class="block text-gray-700 font-bold mb-1 sm:mb-2 text-sm sm:text-base">Número Estimado de Niños: 👧👦</label>
+                                    <label for="numKids" class="block text-gray-700 font-bold mb-2 sm:mb-3 text-sm sm:text-base">Número Estimado de Niños: <i data-lucide="users" class="lucide inline-block"></i></label>
                                     <input
                                         type="number"
                                         id="numKids"
                                         name="numeroNinos"
-                                        class="w-full p-2 sm:p-3 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+                                        class="w-full p-3 sm:p-4 border-2 border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base transition duration-150 ease-in-out"
                                         placeholder="Ej: 20"
                                         min="1"
                                         value="${appState.bookingFormData.numKids || ''}"
@@ -1851,8 +2030,8 @@
                                     />
                                     <span id="error-numKids" class="error-message hidden">Este campo es obligatorio.</span>
                                 </div>
-                                <button type="submit" class="w-full bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-full shadow-xl text-base sm:text-lg mt-4 transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer">
-                                    ¡Confirmar Reserva Mágica! ✨
+                                <button type="submit" class="w-full bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-full shadow-xl text-base sm:text-lg mt-6 transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer flex items-center justify-center">
+                                    ¡Confirmar Reserva Mágica! <i data-lucide="sparkles" class="lucide"></i>
                                 </button>
                             </form>
                         </div>
@@ -1860,6 +2039,8 @@
                 </section>
             `;
             renderSection(html);
+            // After rendering the form, ensure Lucide icons are created for the newly injected HTML.
+            lucide.createIcons();
 
             const bookingForm = document.getElementById('bookingForm');
             if (bookingForm) {
@@ -2112,14 +2293,14 @@
 
             // *** Validations are performed first ***
             if (appState.selectedItems.length === 0) {
-                showInfoModal('¡Por favor, añade al menos un servicio o paquete a tu reserva! 🛒');
+                showInfoModal('¡Por favor, añade al menos un servicio o paquete a tu reserva! <i data-lucide="shopping-cart" class="lucide"></i>');
                 return;
             }
 
             // Validate minimum quantity for "Mini Taller de Manualidades"
-            const miniTallerItem = appState.selectedItems.find(item => item.name === 'Mini Taller de Manualidades 🎨✂️');
+            const miniTallerItem = appState.selectedItems.find(item => item.name === 'Mini Taller de Manualidades'); // Name adjusted
             if (miniTallerItem && miniTallerItem.quantity < 10) {
-                showInfoModal('El "Mini Taller de Manualidades" requiere un mínimo de 10 niños. Por favor, ajusta la cantidad. 🧑‍🎨');
+                showInfoModal('El "Mini Taller de Manualidades" requiere un mínimo de 10 niños. Por favor, ajusta la cantidad. <i data-lucide="scissors" class="lucide"></i>');
                 return;
             }
 
@@ -2146,13 +2327,13 @@
             }
 
             if (!formIsValid) {
-                showInfoModal('¡Oops! Por favor, completa todos los campos requeridos correctamente para realizar la reserva. 📝');
+                showInfoModal('¡Oops! Por favor, completa todos los campos requeridos correctamente para realizar la reserva. <i data-lucide="clipboard-list" class="lucide"></i>');
                 return;
             }
 
             // If all validations pass, save the form and show the modal.
             saveBookingFormData(); // Save data before redirection.
-            showInfoModal('¡Redirigiendo a JotForm para finalizar tu reserva! 🎉 Haz clic en "¡Entendido!" para continuar.', () => {
+            showInfoModal('¡Redirigiendo a JotForm para finalizar tu reserva! <i data-lucide="sparkles" class="lucide"></i> Haz clic en "¡Entendido!" para continuar.', () => {
                 // This is what will execute when the user clicks "¡Entendido!" in the modal.
 
                 // --- Data Collection for JotForm (re-obtained to ensure latest values) ---
