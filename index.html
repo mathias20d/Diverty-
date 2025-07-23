@@ -558,7 +558,7 @@
             <button id="viewCartDetailsButton" class="bg-gradient-to-br from-purple-500 via-purple-400 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Ver detalles del carrito">
                 Ver Detalles <i data-lucide="shopping-cart"></i>
             </button>
-            <button id="proceedToBookButton" class="bg-gradient-to-br from-cyan-500 via-blue-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Proceder a la reserva">
+            <button id="proceedToBookButton" class="bg-gradient-to-br from-cyan-500 via-blue-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-content-center" aria-label="Proceder a la reserva">
                 Reservar <i data-lucide="sparkles"></i>
             </button>
         </div>
@@ -1176,16 +1176,16 @@
             if (service && service.imageUrl) {
                 return service.imageUrl;
             }
-            // Check animatorPackagesData (Animators)
-            const animatorPkg = animatorPackagesData.find(p => p.name === itemName);
-            if (animatorPkg && animatorPkg.imageUrl) {
-                return animatorPkg.imageUrl;
-            }
-            // Check clownPackagesData (Clowns)
-            const clownPkg = clownPackagesData.find(p => p.name === itemName);
-            if (clownPkg && clownPkg.imageUrl) {
-                return clownPkg.imageUrl;
-            }
+            // Check animatorPackagesData (Animators) - NO IMAGE FOR THESE SECTIONS
+            // const animatorPkg = animatorPackagesData.find(p => p.name === itemName);
+            // if (animatorPkg && animatorPkg.imageUrl) {
+            //     return animatorPkg.imageUrl;
+            // }
+            // Check clownPackagesData (Clowns) - NO IMAGE FOR THESE SECTIONS
+            // const clownPkg = clownPackagesData.find(p => p.name === itemName);
+            // if (clownPkg && clownPkg.imageUrl) {
+            //     return clownPkg.imageUrl;
+            // }
             // Check bubblePackagesData
             const bubblePkg = bubblePackagesData.find(bp => bp.name === itemName);
             if (bubblePkg && bubblePkg.imageUrl) {
@@ -1449,9 +1449,9 @@
                                 <img src="${itemImageUrl}" alt="Imagen de ${item.name}" class="w-10 h-10 object-cover rounded-md mr-2" loading="lazy">
                                 <span class="font-semibold text-gray-800 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
                             </div>
-                            <div class="flex items-center space-x-2">
+                            <div class="flex items-center flex-shrink-0 ml-4">
                                 ${strikethroughHtml}
-                                <span class="font-bold text-pink-600 text-base">$${itemTotalPrice.toFixed(2)}</span>
+                                <span class="font-bold text-pink-600 text-base whitespace-nowrap">$${itemTotalPrice.toFixed(2)}</span>
                                 <button class="remove-item-from-minicart-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200 cursor-pointer" data-item-name="${item.name}" aria-label="Quitar ${item.name}"><i data-lucide="x-circle"></i></button>
                             </div>
                         </div>
@@ -1573,9 +1573,10 @@
          * @param {Array<Object>} packagesArray - Array of package data.
          * @param {string} sectionTitle - Title for the section.
          * @param {string} sectionIcon - Lucide icon name for the section title.
+         * @param {boolean} includeImage - Whether to include the package image.
          * @returns {string} HTML string for the package section.
          */
-        function generatePackageCardsHtml(packagesArray, sectionTitle, sectionIcon) {
+        function generatePackageCardsHtml(packagesArray, sectionTitle, sectionIcon, includeImage = true) {
             const cardsHtml = packagesArray.map((pkg, index) => {
                 const isSelected = appState.selectedItems.some(item => item.name === pkg.name);
                 let buttonText, buttonClassColor;
@@ -1596,7 +1597,8 @@
                 if (Math.abs(displayPrice - pkg.price) > 0.001) {
                     originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
                 }
-                const packageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
+                // Conditionally include the image
+                const packageImageHtml = includeImage && pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
 
                 return `
                     <div class="${pkg.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
@@ -1749,7 +1751,7 @@
                         service.themes.ninas.forEach(theme => {
                             const fullThemeName = `${service.name}: ${theme}`;
                             const isThemeAlreadyAdded = selectedThemeItems.some(item => item.name === fullThemeName);
-                            themeOptionsHtml += `<option value="${theme}" ${isThemeAlreadyAdded ? 'disabled' : ''}>${theme} ${isThemeAlreadyAdded ? '(Añadida)' : ''}</option>`;
+                            themeOptionsHtml += `<option value="${theme}" ${isThemeAlreadyAdded ? 'disabled' : ''}>${theme} ${isThemeAlreadyAdded ? '(Añadido)' : ''}</option>`;
                         });
                         themeOptionsHtml += '</optgroup><optgroup label="Niño">';
                         service.themes.ninos.forEach(theme => {
@@ -2053,7 +2055,8 @@
          */
         function renderAnimatorPackagesSection() {
             try {
-                const html = generatePackageCardsHtml(animatorPackagesData, 'Paquetes de Animadores', 'user-check');
+                // Pass includeImage = false to hide images for this section
+                const html = generatePackageCardsHtml(animatorPackagesData, 'Paquetes de Animadores', 'user-check', false);
                 renderSection(html);
 
                 document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
@@ -2064,11 +2067,7 @@
                         handleCartAction({ name: itemName, price: itemPrice }, actionType);
                     };
                 });
-                document.querySelectorAll('.service-image').forEach(img => {
-                    img.onclick = (event) => {
-                        showImageModal(event.target.src, event.target.alt);
-                    };
-                });
+                // No image click listener needed as images are removed
                 console.log('renderAnimatorPackagesSection: Event listeners para la sección Paquetes de Animadores asignados.');
             } catch (error) {
                 console.error('renderAnimatorPackagesSection: Error al renderizar la sección Paquetes de Animadores:', error);
@@ -2080,7 +2079,8 @@
          */
         function renderClownPackagesSection() {
             try {
-                const html = generatePackageCardsHtml(clownPackagesData, 'Paquetes de Payasos', 'clown');
+                // Pass includeImage = false to hide images for this section
+                const html = generatePackageCardsHtml(clownPackagesData, 'Paquetes de Payasos', 'clown', false);
                 renderSection(html);
 
                 document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
@@ -2091,11 +2091,7 @@
                         handleCartAction({ name: itemName, price: itemPrice }, actionType);
                     };
                 });
-                document.querySelectorAll('.service-image').forEach(img => {
-                    img.onclick = (event) => {
-                        showImageModal(event.target.src, event.target.alt);
-                    };
-                });
+                // No image click listener needed as images are removed
                 console.log('renderClownPackagesSection: Event listeners para la sección Paquetes de Payasos asignados.');
             } catch (error) {
                 console.error('renderClownPackagesSection: Error al renderizar la sección Paquetes de Payasos:', error);
