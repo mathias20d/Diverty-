@@ -8,15 +8,15 @@
     <meta name="description" content="Organizamos las mejores fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Expertos en animación infantil, shows de burbujas, pintacaritas, globoflexia y personajes temáticos. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!">
     
     <!-- Open Graph Tags for social media and messaging apps (Facebook, WhatsApp, etc.). -->
-    <meta property="og:title" content="Diverty Eventos | Fiestas Infantiles en Panamá">
-    <meta property="og:description" content="Organizamos las mejores fiestas infantiles en Panamá. Animación, shows de burbujas, pintacaritas y más. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!">
-    <!-- IMPORTANT! Corrected image URL for Netlify. -->
-    <meta property="og:image" content="https://divertypanama.netlify.app/android-chrome-512x512.png"> 
+    <!-- Estas etiquetas se actualizarán dinámicamente al abrir un artículo del blog. -->
+    <meta property="og:title" id="ogTitle" content="Diverty Eventos | Fiestas Infantiles en Panamá">
+    <meta property="og:description" id="ogDescription" content="Organizamos las mejores fiestas infantiles en Panamá. Animación, shows de burbujas, pintacaritas y más. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!">
+    <meta property="og:image" id="ogImage" content="https://divertypanama.netlify.app/android-chrome-512x512.png"> 
     <meta property="og:image:width" content="512"> 
     <meta property="og:image:height" content="512"> 
-    <meta property="og:image:alt" content="Logo de Diverty Eventos, para fiestas infantiles en Panamá">
-    <meta property="og:url" content="https://divertypanama.netlify.app/"> <!-- Your actual website URL. -->
-    <meta property="og:type" content="website">
+    <meta property="og:image:alt" id="ogImageAlt" content="Logo de Diverty Eventos, para fiestas infantiles en Panamá">
+    <meta property="og:url" id="ogUrl" content="https://divertypanama.netlify.app/"> <!-- Your actual website URL. -->
+    <meta property="og:type" id="ogType" content="website">
 
     <!-- Google tag (gtag.js) for Google Analytics: Allows tracking of user visits and behavior. -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-R3G3Y0FLVN"></script>
@@ -1821,16 +1821,37 @@
             }
             if (textElement) textElement.innerHTML = post.content; // Use innerHTML for rich content
 
-            // Set social sharing links
-            const pageUrl = window.location.href; // Or a specific URL for the blog post if you had dynamic routes
-            const shareText = encodeURIComponent(`¡Mira este increíble artículo de Diverty Eventos: "${post.title}"!`);
-            const shareUrl = encodeURIComponent(pageUrl);
+            // --- Dynamic Open Graph Tags Update ---
+            const ogTitle = document.getElementById('ogTitle');
+            const ogDescription = document.getElementById('ogDescription');
+            const ogImage = document.getElementById('ogImage');
+            const ogImageAlt = document.getElementById('ogImageAlt');
+            const ogUrl = document.getElementById('ogUrl');
+            const ogType = document.getElementById('ogType');
 
-            if (shareWhatsapp) shareWhatsapp.href = `https://wa.me/?text=${shareText}%20${shareUrl}`;
-            if (shareFacebook) shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}`;
+            // Construct the shareable URL with hash
+            const shareableUrl = `${window.location.origin}${window.location.pathname}#${post.id}`;
+
+            if (ogTitle) ogTitle.setAttribute('content', post.title);
+            if (ogDescription) ogDescription.setAttribute('content', post.description);
+            if (ogImage) ogImage.setAttribute('content', post.imageUrl);
+            if (ogImageAlt) ogImageAlt.setAttribute('content', post.title);
+            if (ogUrl) ogUrl.setAttribute('content', shareableUrl); // Use hash-based URL for sharing
+            if (ogType) ogType.setAttribute('content', 'article');
+
+            // Update the browser's URL without reloading the page
+            history.pushState({ id: post.id }, post.title, `#${post.id}`);
+            // --- End Dynamic Open Graph Tags Update ---
+
+            // Set social sharing links
+            const encodedShareText = encodeURIComponent(`¡Mira este increíble artículo de Diverty Eventos: "${post.title}"!`);
+            const encodedShareUrl = encodeURIComponent(shareableUrl);
+
+            if (shareWhatsapp) shareWhatsapp.href = `https://wa.me/?text=${encodedShareText}%20${encodedShareUrl}`;
+            if (shareFacebook) shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodedShareUrl}&quote=${encodedShareText}`;
             // Instagram sharing is more complex as it doesn't have a direct web share API for posts.
             // This link will open Instagram, but the user will need to manually share.
-            if (shareInstagram) shareInstagram.href = `https://www.instagram.com/direct/new/?text=${shareText}%20${shareUrl}`;
+            if (shareInstagram) shareInstagram.href = `https://www.instagram.com/direct/new/?text=${encodedShareText}%20${encodedShareUrl}`;
 
             // CTA Button
             if (blogPostCtaButton) {
@@ -1885,6 +1906,25 @@
                 document.getElementById('blogPostModalImage').alt = '';
                 document.getElementById('blogPostModalText').innerHTML = '';
                 document.getElementById('relatedBlogPostsContainer').innerHTML = ''; // Clear related posts
+
+                // --- Revert Open Graph Tags ---
+                const ogTitle = document.getElementById('ogTitle');
+                const ogDescription = document.getElementById('ogDescription');
+                const ogImage = document.getElementById('ogImage');
+                const ogImageAlt = document.getElementById('ogImageAlt');
+                const ogUrl = document.getElementById('ogUrl');
+                const ogType = document.getElementById('ogType');
+
+                if (ogTitle) ogTitle.setAttribute('content', 'Diverty Eventos | Fiestas Infantiles en Panamá');
+                if (ogDescription) ogDescription.setAttribute('content', 'Organizamos las mejores fiestas infantiles en Panamá. Animación, shows de burbujas, pintacaritas y más. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!');
+                if (ogImage) ogImage.setAttribute('content', 'https://divertypanama.netlify.app/android-chrome-512x512.png');
+                if (ogImageAlt) ogImageAlt.setAttribute('content', 'Logo de Diverty Eventos, para fiestas infantiles en Panamá');
+                if (ogUrl) ogUrl.setAttribute('content', 'https://divertypanama.netlify.app/');
+                if (ogType) ogType.setAttribute('content', 'website');
+
+                // Revert the browser's URL hash
+                history.pushState({}, document.title, window.location.pathname);
+                // --- End Revert Open Graph Tags ---
             });
         }
 
@@ -2173,7 +2213,7 @@
                                     <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="remove_all" class="add-remove-button flex-grow modern-button remove-button" aria-label="Quitar todas las unidades de ${service.name} del carrito">
                                         Quitar Todo <i data-lucide="trash-2"></i>
                                     </button>` : ''}
-                                </div>`;
+                        </div>`;
                         } else {
                             const isSelected = !!selectedItemInCart;
                             const buttonClassColor = isSelected ? 'modern-button remove-button' : `modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700`;
@@ -3030,6 +3070,23 @@
             }
         }
 
+        /**
+         * Checks the URL hash on page load and opens the corresponding blog post if an ID is found.
+         */
+        function checkUrlHashForBlogPost() {
+            const hash = window.location.hash.substring(1); // Get hash without '#'
+            if (hash) {
+                const blogPost = blogPostsData.find(post => post.id === hash);
+                if (blogPost) {
+                    setActiveSection('blog'); // Ensure blog section is active first
+                    // Use a small delay to ensure the blog section is rendered before opening modal
+                    setTimeout(() => {
+                        showBlogPostContent(blogPost);
+                    }, 100); 
+                }
+            }
+        }
+
         // --- Application Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOMContentLoaded: El DOM ha sido completamente cargado y parseado.');
@@ -3086,7 +3143,13 @@
                 document.getElementById('viewCartDetailsButton').onclick = showMiniCartModal;
                 console.log('DOMContentLoaded: Listeners de carrito asignados.');
 
-                setActiveSection('home');
+                // Check URL hash for blog post on load
+                checkUrlHashForBlogPost();
+                // If no blog post hash, or after handling it, set the default active section
+                if (!window.location.hash) {
+                    setActiveSection('home');
+                }
+                
                 updateCartSummary();
                 lucide.createIcons(); // Initial icon creation
                 console.log('DOMContentLoaded: Inicialización completa. Sección Home cargada.');
