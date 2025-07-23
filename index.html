@@ -260,7 +260,7 @@
         .whatsapp-float-button:hover {
             transform: scale(1.1);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            background-image: linear-gradient(to bottom right, #1DA851, #25D366); /* Reverse gradient on hover */
+            background-image: linear-gradient(to bottom right, #1DA850, #25D366); /* Reverse gradient on hover */
             animation: none; /* Stop pulse on hover for smoother scale effect */
         }
         .whatsapp-float-button .lucide {
@@ -623,6 +623,7 @@
     <div id="blogPostModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="blogPostModalTitle" aria-hidden="true">
         <div id="blogPostModalContent" tabindex="-1" class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl shadow-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-center border-4 border-blue-500 transform transition-all duration-300 scale-95 opacity-0">
             <h2 id="blogPostModalTitle" class="text-3xl font-extrabold text-white mb-4"></h2>
+            <p id="blogPostReadingTime" class="text-gray-300 text-sm mb-4 flex items-center justify-center"></p> <!-- Added for reading time -->
             <img id="blogPostModalImage" src="" alt="" class="w-full h-48 object-cover rounded-lg mb-4">
             <div id="blogPostModalText" class="text-lg text-gray-100 mb-6 text-left"></div>
             
@@ -786,7 +787,7 @@
         // --- Global Application State Management ---
         // 'appState' contains all state variables that control application behavior.
         let appState = {
-            activeSection: 'home', // Currently visible section ('home', 'services', 'animatorPackages', 'clownPackages', 'bubblePackages', 'booking').
+            activeSection: 'home', // Currently visible section ('home', 'services', 'animatorPackages', 'clownPackages', 'bubblePackages', 'booking', 'testimonials', 'gallery', 'blog').
             selectedItems: [], // Array to store selected services/packages in the cart.
             promotedPackages: [], // Array to store the names of packages on promotion.
             selectedLocation: 'Panamá Centro', // Selected location for calculating transport surcharge.
@@ -1018,9 +1019,18 @@
             { imageUrl: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg', alt: 'Personaje temático en evento' },
             { imageUrl: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', alt: 'Taller de manualidades para niños' },
             { imageUrl: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg', alt: 'Show de burbujas gigantes' },
-            { imageUrl: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg', alt: 'Burbujas premium con luces LED' },
+            { imageUrl: 'https://i.ibb.co/nMjnb9sJ/file-000000003a0461fa918e3a8f30f312e2.png', alt: 'Burbujas premium con luces LED' },
             { imageUrl: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg', alt: 'Evento corporativo con show de burbujas' }
         ];
+
+        // Function to estimate reading time
+        function estimateReadingTime(text) {
+            const wordsPerMinute = 200; // Average reading speed
+            const textWithoutHtml = text.replace(/<[^>]*>/g, ''); // Remove HTML tags
+            const wordCount = textWithoutHtml.split(/\s+/).filter(word => word.length > 0).length;
+            const minutes = Math.ceil(wordCount / wordsPerMinute);
+            return minutes === 1 ? '1 minuto de lectura' : `${minutes} minutos de lectura`;
+        }
 
         // NEW: Static blog posts data
         const blogPostsData = [
@@ -1028,11 +1038,11 @@
                 id: 'blog1',
                 title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025',
                 description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. Desde superhéroes hasta personajes mágicos, ¡inspírate para el cumpleaños de tus hijos!',
-                imageUrl: 'https://i.ibb.co/L8bY704/fiesta-tematica-panama.jpg',
+                imageUrl: 'https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png', // Updated image URL here
                 icon: 'party-popper',
                 content: `
                     <p>Organizar una fiesta infantil es una aventura llena de creatividad y alegría. Para el 2025, las tendencias en temáticas de fiestas infantiles en Panamá están más emocionantes que nunca. Aquí te presentamos las 7 temáticas más pedidas que harán que la celebración de tus hijos sea inolvidable:</p>
-                    <img src="https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg" alt="Decoración temática de fiesta infantil con globos y personajes" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
+                    <img src="https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png" alt="Decoración de fiesta infantil con globos y personajes de dibujos animados" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
                     <h3>1. El Mundo Mágico de Encanto:</h3>
                     <p>Inspirada en la película de Disney, esta temática llena de color y música es perfecta para los pequeños soñadores. Imagina decoraciones vibrantes y personajes que cobran vida, transportando a todos a un lugar donde la magia es real.</p>
                     <h3>2. Aventura con Bluey:</h3>
@@ -1065,8 +1075,8 @@
                     <h3>¿Qué hace tan especial a un show de burbujas gigantes?</h3>
                     <ul>
                         <li><strong>Magia Visual:</strong> Las burbujas de tamaños increíbles, algunas tan grandes que pueden envolver a un niño, crean un espectáculo visual hipnotizante. La luz se refracta en ellas, creando un efecto arcoíris que fascina a todos.</li>
-                        <img src="https://placehold.co/600x400/8B5CF6/FFFFFF?text=Burbuja+Gigante+Interacción" alt="Niño dentro de una burbuja gigante creada por un animador" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
                         <li><strong>Interactividad:</strong> Los niños no solo observan, ¡participan! Pueden intentar atrapar burbujas, hacer las suyas propias, e incluso entrar dentro de una burbuja gigante para una foto inolvidable.</li>
+                        <img src="https://i.ibb.co/nMjnb9sJ/file-000000003a0461fa918e3a8f30f312e2.png" alt="Niño dentro de una burbuja gigante creada por un animador" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
                         <li><strong>Momentos Fotográficos Únicos:</strong> Las fotos de los niños dentro de una burbuja o rodeados de cientos de ellas son recuerdos que durarán para siempre y que querrás compartir.</li>
                         <li><strong>Diversión para Todas las Edades:</strong> Aunque es un show infantil, los adultos también se maravillan con la belleza y la ciencia detrás de las burbujas. Es un entretenimiento que une a toda la familia.</li>
                         <li><strong>Adaptabilidad:</strong> Se puede realizar en casi cualquier espacio, ya sea en un jardín, un salón de eventos o incluso en interiores con las precauciones adecuadas. Solo necesitamos un poco de espacio para la magia.</li>
@@ -1074,32 +1084,14 @@
                     <p>En Diverty Eventos, somos expertos en shows de burbujas gigantes. Utilizamos equipos profesionales y soluciones especiales para crear las burbujas más impresionantes y duraderas. ¡Añade este toque mágico a tu fiesta y crea recuerdos inolvidables que tus invitados atesorarán!</p>
                 `,
                 createdAt: new Date('2025-07-15T14:30:00Z') // Example date
-            },
-            {
-                id: 'blog3',
-                title: 'Consejos para Elegir el Mejor Animador para tu Fiesta Infantil en Panamá',
-                description: 'Un buen animador es el alma de la fiesta. Aprende qué buscar al contratar un animador infantil en Panamá para asegurar la diversión y el éxito de tu evento.',
-                imageUrl: 'https://i.ibb.co/Yy2M5r4/animador-fiesta-panama.jpg',
-                icon: 'user-check',
-                content: `
-                    <p>El animador es la pieza clave para que una fiesta infantil sea un éxito rotundo. En Panamá, hay muchas opciones, pero elegir al mejor requiere considerar algunos puntos importantes. Aquí te dejamos nuestros mejores consejos para que tomes la decisión correcta:</p>
-                    <img src="https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg" alt="Animador interactuando alegremente con un grupo de niños en una fiesta" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
-                    <h3>1. Experiencia y Profesionalismo:</h3>
-                    <p>Busca animadores con experiencia comprobada en fiestas infantiles. Un profesional sabrá cómo manejar diferentes grupos de edades, improvisar ante imprevistos y mantener la energía alta durante todo el evento, asegurando que la diversión nunca decaiga.</p>
-                    <h3>2. Repertorio de Actividades:</h3>
-                    <p>Pregunta sobre los juegos, dinámicas, canciones y shows que ofrecen. ¿Incluyen pintacaritas, globoflexia, magia cómica? Un repertorio variado asegura que todos los niños encuentren algo que les guste y participen activamente.</p>
-                    <img src="https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg" alt="Niños con pintacaritas de animales y superhéroes en una fiesta infantil" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
-                    <h3>3. Conexión con los Niños:</h3>
-                    <p>Un buen animador tiene una energía especial que le permite conectar rápidamente con los niños. Busca videos o testimonios que muestren su interacción con los pequeños. La empatía, la paciencia y la capacidad de hacer reír son fundamentales.</p>
-                    <h3>4. Adaptabilidad:</h3>
-                    <p>Cada fiesta es diferente. El animador debe ser capaz de adaptar sus actividades al espacio disponible, al número de niños y a sus edades, e incluso a la temática de la fiesta. La flexibilidad es clave para un evento exitoso.</p>
-                    <h3>5. Puntualidad y Presentación:</h3>
-                    <p>La puntualidad es crucial para que el evento comience sin contratiempos. Además, la presentación del animador (vestuario, higiene y actitud) debe ser impecable y acorde al evento que estás organizando.</p>
-                    <p>En Diverty Eventos, nuestros animadores son seleccionados por su talento, experiencia y su amor por los niños. ¡Confía en nosotros para llevar la alegría y la diversión a tu celebración en Panamá, garantizando sonrisas inolvidables!</p>
-                `,
-                createdAt: new Date('2025-07-10T09:15:00Z') // Example date
             }
-        ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // Sort by date, newest first
+        ].filter(post => post.title !== 'Consejos para Elegir el Mejor Animador para tu Fiesta Infantil en Panamá') // Filter out the specified blog post
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // Sort by date, newest first
+
+        // Add estimated reading time to each blog post object
+        blogPostsData.forEach(post => {
+            post.readingTime = estimateReadingTime(post.content);
+        });
 
         // Transport surcharges by event location.
         const transportFeesByLocation = {
@@ -1806,6 +1798,7 @@
             const modal = document.getElementById('blogPostModal');
             const modalContent = document.getElementById('blogPostModalContent');
             const titleElement = document.getElementById('blogPostModalTitle');
+            const readingTimeElement = document.getElementById('blogPostReadingTime'); // NEW
             const imageElement = document.getElementById('blogPostModalImage');
             const textElement = document.getElementById('blogPostModalText');
             const shareWhatsapp = document.getElementById('shareWhatsapp');
@@ -1815,6 +1808,7 @@
             const relatedBlogPostsContainer = document.getElementById('relatedBlogPostsContainer');
 
             if (titleElement) titleElement.textContent = post.title;
+            if (readingTimeElement) readingTimeElement.innerHTML = `<i data-lucide="clock" class="w-5 h-5 mr-2"></i> ${post.readingTime}`; // NEW
             if (imageElement) {
                 imageElement.src = post.imageUrl;
                 imageElement.alt = post.title;
@@ -1902,6 +1896,7 @@
             toggleModal(modal, modalContent, false, () => {
                 // Clear content after closing
                 document.getElementById('blogPostModalTitle').textContent = '';
+                document.getElementById('blogPostReadingTime').textContent = ''; // NEW
                 document.getElementById('blogPostModalImage').src = '';
                 document.getElementById('blogPostModalImage').alt = '';
                 document.getElementById('blogPostModalText').innerHTML = '';
@@ -2665,6 +2660,7 @@
                         <img src="${post.imageUrl || 'https://placehold.co/400x250/8B5CF6/FFFFFF?text=Blog+Post'}" alt="Imagen para ${post.title}" class="blog-image cursor-pointer" loading="lazy">
                         <div class="blog-card-content">
                             <h3 class="text-xl sm:text-2xl font-bold mb-3">${post.title} <i data-lucide="${post.icon || 'book-open'}"></i></h3>
+                            <p class="text-gray-500 text-xs mt-2 mb-2 flex items-center"><i data-lucide="clock" class="w-4 h-4 mr-1"></i> ${post.readingTime}</p> <!-- NEW -->
                             <p class="text-gray-700 text-base sm:text-lg mb-4 flex-grow">${post.description}</p>
                             <button class="read-more-blog-button modern-button bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 text-white" data-blog-id="${post.id}" aria-label="Leer más sobre ${post.title}">
                                 Leer Más <i data-lucide="arrow-right"></i>
@@ -2700,6 +2696,7 @@
                         showImageModal(event.target.src, event.target.alt);
                     };
                 });
+                lucide.createIcons(); // Ensure icons are created after rendering the blog section
                 console.log('renderBlogSection: Sección Blog renderizada con datos estáticos y listeners asignados.');
             } catch (error) {
                 console.error('renderBlogSection: Error al renderizar la sección Blog:', error);
@@ -2728,7 +2725,7 @@
                                 <div class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm border border-gray-200">
                                     <div class="flex items-center flex-grow min-w-0">
                                         <img src="${itemImageUrl}" alt="Imagen de ${item.name}" class="w-12 h-12 object-cover rounded-md mr-3" loading="lazy">
-                                        <span class="font-semibold text-gray-800 text-sm sm:text-base">${item.name} ${item.quantity > 0 ? `(x${item.quantity})` : ''}</span>
+                                        <span class="font-semibold text-gray-800 text-sm sm:text-base">${item.name} ${item.quantity > 0 ? `(x${item.quantity})` : ''} ($${itemTotalForJotForm.toFixed(2)})</span>
                                     </div>
                                     <div class="flex items-center flex-shrink-0 ml-4">
                                         ${strikethroughHtml}
