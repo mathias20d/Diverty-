@@ -1724,11 +1724,19 @@
             updateCartSummary();
             saveBookingFormData(); // Save empty cart
             // Re-render current section to update button states if needed
-            if (appState.activeSection === 'services') renderServicesSection();
-            if (appState.activeSection === 'home') renderHomeSection();
-            if (appState.activeSection === 'animatorPackages') renderAnimatorPackagesSection();
-            if (appState.activeSection === 'clownPackages') renderClownPackagesSection();
-            if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection();
+            if (appState.activeSection === 'services') {
+                renderServicesSection();
+            } else if (appState.activeSection === 'home') {
+                renderHomeSection();
+            } else if (appState.activeSection === 'animatorPackages') {
+                renderAnimatorPackagesSection();
+            } else if (appState.activeSection === 'clownPackages') {
+                renderClownPackagesSection();
+            } else if (appState.activeSection === 'bubblePackages') {
+                renderBubblePackagesSection();
+            } else if (appState.activeSection === 'booking') {
+                renderBookingSection();
+            }
             showToast('Carrito vaciado.', 'info');
         }
 
