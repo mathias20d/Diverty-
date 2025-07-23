@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- SEO optimized title: Includes main keywords and location to improve search engine visibility. -->
-    <title>Diverty Eventos | Fiestas Infantiles en Panamá | Animación, Shows de Burbujas, Pintacaritas</title>
-    <meta name="description" content="Organizamos las mejores fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Expertos en animación infantil, shows de burbujas, pintacaritas, globoflexia, personajes temáticos y paquetes de diversión. ¡Haz que la fiesta de tus hijos sea inolvidable con Diverty Eventos en todo Panamá!">
+    <title>Fiestas Infantiles en Panamá | Animación y Shows | Diverty Eventos</title>
+    <meta name="description" content="Organizamos las mejores fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Expertos en animación infantil, shows de burbujas, pintacaritas, globoflexia y personajes temáticos. ¡Haz la fiesta soñada de tus hijos con Diverty Eventos!">
     
     <!-- Open Graph Tags for social media and messaging apps (Facebook, WhatsApp, etc.). -->
     <meta property="og:title" content="Diverty Eventos | Fiestas Infantiles en Panamá">
@@ -419,6 +419,133 @@
         .modern-button.remove-button:hover {
             background-image: linear-gradient(to right, #DC2626, #EF4444);
         }
+
+        /* Blog specific styles */
+        .blog-card {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Ensures rounded corners on image */
+            border: 4px solid #e9d5ff; /* Softer border: purple-200 */
+        }
+        .blog-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .blog-card img {
+            width: 100%;
+            height: 200px; /* Fixed height for consistency */
+            object-fit: cover;
+            border-bottom: 2px solid #e5e7eb; /* Light gray border under image */
+        }
+        .blog-card-content {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .blog-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            color: #6d28d9; /* Purple-700 */
+            margin-bottom: 0.75rem;
+        }
+        .blog-card p {
+            font-family: 'Quicksand', sans-serif;
+            color: #4b5563; /* Gray-700 */
+            font-size: 0.95rem;
+            line-height: 1.6;
+            flex-grow: 1; /* Allows description to take available space */
+            margin-bottom: 1rem;
+        }
+        .blog-card .modern-button {
+            margin-top: auto; /* Pushes button to the bottom */
+            width: 100%;
+        }
+
+        /* Styles for images within the blog post modal content */
+        #blogPostModalContent {
+            background-image: linear-gradient(to bottom right, #fdf4ff, #ffe4e6); /* Light purple to light pink gradient */
+            border-color: #e9d5ff; /* purple-200 */
+            color: #4b5563; /* Default text color for modal content */
+        }
+        #blogPostModalTitle {
+            color: #6d28d9; /* purple-800 */
+        }
+        #blogPostModalImage {
+            border: 2px solid #fbcfe8; /* pink-300 */
+        }
+        #blogPostModalText img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.75rem; /* rounded-lg */
+            margin: 1.5rem auto; /* my-6 */
+            display: block; /* Center the image */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border: 2px solid #fbcfe8; /* pink-300 */
+        }
+        #blogPostModalText h3 {
+            color: #db2777; /* pink-600 for subheadings in modal */
+            font-size: 1.75rem; /* text-2xl */
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        #blogPostModalText ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #4b5563; /* gray-600 */
+        }
+        #blogPostModalText li {
+            margin-bottom: 0.5rem;
+        }
+        #blogPostModalText p {
+            margin-bottom: 1rem;
+            color: #4b5563; /* gray-700 */
+            line-height: 1.75;
+        }
+        /* Styling for social share buttons */
+        .share-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .share-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        .share-button.whatsapp { background-color: #25D366; }
+        .share-button.facebook { background-color: #1877F2; }
+        .share-button.instagram { 
+            background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+        }
+        /* Related articles styling */
+        #relatedBlogPostsContainer .related-blog-item {
+            background-color: #f3e8ff; /* purple-100 */
+            border: 2px solid #d8b4fe; /* purple-300 */
+            color: #6d28d9; /* purple-700 */
+        }
+        #relatedBlogPostsContainer .related-blog-item h4 {
+            color: #6d28d9; /* purple-800 */
+        }
+        #relatedBlogPostsContainer .related-blog-item p {
+            color: #4b5563; /* gray-600 */
+        }
+        #relatedBlogPosts {
+            border-color: #d8b4fe; /* purple-300 */
+        }
+        #relatedBlogPosts h3 {
+            color: #a78bfa; /* purple-400 */
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
@@ -492,6 +619,44 @@
             <img id="modalImage" src="" alt="Imagen ampliada del servicio" class="max-w-full max-h-[80vh] object-contain rounded-lg">
         </div>
     </div>
+    <!-- NEW BLOG POST MODAL -->
+    <div id="blogPostModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="blogPostModalTitle" aria-hidden="true">
+        <div id="blogPostModalContent" tabindex="-1" class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl shadow-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-center border-4 border-blue-500 transform transition-all duration-300 scale-95 opacity-0">
+            <h2 id="blogPostModalTitle" class="text-3xl font-extrabold text-white mb-4"></h2>
+            <img id="blogPostModalImage" src="" alt="" class="w-full h-48 object-cover rounded-lg mb-4">
+            <div id="blogPostModalText" class="text-lg text-gray-100 mb-6 text-left"></div>
+            
+            <!-- Social Share Buttons -->
+            <div class="flex justify-center space-x-4 my-6">
+                <a href="#" id="shareWhatsapp" target="_blank" class="share-button whatsapp" aria-label="Compartir en WhatsApp">
+                    <i data-lucide="message-circle"></i>
+                </a>
+                <a href="#" id="shareFacebook" target="_blank" class="share-button facebook" aria-label="Compartir en Facebook">
+                    <i data-lucide="facebook"></i>
+                </a>
+                <a href="#" id="shareInstagram" target="_blank" class="share-button instagram" aria-label="Compartir en Instagram">
+                    <i data-lucide="instagram"></i>
+                </a>
+            </div>
+
+            <!-- Call to Action -->
+            <button id="blogPostCtaButton" class="modern-button bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white w-full my-6">
+                ¡Reserva tu Evento Ahora! <i data-lucide="calendar-check"></i>
+            </button>
+
+            <!-- Related Articles Section -->
+            <div id="relatedBlogPosts" class="mt-8 pt-4 border-t-2 border-blue-400 text-left">
+                <h3 class="text-2xl font-extrabold text-blue-300 mb-4">Artículos Relacionados</h3>
+                <div id="relatedBlogPostsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Related posts will be injected here -->
+                </div>
+            </div>
+
+            <button id="closeBlogPostModalButton" class="bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto mt-6" aria-label="Cerrar entrada de blog">
+                Cerrar <i data-lucide="x-circle" class="lucide"></i>
+            </button>
+        </div>
+    </div>
 
     <!-- NEW HEADER -->
     <header id="mainHeader" class="py-3 px-4 w-full sticky top-0 z-40">
@@ -514,6 +679,7 @@
                 <button id="navBubblePackages" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="wind"></i> Burbujas</button>
                 <button id="navTestimonials" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="message-square"></i> Testimonios</button>
                 <button id="navGallery" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="image"></i> Galería</button>
+                <button id="navBlog" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="book-open"></i> Blog</button>
                 <button id="navBooking" class="bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-5 rounded-full shadow-lg transition duration-300 transform hover:scale-105 flex items-center">
                     <i data-lucide="calendar-check"></i> ¡Reserva Ahora!
                 </button>
@@ -544,6 +710,7 @@
             <button id="mobileNavBubblePackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="wind"></i> Paquetes de Burbujas</button>
             <button id="mobileNavTestimonials" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="message-square"></i> Testimonios</button>
             <button id="mobileNavGallery" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="image"></i> Galería</button>
+            <button id="mobileNavBlog" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="book-open"></i> Blog</button>
             <button id="mobileNavBooking" class="mt-4 w-full bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-5 rounded-full shadow-lg transition duration-300 flex items-center justify-center" role="menuitem"> <!-- Reduced mt from 8 to 4 -->
                 <i data-lucide="calendar-check"></i> ¡Reserva Ahora!
             </button>
@@ -615,13 +782,11 @@
     <!-- Toast Notification Container -->
     <div id="toastNotification" role="status" aria-live="polite"></div>
 
-    <!-- JavaScript script for page functionality. -->
-    <script>
+    <script type="module">
         // --- Global Application State Management ---
         // 'appState' contains all state variables that control application behavior.
         let appState = {
             activeSection: 'home', // Currently visible section ('home', 'services', 'animatorPackages', 'clownPackages', 'bubblePackages', 'booking').
-            userId: 'guest_user_' + Math.random().toString(36).substring(2, 9), // Unique ID for the guest user.
             selectedItems: [], // Array to store selected services/packages in the cart.
             promotedPackages: [], // Array to store the names of packages on promotion.
             selectedLocation: 'Panamá Centro', // Selected location for calculating transport surcharge.
@@ -639,8 +804,8 @@
                 selectedLocation: 'Panamá Centro' 
             },
             lastFocusedElement: null, // To store the element that had focus before a modal opened.
-            promoEndDate: null, // New: End date for the promotion.
-            countdownInterval: null // New: Interval ID for the countdown timer.
+            promoEndDate: null, // End date for the promotion.
+            countdownInterval: null, // Interval ID for the countdown timer.
         };
 
         // --- Data Definition (Services and Packages) ---
@@ -857,6 +1022,84 @@
             { imageUrl: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg', alt: 'Evento corporativo con show de burbujas' }
         ];
 
+        // NEW: Static blog posts data
+        const blogPostsData = [
+            {
+                id: 'blog1',
+                title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025',
+                description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. Desde superhéroes hasta personajes mágicos, ¡inspírate para el cumpleaños de tus hijos!',
+                imageUrl: 'https://i.ibb.co/L8bY704/fiesta-tematica-panama.jpg',
+                icon: 'party-popper',
+                content: `
+                    <p>Organizar una fiesta infantil es una aventura llena de creatividad y alegría. Para el 2025, las tendencias en temáticas de fiestas infantiles en Panamá están más emocionantes que nunca. Aquí te presentamos las 7 temáticas más pedidas que harán que la celebración de tus hijos sea inolvidable:</p>
+                    <img src="https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg" alt="Decoración temática de fiesta infantil con globos y personajes" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
+                    <h3>1. El Mundo Mágico de Encanto:</h3>
+                    <p>Inspirada en la película de Disney, esta temática llena de color y música es perfecta para los pequeños soñadores. Imagina decoraciones vibrantes y personajes que cobran vida, transportando a todos a un lugar donde la magia es real.</p>
+                    <h3>2. Aventura con Bluey:</h3>
+                    <p>La popular perrita Bluey y su familia traen juegos interactivos y diversión sin fin, ideal para fiestas al aire libre. Los niños adoran las dinámicas de Bluey que fomentan el juego imaginativo y la actividad física.</p>
+                    <img src="https://placehold.co/600x400/8B5CF6/FFFFFF?text=Fiesta+de+Superhéroes" alt="Niños disfrazados de superhéroes en una fiesta infantil, listos para la acción" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
+                    <h3>3. Superhéroes al Rescate:</h3>
+                    <p>Los clásicos nunca pasan de moda. Spiderman, Batman y la Mujer Maravilla siguen siendo los favoritos para los niños y niñas que sueñan con salvar el mundo. ¡Una temática llena de acción, disfraces y misiones emocionantes!</p>
+                    <h3>4. Princesas con un Toque Moderno:</h3>
+                    <p>Las princesas de Disney reinventadas con toques modernos y actividades que empoderan a las niñas. ¡No solo se trata de vestidos y castillos, sino de aventura, valentía y la búsqueda de sus propios sueños!</p>
+                    <h3>5. Exploradores de Dinosaurios:</h3>
+                    <p>Un viaje prehistórico lleno de descubrimientos y aventuras, con decoraciones de dinosaurios y fósiles. Ideal para los pequeños paleontólogos que aman explorar y aprender sobre el mundo jurásico.</p>
+                    <img src="https://placehold.co/600x400/8B5CF6/FFFFFF?text=Fiesta+de+Videojuegos" alt="Decoración de fiesta inspirada en videojuegos, con elementos de Mario Bros y Minecraft" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
+                    <h3>6. Fiesta de Videojuegos (Minecraft/Mario Bros):</h3>
+                    <p>Para los amantes de los videojuegos, una fiesta inspirada en Minecraft o Mario Bros. es garantía de diversión pixelada y desafíos emocionantes. ¡Los niños pueden sumergirse en sus mundos virtuales favoritos!</p>
+                    <h3>7. Unicornios y Fantasía:</h3>
+                    <p>La magia de los unicornios, arcoíris y seres fantásticos sigue cautivando, creando un ambiente de ensueño y mucha dulzura. Esta temática es perfecta para los que aman el brillo, los colores pastel y la imaginación sin límites.</p>
+                    <p>En Diverty Eventos, podemos ayudarte a hacer realidad cualquiera de estas temáticas con nuestra animación, shows de burbujas y pintacaritas. ¡Contáctanos y hagamos magia!</p>
+                `,
+                createdAt: new Date('2025-07-20T10:00:00Z') // Example date
+            },
+            {
+                id: 'blog2',
+                title: 'Shows de Burbujas Gigantes: La Tendencia que Enamorará a los Niños en tu Fiesta',
+                description: 'Descubre por qué los shows de burbujas gigantes son el entretenimiento más buscado para fiestas infantiles en Panamá. ¡Una experiencia mágica e interactiva!',
+                imageUrl: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg',
+                icon: 'wind',
+                content: `
+                    <p>Si estás buscando un show que deje a todos con la boca abierta en tu próxima fiesta infantil en Panamá, ¡el show de burbujas gigantes es la respuesta! Esta tendencia ha ganado una popularidad inmensa por su capacidad de asombrar y cautivar a niños y adultos por igual.</p>
+                    <img src="https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg" alt="Niños disfrutando de un show de burbujas gigantes al aire libre" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
+                    <h3>¿Qué hace tan especial a un show de burbujas gigantes?</h3>
+                    <ul>
+                        <li><strong>Magia Visual:</strong> Las burbujas de tamaños increíbles, algunas tan grandes que pueden envolver a un niño, crean un espectáculo visual hipnotizante. La luz se refracta en ellas, creando un efecto arcoíris que fascina a todos.</li>
+                        <img src="https://placehold.co/600x400/8B5CF6/FFFFFF?text=Burbuja+Gigante+Interacción" alt="Niño dentro de una burbuja gigante creada por un animador" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
+                        <li><strong>Interactividad:</strong> Los niños no solo observan, ¡participan! Pueden intentar atrapar burbujas, hacer las suyas propias, e incluso entrar dentro de una burbuja gigante para una foto inolvidable.</li>
+                        <li><strong>Momentos Fotográficos Únicos:</strong> Las fotos de los niños dentro de una burbuja o rodeados de cientos de ellas son recuerdos que durarán para siempre y que querrás compartir.</li>
+                        <li><strong>Diversión para Todas las Edades:</strong> Aunque es un show infantil, los adultos también se maravillan con la belleza y la ciencia detrás de las burbujas. Es un entretenimiento que une a toda la familia.</li>
+                        <li><strong>Adaptabilidad:</strong> Se puede realizar en casi cualquier espacio, ya sea en un jardín, un salón de eventos o incluso en interiores con las precauciones adecuadas. Solo necesitamos un poco de espacio para la magia.</li>
+                    </ul>
+                    <p>En Diverty Eventos, somos expertos en shows de burbujas gigantes. Utilizamos equipos profesionales y soluciones especiales para crear las burbujas más impresionantes y duraderas. ¡Añade este toque mágico a tu fiesta y crea recuerdos inolvidables que tus invitados atesorarán!</p>
+                `,
+                createdAt: new Date('2025-07-15T14:30:00Z') // Example date
+            },
+            {
+                id: 'blog3',
+                title: 'Consejos para Elegir el Mejor Animador para tu Fiesta Infantil en Panamá',
+                description: 'Un buen animador es el alma de la fiesta. Aprende qué buscar al contratar un animador infantil en Panamá para asegurar la diversión y el éxito de tu evento.',
+                imageUrl: 'https://i.ibb.co/Yy2M5r4/animador-fiesta-panama.jpg',
+                icon: 'user-check',
+                content: `
+                    <p>El animador es la pieza clave para que una fiesta infantil sea un éxito rotundo. En Panamá, hay muchas opciones, pero elegir al mejor requiere considerar algunos puntos importantes. Aquí te dejamos nuestros mejores consejos para que tomes la decisión correcta:</p>
+                    <img src="https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg" alt="Animador interactuando alegremente con un grupo de niños en una fiesta" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
+                    <h3>1. Experiencia y Profesionalismo:</h3>
+                    <p>Busca animadores con experiencia comprobada en fiestas infantiles. Un profesional sabrá cómo manejar diferentes grupos de edades, improvisar ante imprevistos y mantener la energía alta durante todo el evento, asegurando que la diversión nunca decaiga.</p>
+                    <h3>2. Repertorio de Actividades:</h3>
+                    <p>Pregunta sobre los juegos, dinámicas, canciones y shows que ofrecen. ¿Incluyen pintacaritas, globoflexia, magia cómica? Un repertorio variado asegura que todos los niños encuentren algo que les guste y participen activamente.</p>
+                    <img src="https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg" alt="Niños con pintacaritas de animales y superhéroes en una fiesta infantil" class="my-6 rounded-lg shadow-md border-2 border-pink-300">
+                    <h3>3. Conexión con los Niños:</h3>
+                    <p>Un buen animador tiene una energía especial que le permite conectar rápidamente con los niños. Busca videos o testimonios que muestren su interacción con los pequeños. La empatía, la paciencia y la capacidad de hacer reír son fundamentales.</p>
+                    <h3>4. Adaptabilidad:</h3>
+                    <p>Cada fiesta es diferente. El animador debe ser capaz de adaptar sus actividades al espacio disponible, al número de niños y a sus edades, e incluso a la temática de la fiesta. La flexibilidad es clave para un evento exitoso.</p>
+                    <h3>5. Puntualidad y Presentación:</h3>
+                    <p>La puntualidad es crucial para que el evento comience sin contratiempos. Además, la presentación del animador (vestuario, higiene y actitud) debe ser impecable y acorde al evento que estás organizando.</p>
+                    <p>En Diverty Eventos, nuestros animadores son seleccionados por su talento, experiencia y su amor por los niños. ¡Confía en nosotros para llevar la alegría y la diversión a tu celebración en Panamá, garantizando sonrisas inolvidables!</p>
+                `,
+                createdAt: new Date('2025-07-10T09:15:00Z') // Example date
+            }
+        ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()); // Sort by date, newest first
 
         // Transport surcharges by event location.
         const transportFeesByLocation = {
@@ -891,7 +1134,7 @@
 
         /**
          * Sets the active section of the application and renders it.
-         * @param {string} sectionName - The name of the section to activate ('home', 'services', 'animatorPackages', 'clownPackages', 'bubblePackages', 'booking', 'testimonials', 'gallery').
+         * @param {string} sectionName - The name of the section to activate ('home', 'services', 'animatorPackages', 'clownPackages', 'bubblePackages', 'booking', 'testimonials', 'gallery', 'blog').
          */
         function setActiveSection(sectionName) {
             console.log(`setActiveSection: Cambiando a la sección: ${sectionName}`);
@@ -928,6 +1171,8 @@
                 renderTestimonialsSection();
             } else if (sectionName === 'gallery') { // NEW
                 renderGallerySection();
+            } else if (sectionName === 'blog') { // NEW
+                renderBlogSection();
             }
             else if (sectionName === 'booking') {
                 renderBookingSection();
@@ -1171,19 +1416,9 @@
             if (service && service.imageUrl) {
                 return service.imageUrl;
             }
-            // Check animatorPackagesData (Animators) - NO IMAGE FOR THESE SECTIONS
-            // const animatorPkg = animatorPackagesData.find(p => p.name === itemName);
-            // if (animatorPkg && animatorPkg.imageUrl) {
-            //     return animatorPkg.imageUrl;
-            // }
-            // Check clownPackagesData (Clowns) - NO IMAGE FOR THESE SECTIONS
-            // const clownPkg = clownPackagesData.find(p => p.name === itemName);
-            // if (clownPkg && clownPkg.imageUrl) {
-            //     return clownPkg.imageUrl;
-            // }
             // Check bubblePackagesData
             const bubblePkg = bubblePackagesData.find(bp => bp.name === itemName);
-            if (bubblePkg && bubblePkg.imageUrl) {
+            if (bubblePkg && bp.imageUrl) {
                 return bubblePkg.imageUrl;
             }
             // Default placeholder if no specific image is found
@@ -1252,6 +1487,7 @@
                 const bookingWarningModal = document.getElementById('bookingWarningModal');
                 const miniCartModal = document.getElementById('miniCartModal');
                 const imageModal = document.getElementById('imageModal');
+                const blogPostModal = document.getElementById('blogPostModal');
 
                 if (!infoModal.classList.contains('hidden')) {
                     closeModal();
@@ -1263,6 +1499,8 @@
                     closeMiniCartModal();
                 } else if (!imageModal.classList.contains('hidden')) {
                     closeImageModal();
+                } else if (!blogPostModal.classList.contains('hidden')) {
+                    closeBlogPostModal();
                 }
             }
         }
@@ -1442,7 +1680,7 @@
                         <div class="flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
                             <div class="flex items-center">
                                 <img src="${itemImageUrl}" alt="Imagen de ${item.name}" class="w-10 h-10 object-cover rounded-md mr-2" loading="lazy">
-                                <span class="font-semibold text-gray-800 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                                <span class="font-semibold text-gray-800 text-sm">${item.name} ${item.quantity > 0 ? `(x${item.quantity})` : ''}</span>
                             </div>
                             <div class="flex items-center flex-shrink-0 ml-4">
                                 ${strikethroughHtml}
@@ -1560,6 +1798,96 @@
             }, 3000);
         }
 
+        /**
+         * Shows the full content of a blog post in a modal.
+         * @param {object} post - The blog post object.
+         */
+        function showBlogPostContent(post) {
+            const modal = document.getElementById('blogPostModal');
+            const modalContent = document.getElementById('blogPostModalContent');
+            const titleElement = document.getElementById('blogPostModalTitle');
+            const imageElement = document.getElementById('blogPostModalImage');
+            const textElement = document.getElementById('blogPostModalText');
+            const shareWhatsapp = document.getElementById('shareWhatsapp');
+            const shareFacebook = document.getElementById('shareFacebook');
+            const shareInstagram = document.getElementById('shareInstagram');
+            const blogPostCtaButton = document.getElementById('blogPostCtaButton');
+            const relatedBlogPostsContainer = document.getElementById('relatedBlogPostsContainer');
+
+            if (titleElement) titleElement.textContent = post.title;
+            if (imageElement) {
+                imageElement.src = post.imageUrl;
+                imageElement.alt = post.title;
+            }
+            if (textElement) textElement.innerHTML = post.content; // Use innerHTML for rich content
+
+            // Set social sharing links
+            const pageUrl = window.location.href; // Or a specific URL for the blog post if you had dynamic routes
+            const shareText = encodeURIComponent(`¡Mira este increíble artículo de Diverty Eventos: "${post.title}"!`);
+            const shareUrl = encodeURIComponent(pageUrl);
+
+            if (shareWhatsapp) shareWhatsapp.href = `https://wa.me/?text=${shareText}%20${shareUrl}`;
+            if (shareFacebook) shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}`;
+            // Instagram sharing is more complex as it doesn't have a direct web share API for posts.
+            // This link will open Instagram, but the user will need to manually share.
+            if (shareInstagram) shareInstagram.href = `https://www.instagram.com/direct/new/?text=${shareText}%20${shareUrl}`;
+
+            // CTA Button
+            if (blogPostCtaButton) {
+                blogPostCtaButton.onclick = () => {
+                    closeBlogPostModal();
+                    setActiveSection('booking');
+                };
+            }
+
+            // Related Articles
+            if (relatedBlogPostsContainer) {
+                const filteredPosts = blogPostsData.filter(p => p.id !== post.id);
+                const shuffled = filteredPosts.sort(() => 0.5 - Math.random());
+                const related = shuffled.slice(0, 2); // Get up to 2 random related posts
+
+                if (related.length > 0) {
+                    relatedBlogPostsContainer.innerHTML = related.map(relatedPost => `
+                        <div class="bg-purple-100 p-4 rounded-lg shadow-md flex flex-col items-start cursor-pointer hover:bg-purple-200 transition duration-200 related-blog-item" data-blog-id="${relatedPost.id}">
+                            <h4 class="text-lg font-bold text-purple-800 mb-2">${relatedPost.title}</h4>
+                            <p class="text-sm text-gray-600">${relatedPost.description.substring(0, 80)}...</p>
+                        </div>
+                    `).join('');
+
+                    document.querySelectorAll('.related-blog-item').forEach(item => {
+                        item.onclick = (event) => {
+                            const relatedBlogId = event.currentTarget.dataset.blogId;
+                            const relatedBlogPost = blogPostsData.find(p => p.id === relatedBlogId);
+                            if (relatedBlogPost) {
+                                showBlogPostContent(relatedBlogPost); // Open the new related post
+                            }
+                        };
+                    });
+                } else {
+                    relatedBlogPostsContainer.innerHTML = '<p class="text-gray-600 text-center">No hay artículos relacionados disponibles.</p>';
+                }
+            }
+
+            toggleModal(modal, modalContent, true);
+            lucide.createIcons(); // Re-create icons for new buttons/content
+        }
+
+        /**
+         * Hides the blog post content modal.
+         */
+        function closeBlogPostModal() {
+            const modal = document.getElementById('blogPostModal');
+            const modalContent = document.getElementById('blogPostModalContent');
+            toggleModal(modal, modalContent, false, () => {
+                // Clear content after closing
+                document.getElementById('blogPostModalTitle').textContent = '';
+                document.getElementById('blogPostModalImage').src = '';
+                document.getElementById('blogPostModalImage').alt = '';
+                document.getElementById('blogPostModalText').innerHTML = '';
+                document.getElementById('relatedBlogPostsContainer').innerHTML = ''; // Clear related posts
+            });
+        }
+
 
         // --- Section Rendering Functions ---
 
@@ -1644,7 +1972,7 @@
                     <section class="hero-banner my-8 animate-slide-up-fade-in">
                         <div class="hero-banner-content w-full mx-auto">
                             <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight text-center drop-shadow-lg">
-                                🎉 ¡Hacemos que tu fiesta sea inolvidable! 🎈
+                                🎉 ¡Las Mejores Fiestas Infantiles en Panamá! 🎈
                             </h2>
                             <p class="text-lg sm:text-xl lg:text-2xl mb-10 px-4 drop-shadow-md">
                                 Animación infantil, shows de burbujas gigantes y más en Panamá. ¡La magia comienza aquí!
@@ -2287,6 +2615,57 @@
             }
         }
 
+        /**
+         * Renders the Blog section using static data.
+         */
+        function renderBlogSection() {
+            try {
+                const blogPostsHtml = blogPostsData.map((post, index) => `
+                    <div class="blog-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
+                        <img src="${post.imageUrl || 'https://placehold.co/400x250/8B5CF6/FFFFFF?text=Blog+Post'}" alt="Imagen para ${post.title}" class="blog-image cursor-pointer" loading="lazy">
+                        <div class="blog-card-content">
+                            <h3 class="text-xl sm:text-2xl font-bold mb-3">${post.title} <i data-lucide="${post.icon || 'book-open'}"></i></h3>
+                            <p class="text-gray-700 text-base sm:text-lg mb-4 flex-grow">${post.description}</p>
+                            <button class="read-more-blog-button modern-button bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 text-white" data-blog-id="${post.id}" aria-label="Leer más sobre ${post.title}">
+                                Leer Más <i data-lucide="arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+
+                const html = `
+                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-10 sm:mb-12">Nuestro Blog de Ideas para Fiestas <i data-lucide="book-open"></i></h2>
+                        <p class="text-lg text-gray-700 text-center mb-10">
+                            Encuentra inspiración, consejos y las últimas tendencias para hacer de cada celebración un momento único y divertido.
+                        </p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
+                            ${blogPostsHtml}
+                        </div>
+                    </section>
+                `;
+                renderSection(html);
+
+                document.querySelectorAll('.read-more-blog-button').forEach(button => {
+                    button.onclick = (event) => {
+                        const blogId = event.currentTarget.dataset.blogId;
+                        const blogPost = blogPostsData.find(post => post.id === blogId);
+                        if (blogPost) {
+                            showBlogPostContent(blogPost);
+                        }
+                    };
+                });
+                document.querySelectorAll('.blog-image').forEach(img => {
+                    img.onclick = (event) => {
+                        showImageModal(event.target.src, event.target.alt);
+                    };
+                });
+                console.log('renderBlogSection: Sección Blog renderizada con datos estáticos y listeners asignados.');
+            } catch (error) {
+                console.error('renderBlogSection: Error al renderizar la sección Blog:', error);
+            }
+        }
+
 
         /**
          * Renders the Booking section, displaying selected items and the form.
@@ -2604,7 +2983,6 @@
                     'direccionExactaDelEvento': exactLocation,
                     'serviciosPaquetesSeleccionados': selectedItemsString,
                     'precioTotalEstimado': `$${finalTotalPrice.toFixed(2)}`,
-                    'idDeSesionVisitante': appState.userId
                 });
                 const jotformUrl = `${jotformBaseUrl}?${params.toString()}`;
                 console.log('handleBookingSubmit: Redirigiendo a JotForm:', jotformUrl);
@@ -2664,6 +3042,7 @@
                 document.getElementById('closeBookingWarningModalButton').onclick = closeBookingWarningModal;
                 document.getElementById('closeMiniCartModalButton').onclick = closeMiniCartModal;
                 document.getElementById('closeImageModalButton').onclick = closeImageModal;
+                document.getElementById('closeBlogPostModalButton').onclick = closeBlogPostModal; // NEW
                 document.getElementById('clearCartButton').onclick = clearCart; // New: Clear cart button
                 console.log('DOMContentLoaded: Listeners de modales asignados.');
 
@@ -2686,10 +3065,11 @@
                     BubblePackages: () => setActiveSection('bubblePackages'),
                     Testimonials: () => setActiveSection('testimonials'), // NEW
                     Gallery: () => setActiveSection('gallery'), // NEW
+                    Blog: () => setActiveSection('blog'), // NEW
                     Booking: () => setActiveSection('booking')
                 };
 
-                ['Home', 'Services', 'AnimatorPackages', 'ClownPackages', 'BubblePackages', 'Testimonials', 'Gallery', 'Booking'].forEach(section => {
+                ['Home', 'Services', 'AnimatorPackages', 'ClownPackages', 'BubblePackages', 'Testimonials', 'Gallery', 'Blog', 'Booking'].forEach(section => {
                     const desktopBtn = document.getElementById(`nav${section}`);
                     const mobileBtn = document.getElementById(`mobileNav${section}`);
                     if (desktopBtn) desktopBtn.onclick = navActions[section];
