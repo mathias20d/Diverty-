@@ -137,7 +137,7 @@
     <style>
         /* Base styles for the page body */
         body {
-            font-family: 'Poppins', sans-serif; /* Changed font to Poppins */
+            font-family: 'Quicksand', sans-serif; /* Changed font to Quicksand for body */
             margin: 0;
             padding: 0;
             /* Subtle background pattern for aesthetic appeal */
@@ -147,7 +147,7 @@
             background-attachment: fixed; /* Optional: for a subtle parallax effect */
         }
         /* Headings using Poppins for a professional touch */
-        h1, h2, h3 {
+        h1, h2, h3, h4 { /* Added h4 for consistency */
             font-family: 'Poppins', sans-serif;
             font-weight: 700; /* Bold for impact */
             letter-spacing: -0.02em; /* Slightly tighter letter spacing for headings */
@@ -225,6 +225,20 @@
         }
 
         /* Style for the floating WhatsApp button: Allows quick access to contact. */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7);
+            }
+            70% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+            }
+        }
         .whatsapp-float-button {
             position: fixed;
             bottom: 20px;
@@ -241,11 +255,13 @@
             /* Changed to a brighter green gradient */
             background-image: linear-gradient(to bottom right, #25D366, #1DA851); 
             cursor: pointer;
+            animation: pulse 2s infinite; /* Apply the pulse animation */
         }
         .whatsapp-float-button:hover {
             transform: scale(1.1);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             background-image: linear-gradient(to bottom right, #1DA851, #25D366); /* Reverse gradient on hover */
+            animation: none; /* Stop pulse on hover for smoother scale effect */
         }
         .whatsapp-float-button .lucide {
             color: white;
@@ -290,6 +306,14 @@
             opacity: 0; /* Start hidden for animation */
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
         /* Toast Notification Styles */
         #toastNotification {
             position: fixed;
@@ -321,7 +345,8 @@
 
         /* Hero Banner Specific Styles */
         .hero-banner {
-            background-color: #F8F4FF; /* A very light purple/lavender color (purple-50) */
+            /* Changed to a subtle gradient for more visual interest */
+            background-image: linear-gradient(to bottom right, #F8F4FF, #F3E8FF); /* Light purple gradient */
             background-size: cover;
             background-position: center;
             min-height: 70vh; /* Make it tall */
@@ -354,6 +379,46 @@
         .hero-banner-content button {
             color: white; /* Keep button text white for contrast with button background */
         }
+
+        /* Modern card styles */
+        .modern-card {
+            border-style: solid; /* Changed from dashed to solid */
+            border-width: 4px; /* Slightly thicker border */
+            border-radius: 1.5rem; /* Rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Default shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+            /* The border color will be applied via Tailwind classes directly in the HTML based on pkg.color */
+        }
+        .modern-card:hover {
+            transform: translateY(-5px) scale(1.02); /* Lift and slightly scale on hover */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Stronger shadow on hover */
+        }
+
+        /* Modern button styles */
+        .modern-button {
+            font-weight: 700; /* Bold text */
+            padding: 0.75rem 1.5rem; /* Generous padding */
+            border-radius: 9999px; /* Fully rounded */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* Subtle shadow */
+            transition: all 0.3s ease; /* Smooth transitions */
+            border-width: 2px; /* White border */
+            border-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .modern-button:hover {
+            transform: translateY(-2px) scale(1.03); /* Slight lift and scale on hover */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Stronger shadow on hover */
+        }
+        .modern-button.remove-button {
+            background-image: linear-gradient(to right, #EF4444, #DC2626); /* Red gradient for remove */
+            border-color: #EF4444; /* Red border */
+        }
+        .modern-button.remove-button:hover {
+            background-image: linear-gradient(to right, #DC2626, #EF4444);
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
@@ -371,6 +436,7 @@
         <div id="promoModalContent" tabindex="-1" class="bg-gradient-to-br from-pink-600 to-pink-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-pink-500 transform transition-all duration-300 scale-95 opacity-0">
             <h2 class="text-3xl font-extrabold text-white mb-4">¡Promoción del Mes! <i data-lucide="star" class="lucide inline-block"></i></h2>
             <p id="promoMessage" class="text-lg text-gray-100 mb-4"></p>
+            <p id="promoCountdown" class="text-2xl font-extrabold text-yellow-300 mb-6"></p> <!-- Added for countdown -->
             <button id="closePromoModalButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto" aria-label="Genial, cerrar promoción">
                 ¡Genial! <i data-lucide="party-popper" class="lucide"></i>
             </button>
@@ -413,6 +479,9 @@
                     Reservar Ahora <i data-lucide="sparkles"></i>
                 </button>
             </div>
+            <button id="clearCartButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-5 rounded-full shadow-md transition duration-300 cursor-pointer flex items-center justify-center mx-auto mt-4" aria-label="Vaciar todo el carrito">
+                Vaciar Carrito <i data-lucide="trash-2"></i>
+            </button>
         </div>
     </div>
     <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="imageModalTitle" aria-hidden="true">
@@ -430,7 +499,7 @@
             <!-- Logo and Title -->
             <div class="flex items-center">
                 <!-- Increased logo size significantly -->
-                <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Logo de Diverty Eventos" class="w-24 h-24 sm:w-28 sm:h-28 mr-3 rounded-full object-cover border-2 border-pink-400 shadow-md">
+                <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Logo de Diverty Eventos" class="w-24 h-24 sm:w-28 sm:h-28 mr-3 rounded-full object-cover border-2 border-pink-400 shadow-md" loading="eager">
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-900">
                     Diverty Eventos
                 </h1>
@@ -440,7 +509,8 @@
             <nav class="hidden lg:flex items-center space-x-6" aria-label="Navegación Principal">
                 <button id="navHome" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="home"></i> Inicio</button>
                 <button id="navServices" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="sparkles"></i> Servicios</button>
-                <button id="navPackages" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="cake-slice"></i> Planes</button>
+                <button id="navAnimatorPackages" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="user-check"></i> Animadores</button>
+                <button id="navClownPackages" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="clown"></i> Payasos</button>
                 <button id="navBubblePackages" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="wind"></i> Burbujas</button>
                 <button id="navTestimonials" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="message-square"></i> Testimonios</button>
                 <button id="navGallery" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="image"></i> Galería</button>
@@ -468,7 +538,8 @@
         <div class="flex flex-col space-y-4">
             <button id="mobileNavHome" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="home"></i> Inicio</button>
             <button id="mobileNavServices" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="sparkles"></i> Servicios</button>
-            <button id="mobileNavPackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="cake-slice"></i> Planes de Cumpleaños</button>
+            <button id="mobileNavAnimatorPackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="user-check"></i> Paquetes Animadores</button>
+            <button id="mobileNavClownPackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="clown"></i> Paquetes Payasos</button>
             <button id="mobileNavBubblePackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="wind"></i> Paquetes de Burbujas</button>
             <button id="mobileNavTestimonials" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="message-square"></i> Testimonios</button>
             <button id="mobileNavGallery" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="image"></i> Galería</button>
@@ -500,13 +571,44 @@
 
     <!-- Floating WhatsApp Button: Quick access to contact via WhatsApp. -->
     <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank" aria-label="Contactar por WhatsApp">
-        <i data-lucide="message-circle"></i>
+        <i data-lucide="message-circle"></i> <!-- Changed to message-circle icon -->
     </a>
 
     <!-- Footer: Copyright information and slogan. -->
     <footer class="bg-purple-700 text-white py-8 px-4 text-center mt-8 rounded-t-xl shadow-inner w-full">
-        <p class="text-lg font-semibold">&copy; 2023 Diverty Eventos. ¡Hacemos magia en cada fiesta infantil en Panamá! <i data-lucide="sparkles"></i></p>
-        <p class="text-sm">Todos los derechos reservados. Servicios de <strong>animación infantil</strong> y <strong>shows para fiestas</strong> en todo Panamá.</p>
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+            <!-- Contact Info -->
+            <div class="flex flex-col items-center md:items-start">
+                <h3 class="text-xl font-bold mb-3 flex items-center"><i data-lucide="phone" class="mr-2"></i> Contáctanos</h3>
+                <p class="text-lg mb-2">Teléfono: <a href="tel:+50766677965" class="hover:underline">+507 6667-7965</a></p>
+                <p class="text-lg mb-2">Email: <a href="mailto:divertypty@gmail.com" class="hover:underline">divertypty@gmail.com</a></p>
+            </div>
+
+            <!-- Social Media -->
+            <div class="flex flex-col items-center">
+                <h3 class="text-xl font-bold mb-3 flex items-center"><i data-lucide="share-2" class="mr-2"></i> Síguenos</h3>
+                <div class="flex space-x-4">
+                    <a href="https://www.facebook.com/DivertyEventosPty" target="_blank" class="text-white hover:text-blue-400 transition-colors duration-300" aria-label="Visita nuestra página de Facebook">
+                        <i data-lucide="facebook" class="w-8 h-8"></i>
+                    </a>
+                    <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="text-white hover:text-pink-400 transition-colors duration-300" aria-label="Visita nuestro perfil de Instagram">
+                        <i data-lucide="instagram" class="w-8 h-8"></i>
+                    </a>
+                    <a href="https://wa.me/50766677965" target="_blank" class="text-white hover:text-green-400 transition-colors duration-300" aria-label="Chatea con nosotros en WhatsApp">
+                        <i data-lucide="message-circle" class="w-8 h-8"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Legal/Slogan -->
+            <div class="flex flex-col items-center md:items-end">
+                <h3 class="text-xl font-bold mb-3 flex items-center"><i data-lucide="sparkles" class="mr-2"></i> Nuestra Promesa</h3>
+                <p class="text-lg font-semibold mb-2">&copy; 2023 Diverty Eventos.</p>
+                <p class="text-base">¡Hacemos magia en cada fiesta infantil en Panamá!</p>
+                <a href="#" class="text-sm text-gray-300 hover:underline mt-2">Política de Privacidad</a>
+            </div>
+        </div>
+        <p class="text-sm mt-6">Todos los derechos reservados. Servicios de <strong>animación infantil</strong> y <strong>shows para fiestas</strong> en todo Panamá.</p>
     </footer>
 
     <!-- Toast Notification Container -->
@@ -517,7 +619,7 @@
         // --- Global Application State Management ---
         // 'appState' contains all state variables that control application behavior.
         let appState = {
-            activeSection: 'home', // Currently visible section ('home', 'services', 'packages', 'bubblePackages', 'booking').
+            activeSection: 'home', // Currently visible section ('home', 'services', 'animatorPackages', 'clownPackages', 'bubblePackages', 'booking').
             userId: 'guest_user_' + Math.random().toString(36).substring(2, 9), // Unique ID for the guest user.
             selectedItems: [], // Array to store selected services/packages in the cart.
             promotedPackages: [], // Array to store the names of packages on promotion.
@@ -535,7 +637,9 @@
                 exactLocation: '',
                 selectedLocation: 'Panamá Centro' 
             },
-            lastFocusedElement: null // To store the element that had focus before a modal opened.
+            lastFocusedElement: null, // To store the element that had focus before a modal opened.
+            promoEndDate: null, // New: End date for the promotion.
+            countdownInterval: null // New: Interval ID for the countdown timer.
         };
 
         // --- Data Definition (Services and Packages) ---
@@ -601,46 +705,65 @@
                 imageUrl: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg',
                 icon: 'scissors'
             },
-            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: '', icon: 'popcorn' }
+            { id: '8', name: 'Máquinas de Snack Algodón y Pop Corn', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://i.ibb.co/JzG732C/popcorn-cotton-candy.jpg', icon: 'popcorn' }
         ];
 
-        const packagesData = [
-            { id: 'P1', name: 'Plan Básico', price: 80, services: [ // Precio cambiado a 80
-                'Payas@ o animad@r',
+        // Data for Animator Packages
+        const animatorPackagesData = [
+            { id: 'P1', name: 'Plan Básico (Animador)', price: 80, services: [
+                'Animador profesional',
                 'Animación infantil',
                 'Juegos y concursos',
                 'Figuras con globos',
                 'Romper la piñata'
-            ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', imageUrl: '', icon: 'rocket' },
-            { id: 'P2', name: 'Plan Recreativo', price: 100, services: [
-                'Payas@ o animad@r',
-                'Pintacaritas (1 hora)', // Updated to specify 1 hour
-                'Animación infantil (1 hora)', // Updated to specify 1 hour
+            ], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', imageUrl: 'https://i.ibb.co/L89kY5K/hero-banner-kids-party.jpg', icon: 'rocket' },
+            { id: 'P2', name: 'Plan Recreativo (Animador)', price: 100, services: [
+                'Animador profesional',
+                'Pintacaritas (1 hora)',
+                'Animación infantil (1 hora)',
                 'Juegos y concursos',
                 'Figuras con globos',
                 'Romper la piñata'
-            ], description: '2h de aventura: Payaso/animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', imageUrl: '', icon: 'rainbow' },
-            { id: 'P3', name: 'Plan Magic', price: 135, services: [
-                'Payasit@ o animad@r',
-                'Animación, juegos y concursos (1.5 horas)', // Updated to 1.5 hours
-                'Pintacaritas (1 hora)', // Updated to 1 hour
+            ], description: '2h de aventura: Animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', imageUrl: 'https://i.ibb.co/P4w8dD7/plan-recreativo.jpg', icon: 'rainbow' }
+        ];
+
+        // Data for Clown Packages
+        const clownPackagesData = [
+            { id: 'C1', name: 'Paquete Payaso Risitas', price: 90, services: [
+                'Payaso profesional',
+                'Rutina de comedia y gags',
+                'Juegos interactivos',
+                'Figuras básicas con globos',
+                'Romper la piñata'
+            ], description: '1.5h de risas garantizadas con nuestro Payaso Risitas, lleno de juegos y humor para los más pequeños.', color: 'bg-gradient-to-br from-yellow-200 to-yellow-300 border-yellow-400 text-yellow-800', imageUrl: 'https://i.ibb.co/YZW14g2/clown-risitas.jpg', icon: 'smile' },
+            { id: 'C2', name: 'Paquete Circo Divertido', price: 140, services: [
+                'Payaso principal',
+                'Show de magia cómica',
+                'Globoflexia avanzada (figuras más elaboradas)',
+                'Juegos y concursos temáticos de circo',
+                'Asistencia en la piñata y canto de cumpleaños'
+            ], description: '2.5h de un espectáculo circense con nuestro payaso, magia, y mucha interacción para una fiesta inolvidable.', color: 'bg-gradient-to-br from-orange-200 to-orange-300 border-orange-400 text-orange-800', imageUrl: 'https://i.ibb.co/bF9y2xS/clown-circus.jpg', icon: 'circus-tent' },
+            { id: 'P3', name: 'Plan Magic (Payaso)', price: 135, services: [
+                'Payaso profesional',
+                'Animación, juegos y concursos (1.5 horas)',
+                'Pintacaritas (1 hora)',
                 'Show de magia cómica',
                 'Asistencia para la piñata'
-            ], description: '2.5h premium: Payaso/animador, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800', imageUrl: '', icon: 'magic-wand' },
+            ], description: '2.5h premium: Payaso, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800', imageUrl: 'https://i.ibb.co/S751D9N/plan-magic.jpg', icon: 'magic-wand' },
             { 
                 id: 'P4', 
-                name: 'Plan Diverty', 
+                name: 'Plan Diverty (Payaso)', 
                 price: 210, 
                 services: [
-                    'Payasito o Animador',
+                    'Payaso profesional',
                     'Juegos y concursos',
                     'Pintacaritas',
                     'Globoflexia',
                     'Show de Burbujas o Magia Cómica',
                     'Asistencia en la piñata'
                 ], 
-                description: '3h de diversión completa: Payaso/animador, juegos, pintacaritas, globoflexia, show de burbujas o magia, y asistencia piñata. ¡La magia garantizada!', 
-                color: 'bg-gradient-to-br from-green-200 to-green-300 border-green-400 text-green-800', imageUrl: '', icon: 'party-popper'
+                description: '3h de diversión completa: Payaso, juegos, pintacaritas, globoflexia, show de burbujas o magia, y asistencia piñata. ¡La magia garantizada!', 
+                color: 'bg-gradient-to-br from-green-200 to-green-300 border-green-400 text-green-800', imageUrl: 'https://i.ibb.co/Xz22jV1/plan-diverty.jpg', icon: 'party-popper'
             }
         ];
 
@@ -676,7 +799,7 @@
                     'Burbujas de espuma' // New service
                 ],
                 description: '1 hora de show con burbujas gigantes, humo, burbujas LED, interacción con el público, fotos dentro de la burbuja gigante, trucos con burbujas y burbujas de espuma.', // Updated description
-                color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', 
+                color: 'bg-gradient-to-br from-blue-100 to-blue-200 border-blue-300 text-blue-800', /* Changed from green to blue for bubble packages */
                 imageUrl: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg',
                 icon: 'droplets'
             },
@@ -773,7 +896,7 @@
 
         /**
          * Sets the active section of the application and renders it.
-         * @param {string} sectionName - The name of the section to activate ('home', 'services', 'packages', 'bubblePackages', 'booking', 'testimonials', 'gallery').
+         * @param {string} sectionName - The name of the section to activate ('home', 'services', 'animatorPackages', 'clownPackages', 'bubblePackages', 'booking', 'testimonials', 'gallery').
          */
         function setActiveSection(sectionName) {
             console.log(`setActiveSection: Cambiando a la sección: ${sectionName}`);
@@ -798,8 +921,10 @@
                 renderHomeSection();
             } else if (sectionName === 'services') {
                 renderServicesSection();
-            } else if (sectionName === 'packages') {
-                renderPackagesSection();
+            } else if (sectionName === 'animatorPackages') { // Now for Animator Packages
+                renderAnimatorPackagesSection();
+            } else if (sectionName === 'clownPackages') { // NEW for Clown Packages
+                renderClownPackagesSection();
             } else if (sectionName === 'bubblePackages') {
                 renderBubblePackagesSection();
                 // Also render company references below bubble packages
@@ -942,9 +1067,13 @@
             // Re-render the active section to update buttons and prices.
             if (appState.activeSection === 'services') {
                 renderServicesSection();
-            } else if (appState.activeSection === 'packages') {
-                renderPackagesSection();
-            } else if (appState.activeSection === 'bubblePackages') { // New section
+            } else if (appState.activeSection === 'home') {
+                renderHomeSection();
+            } else if (appState.activeSection === 'animatorPackages') {
+                renderAnimatorPackagesSection();
+            } else if (appState.activeSection === 'clownPackages') {
+                renderClownPackagesSection();
+            } else if (appState.activeSection === 'bubblePackages') {
                 renderBubblePackagesSection();
             } else if (appState.activeSection === 'booking') {
                 renderBookingSection();
@@ -986,7 +1115,7 @@
                 }
                 toastType = 'success';
             } else if (action === 'remove_all') {
-                // Remove all instances of a specific character from the cart
+                // Remove all instances of a specific character from the cart.
                 appState.selectedItems = appState.selectedItems.filter(item => item.name !== fullCharacterName);
                 message = `"${character.name}" eliminado del carrito.`;
                 toastType = 'info';
@@ -1034,6 +1163,36 @@
             updateCartSummary();
             saveBookingFormData(); // Save cart state after each action.
             showToast(message, toastType);
+        }
+
+        /**
+         * Returns the image URL for a given item name.
+         * @param {string} itemName - The name of the item.
+         * @returns {string} The URL of the item's image, or a placeholder if not found.
+         */
+        function getItemImageUrl(itemName) {
+            // Check servicesData
+            const service = servicesData.find(s => s.name === itemName || itemName.startsWith(s.name + ':'));
+            if (service && service.imageUrl) {
+                return service.imageUrl;
+            }
+            // Check animatorPackagesData (Animators)
+            const animatorPkg = animatorPackagesData.find(p => p.name === itemName);
+            if (animatorPkg && animatorPkg.imageUrl) {
+                return animatorPkg.imageUrl;
+            }
+            // Check clownPackagesData (Clowns)
+            const clownPkg = clownPackagesData.find(p => p.name === itemName);
+            if (clownPkg && clownPkg.imageUrl) {
+                return clownPkg.imageUrl;
+            }
+            // Check bubblePackagesData
+            const bubblePkg = bubblePackagesData.find(bp => bp.name === itemName);
+            if (bubblePkg && bubblePkg.imageUrl) {
+                return bubblePkg.imageUrl;
+            }
+            // Default placeholder if no specific image is found
+            return 'https://placehold.co/40x40/E0F2F7/000000?text=Item';
         }
 
 
@@ -1145,8 +1304,18 @@
             const promoModal = document.getElementById('promoModal');
             const promoModalContent = document.getElementById('promoModalContent');
             const promoMessage = document.getElementById('promoMessage');
-            if (promoMessage) promoMessage.textContent = message;
-            toggleModal(promoModal, promoModalContent, true);
+            const promoCountdown = document.getElementById('promoCountdown');
+
+            // Set promotion end date (e.g., 7 days from now)
+            const endDate = new Date();
+            endDate.setDate(endDate.getDate() + 7); // Set to 7 days from today
+            appState.promoEndDate = endDate;
+
+            // Format end date for display
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedEndDate = endDate.toLocaleDateString('es-ES', options);
+
+            if (promoMessage) promoMessage.innerHTML = `${message}<br>Oferta válida hasta el <strong>${formattedEndDate}</strong>.`;
             
             // Set all bubble packages for promotion
             appState.promotedPackages = bubblePackagesData.map(pkg => pkg.name);
@@ -1154,9 +1323,52 @@
             updateCartSummary();
             // Re-render sections if active to show the discount.
             if (appState.activeSection === 'services') renderServicesSection();
-            if (appState.activeSection === 'packages') renderPackagesSection();
-            if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection(); // New section
+            if (appState.activeSection === 'home') renderHomeSection();
+            if (appState.activeSection === 'animatorPackages') renderAnimatorPackagesSection();
+            if (appState.activeSection === 'clownPackages') renderClownPackagesSection();
+            if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection();
             if (appState.activeSection === 'booking') renderBookingSection();
+
+            toggleModal(promoModal, promoModalContent, true);
+
+            // Start countdown
+            if (appState.countdownInterval) {
+                clearInterval(appState.countdownInterval);
+            }
+            updateCountdown(); // Initial call
+            appState.countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        /**
+         * Updates the countdown timer in the promotion modal.
+         */
+        function updateCountdown() {
+            const promoCountdown = document.getElementById('promoCountdown');
+            if (!promoCountdown || !appState.promoEndDate) {
+                if (appState.countdownInterval) clearInterval(appState.countdownInterval);
+                return;
+            }
+
+            const now = new Date().getTime();
+            const distance = appState.promoEndDate.getTime() - now;
+
+            if (distance < 0) {
+                clearInterval(appState.countdownInterval);
+                promoCountdown.textContent = "¡Oferta Finalizada!";
+                // Optionally, remove the discount if the promotion has truly ended.
+                // appState.promotedPackages = []; 
+                // updateCartSummary();
+                // if (appState.activeSection === 'packages') renderPackagesSection();
+                // if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection();
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            promoCountdown.textContent = `¡Quedan ${days}d ${hours}h ${minutes}m ${seconds}s!`;
         }
 
         /**
@@ -1166,12 +1378,23 @@
             const modal = document.getElementById('promoModal');
             const modalContent = document.getElementById('promoModalContent');
             const promoMessage = document.getElementById('promoMessage');
+            const promoCountdown = document.getElementById('promoCountdown');
+
             if (promoMessage) promoMessage.textContent = ''; // Clear message on close
+            if (promoCountdown) promoCountdown.textContent = ''; // Clear countdown on close
+
             toggleModal(modal, modalContent, false);
+            // Clear the countdown interval when the modal is closed
+            if (appState.countdownInterval) {
+                clearInterval(appState.countdownInterval);
+                appState.countdownInterval = null;
+            }
             // Promoted packages are not cleared so the discount persists during the session.
             updateCartSummary();
-            if (appState.activeSection === 'packages') renderPackagesSection(); // Refresh to ensure discount display.
-            if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection(); // New section
+            if (appState.activeSection === 'home') renderHomeSection();
+            if (appState.activeSection === 'animatorPackages') renderAnimatorPackagesSection();
+            if (appState.activeSection === 'clownPackages') renderClownPackagesSection();
+            if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection();
         }
 
         /**
@@ -1211,6 +1434,7 @@
             } else {
                 miniCartItemsDiv.innerHTML = appState.selectedItems.map(item => {
                     const itemTotalPrice = getAdjustedItemPrice(item);
+                    const itemImageUrl = getItemImageUrl(item.name); // Get image URL for the item
                     
                     let strikethroughHtml = '';
                     if (item.name === 'Pintacaritas' && item.quantity > 1) {
@@ -1221,10 +1445,14 @@
 
                     return `
                         <div class="flex justify-between items-center py-1 border-b border-gray-100 last:border-b-0">
-                            <span class="font-semibold text-gray-800 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                            <div class="flex items-center">
+                                <img src="${itemImageUrl}" alt="Imagen de ${item.name}" class="w-10 h-10 object-cover rounded-md mr-2" loading="lazy">
+                                <span class="font-semibold text-gray-800 text-sm">${item.name} ${item.quantity > 1 ? `(x${item.quantity})` : ''}</span>
+                            </div>
                             <div class="flex items-center space-x-2">
                                 ${strikethroughHtml}
                                 <span class="font-bold text-pink-600 text-base">$${itemTotalPrice.toFixed(2)}</span>
+                                <button class="remove-item-from-minicart-button text-red-500 hover:text-red-700 font-bold ml-2 transition duration-200 cursor-pointer" data-item-name="${item.name}" aria-label="Quitar ${item.name}"><i data-lucide="x-circle"></i></button>
                             </div>
                         </div>
                     `;
@@ -1238,6 +1466,20 @@
             miniCartTotalPriceSpan.textContent = `$${totalItemsPrice.toFixed(2)}`;
 
             toggleModal(miniCartModal, miniCartModalContent, true);
+
+            // Add event listeners for individual remove buttons in the mini-cart
+            document.querySelectorAll('#miniCartModal .remove-item-from-minicart-button').forEach(button => {
+                button.onclick = (event) => {
+                    const itemName = event.currentTarget.dataset.itemName;
+                    const itemToRemove = appState.selectedItems.find(item => item.name === itemName);
+                    if (itemToRemove) {
+                        handleCartAction(itemToRemove, 'remove_all'); // Use remove_all for simplicity here
+                        showMiniCartModal(); // Re-render mini-cart to reflect changes
+                        showToast(`"${itemName}" eliminado del carrito.`, 'info');
+                    }
+                };
+            });
+            lucide.createIcons(); // Re-create icons for new buttons
         }
 
         /**
@@ -1247,6 +1489,22 @@
             const modal = document.getElementById('miniCartModal');
             const modalContent = document.getElementById('miniCartModalContent');
             toggleModal(modal, modalContent, false);
+        }
+
+        /**
+         * Clears all items from the cart.
+         */
+        function clearCart() {
+            appState.selectedItems = [];
+            updateCartSummary();
+            saveBookingFormData(); // Save empty cart
+            // Re-render current section to update button states if needed
+            if (appState.activeSection === 'services') renderServicesSection();
+            if (appState.activeSection === 'home') renderHomeSection();
+            if (appState.activeSection === 'animatorPackages') renderAnimatorPackagesSection();
+            if (appState.activeSection === 'clownPackages') renderClownPackagesSection();
+            if (appState.activeSection === 'bubblePackages') renderBubblePackagesSection();
+            showToast('Carrito vaciado.', 'info');
         }
 
         /**
@@ -1311,6 +1569,76 @@
         // --- Section Rendering Functions ---
 
         /**
+         * Helper function to generate HTML for package cards.
+         * @param {Array<Object>} packagesArray - Array of package data.
+         * @param {string} sectionTitle - Title for the section.
+         * @param {string} sectionIcon - Lucide icon name for the section title.
+         * @returns {string} HTML string for the package section.
+         */
+        function generatePackageCardsHtml(packagesArray, sectionTitle, sectionIcon) {
+            const cardsHtml = packagesArray.map((pkg, index) => {
+                const isSelected = appState.selectedItems.some(item => item.name === pkg.name);
+                let buttonText, buttonClassColor;
+
+                if (isSelected) {
+                    buttonText = 'Quitar del Carrito <i data-lucide="minus"></i>';
+                    buttonClassColor = 'modern-button remove-button'; // Use modern-button and remove-button classes
+                } else {
+                    // Extract the base color (e.g., 'pink', 'indigo', 'yellow', 'orange', 'green') from pkg.color
+                    const baseColorMatch = pkg.color.match(/border-(\w+)-/);
+                    const baseColor = baseColorMatch ? baseColorMatch[1] : 'purple'; // Default to purple if not found
+                    buttonText = 'Añadir al Carrito <i data-lucide="plus"></i>';
+                    buttonClassColor = `modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 text-white`;
+                }
+
+                let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 });
+                let originalPriceHtml = '';
+                if (Math.abs(displayPrice - pkg.price) > 0.001) {
+                    originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
+                }
+                const packageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
+
+                return `
+                    <div class="${pkg.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
+                        ${packageImageHtml}
+                        <div class="p-6 sm:p-8 flex flex-col flex-grow">
+                            <h4 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${pkg.color.split(' ').find(cls => cls.startsWith('text-'))}">${pkg.name} <i data-lucide="${pkg.icon}"></i></h4>
+                            <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5 flex-grow">${pkg.description}</p>
+                            <ul class="list-disc list-inside text-gray-600 mb-4 sm:mb-5 text-sm sm:text-base">
+                                ${pkg.services.map(service => `<li>${service}</li>`).join('')}
+                            </ul>
+                            <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
+                                ${originalPriceHtml}$${displayPrice.toFixed(2)}
+                            </p>
+                        </div>
+                        <div class="p-6 pt-0">
+                            <button data-item-name="${pkg.name}" data-item-price="${pkg.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto ${buttonClassColor}" aria-label="${isSelected ? `Quitar ${pkg.name} del carrito` : `Añadir ${pkg.name} al carrito`}">
+                                ${buttonText}
+                            </button>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            // Extract border and text color from the first package for the section border/text, or use a default
+            const sectionBorderColorClass = packagesArray.length > 0 ? packagesArray[0].color.split(' ').find(cls => cls.startsWith('border-')) : 'border-purple-400';
+            const sectionTextColorClass = packagesArray.length > 0 ? packagesArray[0].color.split(' ').find(cls => cls.startsWith('text-')) : 'text-purple-700';
+
+            return `
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 ${sectionBorderColorClass} animate-fade-in">
+                    <h2 class="text-3xl sm:text-4xl font-extrabold ${sectionTextColorClass} text-center mb-10 sm:mb-12">
+                        ${sectionTitle} <i data-lucide="${sectionIcon}"></i>
+                    </h2>
+                    <p class="text-lg text-gray-700 text-center mb-10">
+                        Descubre nuestros planes de <strong>${sectionTitle.toLowerCase()} para eventos infantiles en Panamá</strong>. ¡La opción perfecta para tu celebración!
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
+                        ${cardsHtml}
+                    </div>
+                </section>
+            `;
+        }
+
+        /**
          * Renders the Home section.
          */
         function renderHomeSection() {
@@ -1325,18 +1653,23 @@
                                 Animación infantil, shows de burbujas gigantes y más en Panamá. ¡La magia comienza aquí!
                             </p>
                             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mt-10">
-                                <button id="homeExploreServices" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 border-2 border-white cursor-pointer flex items-center justify-center">
+                                <button id="homeExploreServices" class="modern-button bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700">
                                     ¡Explora Nuestros Servicios! <i data-lucide="sparkles"></i>
                                 </button>
-                                <button id="homeExplorePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 border-2 border-white cursor-pointer flex items-center justify-center">
-                                    ¡Explora Nuestros Planes! <i data-lucide="cake-slice"></i>
+                                <button id="homeExploreAnimatorPackages" class="modern-button bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700">
+                                    ¡Paquetes de Animadores! <i data-lucide="user-check"></i>
                                 </button>
                             </div>
                             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mt-6">
-                                <button id="homeExploreBubblePackages" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 border-2 border-white cursor-pointer flex items-center justify-center">
+                                <button id="homeExploreClownPackages" class="modern-button bg-gradient-to-br from-orange-600 via-orange-400 to-orange-700">
+                                    ¡Paquetes de Payasos! <i data-lucide="clown"></i>
+                                </button>
+                                <button id="homeExploreBubblePackages" class="modern-button bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700">
                                     ¡Paquetes de Burbujas! <i data-lucide="wind"></i>
                                 </button>
-                                <button id="homePromoButton" class="text-white font-bold py-3 px-8 rounded-full shadow-xl text-base sm:text-lg transition duration-300 transform hover:scale-105 bg-gradient-to-br from-pink-500 via-purple-400 to-purple-600 border-2 border-white cursor-pointer flex items-center justify-center">
+                            </div>
+                            <div class="flex justify-center mt-6">
+                                <button id="homePromoButton" class="modern-button bg-gradient-to-br from-pink-500 via-purple-400 to-purple-600">
                                     <i data-lucide="award"></i> Promoción del Mes <i data-lucide="award"></i>
                                 </button>
                             </div>
@@ -1347,7 +1680,8 @@
 
                 // Assign event listeners to the Home section buttons.
                 document.getElementById('homeExploreServices').onclick = () => { setActiveSection('services'); };
-                document.getElementById('homeExplorePackages').onclick = () => { setActiveSection('packages'); };
+                document.getElementById('homeExploreAnimatorPackages').onclick = () => { setActiveSection('animatorPackages'); };
+                document.getElementById('homeExploreClownPackages').onclick = () => { setActiveSection('clownPackages'); };
                 document.getElementById('homeExploreBubblePackages').onclick = () => { setActiveSection('bubblePackages'); };
                 document.getElementById('homePromoButton').onclick = () => {
                     showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en todos nuestros paquetes de burbujas! 🫧');
@@ -1366,7 +1700,11 @@
                 const repeatableServices = ['Pintacaritas', 'Globoflexia', 'Máquinas de Snack Algodón y Pop Corn'];
                 
                 const cardsHtml = servicesData.map((service, index) => {
-                    const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="Imagen de ${service.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">` : '';
+                    const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="Imagen de ${service.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
+
+                    // Extract base color from service.color for button styling
+                    const baseColorMatch = service.color.match(/border-(\w+)-/);
+                    const baseColor = baseColorMatch ? baseColorMatch[1] : 'purple';
 
                     if (service.type === 'character_selection') {
                         const selectedCharacterItems = appState.selectedItems.filter(item => item.name.startsWith(service.name + ':'));
@@ -1376,7 +1714,7 @@
                             return `<option value="${char.id}" ${isCharacterAlreadyAdded ? 'disabled' : ''}>${char.name} ${isCharacterAlreadyAdded ? '(Añadido)' : ''}</option>`;
                         }).join('');
                         return `
-                            <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
+                            <div class="${service.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                                 ${serviceImageHtml}
                                 <div class="p-6 sm:p-8 flex flex-col flex-grow">
                                     <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-indigo-700">${service.name} <i data-lucide="user-round-plus"></i></h2>
@@ -1390,7 +1728,7 @@
                                         </select>
                                     </div>
                                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
-                                        <button data-service-id="${service.id}" data-action="add_character" class="character-action-button flex-grow bg-gradient-to-br from-indigo-600 via-indigo-400 to-indigo-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Añadir personaje seleccionado">
+                                        <button data-service-id="${service.id}" data-action="add_character" class="character-action-button flex-grow modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Añadir personaje seleccionado">
                                             Añadir Seleccionado <i data-lucide="plus"></i>
                                         </button>
                                     </div>
@@ -1421,7 +1759,7 @@
                         });
                         themeOptionsHtml += '</optgroup>';
                         return `
-                            <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
+                            <div class="${service.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                                 ${serviceImageHtml}
                                 <div class="p-6 sm:p-8 flex flex-col flex-grow">
                                     <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-pink-700">${service.name} <i data-lucide="palette"></i></h2>
@@ -1432,7 +1770,7 @@
                                         <select id="themeSelect-${service.id}" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:ring-pink-500 focus:border-pink-500 text-sm sm:text-base cursor-pointer transition duration-150 ease-in-out" aria-label="Selecciona una temática de decoración">${themeOptionsHtml}</select>
                                     </div>
                                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
-                                        <button data-service-id="${service.id}" data-action="add_theme" class="theme-action-button flex-grow bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Añadir temática seleccionada">
+                                        <button data-service-id="${service.id}" data-action="add_theme" class="theme-action-button flex-grow modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 disabled:opacity-50 disabled:cursor-not-allowed" aria-label="Añadir temática seleccionada">
                                             Añadir Seleccionado <i data-lucide="plus"></i>
                                         </button>
                                     </div>
@@ -1452,7 +1790,7 @@
                         // If the item is in the cart, use its quantity, otherwise default to 10.
                         const currentQuantity = selectedItemInCart ? selectedItemInCart.quantity : 10; 
                         return `
-                            <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity50 transition duration-300 hover:scale-[1.02] hover:hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
+                            <div class="${service.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                                 ${serviceImageHtml}
                                 <div class="p-6 sm:p-8 flex flex-col flex-grow">
                                     <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-yellow-700">${service.name} <i data-lucide="scissors"></i></h2>
@@ -1465,11 +1803,11 @@
                                     </div>
                                     <p class="text-lg font-semibold text-gray-700">Subtotal: <span id="manualidadesSubtotal-${service.id}">$${(service.price * currentQuantity).toFixed(2)}</span></p>
                                     <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto">
-                                        <button data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price}" class="update-manualidades-quantity-button flex-grow bg-gradient-to-br from-yellow-600 via-yellow-400 to-yellow-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Actualizar cantidad de niños para el taller de manualidades">
+                                        <button data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price}" class="update-manualidades-quantity-button flex-grow modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700" aria-label="Actualizar cantidad de niños para el taller de manualidades">
                                             Actualizar Cantidad <i data-lucide="refresh-cw"></i>
                                         </button>
                                         ${selectedItemInCart ? `
-                                        <button data-service-id="${service.id}" data-service-name="${service.name}" data-action-type="remove_all" class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105 cursor-pointer flex items-center justify-center" aria-label="Quitar taller de manualidades del carrito">
+                                        <button data-service-id="${service.id}" data-service-name="${service.name}" data-action-type="remove_all" class="add-remove-button flex-grow modern-button remove-button" aria-label="Quitar taller de manualidades del carrito">
                                             Quitar Taller <i data-lucide="trash-2"></i>
                                         </button>` : ''}
                                     </div>
@@ -1502,31 +1840,30 @@
                         if (isRepeatableService) {
                             buttonsHtml = `
                                 <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 mt-auto p-6 pt-0">
-                                    <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="add" class="add-remove-button flex-grow bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 transform hover:scale-105 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Añadir ${service.name} al carrito">
+                                    <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="add" class="add-remove-button flex-grow modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700" aria-label="Añadir ${service.name} al carrito">
                                         Añadir <i data-lucide="plus"></i> ${currentQuantity > 0 ? `(x${currentQuantity})` : ''}
                                     </button>
                                     ${currentQuantity > 0 ? `
-                                    <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="remove_all" class="add-remove-button flex-grow bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 transform hover:scale-105 cursor-pointer flex items-center justify-center" aria-label="Quitar todas las unidades de ${service.name} del carrito">
+                                    <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="remove_all" class="add-remove-button flex-grow modern-button remove-button" aria-label="Quitar todas las unidades de ${service.name} del carrito">
                                         Quitar Todo <i data-lucide="trash-2"></i>
                                     </button>` : ''}
                                 </div>`;
                         } else {
                             const isSelected = !!selectedItemInCart;
-                            const buttonClassColor = isSelected ? 'bg-red-500 hover:bg-red-600' : 'bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white border-2 border-white';
-                            const buttonShadow = isSelected ? 'shadow-md' : 'shadow-xl';
+                            const buttonClassColor = isSelected ? 'modern-button remove-button' : `modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700`;
                             buttonsHtml = `
                                 <div class="p-6 pt-0">
-                                    <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 cursor-pointer flex items-center justify-center" aria-label="${isSelected ? `Quitar ${service.name} del carrito` : `Añadir ${service.name} al carrito`}">
+                                    <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto ${buttonClassColor}" aria-label="${isSelected ? `Quitar ${service.name} del carrito` : `Añadir ${service.name} al carrito`}">
                                         ${isSelected ? 'Quitar del Carrito <i data-lucide="minus"></i>' : 'Añadir al Carrito <i data-lucide="plus"></i>'}
                                     </button>
                                 </div>`;
                         }
 
                         return `
-                            <div class="${service.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
+                            <div class="${service.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                                 ${serviceImageHtml}
                                 <div class="p-6 sm:p-8 flex flex-col flex-grow">
-                                    <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-purple-700">${service.name} <i data-lucide="${service.icon}"></i></h2>
+                                    <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${service.color.split(' ').find(cls => cls.startsWith('text-'))}">${service.name} <i data-lucide="${service.icon}"></i></h2>
                                     <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5 flex-grow">${service.description}</p>
                                     ${displayPriceHtml}
                                 </div>
@@ -1535,9 +1872,12 @@
                     }
                 }).join('');
 
+                const sectionBorderColorClass = servicesData.length > 0 ? servicesData[0].color.split(' ').find(cls => cls.startsWith('border-')) : 'border-purple-400';
+                const sectionTextColorClass = servicesData.length > 0 ? servicesData[0].color.split(' ').find(cls => cls.startsWith('text-')) : 'text-purple-700';
+
                 const html = `
-                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
-                        <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-10 sm:mb-12">Nuestros Servicios <i data-lucide="sparkles"></i></h2>
+                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 ${sectionBorderColorClass} animate-fade-in">
+                        <h2 class="text-3xl sm:text-4xl font-extrabold ${sectionTextColorClass} text-center mb-10 sm:mb-12">Nuestros Servicios <i data-lucide="sparkles"></i></h2>
                         <p class="text-lg text-gray-700 text-center mb-10">
                             Servicios de animación para fiestas infantiles en Panamá. ¡Hacemos tu evento mágico e inolvidable!
                         </p>
@@ -1579,7 +1919,7 @@
                         const fullCharacterName = button.dataset.fullName;
                         const characterService = servicesData.find(s => s.type === 'character_selection');
                         const charNameOnly = fullCharacterName.replace(characterService.name + ': ', '');
-                        const characterToRemove = characterService.characters.find(c => c.name === charNameOnly);
+                        const characterToRemove = characterService.characters.find(c => c.name === charNameOnly); // Corrected to use name for lookup
                         if (characterService && characterToRemove) {
                             updateCharacterInCart(characterService, characterToRemove, 'remove_all');
                         }
@@ -1709,64 +2049,11 @@
         }
 
         /**
-         * Renders the Packages section.
+         * Renders the Animator Packages section.
          */
-        function renderPackagesSection() {
+        function renderAnimatorPackagesSection() {
             try {
-                const cardsHtml = packagesData.map((pkg, index) => {
-                    const isSelected = appState.selectedItems.some(item => item.name === pkg.name);
-                    let buttonText, buttonClassColor, buttonShadow, buttonBorder;
-
-                    if (isSelected) {
-                        buttonText = 'Quitar del Carrito <i data-lucide="minus"></i>';
-                        buttonClassColor = 'bg-red-500 hover:bg-red-600';
-                        buttonShadow = 'shadow-md';
-                        buttonBorder = '';
-                    } else {
-                        buttonText = 'Añadir al Carrito <i data-lucide="plus"></i>';
-                        buttonClassColor = 'bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white';
-                        buttonShadow = 'shadow-xl';
-                        buttonBorder = 'border-2 border-white';
-                    }
-
-                    let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 });
-                    let originalPriceHtml = '';
-                    if (Math.abs(displayPrice - pkg.price) > 0.001) {
-                        originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
-                    }
-                    const packageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">` : '';
-
-                    return `
-                        <div class="${pkg.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-                            ${packageImageHtml}
-                            <div class="p-6 sm:p-8 flex flex-col flex-grow">
-                                <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-indigo-700">${pkg.name} <i data-lucide="${pkg.icon}"></i></h2>
-                                <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5 flex-grow">${pkg.description}</p>
-                                <ul class="list-disc list-inside text-gray-600 mb-4 sm:mb-5 text-sm sm:text-base">
-                                    ${pkg.services.map(service => `<li>${service}</li>`).join('')}
-                                </ul>
-                                <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
-                                    ${originalPriceHtml}$${displayPrice.toFixed(2)}
-                                </p>
-                            </div>
-                            <div class="p-6 pt-0">
-                                <button data-item-name="${pkg.name}" data-item-price="${pkg.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder} cursor-pointer flex items-center justify-center" aria-label="${isSelected ? `Quitar ${pkg.name} del carrito` : `Añadir ${pkg.name} al carrito`}">
-                                    ${buttonText}
-                                </button>
-                            </div>
-                        </div>`;
-                }).join('');
-
-                const html = `
-                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-pink-400 animate-fade-in">
-                        <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-10 sm:mb-12">Nuestros Planes de Cumpleaños <i data-lucide="cake-slice"></i></h2>
-                        <p class="text-lg text-gray-700 text-center mb-10">
-                            Descubre nuestros planes de <strong>cumpleaños para eventos infantiles en Panamá</strong>. ¡La opción perfecta para tu celebración!
-                        </p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
-                            ${cardsHtml}
-                        </div>
-                    </section>`;
+                const html = generatePackageCardsHtml(animatorPackagesData, 'Paquetes de Animadores', 'user-check');
                 renderSection(html);
 
                 document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
@@ -1782,11 +2069,39 @@
                         showImageModal(event.target.src, event.target.alt);
                     };
                 });
-                console.log('renderPackagesSection: Event listeners para la sección Planes asignados.');
+                console.log('renderAnimatorPackagesSection: Event listeners para la sección Paquetes de Animadores asignados.');
             } catch (error) {
-                console.error('renderPackagesSection: Error al renderizar la sección Planes:', error);
+                console.error('renderAnimatorPackagesSection: Error al renderizar la sección Paquetes de Animadores:', error);
             }
         }
+
+        /**
+         * Renders the Clown Packages section.
+         */
+        function renderClownPackagesSection() {
+            try {
+                const html = generatePackageCardsHtml(clownPackagesData, 'Paquetes de Payasos', 'clown');
+                renderSection(html);
+
+                document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
+                    button.onclick = () => {
+                        const itemName = button.dataset.itemName;
+                        const itemPrice = parseFloat(button.dataset.itemPrice);
+                        const actionType = button.dataset.actionType;
+                        handleCartAction({ name: itemName, price: itemPrice }, actionType);
+                    };
+                });
+                document.querySelectorAll('.service-image').forEach(img => {
+                    img.onclick = (event) => {
+                        showImageModal(event.target.src, event.target.alt);
+                    };
+                });
+                console.log('renderClownPackagesSection: Event listeners para la sección Paquetes de Payasos asignados.');
+            } catch (error) {
+                console.error('renderClownPackagesSection: Error al renderizar la sección Paquetes de Payasos:', error);
+            }
+        }
+
 
         /**
          * Renders the Bubble Packages section.
@@ -1795,18 +2110,17 @@
             try {
                 const cardsHtml = bubblePackagesData.map((pkg, index) => {
                     const isSelected = appState.selectedItems.some(item => item.name === pkg.name);
-                    let buttonText, buttonClassColor, buttonShadow, buttonBorder;
+                    let buttonText, buttonClassColor;
 
                     if (isSelected) {
                         buttonText = 'Quitar del Carrito <i data-lucide="minus"></i>';
-                        buttonClassColor = 'bg-red-500 hover:bg-red-600';
-                        buttonShadow = 'shadow-md';
-                        buttonBorder = '';
+                        buttonClassColor = 'modern-button remove-button';
                     } else {
+                        // Extract the base color (e.g., 'blue') from pkg.color
+                        const baseColorMatch = pkg.color.match(/border-(\w+)-/);
+                        const baseColor = baseColorMatch ? baseColorMatch[1] : 'blue'; // Default to blue
                         buttonText = 'Añadir al Carrito <i data-lucide="plus"></i>';
-                        buttonClassColor = 'bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 text-white';
-                        buttonShadow = 'shadow-xl';
-                        buttonBorder = 'border-2 border-white';
+                        buttonClassColor = `modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 text-white`;
                     }
 
                     let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 });
@@ -1814,32 +2128,35 @@
                     if (Math.abs(displayPrice - pkg.price) > 0.001) {
                         originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
                     }
-                    const bubblePackageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">` : '';
+                    const bubblePackageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
 
                     return `
-                        <div class="${pkg.color} rounded-2xl shadow-xl flex flex-col justify-between border-4 border-dashed border-opacity-50 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
+                        <div class="${pkg.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                             ${bubblePackageImageHtml}
                             <div class="p-6 sm:p-8 flex flex-col flex-grow">
-                                <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-blue-700">${pkg.name} <i data-lucide="${pkg.icon}"></i></h2>
+                                <h2 class="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 ${pkg.color.split(' ').find(cls => cls.startsWith('text-'))}">${pkg.name} <i data-lucide="${pkg.icon}"></i></h2>
                                 <p class="text-sm sm:text-base text-gray-700 mb-4 sm:mb-5 flex-grow">${pkg.description}</p>
                                 <ul class="list-disc list-inside text-gray-600 mb-4 sm:mb-5 text-sm sm:text-base">
                                     ${pkg.services.map(service => `<li>${service}</li>`).join('')}
-                                </ul>
+                               </ul>
                                 <p class="text-3xl sm:text-4xl font-extrabold text-pink-600 mb-4 sm:mb-5">
                                     ${originalPriceHtml}$${displayPrice.toFixed(2)}
                                 </p>
                             </div>
                             <div class="p-6 pt-0">
-                                <button data-item-name="${pkg.name}" data-item-price="${pkg.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto font-bold py-2 px-4 rounded-full ${buttonShadow} text-sm sm:text-base transition duration-300 ${buttonClassColor} text-white transform hover:scale-105 ${buttonBorder} cursor-pointer flex items-center justify-center" aria-label="${isSelected ? `Quitar ${pkg.name} del carrito` : `Añadir ${pkg.name} al carrito`}">
+                                <button data-item-name="${pkg.name}" data-item-price="${pkg.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto ${buttonClassColor}" aria-label="${isSelected ? `Quitar ${pkg.name} del carrito` : `Añadir ${pkg.name} al carrito`}">
                                     ${buttonText}
                                 </button>
                             </div>
                         </div>`;
                 }).join('');
 
+                const sectionBorderColorClass = bubblePackagesData.length > 0 ? bubblePackagesData[0].color.split(' ').find(cls => cls.startsWith('border-')) : 'border-blue-400';
+                const sectionTextColorClass = bubblePackagesData.length > 0 ? bubblePackagesData[0].color.split(' ').find(cls => cls.startsWith('text-')) : 'text-blue-700';
+
                 const html = `
-                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-blue-400 animate-fade-in">
-                        <h2 class="text-3xl sm:text-4xl font-extrabold text-blue-700 text-center mb-10 sm:mb-12">Nuestros Paquetes de Burbujas <i data-lucide="wind"></i></h2>
+                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 ${sectionBorderColorClass} animate-fade-in">
+                        <h2 class="text-3xl sm:text-4xl font-extrabold ${sectionTextColorClass} text-center mb-10 sm:mb-12">Nuestros Paquetes de Burbujas <i data-lucide="wind"></i></h2>
                         <p class="text-lg text-gray-700 text-center mb-10">
                             ¡Sumérgete en la diversión con nuestros increíbles paquetes de shows de burbujas gigantes en Panamá!
                         </p>
@@ -1874,8 +2191,8 @@
         function renderCompanyReferencesSection() {
             try {
                 const cardsHtml = companyReferencesData.map((company, index) => `
-                    <div class="bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center p-6 border-4 border-gray-200 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-                        <img src="${company.imageUrl}" alt="Logo de ${company.name}" class="w-full h-32 object-cover rounded-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image">
+                    <div class="bg-white modern-card flex flex-col items-center justify-center p-6 border-gray-200 animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
+                        <img src="${company.imageUrl}" alt="Logo de ${company.name}" class="w-full h-32 object-cover rounded-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">
                         <h3 class="text-lg sm:text-xl font-bold text-gray-800 text-center">${company.name}</h3>
                     </div>
                 `).join('');
@@ -1910,8 +2227,8 @@
         function renderTestimonialsSection() {
             try {
                 const testimonialsHtml = testimonialsData.map((testimonial, index) => `
-                    <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 flex flex-col items-center text-center border-4 border-pink-200 transition duration-300 hover:scale-[1.02] hover:shadow-2xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-                        <img src="${testimonial.imageUrl}" alt="Foto de ${testimonial.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-pink-400 shadow-md">
+                    <div class="bg-white modern-card p-6 sm:p-8 flex flex-col items-center text-center border-pink-200 animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
+                        <img src="${testimonial.imageUrl}" alt="Foto de ${testimonial.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-pink-400 shadow-md" loading="lazy">
                         <p class="text-gray-700 text-base sm:text-lg italic mb-4">"${testimonial.review}"</p>
                         <p class="font-bold text-purple-700 text-lg">${testimonial.name}</p>
                         <p class="text-gray-500 text-sm">${testimonial.role}</p>
@@ -1943,7 +2260,7 @@
             try {
                 const galleryImagesHtml = galleryData.map((image, index) => `
                     <div class="relative group rounded-xl overflow-hidden shadow-lg border-2 border-gray-200 transition duration-300 hover:scale-[1.02] hover:shadow-xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-                        <img src="${image.imageUrl}" alt="${image.alt}" class="w-full h-48 object-cover transition duration-300 group-hover:opacity-80 cursor-pointer gallery-image">
+                        <img src="${image.imageUrl}" alt="${image.alt}" class="w-full h-48 object-cover transition duration-300 group-hover:opacity-80 cursor-pointer gallery-image" loading="lazy">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                             <p class="text-white text-sm font-semibold">${image.alt}</p>
                         </div>
@@ -1985,10 +2302,11 @@
         function renderBookingSection() {
             try {
                 const selectedItemsListHtml = appState.selectedItems.length === 0
-                    ? `<p class="text-red-600 text-sm sm:text-base">No has seleccionado ningún servicio. Por favor, vuelve a la sección de Servicios o Paquetes.</p>`
+                    ? `<p class="text-red-600 text-sm sm:text-base text-center">No has seleccionado ningún servicio. Por favor, vuelve a la sección de Servicios o Paquetes.</p>`
                     : `<div class="space-y-3">
                         ${appState.selectedItems.map((item) => {
                             const itemTotalForJotForm = getAdjustedItemPrice(item);
+                            const itemImageUrl = getItemImageUrl(item.name); // Get image URL for the item
                             let strikethroughHtml = '';
                             if (item.name === 'Pintacaritas' && item.quantity > 1) {
                                 strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
@@ -1996,11 +2314,14 @@
                                 strikethroughHtml = `<span class="line-through text-gray-500 text-xs">$${item.price.toFixed(2)}</span> `;
                             }
                             return `
-                                <div class="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                                    <span class="font-semibold text-gray-800 text-base">${item.name} ${item.quantity > 0 ? `(x${item.quantity})` : ''}</span>
-                                    <div class="flex items-center space-x-2">
+                                <div class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm border border-gray-200">
+                                    <div class="flex items-center flex-grow min-w-0">
+                                        <img src="${itemImageUrl}" alt="Imagen de ${item.name}" class="w-12 h-12 object-cover rounded-md mr-3" loading="lazy">
+                                        <span class="font-semibold text-gray-800 text-sm sm:text-base truncate">${item.name} ${item.quantity > 0 ? `(x${item.quantity})` : ''}</span>
+                                    </div>
+                                    <div class="flex items-center flex-shrink-0 ml-4">
                                         ${strikethroughHtml}
-                                        <span class="font-bold text-pink-600 text-lg">$${itemTotalForJotForm.toFixed(2)}</span>
+                                        <span class="font-bold text-pink-600 text-lg sm:text-xl whitespace-nowrap">$${itemTotalForJotForm.toFixed(2)}</span>
                                     </div>
                                 </div>`;
                         }).join('')}
@@ -2351,6 +2672,7 @@
                 document.getElementById('closeBookingWarningModalButton').onclick = closeBookingWarningModal;
                 document.getElementById('closeMiniCartModalButton').onclick = closeMiniCartModal;
                 document.getElementById('closeImageModalButton').onclick = closeImageModal;
+                document.getElementById('clearCartButton').onclick = clearCart; // New: Clear cart button
                 console.log('DOMContentLoaded: Listeners de modales asignados.');
 
                 // --- NEW: Mobile Menu Event Listeners ---
@@ -2367,14 +2689,15 @@
                 const navActions = {
                     Home: () => setActiveSection('home'),
                     Services: () => setActiveSection('services'),
-                    Packages: () => setActiveSection('packages'),
+                    AnimatorPackages: () => setActiveSection('animatorPackages'), // Direct to animator packages page
+                    ClownPackages: () => setActiveSection('clownPackages'), // Direct to clown packages page
                     BubblePackages: () => setActiveSection('bubblePackages'),
                     Testimonials: () => setActiveSection('testimonials'), // NEW
                     Gallery: () => setActiveSection('gallery'), // NEW
                     Booking: () => setActiveSection('booking')
                 };
 
-                ['Home', 'Services', 'Packages', 'BubblePackages', 'Testimonials', 'Gallery', 'Booking'].forEach(section => {
+                ['Home', 'Services', 'AnimatorPackages', 'ClownPackages', 'BubblePackages', 'Testimonials', 'Gallery', 'Booking'].forEach(section => {
                     const desktopBtn = document.getElementById(`nav${section}`);
                     const mobileBtn = document.getElementById(`mobileNav${section}`);
                     if (desktopBtn) desktopBtn.onclick = navActions[section];
