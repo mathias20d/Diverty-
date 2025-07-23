@@ -137,71 +137,64 @@
     <style>
         /* Base styles for the page body */
         body {
-            font-family: 'Quicksand', sans-serif; 
+            font-family: 'Quicksand', sans-serif; /* Changed font to Quicksand for body */
             margin: 0;
             padding: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M0 0h3v3H0V0zm3 3h3v3H3V3z'/%3E%3C/g%3E%3C/svg%3E"); /* Lighter pattern */
+            /* Subtle background pattern for aesthetic appeal */
+            background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M0 0h3v3H0V0zm3 3h3v3H3V3z'/%3E%3C/g%3E%3C/svg%3E");
             background-repeat: repeat;
             background-size: 6px 6px;
-            background-attachment: fixed;
+            background-attachment: fixed; /* Optional: for a subtle parallax effect */
         }
         /* Headings using Poppins for a professional touch */
-        h1, h2, h3, h4 { 
+        h1, h2, h3, h4 { /* Added h4 for consistency */
             font-family: 'Poppins', sans-serif;
-            font-weight: 800; /* Extra bold for more impact */
-            letter-spacing: -0.03em; /* Slightly tighter letter spacing */
-            line-height: 1.2; /* Better line height for headings */
-        }
-        p {
-            line-height: 1.6; /* Improved line height for body text */
+            font-weight: 700; /* Bold for impact */
+            letter-spacing: -0.02em; /* Slightly tighter letter spacing for headings */
         }
         
         /* --- NEW HEADER STYLES --- */
         #mainHeader {
             transition: background-color 0.4s ease-out, box-shadow 0.4s ease-out;
-            padding-top: 1rem; /* Increased padding */
-            padding-bottom: 1rem; /* Increased padding */
         }
         #mainHeader.scrolled {
-            background-color: rgba(255, 255, 255, 0.98); /* More opaque */
-            backdrop-filter: blur(12px); /* Stronger blur */
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 6px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Stronger shadow */
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
         .nav-link {
-            transition: color 0.3s ease, border-bottom 0.3s ease, transform 0.2s ease; /* Added transform */
+            transition: color 0.3s ease, border-bottom 0.3s ease; /* Added border-bottom transition */
             position: relative;
-            padding-bottom: 6px; /* More space for the border */
-            font-weight: 600; /* Slightly bolder */
+            padding-bottom: 4px; /* Space for the border */
         }
         .nav-link.active {
-            color: #db2777; /* Pink-600 */
+            color: #db2777; /* Pink-600 for active link */
             font-weight: 700;
-            border-bottom: 3px solid #db2777; /* Thicker border */
+            border-bottom: 2px solid #db2777; /* Pink-600 border for active link */
         }
         .nav-link:hover {
             color: #db2777; /* Pink-600 on hover */
-            transform: translateY(-2px); /* Subtle lift on hover */
         }
         
         /* --- NEW MOBILE MENU STYLES --- */
         #mobileMenu {
             position: fixed;
             top: 0;
-            right: -100%; 
-            width: 85%; /* Slightly wider */
-            max-width: 350px; /* Increased max-width */
-            height: 100%; 
+            right: -100%; /* Start off-screen */
+            width: 80%;
+            max-width: 320px;
+            height: 100%; /* This is likely the culprit if content is cut off */
             background-color: white;
-            box-shadow: -15px 0 40px rgba(0,0,0,0.15); /* Stronger shadow */
+            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
             transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             z-index: 100;
             display: flex;
             flex-direction: column;
-            padding: 2rem; /* Increased padding */
+            padding: 1.5rem; /* Reduced from 2rem */
         }
         #mobileMenu.open {
-            right: 0; 
+            right: 0; /* Slide in */
         }
         #mobileMenuOverlay {
             position: fixed;
@@ -209,7 +202,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.6); /* Darker overlay */
+            background-color: rgba(0,0,0,0.5);
             z-index: 99;
             opacity: 0;
             visibility: hidden;
@@ -220,16 +213,15 @@
             visibility: visible;
         }
         .mobile-nav-link {
-            font-family: 'Quicksand', sans-serif; 
-            font-size: 1.25rem; /* Slightly larger */
-            padding: 1rem; /* Increased padding */
-            border-radius: 0.75rem; /* More rounded */
-            transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease; /* Added transform */
+            font-family: 'Quicksand', sans-serif; /* Applied Quicksand for mobile links */
+            font-size: 1.125rem; /* Reduced from 1.25rem (text-lg) */
+            padding: 0.75rem; /* Reduced from 1rem */
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
         .mobile-nav-link:hover, .mobile-nav-link.active {
-            background-color: #f3e8ff; 
-            color: #7e22ce; 
-            transform: translateX(5px); /* Slide effect on hover */
+            background-color: #f3e8ff; /* Purple-100 */
+            color: #7e22ce; /* Purple-700 */
         }
 
         /* Style for the floating WhatsApp button: Allows quick access to contact. */
@@ -249,61 +241,60 @@
         }
         .whatsapp-float-button {
             position: fixed;
-            bottom: 25px; /* Slightly higher */
-            right: 25px; /* Slightly more to the right */
+            bottom: 20px;
+            right: 20px;
             z-index: 1000;
-            width: 60px; /* Slightly larger */
-            height: 60px; /* Slightly larger */
+            width: 56px;
+            height: 56px;
             display: flex;
             justify-content: center;
             align-items: center;
             border-radius: 9999px;
-            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15), 0 6px 10px -3px rgba(0, 0, 0, 0.08); /* Stronger shadow */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             transition: all 0.3s ease;
+            /* Changed to a brighter green gradient */
             background-image: linear-gradient(to bottom right, #25D366, #1DA851); 
             cursor: pointer;
-            animation: pulse 2s infinite; 
+            animation: pulse 2s infinite; /* Apply the pulse animation */
         }
         .whatsapp-float-button:hover {
-            transform: scale(1.12); /* More pronounced scale */
-            box-shadow: 0 25px 35px -8px rgba(0, 0, 0, 0.15), 0 12px 15px -6px rgba(0, 0, 0, 0.08); /* Stronger shadow on hover */
-            background-image: linear-gradient(to bottom right, #1DA851, #25D366); 
-            animation: none; 
+            transform: scale(1.1);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            background-image: linear-gradient(to bottom right, #1DA851, #25D366); /* Reverse gradient on hover */
+            animation: none; /* Stop pulse on hover for smoother scale effect */
         }
         .whatsapp-float-button .lucide {
             color: white;
-            width: 2.2rem; /* Slightly larger icon */
-            height: 2.2rem; /* Slightly larger icon */
+            width: 2rem;
+            height: 2rem;
         }
 
         /* Style for inline validation error messages */
         .error-message {
-            color: #ef4444; 
-            font-size: 0.9rem; /* Slightly larger font */
-            margin-top: 0.35rem; /* More spacing */
-            font-weight: 600;
+            color: #ef4444; /* red-500 */
+            font-size: 0.875rem; /* text-sm */
+            margin-top: 0.25rem;
         }
         .input-error {
-            border-color: #ef4444 !important; 
-            box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); /* Red ring on error */
+            border-color: #ef4444 !important; /* red-500 */
         }
         /* Style for Lucide icons to ensure consistent sizing and alignment */
         .lucide {
             width: 1em;
             height: 1em;
-            vertical-align: -0.15em; /* Better alignment */
-            margin-right: 0.5em; /* More spacing */
+            vertical-align: -0.125em; /* Better alignment with text */
+            margin-right: 0.4em;
             flex-shrink: 0;
         }
         button .lucide {
-            margin-right: 0.6rem; /* More spacing */
+            margin-right: 0.5rem;
         }
         
         /* Animations for elements appearing on screen */
         @keyframes slideUpFadeIn {
             from {
                 opacity: 0;
-                transform: translateY(30px); /* More pronounced slide */
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
@@ -311,8 +302,8 @@
             }
         }
         .animate-slide-up-fade-in {
-            animation: slideUpFadeIn 0.7s ease-out forwards; /* Slightly longer duration */
-            opacity: 0; 
+            animation: slideUpFadeIn 0.6s ease-out forwards;
+            opacity: 0; /* Start hidden for animation */
         }
 
         @keyframes fadeIn {
@@ -320,27 +311,27 @@
             to { opacity: 1; }
         }
         .animate-fade-in {
-            animation: fadeIn 0.9s ease-out forwards; /* Slightly longer duration */
+            animation: fadeIn 0.8s ease-out forwards;
         }
 
         /* Toast Notification Styles */
         #toastNotification {
             position: fixed;
-            top: 25px; /* Slightly lower */
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 10000;
-            padding: 14px 24px; /* More padding */
+            padding: 12px 20px;
             border-radius: 9999px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25); /* Stronger shadow */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             color: white;
-            font-weight: 700; /* Bolder text */
+            font-weight: 600;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, transform 0.3s ease-in-out;
             display: flex;
             align-items: center;
-            gap: 10px; /* More gap */
+            gap: 8px;
         }
         #toastNotification.show {
             opacity: 1;
@@ -350,89 +341,83 @@
         #toastNotification.success { background-color: #10B981; }
         #toastNotification.info { background-color: #3B82F6; }
         #toastNotification.error { background-color: #EF4444; }
-        #toastNotification .lucide { width: 1.3em; height: 1.3em; margin-right: 0; }
+        #toastNotification .lucide { width: 1.2em; height: 1.2em; margin-right: 0; }
 
         /* Hero Banner Specific Styles */
         .hero-banner {
-            background-image: linear-gradient(to bottom right, #F8F4FF, #E0D4FF); /* Softer, richer purple gradient */
+            /* Changed to a subtle gradient for more visual interest */
+            background-image: linear-gradient(to bottom right, #F8F4FF, #F3E8FF); /* Light purple gradient */
             background-size: cover;
             background-position: center;
-            min-height: 80vh; /* Taller */
+            min-height: 70vh; /* Make it tall */
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             position: relative;
             overflow: hidden;
-            border-radius: 2.5rem; /* More rounded */
-            box-shadow: 0 25px 40px -8px rgba(0, 0, 0, 0.15), 0 12px 20px -6px rgba(0, 0, 0, 0.08); /* Stronger, softer shadow */
-            padding: 2rem; /* Ensure padding */
+            border-radius: 2rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .hero-banner::before {
+            content: none; 
         }
         .hero-banner-content {
             position: relative;
             z-index: 2;
-            color: #3A006F; /* Deeper purple text for contrast */
+            color: #4A0082; /* Darker text for contrast on light background */
             padding: 2rem;
-            max-width: 1000px; /* Wider content area */
-            width: 100%; 
-            margin: 0 auto; 
+            max-width: 900px;
+            width: 100%; /* Ensure it takes full width within its flex container */
+            margin: 0 auto; /* Center content horizontally */
         }
+        /* Adjust text color within hero-banner-content for better contrast */
         .hero-banner-content h2, .hero-banner-content p {
-            color: #3A006F; 
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1); /* Subtle text shadow */
+            color: #4A0082; /* Dark purple for headings and paragraphs */
         }
+        /* Adjust button text color within hero-banner-content for better contrast */
         .hero-banner-content button {
-            color: white; 
+            color: white; /* Keep button text white for contrast with button background */
         }
 
         /* Modern card styles */
         .modern-card {
-            border-style: solid; 
-            border-width: 3px; /* Slightly thinner, more refined border */
-            border-radius: 1.75rem; /* More rounded */
-            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.1), 0 6px 10px -3px rgba(0, 0, 0, 0.05); /* Softer shadow */
-            transition: transform 0.3s ease, box-shadow 0.3s ease; 
+            border-style: solid; /* Changed from dashed to solid */
+            border-width: 4px; /* Slightly thicker border */
+            border-radius: 1.5rem; /* Rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Default shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+            /* The border color will be applied via Tailwind classes directly in the HTML based on pkg.color */
         }
         .modern-card:hover {
-            transform: translateY(-8px) scale(1.03); /* More pronounced lift and scale */
-            box-shadow: 0 25px 40px -8px rgba(0, 0, 0, 0.15), 0 12px 20px -6px rgba(0, 0, 0, 0.08); /* Stronger, softer shadow on hover */
+            transform: translateY(-5px) scale(1.02); /* Lift and slightly scale on hover */
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); /* Stronger shadow on hover */
         }
 
         /* Modern button styles */
         .modern-button {
-            font-weight: 700; 
-            padding: 0.9rem 1.8rem; /* More generous padding */
-            border-radius: 9999px; 
-            box-shadow: 0 5px 10px -2px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* Subtle shadow */
-            transition: all 0.3s ease; 
-            border-width: 2px; 
+            font-weight: 700; /* Bold text */
+            padding: 0.75rem 1.5rem; /* Generous padding */
+            border-radius: 9999px; /* Fully rounded */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* Subtle shadow */
+            transition: all 0.3s ease; /* Smooth transitions */
+            border-width: 2px; /* White border */
             border-color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Subtle text shadow on buttons */
         }
         .modern-button:hover {
-            transform: translateY(-3px) scale(1.04); /* More pronounced lift and scale */
-            box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.15), 0 6px 10px -3px rgba(0, 0, 0, 0.08); /* Stronger shadow on hover */
+            transform: translateY(-2px) scale(1.03); /* Slight lift and scale on hover */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Stronger shadow on hover */
         }
         .modern-button.remove-button {
-            background-image: linear-gradient(to right, #EF4444, #DC2626); 
-            border-color: #EF4444; 
+            background-image: linear-gradient(to right, #EF4444, #DC2626); /* Red gradient for remove */
+            border-color: #EF4444; /* Red border */
         }
         .modern-button.remove-button:hover {
             background-image: linear-gradient(to right, #DC2626, #EF4444);
-        }
-
-        /* Form input focus styles */
-        input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"], input[type="time"], select {
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        input[type="text"]:focus, input[type="email"]:focus, input[type="tel"]:focus, input[type="number"]:focus, input[type="date"]:focus, input[type="time"]:focus, select:focus {
-            outline: none;
-            border-color: #8B5CF6; /* Purple-500 for focus */
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3); /* Ring on focus */
         }
     </style>
 </head>
@@ -509,7 +494,7 @@
     </div>
 
     <!-- NEW HEADER -->
-    <header id="mainHeader" class="py-4 px-6 w-full sticky top-0 z-40">
+    <header id="mainHeader" class="py-3 px-4 w-full sticky top-0 z-40">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Logo and Title -->
             <div class="flex items-center">
@@ -544,13 +529,14 @@
     <!-- NEW MOBILE MENU -->
     <div id="mobileMenuOverlay" aria-hidden="true"></div>
     <nav id="mobileMenu" aria-label="Navegación Móvil">
-        <div class="flex justify-between items-center mb-6"> 
-            <h2 class="text-2xl font-bold text-purple-800">Menú</h2>
+        <div class="flex justify-between items-center mb-4"> <!-- Reduced mb from 8 to 4 -->
+            <h2 class="text-xl font-bold text-purple-800">Menú</h2>
             <button id="closeMobileMenuButton" class="p-2 text-gray-600 hover:text-purple-800" aria-label="Cerrar menú de navegación">
-                <i data-lucide="x" class="h-8 w-8"></i> <!-- Larger icon -->
+                <i data-lucide="x" class="h-7 w-7"></i>
             </button>
         </div>
-        <div class="flex flex-col space-y-3 overflow-y-auto flex-grow"> 
+        <!-- Added overflow-y-auto and flex-grow to make the content scrollable if it exceeds screen height -->
+        <div class="flex flex-col space-y-2 overflow-y-auto flex-grow"> <!-- Reduced space-y from 4 to 2 -->
             <button id="mobileNavHome" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="home"></i> Inicio</button>
             <button id="mobileNavServices" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="sparkles"></i> Servicios</button>
             <button id="mobileNavAnimatorPackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="user-check"></i> Paquetes Animadores</button>
@@ -558,7 +544,7 @@
             <button id="mobileNavBubblePackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="wind"></i> Paquetes de Burbujas</button>
             <button id="mobileNavTestimonials" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="message-square"></i> Testimonios</button>
             <button id="mobileNavGallery" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="image"></i> Galería</button>
-            <button id="mobileNavBooking" class="mt-6 w-full bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-5 rounded-full shadow-lg transition duration-300 flex items-center justify-center" role="menuitem"> 
+            <button id="mobileNavBooking" class="mt-4 w-full bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-5 rounded-full shadow-lg transition duration-300 flex items-center justify-center" role="menuitem"> <!-- Reduced mt from 8 to 4 -->
                 <i data-lucide="calendar-check"></i> ¡Reserva Ahora!
             </button>
         </div>
@@ -1607,7 +1593,7 @@
                     originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
                 }
                 // Conditionally include the image
-                const packageImageHtml = includeImage && pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-2xl mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
+                const packageImageHtml = includeImage && pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
 
                 return `
                     <div class="${pkg.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
@@ -1635,14 +1621,14 @@
             const sectionTextColorClass = packagesArray.length > 0 ? packagesArray[0].color.split(' ').find(cls => cls.startsWith('text-')) : 'text-purple-700';
 
             return `
-                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-12 border-4 ${sectionBorderColorClass} animate-fade-in">
+                <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 ${sectionBorderColorClass} animate-fade-in">
                     <h2 class="text-3xl sm:text-4xl font-extrabold ${sectionTextColorClass} text-center mb-10 sm:mb-12">
                         ${sectionTitle} <i data-lucide="${sectionIcon}"></i>
                     </h2>
                     <p class="text-lg text-gray-700 text-center mb-10">
                         Descubre nuestros planes de <strong>${sectionTitle.toLowerCase()} para eventos infantiles en Panamá</strong>. ¡La opción perfecta para tu celebración!
                     </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
                         ${cardsHtml}
                     </div>
                 </section>
@@ -1655,7 +1641,7 @@
         function renderHomeSection() {
             try {
                 const html = `
-                    <section class="hero-banner my-12 animate-slide-up-fade-in">
+                    <section class="hero-banner my-8 animate-slide-up-fade-in">
                         <div class="hero-banner-content w-full mx-auto">
                             <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight text-center drop-shadow-lg">
                                 🎉 ¡Hacemos que tu fiesta sea inolvidable! 🎈
@@ -1712,7 +1698,7 @@
                 
                 const cardsHtml = servicesData.map((service, index) => {
                     // Only include image if imageUrl exists for the service
-                    const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="Imagen de ${service.name}" class="w-full h-40 object-cover rounded-t-2xl mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
+                    const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="Imagen de ${service.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
 
                     // Extract base color from service.color for button styling
                     const baseColorMatch = service.color.match(/border-(\w+)-/);
@@ -1888,12 +1874,12 @@
                 const sectionTextColorClass = servicesData.length > 0 ? servicesData[0].color.split(' ').find(cls => cls.startsWith('text-')) : 'text-purple-700';
 
                 const html = `
-                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-12 border-4 ${sectionBorderColorClass} animate-fade-in">
+                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 ${sectionBorderColorClass} animate-fade-in">
                         <h2 class="text-3xl sm:text-4xl font-extrabold ${sectionTextColorClass} text-center mb-10 sm:mb-12">Nuestros Servicios <i data-lucide="sparkles"></i></h2>
                         <p class="text-lg text-gray-700 text-center mb-10">
                             Servicios de animación para fiestas infantiles en Panamá. ¡Hacemos tu evento mágico e inolvidable!
                         </p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
                             ${cardsHtml}
                         </div>
                     </section>
@@ -2134,7 +2120,7 @@
                     if (appState.promotedPackages.includes(pkg.name) && Math.abs(displayPrice - pkg.price) > 0.001) {
                         originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
                     }
-                    const bubblePackageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-2xl mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
+                    const bubblePackageImageHtml = pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Imagen de ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
 
                     return `
                         <div class="${pkg.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
@@ -2161,12 +2147,12 @@
                 const sectionTextColorClass = bubblePackagesData.length > 0 ? bubblePackagesData[0].color.split(' ').find(cls => cls.startsWith('text-')) : 'text-blue-700';
 
                 const html = `
-                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-12 border-4 ${sectionBorderColorClass} animate-fade-in">
+                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 ${sectionBorderColorClass} animate-fade-in">
                         <h2 class="text-3xl sm:text-4xl font-extrabold ${sectionTextColorClass} text-center mb-10 sm:mb-12">Nuestros Paquetes de Burbujas <i data-lucide="wind"></i></h2>
                         <p class="text-lg text-gray-700 text-center mb-10">
                             ¡Sumérgete en la diversión con nuestros increíbles paquetes de shows de burbujas gigantes en Panamá!
                         </p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
                             ${cardsHtml}
                         </div>
                     </section>`;
@@ -2198,18 +2184,18 @@
             try {
                 const cardsHtml = companyReferencesData.map((company, index) => `
                     <div class="bg-white modern-card flex flex-col items-center justify-center p-6 border-gray-200 animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-                        <img src="${company.imageUrl}" alt="Logo de ${company.name}" class="w-full h-32 object-cover rounded-xl mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">
+                        <img src="${company.imageUrl}" alt="Logo de ${company.name}" class="w-full h-32 object-cover rounded-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">
                         <h3 class="text-lg sm:text-xl font-bold text-gray-800 text-center">${company.name}</h3>
                     </div>
                 `).join('');
 
                 const html = `
-                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-12 border-4 border-green-400 animate-fade-in">
+                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-green-400 animate-fade-in">
                         <h2 class="text-3xl sm:text-4xl font-extrabold text-green-700 text-center mb-10 sm:mb-12">Nuestros Clientes Corporativos <i data-lucide="building"></i></h2>
                         <p class="text-lg text-gray-700 text-center mb-10">
                             Hemos llevado la magia de las burbujas gigantes a eventos de grandes empresas y organizaciones en Panamá. ¡Confía en nuestra experiencia!
                         </p>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 sm:gap-12">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 sm:gap-10">
                             ${cardsHtml}
                         </div>
                     </section>
@@ -2242,12 +2228,12 @@
                 `).join('');
 
                 const html = `
-                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-12 border-4 border-pink-400 animate-fade-in">
+                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-pink-400 animate-fade-in">
                         <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-10 sm:mb-12">Lo Que Dicen Nuestros Clientes <i data-lucide="message-square"></i></h2>
                         <p class="text-lg text-gray-700 text-center mb-10">
                             La felicidad de nuestros clientes es nuestra mayor recompensa. Lee sus experiencias con Diverty Eventos.
                         </p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-10">
                             ${testimonialsHtml}
                         </div>
                     </section>
@@ -2274,12 +2260,12 @@
                 `).join('');
 
                 const html = `
-                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-12 border-4 border-blue-400 animate-fade-in">
+                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-blue-400 animate-fade-in">
                         <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-10 sm:mb-12">Nuestra Galería de Momentos Mágicos <i data-lucide="image"></i></h2>
                         <p class="text-lg text-gray-700 text-center mb-10">
                             Explora la alegría y la diversión de nuestros eventos. ¡Capturamos sonrisas inolvidables!
                         </p>
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                             ${galleryImagesHtml}
                         </div>
                         <div class="text-center mt-10">
@@ -2342,7 +2328,7 @@
                 const finalTotalPrice = totalItemsPrice + currentTransportFee;
 
                 const html = `
-                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-12 border-4 border-purple-400 animate-fade-in">
+                    <section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
                         <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-10 sm:mb-12">Reserva tu Evento <i data-lucide="calendar-check"></i></h2>
                         <p class="text-lg text-gray-700 text-center mb-10">
                             ¡Reserva tu <strong>fiesta infantil en Panamá</strong>! Completa este formulario para asegurar la magia de tu evento.
