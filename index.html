@@ -679,11 +679,11 @@
                     ]
                 }
             },
-            // Thematic characters service (price updated to 65)
+            // Thematic characters service (price updated to 75)
             {
                 id: '9',
                 name: 'Personajes Temáticos',
-                price: 65, // Base price for one character, updated to $65
+                price: 75, // Base price for one character, updated to $75
                 description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige entre Mickey, Minnie y Mario Bros. Servicio por 1 hora.',
                 color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800',
                 type: 'character_selection', // Special type to handle character selection
@@ -729,20 +729,15 @@
 
         // Data for Clown Packages
         const clownPackagesData = [
-            { id: 'C1', name: 'Paquete Payaso Risitas', price: 90, services: [
+            { id: 'C1', name: 'Paquete Circo Divertido', price: 90, services: [ // Renamed from 'Paquete Payaso Risitas'
                 'Payaso profesional',
-                'Rutina de comedia y gags',
-                'Juegos interactivos',
+                'Integración de niños y adultos', // Added
+                'Juegos y concursos', // Added
                 'Figuras básicas con globos',
+                'Canto de cumpleaños', // Added
                 'Romper la piñata'
             ], description: '1.5h de risas garantizadas con nuestro Payaso Risitas, lleno de juegos y humor para los más pequeños.', color: 'bg-gradient-to-br from-yellow-200 to-yellow-300 border-yellow-400 text-yellow-800', icon: 'smile' }, // Removed imageUrl
-            { id: 'C2', name: 'Paquete Circo Divertido', price: 140, services: [
-                'Payaso principal',
-                'Show de magia cómica',
-                'Globoflexia avanzada (figuras más elaboradas)',
-                'Juegos y concursos temáticos de circo',
-                'Asistencia en la piñata y canto de cumpleaños'
-            ], description: '2.5h de un espectáculo circense con nuestro payaso, magia, y mucha interacción para una fiesta inolvidable.', color: 'bg-gradient-to-br from-orange-200 to-orange-300 border-orange-400 text-orange-800', icon: 'circus-tent' }, // Removed imageUrl
+            // Removed 'C2' Paquete Circo Divertido
             { id: 'P3', name: 'Plan Magic (Payaso)', price: 135, services: [
                 'Payaso profesional',
                 'Animación, juegos y concursos (1.5 horas)',
