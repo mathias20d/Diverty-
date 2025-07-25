@@ -65,81 +65,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-    <!-- Firebase SDKs -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-        // Your web app's Firebase configuration (provided by the user)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCdoZn0HnwP3j_gc-pNPpHmhrGGRYrXF2o",
-            authDomain: "divertyreservas.firebaseapp.com",
-            projectId: "divertyreservas",
-            storageBucket: "divertyreservas.firebasestorage.app",
-            messagingSenderId: "1083314669611",
-            appId: "1:1083314669611:web:d8fced96496a38bbbe426e",
-            measurementId: "G-4BGBZBPJ9G"
-        };
-
-        // Global Firebase variables (will be initialized later)
-        window.firebaseApp = null;
-        window.db = null;
-        window.auth = null;
-        window.currentUserId = null;
-        window.isFirebaseReady = false;
-        window.analytics = null; // Global for analytics
-
-        try {
-            window.firebaseApp = initializeApp(firebaseConfig);
-            window.db = getFirestore(window.firebaseApp);
-            window.auth = getAuth(window.firebaseApp);
-            window.analytics = getAnalytics(window.firebaseApp); // Initialize Analytics
-
-            onAuthStateChanged(window.auth, async (user) => {
-                if (user) {
-                    window.currentUserId = user.uid;
-                    console.log("Firebase Auth State Changed: User logged in with UID:", user.uid);
-                } else {
-                    try {
-                        // Prioritize anonymous sign-in for public features like comments.
-                        // This avoids issues with custom tokens from the Canvas environment
-                        // that might be mismatched or expired for this specific app's Firebase project.
-                        await signInAnonymously(window.auth);
-                        console.log("Firebase Auth State Changed: Signed in anonymously.");
-                        window.currentUserId = window.auth.currentUser?.uid; // Get the UID from the newly signed-in anonymous user
-                    } catch (error) {
-                        console.error("Firebase Auth State Changed Error: Error signing in anonymously:", error);
-                        window.currentUserId = crypto.randomUUID(); // Fallback to random ID if anonymous sign-in fails
-                    }
-                }
-                window.isFirebaseReady = true;
-                console.log("Firebase ready. User ID:", window.currentUserId);
-                // If a blog post modal is open, reload comments to ensure they load with auth
-                if (!document.getElementById('blogPostModal').classList.contains('hidden')) {
-                    const currentPostId = document.getElementById('blogPostModal').dataset.currentPostId;
-                    if (currentPostId) {
-                        loadCommentsForBlogPost(currentPostId);
-                    }
-                }
-            });
-        } catch (initError) {
-            console.error("Firebase Initialization Error: Could not initialize Firebase App:", initError);
-            window.isFirebaseReady = false;
-            window.currentUserId = crypto.randomUUID(); // Still provide a random ID for non-Firebase functionality
-        }
-
-        // Expose Firestore functions globally for use in the main script
-        window.addDoc = addDoc;
-        window.collection = collection;
-        window.query = query;
-        window.orderBy = orderBy;
-        window.onSnapshot = onSnapshot;
-        window.serverTimestamp = serverTimestamp;
-    </script>
-
     <style>
         /* Base styles */
         body {
@@ -415,119 +340,6 @@
         #relatedBlogPostsContainer .related-blog-item p { color: #4b5563; }
         #relatedBlogPosts { border-color: #d8b4fe; }
         #relatedBlogPosts h3 { color: #a78bfa; }
-
-        /* Comments Section Styles */
-        .comment-section {
-            background-color: #fef0f8; /* pink-50 */
-            border: 2px solid #fbcfe8; /* pink-200 */
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            text-align: left;
-        }
-        .comment-section h3 {
-            color: #db2777; /* pink-600 */
-            font-size: 1.8rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .comment-input-group label {
-            display: block;
-            color: #4b5563;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        .comment-input-group input,
-        .comment-input-group textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #fbcfe8; /* pink-200 */
-            border-radius: 0.5rem;
-            background-color: white;
-            color: #374151;
-            font-family: 'Quicksand', sans-serif;
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .comment-input-group input:focus,
-        .comment-input-group textarea:focus {
-            outline: none;
-            border-color: #db2777; /* pink-600 */
-            box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.2); /* pink-600 with opacity */
-        }
-        .comment-input-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        .comment-submit-button {
-            background-image: linear-gradient(to right, #db2777, #ec4899); /* pink-600 to pink-500 */
-            color: white;
-            font-weight: 700;
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border: none;
-            margin-top: 1.5rem;
-        }
-        .comment-submit-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 10px rgba(0,0,0,0.2);
-        }
-        .comment-list {
-            margin-top: 2rem;
-            border-top: 2px dashed #fbcfe8; /* pink-200 */
-            padding-top: 1.5rem;
-        }
-        .comment-item {
-            background-color: white;
-            border: 1px solid #fbcfe8; /* pink-200 */
-            border-radius: 0.75rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        .comment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
-        }
-        .comment-author {
-            font-weight: 700;
-            color: #6d28d9; /* purple-700 */
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-            word-break: break-word; /* Break long names */
-        }
-        .comment-author .lucide {
-            margin-right: 0.5rem;
-            flex-shrink: 0;
-        }
-        .comment-timestamp {
-            font-size: 0.85rem;
-            color: #6b7280; /* gray-500 */
-            white-space: nowrap; /* Keep timestamp on one line */
-            margin-left: 0.5rem; /* Space from author */
-        }
-        .comment-text {
-            color: #374151; /* gray-700 */
-            line-height: 1.6;
-            word-wrap: break-word; /* Ensure long words break */
-        }
-        .comment-loading {
-            text-align: center;
-            color: #9ca3af; /* gray-400 */
-            font-style: italic;
-            margin-top: 1rem;
-        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
@@ -623,28 +435,6 @@
                 <h3 class="text-2xl font-extrabold text-blue-300 mb-4">Artículos Relacionados</h3>
                 <div id="relatedBlogPostsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
             </div>
-
-            <!-- Comments Section -->
-            <div class="comment-section">
-                <h3>Comentarios <i data-lucide="message-square-text"></i></h3>
-                <form id="commentForm" class="space-y-4 mb-6">
-                    <div class="comment-input-group">
-                        <label for="commentUserName">Tu Nombre:</label>
-                        <input type="text" id="commentUserName" placeholder="Tu nombre" required class="text-gray-800">
-                    </div>
-                    <div class="comment-input-group">
-                        <label for="commentText">Tu Comentario:</label>
-                        <textarea id="commentText" placeholder="Escribe tu comentario aquí..." rows="4" required class="text-gray-800"></textarea>
-                    </div>
-                    <button type="submit" id="submitCommentButton" class="comment-submit-button w-full">
-                        <i data-lucide="send"></i> Publicar Comentario
-                    </button>
-                </form>
-                <div id="commentsList" class="comment-list">
-                    <p class="comment-loading">Cargando comentarios...</p>
-                </div>
-            </div>
-            <!-- End Comments Section -->
 
             <button id="closeBlogPostModalButton" class="bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto mt-6" aria-label="Close blog post">
                 Cerrar <i data-lucide="x-circle" class="lucide"></i>
@@ -750,7 +540,7 @@
 
     <div id="toastNotification" role="status" aria-live="polite"></div>
 
-<script type="module">
+<script>
 // --- Global Application State ---
 let appState = {
     activeSection: 'home',
@@ -762,9 +552,7 @@ let appState = {
     bookingFormData: {},
     lastFocusedElement: null,
     promoEndDate: null,
-    countdownInterval: null,
-    currentBlogPostId: null, // To keep track of the currently open blog post for comments
-    commentsUnsubscribe: null // To store the Firestore unsubscribe function
+    countdownInterval: null
 };
 
 // --- Data Definitions ---
@@ -1065,13 +853,14 @@ function toggleModal(modal, content, show, callback = null) {
     if (!modal || !content) return console.error("Modal elements not found.");
     if (show) {
         appState.lastFocusedElement = document.activeElement; // Save focused element
-        modal.classList.remove('hidden');
+        modal.classList.remove('hidden'); // This is the key line
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden'; // Prevent scrolling body
         setTimeout(() => {
             content.classList.remove('scale-95', 'opacity-0');
             content.classList.add('scale-100', 'opacity-100');
             content.focus(); // Focus modal content for accessibility
+            console.log(`Modal ${modal.id} visibility after setTimeout: ${!modal.classList.contains('hidden')}`); // Debugging
         }, 10);
         document.addEventListener('keydown', handleEscapeKey); // Add escape key listener
         appState.infoModalCallback = callback; // Store callback for info modal
@@ -1251,135 +1040,20 @@ function showToast(message, type = 'info') {
 }
 
 /**
- * Loads comments for a specific blog post from Firestore.
- * @param {string} blogPostId - The ID of the blog post.
- */
-function loadCommentsForBlogPost(blogPostId) {
-    if (!window.isFirebaseReady || !window.db) {
-        console.warn("loadCommentsForBlogPost: Firebase not ready for comments.");
-        document.getElementById('commentsList').innerHTML = '<p class="comment-loading">No se pueden cargar comentarios. Firebase no está inicializado.</p>';
-        return;
-    }
-
-    // Unsubscribe from previous listener if any
-    if (appState.commentsUnsubscribe) {
-        appState.commentsUnsubscribe();
-        console.log("loadCommentsForBlogPost: Unsubscribed from previous comments listener.");
-    }
-
-    const commentsListDiv = document.getElementById('commentsList');
-    commentsListDiv.innerHTML = '<p class="comment-loading">Cargando comentarios...</p>'; // Show loading message
-
-    // Use the projectId from firebaseConfig as the appId for the collection path
-    const effectiveAppId = firebaseConfig.projectId; 
-    const commentsRef = window.collection(window.db, `artifacts/${effectiveAppId}/public/data/blogComments`);
-    console.log("loadCommentsForBlogPost: Comments collection path:", commentsRef.path);
-    const q = window.query(commentsRef, window.orderBy('timestamp', 'desc'));
-
-    appState.commentsUnsubscribe = window.onSnapshot(q, (snapshot) => {
-        const comments = [];
-        snapshot.forEach(doc => {
-            const comment = doc.data();
-            // Only add comments for the current blog post
-            if (comment.blogPostId === blogPostId) {
-                comments.push({ id: doc.id, ...comment });
-            }
-        });
-
-        if (comments.length === 0) {
-            commentsListDiv.innerHTML = '<p class="comment-loading">Sé el primero en comentar.</p>';
-        } else {
-            commentsListDiv.innerHTML = comments.map(comment => {
-                const date = comment.timestamp ? new Date(comment.timestamp.toDate()).toLocaleString('es-ES') : 'Fecha desconocida';
-                const displayName = sanitizeHTML(comment.userName || 'Anónimo');
-                const displayComment = sanitizeHTML(comment.commentText);
-                const displayUserId = comment.userId ? `<span class="text-xs text-gray-400 ml-2">ID: ${comment.userId.substring(0, 8)}...</span>` : ''; // Show truncated user ID
-                return `
-                    <div class="comment-item">
-                        <div class="comment-header">
-                            <span class="comment-author"><i data-lucide="user"></i> ${displayName}${displayUserId}</span>
-                            <span class="comment-timestamp">${date}</span>
-                        </div>
-                        <p class="comment-text">${displayComment}</p>
-                    </div>
-                `;
-            }).join('');
-        }
-        lucide.createIcons(); // Re-render Lucide icons for new comments
-    }, (error) => {
-        console.error("loadCommentsForBlogPost Error: Error loading comments:", error);
-        commentsListDiv.innerHTML = '<p class="comment-loading text-red-500">Error al cargar comentarios.</p>';
-        showToast('Error al cargar comentarios.', 'error');
-    });
-}
-
-/**
- * Adds a new comment to Firestore.
- * @param {string} blogPostId - The ID of the blog post.
- * @param {string} userName - The name of the commenter.
- * @param {string} commentText - The comment text.
- */
-async function addComment(blogPostId, userName, commentText) {
-    console.log("DEBUG: addComment: Attempting to add comment.");
-    console.log("DEBUG: addComment: Firebase ready check:", window.isFirebaseReady);
-    console.log("DEBUG: addComment: Current User ID:", window.currentUserId);
-
-    if (!window.isFirebaseReady || !window.db || !window.currentUserId) {
-        showToast('Firebase no está listo o no se pudo autenticar. Inténtalo de nuevo.', 'error');
-        console.error("addComment Error: Firebase not ready or user not authenticated.");
-        return;
-    }
-
-    const submitButton = document.getElementById('submitCommentButton');
-    submitButton.disabled = true; // Disable button during submission
-    submitButton.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> Publicando...';
-    lucide.createIcons();
-
-    try {
-        // Use the projectId from firebaseConfig as the appId for the collection path
-        const effectiveAppId = firebaseConfig.projectId; 
-        const commentsRef = window.collection(window.db, `artifacts/${effectiveAppId}/public/data/blogComments`);
-        console.log("DEBUG: addComment: Comments collection path:", commentsRef.path);
-
-        await window.addDoc(commentsRef, {
-            blogPostId: blogPostId,
-            userId: window.currentUserId,
-            userName: sanitizeHTML(userName),
-            commentText: sanitizeHTML(commentText),
-            timestamp: window.serverTimestamp() // Use server timestamp
-        });
-        showToast('Comentario publicado con éxito.', 'success');
-        document.getElementById('commentText').value = ''; // Clear textarea
-        localStorage.setItem('commentUserName', userName); // Save name for future use
-        console.log("DEBUG: addComment: Comment successfully added.");
-    } catch (e) {
-        console.error("addComment Error: Error adding document:", e);
-        showToast(`Error al publicar el comentario: ${e.message || 'Desconocido'}.`, 'error');
-    } finally {
-        submitButton.disabled = false; // Re-enable button
-        submitButton.innerHTML = '<i data-lucide="send"></i> Publicar Comentario';
-        lucide.createIcons();
-    }
-}
-
-/**
- * Sanitizes HTML input to prevent XSS attacks.
- * @param {string} str - The string to sanitize.
- * @returns {string} The sanitized string.
- */
-function sanitizeHTML(str) {
-    const div = document.createElement('div');
-    div.appendChild(document.createTextNode(str));
-    return div.innerHTML;
-}
-
-/**
  * Displays the content of a blog post in a modal.
  * @param {object} post - The blog post object.
   */
 function showBlogPostContent(post) {
+    console.log("Attempting to show blog post modal for:", post.id);
     const modal = document.getElementById('blogPostModal');
     const modalContent = document.getElementById('blogPostModalContent');
+
+    if (!modal || !modalContent) {
+        console.error("showBlogPostContent: Modal or modal content elements not found!");
+        showToast("Error al cargar el blog. Elementos de la ventana modal no encontrados.", "error");
+        return;
+    }
+
     document.getElementById('blogPostModalTitle').textContent = post.title;
     document.getElementById('blogPostReadingTime').innerHTML = `<i data-lucide="clock" class="w-5 h-5 mr-2"></i> ${post.readingTime}`;
     const imgEl = document.getElementById('blogPostModalImage');
@@ -1456,40 +1130,11 @@ function showBlogPostContent(post) {
         relatedContainer.innerHTML = ''; // Clear if no related posts
     }
 
-    // --- Comments Section Logic ---
-    appState.currentBlogPostId = post.id; // Store current blog post ID
-    const commentUserNameInput = document.getElementById('commentUserName');
-    const commentTextarea = document.getElementById('commentText');
-    const commentForm = document.getElementById('commentForm');
-
-    // Pre-fill user name if available from local storage
-    commentUserNameInput.value = localStorage.getItem('commentUserName') || '';
-
-    // Remove previous event listener to prevent duplicates
-    if (commentForm._submitListener) {
-        commentForm.removeEventListener('submit', commentForm._submitListener);
-    }
-    // Add new event listener for comment submission
-    commentForm._submitListener = async (event) => {
-        event.preventDefault();
-        const userName = commentUserNameInput.value.trim();
-        const commentContent = commentTextarea.value.trim();
-
-        if (!userName || !commentContent) {
-            showToast('Por favor, ingresa tu nombre y un comentario.', 'error');
-            return;
-        }
-        await addComment(appState.currentBlogPostId, userName, commentContent);
-    };
-    commentForm.addEventListener('submit', commentForm._submitListener);
-
-    // Load comments for the current blog post
-    loadCommentsForBlogPost(post.id);
-
     // Scroll to the top of the modal content
     modalContent.scrollTop = 0;
 
     toggleModal(modal, modalContent, true);
+    console.log("Modal visibility after toggle:", !modal.classList.contains('hidden')); // Debugging
     lucide.createIcons();
 }
 
@@ -1504,13 +1149,6 @@ function closeBlogPostModal() {
         document.getElementById('ogImageAlt').setAttribute('content', 'Logo de Diverty Eventos, para fiestas infantiles en Panamá'); // Reset og:image:alt
         document.getElementById('ogUrl').setAttribute('content', 'https://divertypanama.netlify.app/');
         document.getElementById('ogType').setAttribute('content', 'website');
-        
-        // Unsubscribe from comments listener when modal is closed
-        if (appState.commentsUnsubscribe) {
-            appState.commentsUnsubscribe();
-            appState.commentsUnsubscribe = null;
-        }
-        appState.currentBlogPostId = null;
     });
 }
 
