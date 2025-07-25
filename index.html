@@ -67,9 +67,22 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+        // Your web app's Firebase configuration (provided by the user)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCdoZn0HnwP3j_gc-pNPpHmhrGGRYrXF2o",
+            authDomain: "divertyreservas.firebaseapp.com",
+            projectId: "divertyreservas",
+            storageBucket: "divertyreservas.firebasestorage.app",
+            messagingSenderId: "1083314669611",
+            appId: "1:1083314669611:web:d8fced96496a38bbbe426e",
+            measurementId: "G-4BGBZBPJ9G"
+        };
 
         // Global Firebase variables (will be initialized later)
         window.firebaseApp = null;
@@ -77,36 +90,34 @@
         window.auth = null;
         window.currentUserId = null;
         window.isFirebaseReady = false;
+        window.analytics = null; // Global for analytics
 
-        // Initialize Firebase
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-
-        if (Object.keys(firebaseConfig).length > 0) {
+        try {
             window.firebaseApp = initializeApp(firebaseConfig);
             window.db = getFirestore(window.firebaseApp);
             window.auth = getAuth(window.firebaseApp);
+            window.analytics = getAnalytics(window.firebaseApp); // Initialize Analytics
 
             onAuthStateChanged(window.auth, async (user) => {
                 if (user) {
                     window.currentUserId = user.uid;
+                    console.log("Firebase Auth State Changed: User logged in with UID:", user.uid);
                 } else {
-                    // Sign in anonymously if no user is authenticated
                     try {
-                        if (typeof __initial_auth_token !== 'undefined') {
-                            await signInWithCustomToken(window.auth, __initial_auth_token);
-                        } else {
-                            await signInAnonymously(window.auth);
-                        }
-                        window.currentUserId = window.auth.currentUser?.uid || crypto.randomUUID(); // Fallback for anonymous
+                        // Prioritize anonymous sign-in for public features like comments.
+                        // This avoids issues with custom tokens from the Canvas environment
+                        // that might be mismatched or expired for this specific app's Firebase project.
+                        await signInAnonymously(window.auth);
+                        console.log("Firebase Auth State Changed: Signed in anonymously.");
+                        window.currentUserId = window.auth.currentUser?.uid; // Get the UID from the newly signed-in anonymous user
                     } catch (error) {
-                        console.error("Error signing in anonymously:", error);
-                        window.currentUserId = crypto.randomUUID(); // Generate a random ID if anonymous sign-in fails
+                        console.error("Firebase Auth State Changed Error: Error signing in anonymously:", error);
+                        window.currentUserId = crypto.randomUUID(); // Fallback to random ID if anonymous sign-in fails
                     }
                 }
                 window.isFirebaseReady = true;
                 console.log("Firebase ready. User ID:", window.currentUserId);
-                // If a blog post modal is open, reload comments
+                // If a blog post modal is open, reload comments to ensure they load with auth
                 if (!document.getElementById('blogPostModal').classList.contains('hidden')) {
                     const currentPostId = document.getElementById('blogPostModal').dataset.currentPostId;
                     if (currentPostId) {
@@ -114,10 +125,10 @@
                     }
                 }
             });
-        } else {
-            console.warn("Firebase config not found. Running without Firebase features.");
-            window.isFirebaseReady = true; // Still set ready to allow app to function without comments
-            window.currentUserId = crypto.randomUUID(); // Generate a random ID for non-Firebase users
+        } catch (initError) {
+            console.error("Firebase Initialization Error: Could not initialize Firebase App:", initError);
+            window.isFirebaseReady = false;
+            window.currentUserId = crypto.randomUUID(); // Still provide a random ID for non-Firebase functionality
         }
 
         // Expose Firestore functions globally for use in the main script
@@ -1245,7 +1256,7 @@ function showToast(message, type = 'info') {
  */
 function loadCommentsForBlogPost(blogPostId) {
     if (!window.isFirebaseReady || !window.db) {
-        console.warn("Firebase not ready for comments.");
+        console.warn("loadCommentsForBlogPost: Firebase not ready for comments.");
         document.getElementById('commentsList').innerHTML = '<p class="comment-loading">No se pueden cargar comentarios. Firebase no está inicializado.</p>';
         return;
     }
@@ -1253,12 +1264,16 @@ function loadCommentsForBlogPost(blogPostId) {
     // Unsubscribe from previous listener if any
     if (appState.commentsUnsubscribe) {
         appState.commentsUnsubscribe();
+        console.log("loadCommentsForBlogPost: Unsubscribed from previous comments listener.");
     }
 
     const commentsListDiv = document.getElementById('commentsList');
     commentsListDiv.innerHTML = '<p class="comment-loading">Cargando comentarios...</p>'; // Show loading message
 
-    const commentsRef = window.collection(window.db, `artifacts/${typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'}/public/data/blogComments`);
+    // Use the projectId from firebaseConfig as the appId for the collection path
+    const effectiveAppId = firebaseConfig.projectId; 
+    const commentsRef = window.collection(window.db, `artifacts/${effectiveAppId}/public/data/blogComments`);
+    console.log("loadCommentsForBlogPost: Comments collection path:", commentsRef.path);
     const q = window.query(commentsRef, window.orderBy('timestamp', 'desc'));
 
     appState.commentsUnsubscribe = window.onSnapshot(q, (snapshot) => {
@@ -1292,7 +1307,7 @@ function loadCommentsForBlogPost(blogPostId) {
         }
         lucide.createIcons(); // Re-render Lucide icons for new comments
     }, (error) => {
-        console.error("Error loading comments:", error);
+        console.error("loadCommentsForBlogPost Error: Error loading comments:", error);
         commentsListDiv.innerHTML = '<p class="comment-loading text-red-500">Error al cargar comentarios.</p>';
         showToast('Error al cargar comentarios.', 'error');
     });
@@ -1305,8 +1320,13 @@ function loadCommentsForBlogPost(blogPostId) {
  * @param {string} commentText - The comment text.
  */
 async function addComment(blogPostId, userName, commentText) {
+    console.log("DEBUG: addComment: Attempting to add comment.");
+    console.log("DEBUG: addComment: Firebase ready check:", window.isFirebaseReady);
+    console.log("DEBUG: addComment: Current User ID:", window.currentUserId);
+
     if (!window.isFirebaseReady || !window.db || !window.currentUserId) {
         showToast('Firebase no está listo o no se pudo autenticar. Inténtalo de nuevo.', 'error');
+        console.error("addComment Error: Firebase not ready or user not authenticated.");
         return;
     }
 
@@ -1316,7 +1336,11 @@ async function addComment(blogPostId, userName, commentText) {
     lucide.createIcons();
 
     try {
-        const commentsRef = window.collection(window.db, `artifacts/${typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'}/public/data/blogComments`);
+        // Use the projectId from firebaseConfig as the appId for the collection path
+        const effectiveAppId = firebaseConfig.projectId; 
+        const commentsRef = window.collection(window.db, `artifacts/${effectiveAppId}/public/data/blogComments`);
+        console.log("DEBUG: addComment: Comments collection path:", commentsRef.path);
+
         await window.addDoc(commentsRef, {
             blogPostId: blogPostId,
             userId: window.currentUserId,
@@ -1327,9 +1351,10 @@ async function addComment(blogPostId, userName, commentText) {
         showToast('Comentario publicado con éxito.', 'success');
         document.getElementById('commentText').value = ''; // Clear textarea
         localStorage.setItem('commentUserName', userName); // Save name for future use
+        console.log("DEBUG: addComment: Comment successfully added.");
     } catch (e) {
-        console.error("Error adding document: ", e);
-        showToast('Error al publicar el comentario.', 'error');
+        console.error("addComment Error: Error adding document:", e);
+        showToast(`Error al publicar el comentario: ${e.message || 'Desconocido'}.`, 'error');
     } finally {
         submitButton.disabled = false; // Re-enable button
         submitButton.innerHTML = '<i data-lucide="send"></i> Publicar Comentario';
@@ -2173,6 +2198,21 @@ function validateField(fieldId, isInputEvent = false) {
 }
 
 /**
+ * Formats a date string from YYYY-MM-DD to MM/DD/YYYY.
+ * @param {string} dateString - The date string in YYYY-MM-DD format.
+ * @returns {string} The date string in MM/DD/YYYY format, or an empty string if input is invalid.
+ */
+function formatDateForJotForm(dateString) {
+    if (!dateString) return '';
+    const parts = dateString.split('-'); // Expects YYYY-MM-DD
+    if (parts.length === 3) {
+        const [year, month, day] = parts;
+        return `${month}/${day}/${year}`;
+    }
+    return dateString; // Return original if format is unexpected
+}
+
+/**
  * Handles the booking form submission.
  * @param {Event} event - The form submission event.
  */
@@ -2234,7 +2274,7 @@ async function handleBookingSubmit(event) {
         
         console.log("DEBUG: Detalles de la reserva para JotForm:", bookingDetails);
         console.log("DEBUG: bookingDetails.eventType antes de JotForm:", bookingDetails.eventType);
-        console.log("DEBUG: bookingDetails.eventDate antes de JotForm:", bookingDetails.eventDate);
+        console.log("DEBUG: bookingDetails.eventDate antes de JotForm:", bookingDetails.eventDate); // Specific log for eventDate
 
         // --- JOTFORM REDIRECTION LOGIC ---
         // IMPORTANT: Replace 'YOUR_JOTFORM_URL_HERE' with your actual JotForm URL.
@@ -2265,7 +2305,14 @@ async function handleBookingSubmit(event) {
         if (bookingDetails.email) jotformParams.append(jotformFieldMap.email, bookingDetails.email);
         if (bookingDetails.phone) jotformParams.append(jotformFieldMap.phone, bookingDetails.phone);
         if (bookingDetails.eventType) jotformParams.append(jotformFieldMap.eventType, bookingDetails.eventType);
-        if (bookingDetails.eventDate) jotformParams.append(jotformFieldMap.eventDate, bookingDetails.eventDate);
+        
+        // Format eventDate for JotForm
+        if (bookingDetails.eventDate) {
+            const formattedDate = formatDateForJotForm(bookingDetails.eventDate);
+            console.log("DEBUG: Valor de eventDate FORMATEADO para JotForm:", formattedDate); // Log formatted date
+            jotformParams.append(jotformFieldMap.eventDate, formattedDate);
+        }
+        
         if (bookingDetails.eventTime) jotformParams.append(jotformFieldMap.eventTime, bookingDetails.eventTime);
         if (bookingDetails.eventLocation) jotformParams.append(jotformFieldMap.eventLocation, bookingDetails.eventLocation);
         if (bookingDetails.numChildren) jotformParams.append(jotformFieldMap.numChildren, bookingDetails.numChildren);
