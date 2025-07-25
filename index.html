@@ -65,6 +65,70 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global Firebase variables (will be initialized later)
+        window.firebaseApp = null;
+        window.db = null;
+        window.auth = null;
+        window.currentUserId = null;
+        window.isFirebaseReady = false;
+
+        // Initialize Firebase
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+
+        if (Object.keys(firebaseConfig).length > 0) {
+            window.firebaseApp = initializeApp(firebaseConfig);
+            window.db = getFirestore(window.firebaseApp);
+            window.auth = getAuth(window.firebaseApp);
+
+            onAuthStateChanged(window.auth, async (user) => {
+                if (user) {
+                    window.currentUserId = user.uid;
+                } else {
+                    // Sign in anonymously if no user is authenticated
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined') {
+                            await signInWithCustomToken(window.auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(window.auth);
+                        }
+                        window.currentUserId = window.auth.currentUser?.uid || crypto.randomUUID(); // Fallback for anonymous
+                    } catch (error) {
+                        console.error("Error signing in anonymously:", error);
+                        window.currentUserId = crypto.randomUUID(); // Generate a random ID if anonymous sign-in fails
+                    }
+                }
+                window.isFirebaseReady = true;
+                console.log("Firebase ready. User ID:", window.currentUserId);
+                // If a blog post modal is open, reload comments
+                if (!document.getElementById('blogPostModal').classList.contains('hidden')) {
+                    const currentPostId = document.getElementById('blogPostModal').dataset.currentPostId;
+                    if (currentPostId) {
+                        loadCommentsForBlogPost(currentPostId);
+                    }
+                }
+            });
+        } else {
+            console.warn("Firebase config not found. Running without Firebase features.");
+            window.isFirebaseReady = true; // Still set ready to allow app to function without comments
+            window.currentUserId = crypto.randomUUID(); // Generate a random ID for non-Firebase users
+        }
+
+        // Expose Firestore functions globally for use in the main script
+        window.addDoc = addDoc;
+        window.collection = collection;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.onSnapshot = onSnapshot;
+        window.serverTimestamp = serverTimestamp;
+    </script>
+
     <style>
         /* Base styles */
         body {
@@ -340,6 +404,119 @@
         #relatedBlogPostsContainer .related-blog-item p { color: #4b5563; }
         #relatedBlogPosts { border-color: #d8b4fe; }
         #relatedBlogPosts h3 { color: #a78bfa; }
+
+        /* Comments Section Styles */
+        .comment-section {
+            background-color: #fef0f8; /* pink-50 */
+            border: 2px solid #fbcfe8; /* pink-200 */
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+        }
+        .comment-section h3 {
+            color: #db2777; /* pink-600 */
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .comment-input-group label {
+            display: block;
+            color: #4b5563;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .comment-input-group input,
+        .comment-input-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #fbcfe8; /* pink-200 */
+            border-radius: 0.5rem;
+            background-color: white;
+            color: #374151;
+            font-family: 'Quicksand', sans-serif;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .comment-input-group input:focus,
+        .comment-input-group textarea:focus {
+            outline: none;
+            border-color: #db2777; /* pink-600 */
+            box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.2); /* pink-600 with opacity */
+        }
+        .comment-input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .comment-submit-button {
+            background-image: linear-gradient(to right, #db2777, #ec4899); /* pink-600 to pink-500 */
+            color: white;
+            font-weight: 700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            margin-top: 1.5rem;
+        }
+        .comment-submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+        }
+        .comment-list {
+            margin-top: 2rem;
+            border-top: 2px dashed #fbcfe8; /* pink-200 */
+            padding-top: 1.5rem;
+        }
+        .comment-item {
+            background-color: white;
+            border: 1px solid #fbcfe8; /* pink-200 */
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+        }
+        .comment-author {
+            font-weight: 700;
+            color: #6d28d9; /* purple-700 */
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            word-break: break-word; /* Break long names */
+        }
+        .comment-author .lucide {
+            margin-right: 0.5rem;
+            flex-shrink: 0;
+        }
+        .comment-timestamp {
+            font-size: 0.85rem;
+            color: #6b7280; /* gray-500 */
+            white-space: nowrap; /* Keep timestamp on one line */
+            margin-left: 0.5rem; /* Space from author */
+        }
+        .comment-text {
+            color: #374151; /* gray-700 */
+            line-height: 1.6;
+            word-wrap: break-word; /* Ensure long words break */
+        }
+        .comment-loading {
+            text-align: center;
+            color: #9ca3af; /* gray-400 */
+            font-style: italic;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
@@ -356,7 +533,6 @@
     <div id="promoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="promoMessage" aria-hidden="true">
         <div id="promoModalContent" tabindex="-1" class="bg-gradient-to-br from-pink-600 to-pink-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-pink-500 transform transition-all duration-300 scale-95 opacity-0">
             <h2 class="text-3xl font-extrabold text-white mb-4">¡Promoción del Mes! <i data-lucide="star" class="lucide inline-block"></i></h2>
-            <p id="promoMessage" class="text-lg text-gray-100 mb-4"></p>
             <p id="promoCountdown" class="text-2xl font-extrabold text-yellow-300 mb-6"></p>
             <button id="closePromoModalButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto" aria-label="Genial, cerrar promoción">
                 ¡Genial! <i data-lucide="party-popper" class="lucide"></i>
@@ -393,11 +569,11 @@
                 <button id="closeMiniCartModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full shadow-md transition duration-300 cursor-pointer flex items-center justify-center" aria-label="Cerrar carrito de compras">
                     Cerrar
                 </button>
-                <button id="miniCartProceedToBookButton" class="bg-gradient-to-br from-cyan-500 via-blue-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Proceder a reservar los elementos seleccionados">
+                <button id="miniCartProceedToBookButton" class="bg-gradient-to-br from-cyan-500 via-blue-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Proceed to book selected items">
                     Reservar Ahora <i data-lucide="sparkles"></i>
                 </button>
             </div>
-            <button id="clearCartButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-5 rounded-full shadow-md transition duration-300 cursor-pointer flex items-center justify-center mx-auto mt-4" aria-label="Vaciar todo el carrito">
+            <button id="clearCartButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-5 rounded-full shadow-md transition duration-300 cursor-pointer flex items-center justify-center mx-auto mt-4" aria-label="Empty the entire cart">
                 Vaciar Carrito <i data-lucide="trash-2"></i>
             </button>
         </div>
@@ -405,10 +581,10 @@
 
     <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="imageModalTitle" aria-hidden="true">
         <div id="imageModalContent" tabindex="-1" class="relative bg-white rounded-lg shadow-2xl p-2 max-w-full max-h-full overflow-hidden flex flex-col items-center justify-center transform transition-all duration-300 scale-95 opacity-0">
-            <button id="closeImageModalButton" class="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white rounded-full p-2 text-lg font-bold transition duration-300 z-10 w-8 h-8 flex items-center justify-center" aria-label="Cerrar imagen ampliada">
+            <button id="closeImageModalButton" class="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white rounded-full p-2 text-lg font-bold transition duration-300 z-10 w-8 h-8 flex items-center justify-center" aria-label="Close enlarged image">
                 &times;
             </button>
-            <img id="modalImage" src="" alt="Imagen ampliada del servicio" class="max-w-full max-h-[80vh] object-contain rounded-lg">
+            <img id="modalImage" src="" alt="Enlarged service image" class="max-w-full max-h-[80vh] object-contain rounded-lg">
         </div>
     </div>
 
@@ -419,9 +595,9 @@
             <img id="blogPostModalImage" src="" alt="" class="w-full h-48 object-cover rounded-lg mb-4">
             <div id="blogPostModalText" class="text-lg text-gray-100 mb-6 text-left"></div>
             <div class="flex justify-center space-x-4 my-6">
-                <a href="#" id="shareWhatsapp" target="_blank" class="share-button whatsapp" aria-label="Compartir en WhatsApp"><i data-lucide="message-circle"></i></a>
-                <a href="#" id="shareFacebook" target="_blank" class="share-button facebook" aria-label="Compartir en Facebook"><i data-lucide="facebook"></i></a>
-                <a href="#" id="shareInstagram" target="_blank" class="share-button instagram" aria-label="Compartir en Instagram"><i data-lucide="instagram"></i></a>
+                <a href="#" id="shareWhatsapp" target="_blank" class="share-button whatsapp" aria-label="Share on WhatsApp"><i data-lucide="message-circle"></i></a>
+                <a href="#" id="shareFacebook" target="_blank" class="share-button facebook" aria-label="Share on Facebook"><i data-lucide="facebook"></i></a>
+                <a href="#" id="shareInstagram" target="_blank" class="share-button instagram" aria-label="Share on Instagram"><i data-lucide="instagram"></i></a>
             </div>
             <div class="flex items-center justify-center space-x-2 mt-4 mb-6">
                 <input type="text" id="shortShareLink" class="flex-grow p-2 rounded-md border border-gray-300 text-gray-800 text-sm" readonly>
@@ -436,7 +612,30 @@
                 <h3 class="text-2xl font-extrabold text-blue-300 mb-4">Artículos Relacionados</h3>
                 <div id="relatedBlogPostsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
             </div>
-            <button id="closeBlogPostModalButton" class="bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto mt-6" aria-label="Cerrar entrada de blog">
+
+            <!-- Comments Section -->
+            <div class="comment-section">
+                <h3>Comentarios <i data-lucide="message-square-text"></i></h3>
+                <form id="commentForm" class="space-y-4 mb-6">
+                    <div class="comment-input-group">
+                        <label for="commentUserName">Tu Nombre:</label>
+                        <input type="text" id="commentUserName" placeholder="Tu nombre" required class="text-gray-800">
+                    </div>
+                    <div class="comment-input-group">
+                        <label for="commentText">Tu Comentario:</label>
+                        <textarea id="commentText" placeholder="Escribe tu comentario aquí..." rows="4" required class="text-gray-800"></textarea>
+                    </div>
+                    <button type="submit" id="submitCommentButton" class="comment-submit-button w-full">
+                        <i data-lucide="send"></i> Publicar Comentario
+                    </button>
+                </form>
+                <div id="commentsList" class="comment-list">
+                    <p class="comment-loading">Cargando comentarios...</p>
+                </div>
+            </div>
+            <!-- End Comments Section -->
+
+            <button id="closeBlogPostModalButton" class="bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto mt-6" aria-label="Close blog post">
                 Cerrar <i data-lucide="x-circle" class="lucide"></i>
             </button>
         </div>
@@ -445,12 +644,12 @@
     <header id="mainHeader" class="py-3 px-4 w-full sticky top-0 z-40">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center">
-                <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Logo de Diverty Eventos" class="w-24 h-24 sm:w-28 sm:h-28 mr-3 rounded-full object-cover border-2 border-pink-400 shadow-md" loading="eager">
+                <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Diverty Eventos Logo" class="w-24 h-24 sm:w-28 sm:h-28 mr-3 rounded-full object-cover border-2 border-pink-400 shadow-md" loading="eager">
                 <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-900">
                     Diverty Eventos
                 </h1>
             </div>
-            <nav class="hidden lg:flex items-center space-x-6" aria-label="Navegación Principal">
+            <nav class="hidden lg:flex items-center space-x-6" aria-label="Main Navigation">
                 <button id="navHome" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="home"></i> Inicio</button>
                 <button id="navServices" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="sparkles"></i> Servicios</button>
                 <button id="navAnimatorPackages" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="user-check"></i> Animadores</button>
@@ -463,17 +662,17 @@
                     <i data-lucide="calendar-check"></i> ¡Reserva Ahora!
                 </button>
             </nav>
-            <button id="mobileMenuToggle" class="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer" aria-controls="mobileMenu" aria-expanded="false" aria-label="Abrir menú de navegación">
+            <button id="mobileMenuToggle" class="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer" aria-controls="mobileMenu" aria-expanded="false" aria-label="Open navigation menu">
                 <i data-lucide="menu" class="h-7 w-7"></i>
             </button>
         </div>
     </header>
 
     <div id="mobileMenuOverlay" aria-hidden="true"></div>
-    <nav id="mobileMenu" aria-label="Navegación Móvil">
+    <nav id="mobileMenu" aria-label="Mobile Navigation">
         <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold text-purple-800">Menú</h2>
-            <button id="closeMobileMenuButton" class="p-2 text-gray-600 hover:text-purple-800" aria-label="Cerrar menú de navegación">
+            <button id="closeMobileMenuButton" class="p-2 text-gray-600 hover:text-purple-800" aria-label="Close navigation menu">
                 <i data-lucide="x" class="h-7 w-7"></i>
             </button>
         </div>
@@ -497,10 +696,10 @@
             <i data-lucide="shopping-cart"></i> Ítems: <span id="selectedItemsCount" class="text-purple-700 ml-2">0</span> | Total: <span id="totalPriceDisplay" class="text-pink-700 ml-2">$0.00</span>
         </p>
         <div class="flex space-x-3">
-            <button id="viewCartDetailsButton" class="bg-gradient-to-br from-purple-500 via-purple-400 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Ver detalles del carrito">
+            <button id="viewCartDetailsButton" class="bg-gradient-to-br from-purple-500 via-purple-400 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="View cart details">
                 Ver Detalles <i data-lucide="shopping-cart"></i>
             </button>
-            <button id="proceedToBookButton" class="bg-gradient-to-br from-cyan-500 via-blue-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-content-center" aria-label="Proceder a la reserva">
+            <button id="proceedToBookButton" class="bg-gradient-to-br from-cyan-500 via-blue-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-content-center" aria-label="Proceed to booking">
                 Reservar <i data-lucide="sparkles"></i>
             </button>
         </div>
@@ -509,7 +708,7 @@
     <main id="mainContent" class="container mx-auto p-4 flex-grow">
         </main>
 
-    <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank" aria-label="Contactar por WhatsApp">
+    <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank" aria-label="Contact via WhatsApp">
         <i data-lucide="message-circle"></i>
     </a>
 
@@ -523,9 +722,9 @@
             <div class="flex flex-col items-center">
                 <h3 class="text-xl font-bold mb-3 flex items-center"><i data-lucide="share-2" class="mr-2"></i> Síguenos</h3>
                 <div class="flex space-x-4">
-                    <a href="https://www.facebook.com/DivertyEventosPty" target="_blank" class="text-white hover:text-blue-400 transition-colors duration-300" aria-label="Visita nuestra página de Facebook"><i data-lucide="facebook" class="w-8 h-8"></i></a>
-                    <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="text-white hover:text-pink-400 transition-colors duration-300" aria-label="Visita nuestro perfil de Instagram"><i data-lucide="instagram" class="w-8 h-8"></i></a>
-                    <a href="https://wa.me/50766677965" target="_blank" class="text-white hover:text-green-400 transition-colors duration-300" aria-label="Chatea con nosotros en WhatsApp"><i data-lucide="message-circle" class="w-8 h-8"></i></a>
+                    <a href="https://www.facebook.com/DivertyEventosPty" target="_blank" class="text-white hover:text-blue-400 transition-colors duration-300" aria-label="Visit our Facebook page"><i data-lucide="facebook" class="w-8 h-8"></i></a>
+                    <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="text-white hover:text-pink-400 transition-colors duration-300" aria-label="Visit our Instagram profile"><i data-lucide="instagram" class="w-8 h-8"></i></a>
+                    <a href="https://wa.me/50766677965" target="_blank" class="text-white hover:text-green-400 transition-colors duration-300" aria-label="Chat with us on WhatsApp"><i data-lucide="message-circle" class="w-8 h-8"></i></a>
                 </div>
             </div>
             <div class="flex flex-col items-center md:items-end">
@@ -553,6 +752,8 @@ let appState = {
     lastFocusedElement: null,
     promoEndDate: null,
     countdownInterval: null,
+    currentBlogPostId: null, // To keep track of the currently open blog post for comments
+    commentsUnsubscribe: null // To store the Firestore unsubscribe function
 };
 
 // --- Data Definitions ---
@@ -562,7 +763,10 @@ const servicesData = [
     { id: 'S3', name: 'Decoraciones Temáticas', price: 100, description: 'Transforma cualquier espacio en un mundo mágico con nuestras decoraciones personalizadas. ¡Elige tu temática favorita!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', type: 'theme_selection', imageUrl: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg', icon: 'sparkles', themes: { ninas: ['Barbie', 'Sirenita', 'Cenicienta', 'Moana', 'Abejita', 'Luly Pampin', 'Stitch', 'Minnie', 'Plim Plim', 'Frozen', 'Bluey', 'Mariposas', 'Gatita Marie', 'Hello Kitty', 'Peppa', 'Merlina'], ninos: ['Real Madrid', 'Hot Wheels', 'Sonic', 'Bomberos', 'Legos', 'Dinosaurios', 'Batman', 'Granja', 'Fútbol', 'Mickey', 'Spiderman', 'Paw Patrol', 'Jefes en Pañales', 'Mario Bros', 'Avengers', 'Cristiano', 'Messi', 'Constructor'] } },
     { id: 'S4', name: 'Personajes Temáticos', price: 75, description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige entre Mickey, Minnie y Mario Bros. Servicio por 1 hora.', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', type: 'character_selection', imageUrl: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg', icon: 'users', characters: [{ id: 'mickey', name: 'Mickey Mouse' }, { id: 'minnie', name: 'Minnie Mouse' }, { id: 'mario', name: 'Mario Bros.' }] },
     { id: 'S5', name: 'Mini Taller de Manualidades', price: 12.50, description: 'Taller creativo con 2 manualidades, mobiliario, recreadora, materiales y música. Mínimo 10 niños. Precio por niño.', color: 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-300 text-yellow-800', type: 'manualidades_workshop', imageUrl: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', icon: 'scissors' },
-    { id: 'S6', name: 'Máquinas de Snack', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', icon: 'popcorn', type: 'standard' }
+    { id: 'S6', name: 'Máquinas de Snack', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', icon: 'popcorn', type: 'standard' },
+    // New Services
+    { id: 'S7', name: 'Show de Magia', price: 120, description: 'Un espectáculo interactivo de magia que asombrará a niños y adultos por igual. Duración: 45 minutos.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://placehold.co/400x200/9333ea/ffffff?text=Show+de+Magia', icon: 'wand', type: 'standard' },
+    { id: 'S8', name: 'Alquiler de Inflables', price: 150, description: 'Inflables seguros y divertidos para que los niños salten y jueguen sin parar. Incluye instalación y desinstalación. Duración: 4 horas.', color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', imageUrl: 'https://placehold.co/400x200/16a34a/ffffff?text=Inflables', icon: 'castle', type: 'standard' }
 ];
 
 const animatorPackagesData = [
@@ -609,6 +813,50 @@ const galleryData = [
 ];
 
 const blogPostsData = [
+    { id: 'blog3', title: 'Errores comunes al planear una fiesta infantil (y cómo evitarlos)', description: 'Descubre los errores más frecuentes al organizar una fiesta infantil y cómo Diverty Eventos te ayuda a evitarlos para una celebración perfecta.', imageUrl: 'https://i.ibb.co/gb4WkYzD/aichat-423527.jpg', icon: 'alert-triangle', content: `
+        <p>Planear la fiesta infantil perfecta puede ser un desafío. Queremos que todo salga mágico, pero a menudo se cometen errores que pueden convertir la diversión en estrés. Aquí te mostramos los más comunes y cómo evitarlos:</p>
+        
+        <h3>1. No tener un plan o presupuesto claro</h3>
+        <p>Uno de los mayores errores es empezar sin una idea clara de lo que quieres y cuánto puedes gastar. Esto puede llevar a gastos excesivos o a olvidar elementos importantes.</p>
+        <p><strong>Cómo evitarlo:</strong> Define un tema, haz una lista de invitados y establece un presupuesto realista. Prioriza lo esencial y busca opciones que se ajusten a tus límites.</p>
+        <button data-target-section="animatorPackages" class="modern-button bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white w-full my-4">
+            <i data-lucide="package"></i> Explora nuestros paquetes para simplificar la planificación
+        </button>
+
+        <h3>2. Ignorar la edad de los niños</h3>
+        <p>Lo que divierte a un niño de 3 años no es lo mismo que a uno de 8. Elegir actividades o decoraciones inadecuadas para la edad puede resultar en aburrimiento o caos.</p>
+        <p><strong>Cómo evitarlo:</strong> Adapta los juegos, el entretenimiento y la temática a la edad promedio de los invitados. Si hay un rango amplio de edades, planea actividades variadas.</p>
+        <button data-target-section="services" class="modern-button bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white w-full my-4">
+            <i data-lucide="sparkles"></i> Descubre nuestros servicios adaptados a cada edad
+        </button>
+
+        <h3>3. Subestimar el entretenimiento</h3>
+        <p>Una fiesta infantil sin entretenimiento adecuado puede decaer rápidamente. Los niños necesitan estar activos y comprometidos.</p>
+        <p><strong>Cómo evitarlo:</strong> Contrata profesionales. Un animador, payaso o un show de burbujas gigante puede mantener a todos los niños (¡y adultos!) cautivados y felices.</p>
+        <button data-target-section="clownPackages" class="modern-button bg-gradient-to-br from-yellow-600 via-yellow-400 to-yellow-700 text-white w-full my-4">
+            <i data-lucide="clown"></i> Conoce a nuestros animadores profesionales y payasos
+        </button>
+
+        <h3>4. Mala elección del lugar</h3>
+        <p>Un espacio demasiado pequeño o demasiado grande, sin las comodidades necesarias, puede afectar la experiencia de la fiesta.</p>
+        <p><strong>Cómo evitarlo:</strong> Considera el número de invitados, las actividades planeadas y las condiciones climáticas. Asegúrate de que el lugar tenga suficiente espacio para jugar y comodidades como baños y áreas de sombra.</p>
+
+        <h3>5. Olvidar los pequeños detalles</h3>
+        <p>A veces, nos enfocamos tanto en lo grande que pasamos por alto esos pequeños toques que hacen la diferencia: la música, los dulces, los recuerdos para los invitados.</p>
+        <p><strong>Cómo evitarlo:</strong> Haz una lista de verificación detallada. Piensa en la experiencia completa, desde la llegada de los invitados hasta su despedida. Considera añadir servicios como pintacaritas o globoflexia para un toque extra de diversión.</p>
+        <button data-target-section="services" class="modern-button bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white w-full my-4">
+            <i data-lucide="palette"></i> No olvides nuestros servicios adicionales como pintacaritas y globoflexia
+        </button>
+
+        <h3>6. No tener un plan B (especialmente para el clima)</h3>
+        <p>En Panamá, la lluvia puede aparecer sin previo aviso. No tener un plan alternativo para una fiesta al aire libre es un riesgo.</p>
+        <p><strong>Cómo evitarlo:</strong> Siempre ten un plan de respaldo. Si la fiesta es al aire libre, busca una opción bajo techo cercana o ten carpas disponibles. Comunica este plan a tus invitados si es necesario.</p>
+
+        <p>En Diverty Eventos, estamos aquí para ayudarte a evitar estos errores y garantizar que la fiesta de tus hijos sea un éxito rotundo, llena de alegría y momentos inolvidables. ¡Déjanos la planificación a nosotros!</p>
+        <button data-target-section="booking" class="modern-button bg-gradient-to-br from-cyan-500 to-blue-600 text-white w-full my-6">
+            <i data-lucide="calendar-check"></i> ¡Contáctanos para una fiesta sin estrés!
+        </button>
+    `, createdAt: new Date('2025-07-24T23:55:00Z') }, // New blog post
     { id: 'blog1', title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025', description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. ¡Inspírate para el cumpleaños de tus hijos!', imageUrl: 'https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png', icon: 'party-popper', content: `<p>Organizar una fiesta infantil es una aventura. Para 2025, las tendencias en Panamá son emocionantes. Aquí te presentamos las 7 temáticas más pedidas:</p><h3>1. El Mundo Mágico de Encanto:</h3><p>Inspirada en Disney, esta temática llena de color es perfecta para soñadores.</p><img src="https://i.ibb.co/r2LBjgK1/adba4d9aaf271ec62615fc8e6b007595.jpg" alt="Decoración temática de Encanto para fiesta infantil"><h3>2. Aventura con Bluey:</h3><p>La popular perrita Bluey trae juegos interactivos y diversión sin fin, ideal para fiestas al aire libre.</p><img src="https://i.ibb.co/DgVTvtx3/0e49621b9692a3a1123c9851ea949b5b.jpg" alt="Fiesta temática de Bluey"><h3>3. Superhéroes al Rescate:</h3><p>Los clásicos nunca pasan de moda. Spiderman, Batman y la Mujer Maravilla siguen siendo los favoritos.</p><img src="https://i.ibb.co/BH81xkr5/0d8fb8ceec25c799b7940be2676403b7.jpg" alt="Niños disfrazados de superhéroes en una fiesta"><h3>4. Princesas con un Toque Moderno:</h3><p>Las princesas de Disney reinventadas con actividades que empoderan a las niñas.</p><img src="https://i.ibb.co/PZRDS59F/23cf8a3fabc519f35d1a5d86a2ab3415.jpg" alt="Fiesta temática de Princesas"><h3>5. Exploradores de Dinosaurios:</h3><p>Un viaje prehistórico lleno de descubrimientos y aventuras, con decoraciones de dinosaurios.</p><img src="https://i.ibb.co/ccYm6vjT/bc791435645b56bf0604dbc76e85d151.jpg" alt="Fiesta temática de Dinosaurios"><h3>6. Fiesta de Videojuegos (Minecraft/Mario Bros):</h3><p>Para los amantes de los videojuegos, una fiesta inspirada en Minecraft o Mario Bros. es garantía de diversión.</p><img src="https://i.ibb.co/FLpDsmB9/a401ccd2bc95f03f39ac0f8132229235.jpg" alt="Decoración de fiesta de videojuegos con personajes de Mario Bros"><h3>7. Unicornios y Fantasía:</h3><p>La magia de los unicornios y arcoíris sigue cautivando, creando un ambiente de ensueño.</p><img src="https://i.ibb.co/twTKk0CQ/68ba5b96c1f01abc1ca18d5d7df10b17.jpg" alt="Fiesta temática de Unicornios"> <p>En Diverty Eventos, podemos ayudarte a hacer realidad cualquiera de estas temáticas. ¡Contáctanos!</p>`, createdAt: new Date('2025-07-20T10:00:00Z') },
     { id: 'blog2', title: 'Shows de Burbujas Gigantes: La Tendencia que Enamorará a Todos', description: 'Descubre por qué los shows de burbujas gigantes son el entretenimiento más buscado para fiestas infantiles en Panamá.', imageUrl: 'https://i.ibb.co/7J5JM84n/file-000000003a0461fa918e3a8f30f312e2.png', icon: 'wind', content: `<p>Si buscas un show que deje a todos con la boca abierta, ¡el show de burbujas gigantes es la respuesta! Ha ganado una popularidad inmensa por su capacidad de asombrar.</p><img src="https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg" alt="Niños disfrutando de un show de burbujas gigantes"><h3>¿Qué lo hace tan especial?</h3><ul><li><strong>Magia Visual:</strong> Burbujas de tamaños increíbles crean un espectáculo hipnotizante.</li><img src="https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg" alt="Burbuja Gigante Interacción"><li><strong>Interactividad:</strong> Los niños no solo observan, ¡participan! Pueden entrar en una burbuja gigante para una foto inolvidable.</li><li><strong>Momentos Únicos:</strong> Las fotos son recuerdos que durarán para siempre.</li><li><strong>Diversión para Todas las Edades:</strong> Es un entretenimiento que une a toda la familia.</li></ul><p>En Diverty Eventos, somos expertos en shows de burbujas gigantes. ¡Añade este toque mágico a tu fiesta!</p>`, createdAt: new Date('2025-07-15T14:30:00Z') }
 ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
@@ -769,7 +1017,7 @@ function updateCartSummary() {
     currentTotalPrice += transportFeesByLocation[appState.selectedLocation] || 0;
 
     const countSpan = document.getElementById('selectedItemsCount');
-    const priceSpan = document.getElementById('totalPriceDisplay');
+    const priceSpan = document.getElementById('totalPriceDisplay'); // This is the header's total price display
     if (countSpan && priceSpan && cartSummaryDiv) {
         const totalItems = appState.selectedItems.reduce((total, item) => total + item.quantity, 0);
         if (totalItems > 0) {
@@ -992,6 +1240,115 @@ function showToast(message, type = 'info') {
 }
 
 /**
+ * Loads comments for a specific blog post from Firestore.
+ * @param {string} blogPostId - The ID of the blog post.
+ */
+function loadCommentsForBlogPost(blogPostId) {
+    if (!window.isFirebaseReady || !window.db) {
+        console.warn("Firebase not ready for comments.");
+        document.getElementById('commentsList').innerHTML = '<p class="comment-loading">No se pueden cargar comentarios. Firebase no está inicializado.</p>';
+        return;
+    }
+
+    // Unsubscribe from previous listener if any
+    if (appState.commentsUnsubscribe) {
+        appState.commentsUnsubscribe();
+    }
+
+    const commentsListDiv = document.getElementById('commentsList');
+    commentsListDiv.innerHTML = '<p class="comment-loading">Cargando comentarios...</p>'; // Show loading message
+
+    const commentsRef = window.collection(window.db, `artifacts/${typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'}/public/data/blogComments`);
+    const q = window.query(commentsRef, window.orderBy('timestamp', 'desc'));
+
+    appState.commentsUnsubscribe = window.onSnapshot(q, (snapshot) => {
+        const comments = [];
+        snapshot.forEach(doc => {
+            const comment = doc.data();
+            // Only add comments for the current blog post
+            if (comment.blogPostId === blogPostId) {
+                comments.push({ id: doc.id, ...comment });
+            }
+        });
+
+        if (comments.length === 0) {
+            commentsListDiv.innerHTML = '<p class="comment-loading">Sé el primero en comentar.</p>';
+        } else {
+            commentsListDiv.innerHTML = comments.map(comment => {
+                const date = comment.timestamp ? new Date(comment.timestamp.toDate()).toLocaleString('es-ES') : 'Fecha desconocida';
+                const displayName = sanitizeHTML(comment.userName || 'Anónimo');
+                const displayComment = sanitizeHTML(comment.commentText);
+                const displayUserId = comment.userId ? `<span class="text-xs text-gray-400 ml-2">ID: ${comment.userId.substring(0, 8)}...</span>` : ''; // Show truncated user ID
+                return `
+                    <div class="comment-item">
+                        <div class="comment-header">
+                            <span class="comment-author"><i data-lucide="user"></i> ${displayName}${displayUserId}</span>
+                            <span class="comment-timestamp">${date}</span>
+                        </div>
+                        <p class="comment-text">${displayComment}</p>
+                    </div>
+                `;
+            }).join('');
+        }
+        lucide.createIcons(); // Re-render Lucide icons for new comments
+    }, (error) => {
+        console.error("Error loading comments:", error);
+        commentsListDiv.innerHTML = '<p class="comment-loading text-red-500">Error al cargar comentarios.</p>';
+        showToast('Error al cargar comentarios.', 'error');
+    });
+}
+
+/**
+ * Adds a new comment to Firestore.
+ * @param {string} blogPostId - The ID of the blog post.
+ * @param {string} userName - The name of the commenter.
+ * @param {string} commentText - The comment text.
+ */
+async function addComment(blogPostId, userName, commentText) {
+    if (!window.isFirebaseReady || !window.db || !window.currentUserId) {
+        showToast('Firebase no está listo o no se pudo autenticar. Inténtalo de nuevo.', 'error');
+        return;
+    }
+
+    const submitButton = document.getElementById('submitCommentButton');
+    submitButton.disabled = true; // Disable button during submission
+    submitButton.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> Publicando...';
+    lucide.createIcons();
+
+    try {
+        const commentsRef = window.collection(window.db, `artifacts/${typeof __app_id !== 'undefined' ? __app_id : 'default-app-id'}/public/data/blogComments`);
+        await window.addDoc(commentsRef, {
+            blogPostId: blogPostId,
+            userId: window.currentUserId,
+            userName: sanitizeHTML(userName),
+            commentText: sanitizeHTML(commentText),
+            timestamp: window.serverTimestamp() // Use server timestamp
+        });
+        showToast('Comentario publicado con éxito.', 'success');
+        document.getElementById('commentText').value = ''; // Clear textarea
+        localStorage.setItem('commentUserName', userName); // Save name for future use
+    } catch (e) {
+        console.error("Error adding document: ", e);
+        showToast('Error al publicar el comentario.', 'error');
+    } finally {
+        submitButton.disabled = false; // Re-enable button
+        submitButton.innerHTML = '<i data-lucide="send"></i> Publicar Comentario';
+        lucide.createIcons();
+    }
+}
+
+/**
+ * Sanitizes HTML input to prevent XSS attacks.
+ * @param {string} str - The string to sanitize.
+ * @returns {string} The sanitized string.
+ */
+function sanitizeHTML(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
+/**
  * Displays the content of a blog post in a modal.
  * @param {object} post - The blog post object.
   */
@@ -1003,14 +1360,30 @@ function showBlogPostContent(post) {
     const imgEl = document.getElementById('blogPostModalImage');
     imgEl.src = post.imageUrl;
     imgEl.alt = post.title;
-    document.getElementById('blogPostModalText').innerHTML = post.content;
+    
+    // Set the innerHTML first
+    const blogPostModalTextDiv = document.getElementById('blogPostModalText');
+    blogPostModalTextDiv.innerHTML = post.content;
+
+    // Attach event listeners to buttons within the dynamically loaded content
+    blogPostModalTextDiv.querySelectorAll('button[data-target-section]').forEach(button => {
+        const targetSection = button.dataset.targetSection;
+        // Remove any existing inline onclick to prevent double execution or issues
+        button.removeAttribute('onclick');
+        button.onclick = (event) => {
+            event.preventDefault(); // Prevent default button behavior if any
+            closeBlogPostModal(); // Close the blog post modal
+            setActiveSection(targetSection); // Navigate to the target section
+        };
+    });
 
     // Update Open Graph meta tags for sharing
     const shareableUrl = `${window.location.origin}${window.location.pathname}#${post.id}`;
     history.pushState({ id: post.id }, post.title, `#${post.id}`); // Update URL hash
     document.getElementById('ogTitle').setAttribute('content', post.title);
     document.getElementById('ogDescription').setAttribute('content', post.description);
-    document.getElementById('ogImage').setAttribute('content', post.imageUrl);
+    document.getElementById('ogImage').setAttribute('content', post.imageUrl); // This is the key line
+    document.getElementById('ogImageAlt').setAttribute('content', post.title); // Update og:image:alt
     document.getElementById('ogUrl').setAttribute('content', shareableUrl);
     document.getElementById('ogType').setAttribute('content', 'article');
 
@@ -1034,7 +1407,7 @@ function showBlogPostContent(post) {
         };
     }
     
-    // Set CTA button action
+    // Set CTA button action for the main modal CTA (outside the dynamic content)
     document.getElementById('blogPostCtaButton').onclick = () => { closeBlogPostModal(); setActiveSection('booking'); };
     
     // Render related blog posts
@@ -1058,6 +1431,36 @@ function showBlogPostContent(post) {
         relatedContainer.innerHTML = ''; // Clear if no related posts
     }
 
+    // --- Comments Section Logic ---
+    appState.currentBlogPostId = post.id; // Store current blog post ID
+    const commentUserNameInput = document.getElementById('commentUserName');
+    const commentTextarea = document.getElementById('commentText');
+    const commentForm = document.getElementById('commentForm');
+
+    // Pre-fill user name if available from local storage
+    commentUserNameInput.value = localStorage.getItem('commentUserName') || '';
+
+    // Remove previous event listener to prevent duplicates
+    if (commentForm._submitListener) {
+        commentForm.removeEventListener('submit', commentForm._submitListener);
+    }
+    // Add new event listener for comment submission
+    commentForm._submitListener = async (event) => {
+        event.preventDefault();
+        const userName = commentUserNameInput.value.trim();
+        const commentContent = commentTextarea.value.trim();
+
+        if (!userName || !commentContent) {
+            showToast('Por favor, ingresa tu nombre y un comentario.', 'error');
+            return;
+        }
+        await addComment(appState.currentBlogPostId, userName, commentContent);
+    };
+    commentForm.addEventListener('submit', commentForm._submitListener);
+
+    // Load comments for the current blog post
+    loadCommentsForBlogPost(post.id);
+
     // Scroll to the top of the modal content
     modalContent.scrollTop = 0;
 
@@ -1073,8 +1476,16 @@ function closeBlogPostModal() {
         document.getElementById('ogTitle').setAttribute('content', 'Diverty Eventos | Fiestas Infantiles en Panamá');
         document.getElementById('ogDescription').setAttribute('content', 'Organizamos las mejores fiestas infantiles en Panamá.');
         document.getElementById('ogImage').setAttribute('content', 'https://divertypanama.netlify.app/android-chrome-512x512.png');
+        document.getElementById('ogImageAlt').setAttribute('content', 'Logo de Diverty Eventos, para fiestas infantiles en Panamá'); // Reset og:image:alt
         document.getElementById('ogUrl').setAttribute('content', 'https://divertypanama.netlify.app/');
         document.getElementById('ogType').setAttribute('content', 'website');
+        
+        // Unsubscribe from comments listener when modal is closed
+        if (appState.commentsUnsubscribe) {
+            appState.commentsUnsubscribe();
+            appState.commentsUnsubscribe = null;
+        }
+        appState.currentBlogPostId = null;
     });
 }
 
@@ -1114,7 +1525,7 @@ function generatePackageCardsHtml(packagesArray, includeImage = true) {
                         <p class="text-3xl font-extrabold text-pink-600 mb-5">${originalPriceHtml}$${displayPrice.toFixed(2)}</p>
                     </div>
                     <div class="p-6 pt-0">
-                        <button data-item-name="${pkg.name}" data-item-price="${pkg.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto ${buttonClassColor}" aria-label="${isSelected ? 'Quitar' : 'Añadir'} ${pkg.name}">
+                        <button data-item-name="${pkg.name}" data-item-price="${pkg.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto ${buttonClassColor}" aria-label="${isSelected ? 'Remove' : 'Add'} ${pkg.name}">
                             ${buttonText}
                         </button>
                     </div>
@@ -1219,7 +1630,7 @@ function renderServicesSection() {
             const buttonClassColor = isSelected ? 'modern-button remove-button' : `modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 text-white`;
 
             actionAreaHtml = `
-                <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto ${buttonClassColor}" aria-label="${isSelected ? 'Quitar' : 'Añadir'} ${service.name}">
+                <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto ${buttonClassColor}" aria-label="${isSelected ? 'Remove' : 'Add'} ${service.name}">
                     ${buttonText}
                 </button>
             `;
@@ -1274,7 +1685,7 @@ function renderServicesSection() {
             let itemName = serviceName;
             let quantity = 1;
 
-            if (serviceType === 'theme_selection') {
+            if (service.type === 'theme_selection') {
                 const genderSelect = document.getElementById(`gender-${service.id}`);
                 const themeSelect = document.getElementById(`theme-${service.id}`);
                 if (!genderSelect || !themeSelect || !themeSelect.value) {
@@ -1282,7 +1693,7 @@ function renderServicesSection() {
                     return;
                 }
                 itemName = `${serviceName}: ${themeSelect.value}`;
-            } else if (serviceType === 'character_selection') {
+            } else if (service.type === 'character_selection') {
                 const characterSelect = document.getElementById(`character-${service.id}`);
                 if (!characterSelect || !characterSelect.value) {
                     showToast('Por favor, selecciona un personaje.', 'error');
@@ -1292,12 +1703,12 @@ function renderServicesSection() {
             } else if (service.type === 'manualidades_workshop' || service.type === 'standard_with_quantity') {
                 const quantityInput = document.getElementById(`quantity-${service.id}`);
                 if (!quantityInput || quantityInput.value < (service.type === 'manualidades_workshop' ? 10 : 1)) {
-                    showToast(`La cantidad mínima para ${serviceName} es ${service.type === 'manualidades_workshop' ? '10 niños' : '1'}.`, 'error');
+                    showToast(`La cantidad mínima para ${service.name} es ${service.type === 'manualidades_workshop' ? '10 niños' : '1'}.`, 'error');
                     return;
                 }
                 quantity = parseInt(quantityInput.value, 10);
                 if (service.type === 'standard_with_quantity') {
-                    itemName = `${serviceName} (${quantity} hora${quantity > 1 ? 's' : ''})`;
+                    itemName = `${service.name} (${quantity} hora${quantity > 1 ? 's' : ''})`;
                 }
             }
 
@@ -1341,7 +1752,7 @@ function renderServicesSection() {
             const serviceId = event.target.id.replace('gender-', '');
             const service = servicesData.find(s => s.id === serviceId);
             if (service && service.type === 'theme_selection') {
-                const themeSelect = document.getElementById(`theme-${serviceId}`);
+                const themeSelect = document.getElementById(`theme-${service.id}`);
                 const selectedGender = event.target.value;
                 themeSelect.innerHTML = service.themes[selectedGender].map(theme => `<option value="${theme}">${theme}</option>`).join('');
             }
@@ -1473,7 +1884,7 @@ function renderBlogSection() {
                 <h3>${post.title} <i data-lucide="${post.icon || 'book-open'}"></i></h3>
                 <p class="text-gray-500 text-xs mt-2 mb-2 flex items-center"><i data-lucide="clock" class="w-4 h-4 mr-1"></i> ${post.readingTime}</p>
                 <p>${post.description}</p>
-                <button class="read-more-blog-button modern-button bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 text-white" data-blog-id="${post.id}" aria-label="Leer más sobre ${post.title}">Leer Más <i data-lucide="arrow-right"></i></button>
+                <button class="read-more-blog-button modern-button bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 text-white" data-blog-id="${post.id}" aria-label="Read more about ${post.title}">Leer Más <i data-lucide="arrow-right"></i></button>
             </div>
         </div>`).join('');
     const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
@@ -1491,17 +1902,68 @@ function renderBlogSection() {
     });
 }
 
+/**
+ * Updates the booking summary section (selected items, transport fee, total price)
+ * without re-rendering the entire form.
+ */
+function updateBookingSummaryUI() {
+    console.log("--- DEBUG: Inicia Actualización de Resumen de Reserva ---");
+    const selectedItemsListContainer = document.getElementById('selectedItemsListHtmlContainer');
+    const transportFeeDisplay = document.getElementById('transportFeeDisplay');
+    // IMPORTANT: Changed ID here to target the correct element in the booking form
+    const bookingTotalPriceDisplayElement = document.getElementById('bookingTotalPriceDisplay'); 
+
+    if (!selectedItemsListContainer || !transportFeeDisplay || !bookingTotalPriceDisplayElement) {
+        console.warn("DEBUG: Elementos del resumen de reserva no encontrados. La página podría no ser la de reserva o los IDs HTML son incorrectos.");
+        return;
+    }
+
+    // Calculate total price for selected items
+    const itemsTotalPrice = appState.selectedItems.reduce((sum, item) => sum + getAdjustedItemPrice(item), 0);
+    console.log("DEBUG: Precio total de ítems seleccionados (antes de transporte):", itemsTotalPrice.toFixed(2));
+
+    // Calculate transport fee based on selected location
+    // Ensure appState.selectedLocation is correctly initialized, perhaps from localStorage on load
+    const currentSelectedLocation = appState.selectedLocation || 'Panamá Centro'; // Default if not set
+    const transportFee = transportFeesByLocation[currentSelectedLocation] || 0;
+    console.log("DEBUG: Ubicación seleccionada (appState.selectedLocation):", appState.selectedLocation);
+    console.log("DEBUG: Tarifa de transporte para", currentSelectedLocation, ":", transportFee.toFixed(2));
+
+    // Total price including items and transport
+    const finalTotalPrice = itemsTotalPrice + transportFee;
+    console.log("DEBUG: Precio total final (ítems + transporte):", finalTotalPrice.toFixed(2));
+    console.log("DEBUG: Elemento de UI a actualizar (ID):", bookingTotalPriceDisplayElement.id);
+
+
+    // Generate HTML for selected items in the booking summary
+    const selectedItemsListHtml = appState.selectedItems.length === 0 ?
+        `<p class="text-red-600 text-center">No has seleccionado ningún servicio.</p>` :
+        `<div class="space-y-3">${appState.selectedItems.map(item =>
+            `<div class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
+                <span class="font-semibold text-gray-800">${item.name} (x${item.quantity})</span>
+                <span class="font-bold text-pink-600">$${getAdjustedItemPrice(item).toFixed(2)}</span>
+            </div>`
+        ).join('')}</div>`;
+    
+    const transportFeeHtml = transportFee > 0 ?
+        `<p class="font-bold text-gray-700 mt-4">Transporte (${currentSelectedLocation}): <span class="text-orange-600">$${transportFee.toFixed(2)}</span></p>` :
+        `<p class="font-bold text-gray-700 mt-4">Transporte: <span class="text-green-600">¡Gratis en Panamá Centro!</span></p>`;
+    
+    selectedItemsListContainer.innerHTML = selectedItemsListHtml;
+    transportFeeDisplay.innerHTML = transportFeeHtml;
+    bookingTotalPriceDisplayElement.textContent = `$${finalTotalPrice.toFixed(2)}`; // Use the renamed element
+
+    lucide.createIcons(); // Re-render Lucide icons if any were added/removed in the summary
+    console.log("--- DEBUG: Fin Actualización de Resumen de Reserva ---");
+}
+
+
 /** Renders the booking section with the form and selected items summary. */
 function renderBookingSection() {
-    // Generate HTML for selected items in the booking summary
-    const selectedItemsListHtml = appState.selectedItems.length === 0 ? `<p class="text-red-600 text-center">No has seleccionado ningún servicio.</p>` : `<div class="space-y-3">${appState.selectedItems.map(item => `<div class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm"><span class="font-semibold text-gray-800">${item.name} (x${item.quantity})</span><span class="font-bold text-pink-600">$${getAdjustedItemPrice(item).toFixed(2)}</span></div>`).join('')}</div>`;
-    
-    // Calculate transport fee based on selected location
-    const transportFee = transportFeesByLocation[appState.selectedLocation] || 0;
-    const transportFeeHtml = transportFee > 0 ? `<p class="font-bold text-gray-700 mt-4">Transporte (${appState.selectedLocation}): <span class="text-orange-600">$${transportFee.toFixed(2)}</span></p>` : `<p class="font-bold text-gray-700 mt-4">Transporte: <span class="text-green-600">¡Gratis en Panamá Centro!</span></p>`;
-    
-    // Calculate total price including items and transport
-    const totalPrice = appState.selectedItems.reduce((sum, item) => sum + getAdjustedItemPrice(item), 0) + transportFee;
+    console.log("--- DEBUG: Inicia renderBookingSection ---");
+    console.log("DEBUG: appState.bookingFormData al inicio de renderBookingSection:", appState.bookingFormData);
+    console.log("DEBUG: Valor de eventType en bookingFormData:", appState.bookingFormData.eventType);
+    console.log("DEBUG: Valor de eventDate en bookingFormData:", appState.bookingFormData.eventDate);
 
     const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
         <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-12">Reserva tu Evento <i data-lucide="calendar-check"></i></h2>
@@ -1509,9 +1971,13 @@ function renderBookingSection() {
             <form id="bookingForm" class="space-y-6" novalidate>
                 <div class="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-2xl shadow-xl border-4 border-pink-300 mb-6">
                     <h4 class="text-lg font-bold text-pink-700 mb-4">Tu Selección:</h4>
-                    ${selectedItemsListHtml}
-                    ${transportFeeHtml}
-                    <p class="text-xl font-bold text-purple-700 mt-4">Total a Pagar: <span class="text-pink-600">$${totalPrice.toFixed(2)}</span></p>
+                    <div id="selectedItemsListHtmlContainer">
+                        <!-- Selected items will be rendered here by updateBookingSummaryUI -->
+                    </div>
+                    <div id="transportFeeDisplay">
+                        <!-- Transport fee will be rendered here by updateBookingSummaryUI -->
+                    </div>
+                    <p class="text-xl font-bold text-purple-700 mt-4">Total a Pagar: <span id="bookingTotalPriceDisplay" class="text-pink-600">$0.00</span></p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1554,7 +2020,7 @@ function renderBookingSection() {
                         <p id="eventTime-error" class="error-message"></p>
                     </div>
                     <div>
-                        <label for="eventLocation" class="block text-gray-700 font-semibold mb-2">Ubicación del Evento <span class="text-red-500">*</span></label>
+                        <label for="eventLocation" class="block text-gray-700 font-semibold mb-2">Ubicación del Evento (Área) <span class="text-red-500">*</span></label>
                         <select id="eventLocation" name="eventLocation" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" required aria-required="true">
                             <option value="">Selecciona una ubicación</option>
                             ${Object.keys(transportFeesByLocation).map(loc => `<option value="${loc}" ${appState.bookingFormData.eventLocation === loc ? 'selected' : ''}>${loc} ${transportFeesByLocation[loc] > 0 ? `(+$${transportFeesByLocation[loc].toFixed(2)} transporte)` : '(Gratis)'}</option>`).join('')}
@@ -1568,8 +2034,9 @@ function renderBookingSection() {
                     </div>
                 </div>
                 <div>
-                    <label for="specialRequests" class="block text-gray-700 font-semibold mb-2">Solicitudes Especiales / Comentarios</label>
-                    <textarea id="specialRequests" name="specialRequests" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" placeholder="¿Alguna temática específica, personaje, o detalle adicional?">${appState.bookingFormData.specialRequests || ''}</textarea>
+                    <label for="exactEventLocation" class="block text-gray-700 font-semibold mb-2">Ubicación Exacta del Evento (Dirección Completa)</label>
+                    <input type="text" id="exactEventLocation" name="exactEventLocation" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" placeholder="Ej: Calle Principal, Casa #123, Edificio X, Apartamento Y" value="${appState.bookingFormData.exactEventLocation || ''}">
+                    <p id="exactEventLocation-error" class="error-message"></p>
                 </div>
                 
                 <button type="submit" class="w-full modern-button bg-gradient-to-br from-cyan-500 to-blue-600 text-white py-3">¡Confirmar Reserva Mágica! <i data-lucide="sparkles"></i></button>
@@ -1583,7 +2050,7 @@ function renderBookingSection() {
     if (form) {
         form.onsubmit = handleBookingSubmit;
         // Add input event listeners for real-time validation
-        ['fullName', 'email', 'phone', 'eventType', 'eventDate', 'eventTime', 'eventLocation'].forEach(id => {
+        ['fullName', 'email', 'phone', 'eventType', 'eventDate', 'eventTime', 'eventLocation', 'exactEventLocation'].forEach(id => {
             const input = document.getElementById(id);
             if (input) {
                 input.oninput = () => validateField(id, true);
@@ -1595,10 +2062,15 @@ function renderBookingSection() {
         if (eventLocationSelect) {
             eventLocationSelect.onchange = (event) => {
                 appState.selectedLocation = event.target.value;
-                renderBookingSection(); // Re-render to update transport fee and total
+                console.log("DEBUG: Ubicación del evento cambiada a:", appState.selectedLocation);
+                updateBookingSummaryUI(); // Only update the summary, not the whole section
             };
         }
     }
+    console.log("DEBUG: Llamando a updateBookingSummaryUI desde renderBookingSection.");
+    // Call updateBookingSummaryUI initially to populate the summary section
+    updateBookingSummaryUI();
+    console.log("--- DEBUG: Fin renderBookingSection ---");
 }
 
 
@@ -1612,8 +2084,13 @@ function saveBookingFormData() {
         for (const [key, value] of formData.entries()) {
             data[key] = value;
         }
+        // Ensure to save the new field and remove the old one
+        data.exactEventLocation = document.getElementById('exactEventLocation')?.value || '';
+        delete data.specialRequests; // Explicitly remove the old field if it somehow persisted
+
         appState.bookingFormData = data;
         localStorage.setItem('bookingFormData', JSON.stringify(data));
+        console.log("DEBUG: Datos del formulario de reserva guardados:", appState.bookingFormData);
     }
 }
 
@@ -1625,7 +2102,11 @@ function loadBookingFormData() {
         // Ensure selectedLocation is loaded if available
         if (appState.bookingFormData.eventLocation) {
             appState.selectedLocation = appState.bookingFormData.eventLocation;
+            console.log("DEBUG: Ubicación seleccionada cargada desde localStorage:", appState.selectedLocation);
         }
+        console.log("DEBUG: Datos del formulario de reserva cargados:", appState.bookingFormData);
+    } else {
+        console.log("DEBUG: No se encontraron datos de formulario de reserva en localStorage.");
     }
 }
 
@@ -1679,6 +2160,9 @@ function validateField(fieldId, isInputEvent = false) {
                     errorMessage = 'El número de niños debe ser un valor positivo.';
                 }
                 break;
+            case 'exactEventLocation':
+                // This field is currently optional. Add validation if it becomes required.
+                break;
         }
     }
 
@@ -1694,6 +2178,7 @@ function validateField(fieldId, isInputEvent = false) {
  */
 async function handleBookingSubmit(event) {
     event.preventDefault(); // Prevent default form submission
+    console.log("--- DEBUG: Iniciando envío de formulario de reserva ---");
 
     clearFormErrors(); // Clear all previous errors
 
@@ -1703,6 +2188,7 @@ async function handleBookingSubmit(event) {
     for (const fieldId of requiredFields) {
         if (!validateField(fieldId)) {
             formIsValid = false;
+            console.log(`DEBUG: Campo '${fieldId}' no válido.`);
         }
     }
 
@@ -1710,12 +2196,22 @@ async function handleBookingSubmit(event) {
     if (document.getElementById('numChildren').value) {
         if (!validateField('numChildren')) {
             formIsValid = false;
+            console.log("DEBUG: Campo 'numChildren' no válido.");
         }
     }
+    // Validate new exactEventLocation if it has a value (currently optional)
+    if (document.getElementById('exactEventLocation').value) {
+        if (!validateField('exactEventLocation')) {
+            formIsValid = false;
+            console.log("DEBUG: Campo 'exactEventLocation' no válido.");
+        }
+    }
+
 
     if (appState.selectedItems.length === 0) {
         showInfoModal('¡Tu carrito de diversión está vacío! Por favor, selecciona al menos un servicio o paquete antes de reservar.');
         formIsValid = false;
+        console.log("DEBUG: Carrito vacío, formulario no válido.");
     }
 
     if (formIsValid) {
@@ -1736,52 +2232,73 @@ async function handleBookingSubmit(event) {
         }));
         bookingDetails.totalPrice = (appState.selectedItems.reduce((sum, item) => sum + getAdjustedItemPrice(item), 0) + transportFeesByLocation[appState.selectedLocation]).toFixed(2);
         
-        // Construct WhatsApp message
-        let whatsappMessage = `¡Hola Diverty Eventos! 🎉\n\n`;
-        whatsappMessage += `Tengo una nueva solicitud de reserva para una fiesta infantil:\n\n`;
-        whatsappMessage += `*Datos de Contacto:*\n`;
-        whatsappMessage += `Nombre: ${bookingDetails.fullName}\n`;
-        whatsappMessage += `Email: ${bookingDetails.email}\n`;
-        whatsappMessage += `Teléfono: ${bookingDetails.phone}\n\n`;
-        whatsappMessage += `*Detalles del Evento:*\n`;
-        whatsappMessage += `Tipo de Evento: ${bookingDetails.eventType}\n`;
-        whatsappMessage += `Fecha: ${bookingDetails.eventDate}\n`;
-        whatsappMessage += `Hora: ${bookingDetails.eventTime}\n`;
-        whatsappMessage += `Ubicación: ${bookingDetails.eventLocation} (Transporte: $${transportFeesByLocation[appState.selectedLocation].toFixed(2)})\n`;
-        if (bookingDetails.numChildren) {
-            whatsappMessage += `Niños Estimados: ${bookingDetails.numChildren}\n`;
-        }
-        if (bookingDetails.specialRequests) {
-            whatsappMessage += `Solicitudes Especiales: ${bookingDetails.specialRequests}\n\n`;
-        }
+        console.log("DEBUG: Detalles de la reserva para JotForm:", bookingDetails);
+        console.log("DEBUG: bookingDetails.eventType antes de JotForm:", bookingDetails.eventType);
+        console.log("DEBUG: bookingDetails.eventDate antes de JotForm:", bookingDetails.eventDate);
+
+        // --- JOTFORM REDIRECTION LOGIC ---
+        // IMPORTANT: Replace 'YOUR_JOTFORM_URL_HERE' with your actual JotForm URL.
+        // Use the direct form URL, not the JS embed URL.
+        const jotformBaseUrl = 'https://form.jotform.com/251611549526054'; 
+
+        // IMPORTANT: Map your form field IDs from JotForm here.
+        // You can find these by inspecting your JotForm or using JotForm's pre-fill feature.
+        // These are examples based on common JotForm field names. Adjust them to your actual form!
+        const jotformFieldMap = {
+            fullName: 'q1_fullName', // Example: 'q1_fullName[first]' for first name, 'q1_fullName[last]' for last if split
+            email: 'q3_email',
+            phone: 'q4_phone', // Common JotForm phone field name
+            eventType: 'q5_eventType', // Assuming a dropdown or single choice
+            eventDate: 'q6_eventDate', // Assuming a date picker
+            eventTime: 'q7_eventTime', // Assuming a time field
+            eventLocation: 'q8_eventLocation', // Assuming a dropdown or single choice
+            numChildren: 'q9_numChildren', // Assuming a number field
+            exactEventLocation: 'q13_exactEventLocation', // New field for exact location (adjust ID based on your JotForm)
+            selectedServicesList: 'q11_selectedServicesList', // Assuming a long text area for the list of services
+            totalPrice: 'q12_totalPrice' // Assuming a number or short text field for total price
+        };
+
+        let jotformParams = new URLSearchParams();
+
+        // Populate JotForm parameters using the mapped field names
+        if (bookingDetails.fullName) jotformParams.append(jotformFieldMap.fullName, bookingDetails.fullName);
+        if (bookingDetails.email) jotformParams.append(jotformFieldMap.email, bookingDetails.email);
+        if (bookingDetails.phone) jotformParams.append(jotformFieldMap.phone, bookingDetails.phone);
+        if (bookingDetails.eventType) jotformParams.append(jotformFieldMap.eventType, bookingDetails.eventType);
+        if (bookingDetails.eventDate) jotformParams.append(jotformFieldMap.eventDate, bookingDetails.eventDate);
+        if (bookingDetails.eventTime) jotformParams.append(jotformFieldMap.eventTime, bookingDetails.eventTime);
+        if (bookingDetails.eventLocation) jotformParams.append(jotformFieldMap.eventLocation, bookingDetails.eventLocation);
+        if (bookingDetails.numChildren) jotformParams.append(jotformFieldMap.numChildren, bookingDetails.numChildren);
+        if (bookingDetails.exactEventLocation) jotformParams.append(jotformFieldMap.exactEventLocation, bookingDetails.exactEventLocation); // Add new field
         
-        whatsappMessage += `*Servicios Seleccionados:*\n`;
+        // Format selected services for a single text area in JotForm
+        let servicesListText = '';
         if (bookingDetails.selectedServices.length > 0) {
-            bookingDetails.selectedServices.forEach(service => {
-                whatsappMessage += `- ${service.name} (x${service.quantity}) - $${service.price.toFixed(2)}\n`;
-            });
+            servicesListText = bookingDetails.selectedServices.map(service => 
+                `- ${service.name} (x${service.quantity}) - $${service.price.toFixed(2)}`
+            ).join('\n');
         } else {
-            whatsappMessage += `- Ningún servicio seleccionado (esto no debería pasar si el formulario es válido).\n`;
+            servicesListText = 'Ningún servicio seleccionado.';
         }
-        whatsappMessage += `\n*Total Estimado: $${bookingDetails.totalPrice}*\n\n`;
-        whatsappMessage += `¡Espero su confirmación! Gracias.`;
+        jotformParams.append(jotformFieldMap.selectedServicesList, servicesListText);
+        jotformParams.append(jotformFieldMap.totalPrice, bookingDetails.totalPrice);
 
-        // Encode message for URL
-        const encodedMessage = encodeURIComponent(whatsappMessage);
-        const whatsappUrl = `https://wa.me/50766677965?text=${encodedMessage}`;
+        const jotformUrl = `${jotformBaseUrl}?${jotformParams.toString()}`;
+        console.log("DEBUG: URL de JotForm generada:", jotformUrl);
 
-        // Simulate submission and show success
-        showInfoModal('¡Tu solicitud de reserva ha sido enviada! Te redirigiremos a WhatsApp para confirmar los detalles.', () => {
+        showInfoModal('¡Tu solicitud de reserva ha sido enviada! Te redirigiremos a JotForm para finalizar los detalles.', () => {
             // Clear cart and form data after successful submission
             appState.selectedItems = [];
             appState.bookingFormData = {};
             localStorage.removeItem('bookingFormData');
             setActiveSection('home'); // Go back to home page
-            window.open(whatsappUrl, '_blank'); // Open WhatsApp in new tab
+            window.open(jotformUrl, '_blank'); // Open JotForm in new tab
         });
     } else {
         showToast('Por favor, corrige los errores en el formulario.', 'error');
+        console.log("DEBUG: Errores en el formulario, envío cancelado.");
     }
+    console.log("--- DEBUG: Fin envío de formulario de reserva ---");
 }
 
 /** Clears all error messages and input error styles from the form. */
