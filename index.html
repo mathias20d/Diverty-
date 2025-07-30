@@ -15,12 +15,13 @@
     <meta property="og:url" id="ogUrl" content="https://divertypanama.netlify.app/">
     <meta property="og:type" id="ogType" content="website">
 
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-R3G3Y0FLVN"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBYYJTHTEF"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', 'G-R3G3Y0FLVN');
+        gtag('config', 'G-SBYYJTHTEF');
     </script>
 
     <script type="application/ld+json">
@@ -357,9 +358,14 @@
         <div id="promoModalContent" tabindex="-1" class="bg-gradient-to-br from-pink-600 to-pink-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-pink-500 transform transition-all duration-300 scale-95 opacity-0">
             <h2 class="text-3xl font-extrabold text-white mb-4">¡Promoción del Mes! <i data-lucide="star" class="lucide inline-block"></i></h2>
             <p id="promoCountdown" class="text-2xl font-extrabold text-yellow-300 mb-6"></p>
-            <button id="closePromoModalButton" class="bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto" aria-label="Genial, cerrar promoción">
-                ¡Genial! <i data-lucide="party-popper" class="lucide"></i>
-            </button>
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <button id="viewPromoOfferButton" class="bg-gradient-to-br from-blue-500 via-blue-400 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Ver oferta de burbujas">
+                    Ver Oferta <i data-lucide="wind"></i>
+                </button>
+                <button id="closePromoModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Genial, cerrar promoción">
+                    ¡Genial! <i data-lucide="party-popper" class="lucide"></i>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -924,7 +930,7 @@ function showPromoInfoModal(message) {
     endDate.setDate(endDate.getDate() + 7); // Set promo to end 7 days from now
     appState.promoEndDate = endDate;
     const formattedEndDate = endDate.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-    document.getElementById('promoMessage').innerHTML = `${message}<br>Oferta válida hasta el <strong>${formattedEndDate}</strong>.`;
+    document.getElementById('promoCountdown').innerHTML = `${message}<br>Oferta válida hasta el <strong>${formattedEndDate}</strong>.`;
     // Add bubble packages to promoted items for discount calculation
     appState.promotedPackages = bubblePackagesData.map(pkg => pkg.name);
     updateCartSummary(); // Update cart summary to reflect potential discounts
@@ -933,6 +939,15 @@ function showPromoInfoModal(message) {
     if (appState.countdownInterval) clearInterval(appState.countdownInterval); // Clear any existing countdown
     updateCountdown(); // Initial countdown update
     appState.countdownInterval = setInterval(updateCountdown, 1000); // Start countdown interval
+
+    // Add event listener for the new "View Offer" button
+    const viewOfferButton = document.getElementById('viewPromoOfferButton');
+    if (viewOfferButton) {
+        viewOfferButton.onclick = () => {
+            closePromoModal(); // Close the promo modal
+            setActiveSection('bubblePackages'); // Navigate to bubble packages
+        };
+    }
 }
 
 /** Updates the countdown timer displayed in the promo modal. */
