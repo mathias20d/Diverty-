@@ -548,7 +548,7 @@
 
 <script>
 // --- Global Application State ---
-let appState = {
+const appState = {
     activeSection: 'home',
     selectedItems: [],
     promotedPackages: [],
@@ -569,14 +569,13 @@ const servicesData = [
     { id: 'S4', name: 'Personajes Temáticos', price: 75, description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige entre Mickey, Minnie y Mario Bros. Servicio por 1 hora.', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', type: 'character_selection', imageUrl: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg', icon: 'users', characters: [{ id: 'mickey', name: 'Mickey Mouse' }, { id: 'minnie', name: 'Minnie Mouse' }, { id: 'mario', name: 'Mario Bros.' }] },
     { id: 'S5', name: 'Mini Taller de Manualidades', price: 12.50, description: 'Taller creativo con 2 manualidades, mobiliario, recreadora, materiales y música. Mínimo 10 niños. Precio por niño.', color: 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-300 text-yellow-800', type: 'manualidades_workshop', imageUrl: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', icon: 'scissors' },
     { id: 'S6', name: 'Máquinas de Snack', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', icon: 'popcorn', type: 'standard' },
-    // New Services
-    { id: 'S7', name: 'Show de Magia', price: 120, description: 'Un espectáculo interactivo de magia que asombrará a niños y adultos por igual. Duración: 45 minutos.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://placehold.co/400x200/9333ea/ffffff?text=Show+de+Magia', icon: 'wand', type: 'standard' },
-    { id: 'S8', name: 'Alquiler de Inflables', price: 150, description: 'Inflables seguros y divertidos para que los niños salten y jueguen sin parar. Incluye instalación y desinstalación. Duración: 4 horas.', color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', imageUrl: 'https://placehold.co/400x200/16a34a/ffffff?text=Inflables', icon: 'castle', type: 'standard' }
+    { id: 'S7', name: 'Show de Magia Cómica', price: 100, description: '1.5 horas de un show interactivo de magia cómica que asombrará a todos. Incluye figuras con globos y la aparición de un conejo real (se regala al finalizar el show).', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://placehold.co/400x200/9333ea/ffffff?text=Show+de+Magia', icon: 'wand', type: 'standard' },
+    { id: 'S8', name: 'Alquiler de Inflables', price: 90, description: 'Alquiler por 4 horas. Inflables seguros y divertidos para que los niños salten y jueguen sin parar. Incluye instalación y desinstalación.', color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', imageUrl: 'https://placehold.co/400x200/16a34a/ffffff?text=Inflables', icon: 'castle', type: 'standard' }
 ];
 
 const animatorPackagesData = [
-    { id: 'P1', name: 'Plan Básico (Animador)', price: 65, services: ['1 Animador', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', icon: 'rocket', type: 'standard' },
-    { id: 'P2', name: 'Plan Recreativo (Animador)', price: 85, services: ['Animador profesional', 'Pintacaritas (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '2h de aventura: Animador, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', icon: 'rainbow', type: 'standard' }
+    { id: 'P1', name: 'Plan Básico (Animador)', price: 70, services: ['1 Animador', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', icon: 'rocket', type: 'standard' },
+    { id: 'P2', name: 'Plan Recreativo (Animador)', price: 85, services: ['Animador profesional', 'Pintacaritas básica (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '2h de aventura: Animador, pintacaritas básica, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', icon: 'rainbow', type: 'standard' }
 ];
 
 const clownPackagesData = [
@@ -662,8 +661,8 @@ const blogPostsData = [
             <i data-lucide="calendar-check"></i> ¡Contáctanos para una fiesta sin estrés!
         </button>
     `, createdAt: new Date('2025-07-24T23:55:00Z') }, // New blog post
-    { id: 'blog1', title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025', description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. ¡Inspírate para el cumpleaños de tus hijos!', imageUrl: 'https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png', icon: 'party-popper', content: `<p>Organizar una fiesta infantil es una aventura. Para 2025, las tendencias en Panamá son emocionantes. Aquí te presentamos las 7 temáticas más pedidas:</p><h3>1. El Mundo Mágico de Encanto:</h3><p>Inspirada en Disney, esta temática llena de color es perfecta para soñadores.</p><img src="https://i.ibb.co/r2LBjgK1/adba4d9aaf271ec62615fc8e6b007595.jpg" alt="Decoración temática de Encanto para fiesta infantil"><h3>2. Aventura con Bluey:</h3><p>La popular perrita Bluey trae juegos interactivos y diversión sin fin, ideal para fiestas al aire libre.</p><img src="https://i.ibb.co/DgVTvtx3/0e49621b9692a3a1123c9851ea949b5b.jpg" alt="Fiesta temática de Bluey"><h3>3. Superhéroes al Rescate:</h3><p>Los clásicos nunca pasan de moda. Spiderman, Batman y la Mujer Maravilla siguen siendo los favoritos.</p><img src="https://i.ibb.co/BH81xkr5/0d8fb8ceec25c799b7940be2676403b7.jpg" alt="Niños disfrazados de superhéroes en una fiesta"><h3>4. Princesas con un Toque Moderno:</h3><p>Las princesas de Disney reinventadas con actividades que empoderan a las niñas.</p><img src="https://i.ibb.co/PZRDS59F/23cf8a3fabc519f35d1a5d86a2ab3415.jpg" alt="Fiesta temática de Princesas"><h3>5. Exploradores de Dinosaurios:</h3><p>Un viaje prehistórico lleno de descubrimientos y aventuras, con decoraciones de dinosaurios.</p><img src="https://i.ibb.co/ccYm6vjT/bc791435645b56bf0604dbc76e85d151.jpg" alt="Fiesta temática de Dinosaurios"><h3>6. Fiesta de Videojuegos (Minecraft/Mario Bros):</h3><p>Para los amantes de los videojuegos, una fiesta inspirada en Minecraft o Mario Bros. es garantía de diversión.</p><img src="https://i.ibb.co/FLpDsmB9/a401ccd2bc95f03f39ac0f8132229235.jpg" alt="Decoración de fiesta de videojuegos con personajes de Mario Bros"><h3>7. Unicornios y Fantasía:</h3><p>La magia de los unicornios y arcoíris sigue cautivando, creando un ambiente de ensueño.</p><img src="https://i.ibb.co/twTKk0CQ/68ba5b96c1f01abc1ca18d5d7df10b17.jpg" alt="Fiesta temática de Unicornios"> <p>En Diverty Eventos, podemos ayudarte a hacer realidad cualquiera de estas temáticas. ¡Contáctanos!</p>`, createdAt: new Date('2025-07-20T10:00:00Z') },
-    { id: 'blog2', title: 'Shows de Burbujas Gigantes: La Tendencia que Enamorará a Todos', description: 'Descubre por qué los shows de burbujas gigantes son el entretenimiento más buscado para fiestas infantiles en Panamá.', imageUrl: 'https://i.ibb.co/7J5JM84n/file-000000003a0461fa918e3a8f30f312e2.png', icon: 'wind', content: `<p>Si buscas un show que deje a todos con la boca abierta, ¡el show de burbujas gigantes es la respuesta! Ha ganado una popularidad inmensa por su capacidad de asombrar.</p><img src="https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg" alt="Niños disfrutando de un show de burbujas gigantes"><h3>¿Qué lo hace tan especial?</h3><ul><li><strong>Magia Visual:</strong> Burbujas de tamaños increíbles crean un espectáculo hipnotizante.</li><img src="https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg" alt="Burbuja Gigante Interacción"><li><strong>Interactividad:</strong> Los niños no solo observan, ¡participan! Pueden entrar en una burbuja gigante para una foto inolvidable.</li><li><strong>Momentos Únicos:</strong> Las fotos son recuerdos que durarán para siempre.</li><li><strong>Diversión para Todas las Edades:</strong> Es un entretenimiento que une a toda la familia.</li></ul><p>En Diverty Eventos, somos expertos en shows de burbujas gigantes. ¡Añade este toque mágico a tu fiesta!</p>`, createdAt: new Date('2025-07-15T14:30:00Z') }
+    { id: 'blog1', title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025', description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. ¡Inspírate para el cumpleaños de tus hijos!', imageUrl: 'https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png', icon: 'party-popper', content: `<p>Organizar una fiesta infantil es una aventura. Para 2025, las tendencias en Panamá son emocionantes. Aquí te presentamos las 7 temáticas más pedidas:</p><h3>1. El Mundo Mágico de Encanto:</h3><p>Inspirada en Disney, esta temática llena de color es perfecta para soñadores.</p><img src="https://i.ibb.co/r2LBjgK1/adba4d9aaf271ec62615fc8e6b007595.jpg" alt=""><h3>2. Aventura con Bluey:</h3><p>La popular perrita Bluey trae juegos interactivos y diversión sin fin, ideal para fiestas al aire libre.</p><img src="https://i.ibb.co/DgVTvtx3/0e49621b9692a3a1123c9851ea949b5b.jpg" alt=""><h3>3. Superhéroes al Rescate:</h3><p>Los clásicos nunca pasan de moda. Spiderman, Batman y la Mujer Maravilla siguen siendo los favoritos.</p><img src="https://i.ibb.co/BH81xkr5/0d8fb8ceec25c799b7940be2676403b7.jpg" alt=""><h3>4. Princesas con un Toque Moderno:</h3><p>Las princesas de Disney reinventadas con actividades que empoderan a las niñas.</p><img src="https://i.ibb.co/PZRDS59F/23cf8a3fabc519f35d1a5d86a2ab3415.jpg" alt=""><h3>5. Exploradores de Dinosaurios:</h3><p>Un viaje prehistórico lleno de descubrimientos y aventuras, con decoraciones de dinosaurios.</p><img src="https://i.ibb.co/ccYm6vjT/bc791435645b56bf0604dbc76e85d151.jpg" alt=""><h3>6. Fiesta de Videojuegos (Minecraft/Mario Bros):</h3><p>Para los amantes de los videojuegos, una fiesta inspirada en Minecraft o Mario Bros. es garantía de diversión.</p><img src="https://i.ibb.co/FLpDsmB9/a401ccd2bc95f03f39ac0f8132229235.jpg" alt=""><h3>7. Unicornios y Fantasía:</h3><p>La magia de los unicornios y arcoíris sigue cautivando, creando un ambiente de ensueño.</p><img src="https://i.ibb.co/twTKk0CQ/68ba5b96c1f01abc1ca18d5d7df10b17.jpg" alt=""> <p>En Diverty Eventos, podemos ayudarte a hacer realidad cualquiera de estas temáticas. ¡Contáctanos!</p>`, createdAt: new Date('2025-07-20T10:00:00Z') },
+    { id: 'blog2', title: 'Shows de Burbujas Gigantes: La Tendencia que Enamorará a Todos', description: 'Descubre por qué los shows de burbujas gigantes son el entretenimiento más buscado para fiestas infantiles en Panamá.', imageUrl: 'https://i.ibb.co/7J5JM84n/file-000000003a0461fa918e3a8f30f312e2.png', icon: 'wind', content: `<p>Si buscas un show que deje a todos con la boca abierta, ¡el show de burbujas gigantes es la respuesta! Ha ganado una popularidad inmensa por su capacidad de asombrar.</p><img src="https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg" alt=""><h3>¿Qué lo hace tan especial?</h3><ul><li><strong>Magia Visual:</strong> Burbujas de tamaños increíbles crean un espectáculo hipnotizante.</li><img src="https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg" alt=""><li><strong>Interactividad:</strong> Los niños no solo observan, ¡participan! Pueden entrar en una burbuja gigante para una foto inolvidable.</li><li><strong>Momentos Únicos:</strong> Las fotos son recuerdos que durarán para siempre.</li><li><strong>Diversión para Todas las Edades:</strong> Es un entretenimiento que une a toda la familia.</li></ul><p>En Diverty Eventos, somos expertos en shows de burbujas gigantes. ¡Añade este toque mágico a tu fiesta!</p>`, createdAt: new Date('2025-07-15T14:30:00Z') }
 ].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
 blogPostsData.forEach(post => {
@@ -990,7 +989,7 @@ function showMiniCartModal() {
             const itemTotalPrice = getAdjustedItemPrice(item);
             const itemImageUrl = getItemImageUrl(item.name);
             return `<div class="flex justify-between items-center py-1 border-b last:border-b-0">
-                        <div class="flex items-center"><img src="${itemImageUrl}" alt="Image of ${item.name}" class="w-10 h-10 object-cover rounded-md mr-2" loading="lazy">
+                        <div class="flex items-center"><img src="${itemImageUrl}" alt="" class="w-10 h-10 object-cover rounded-md mr-2" loading="lazy">
                             <span class="font-semibold text-gray-800 text-sm">${item.name} (x${item.quantity})</span></div>
                         <div class="flex items-center"><span class="font-bold text-pink-600 text-base whitespace-nowrap">$${itemTotalPrice.toFixed(2)}</span>
                             <button class="remove-item-from-minicart-button text-red-500 hover:text-red-700 ml-2" data-item-name="${item.name}" aria-label="Quitar ${item.name}"><i data-lucide="x-circle"></i></button></div></div>`;
@@ -1190,7 +1189,7 @@ function generatePackageCardsHtml(packagesArray, includeImage = true) {
             originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
         }
         
-        const packageImageHtml = includeImage && pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="Image of ${pkg.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
+        const packageImageHtml = includeImage && pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
 
         return `<div class="${pkg.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
                     ${packageImageHtml}
@@ -1242,7 +1241,7 @@ function renderHomeSection() {
 /** Renders the services section with dynamic cards for different service types. */
 function renderServicesSection() {
     const cardsHtml = servicesData.map((service, index) => {
-        const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="Image of ${service.name}" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy" data-image-url="${service.imageUrl}" data-alt-text="${service.name}">` : '';
+        const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy" data-image-url="${service.imageUrl}" data-alt-text="${service.name}">` : '';
         
         const baseColorMatch = service.color.match(/border-(\w+)-/);
         const baseColor = baseColorMatch ? baseColorMatch[1] : 'purple';
@@ -1503,7 +1502,7 @@ function renderBubblePackagesSection() {
 function renderCompanyReferencesSection() {
     const cardsHtml = companyReferencesData.map((company, index) => `
         <div class="bg-white modern-card flex flex-col items-center justify-center p-6 border-gray-200 animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-            <img src="${company.imageUrl}" alt="Image of ${company.name}" class="w-full h-32 object-contain rounded-lg mb-4" loading="lazy">
+            <img src="${company.imageUrl}" alt="" class="w-full h-32 object-contain rounded-lg mb-4" loading="lazy">
             <h3 class="text-lg font-bold text-gray-800 text-center">${company.name}</h3>
         </div>`).join('');
     const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-green-400 animate-fade-in">
@@ -1518,7 +1517,7 @@ function renderCompanyReferencesSection() {
 function renderTestimonialsSection() {
     const testimonialsHtml = testimonialsData.map((testimonial, index) => `
         <div class="bg-white modern-card p-8 flex flex-col items-center text-center border-pink-200 animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-            <img src="${testimonial.imageUrl}" alt="Image of ${testimonial.name}" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-pink-400 shadow-md" loading="lazy">
+            <img src="${testimonial.imageUrl}" alt="" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-pink-400 shadow-md" loading="lazy">
             <p class="text-gray-700 text-lg italic mb-4">"${testimonial.review}"</p>
             <p class="font-bold text-purple-700 text-lg">${testimonial.name}</p>
             <p class="text-gray-500 text-sm">${testimonial.role}</p>
@@ -1534,7 +1533,7 @@ function renderTestimonialsSection() {
 function renderGallerySection() {
     const galleryImagesHtml = galleryData.map((image, index) => `
         <div class="relative group rounded-xl overflow-hidden shadow-lg border-2 border-gray-200 transition duration-300 hover:scale-[1.02] hover:shadow-xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-            <img src="${image.imageUrl}" alt="Image of ${image.alt}" class="w-full h-48 object-cover transition duration-300 group-hover:opacity-80 cursor-pointer gallery-image" loading="lazy">
+            <img src="${image.imageUrl}" alt="" class="w-full h-48 object-cover transition duration-300 group-hover:opacity-80 cursor-pointer gallery-image" loading="lazy">
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                 <p class="text-white text-sm font-semibold">${image.alt}</p>
             </div>
@@ -1557,7 +1556,7 @@ function renderGallerySection() {
 function renderBlogSection() {
     const blogPostsHtml = blogPostsData.map((post, index) => `
         <div class="blog-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-            <img src="${post.imageUrl}" alt="Image of ${post.title}" class="blog-image cursor-pointer" loading="lazy">
+            <img src="${post.imageUrl}" alt="" class="blog-image cursor-pointer" loading="lazy">
             <div class="blog-card-content">
                 <h3>${post.title} <i data-lucide="${post.icon || 'book-open'}"></i></h3>
                 <p class="text-gray-500 text-xs mt-2 mb-2 flex items-center"><i data-lucide="clock" class="w-4 h-4 mr-1"></i> ${post.readingTime}</p>
