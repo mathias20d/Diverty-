@@ -99,6 +99,13 @@
             top: 0;
             z-index: 1000;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            padding: 0.5rem 0;
+            background: rgba(255, 107, 107, 0.95);
+            backdrop-filter: blur(10px);
         }
 
         nav {
@@ -110,26 +117,153 @@
         .logo {
             font-size: 1.8rem;
             font-weight: bold;
+            transition: font-size 0.3s ease;
+        }
+
+        header.scrolled .logo {
+            font-size: 1.5rem;
         }
 
         .nav-links {
             display: flex;
             list-style: none;
             gap: 2rem;
+            align-items: center;
         }
 
         .nav-links a {
             color: white;
             text-decoration: none;
-            transition: opacity 0.3s;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            position: relative;
         }
 
         .nav-links a:hover {
-            opacity: 0.8;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            position: relative;
+            margin-left: 1rem;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            width: 250px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            color: #333;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 0;
+            margin-top: 80px;
+            backdrop-filter: blur(5px);
+        }
+
+        .breadcrumb-list {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .breadcrumb-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb-link:hover {
+            color: white;
+        }
+
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .breadcrumb-current {
+            color: white;
+            font-weight: bold;
         }
 
         main {
-            margin-top: 80px;
+            margin-top: 120px;
         }
 
         .hero {
@@ -285,6 +419,14 @@
             .nav-links {
                 display: none;
             }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .search-container {
+                display: none;
+            }
             
             .hero h1 {
                 font-size: 2rem;
@@ -293,27 +435,222 @@
             .services-grid {
                 grid-template-columns: 1fr;
             }
+
+            .breadcrumbs {
+                margin-top: 70px;
+            }
+
+            main {
+                margin-top: 70px;
+            }
+        }
+
+        /* Mobile Menu Styles */
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 80%;
+            max-width: 300px;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            z-index: 1002;
+            transition: right 0.3s ease;
+            padding: 2rem 1rem;
+        }
+
+        .mobile-menu.open {
+            right: 0;
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .mobile-nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 1rem;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .mobile-search {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .mobile-search-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-overlay.open {
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 </head>
 <body>
-    <header>
+    <header id="main-header">
         <nav class="container">
             <div class="logo">🎉 Diverty Eventos</div>
             <ul class="nav-links">
-                <li><a href="#servicios">Servicios</a></li>
-                <li><a href="#areas">Áreas</a></li>
-                <li><a href="#contacto">Contacto</a></li>
+                <li><a href="#inicio" class="nav-link active" data-section="inicio">🏠 Inicio</a></li>
+                <li><a href="#servicios" class="nav-link" data-section="servicios">✨ Servicios</a></li>
+                <li><a href="#paquetes" class="nav-link" data-section="paquetes">📦 Paquetes</a></li>
+                <li><a href="#galeria" class="nav-link" data-section="galeria">📸 Galería</a></li>
+                <li><a href="#areas" class="nav-link" data-section="areas">📍 Áreas</a></li>
+                <li><a href="#contacto" class="nav-link" data-section="contacto">📞 Contacto</a></li>
             </ul>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Buscar servicios..." id="search-input">
+                <div class="search-results" id="search-results"></div>
+            </div>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
         </nav>
     </header>
 
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs" id="breadcrumbs">
+        <div class="container">
+            <nav class="breadcrumb-list" id="breadcrumb-list">
+                <div class="breadcrumb-item">
+                    <a href="#inicio" class="breadcrumb-link">🏠 Inicio</a>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="logo">🎉 Diverty</div>
+            <button class="mobile-menu-close" id="mobile-menu-close">✕</button>
+        </div>
+        <nav class="mobile-nav-links">
+            <a href="#inicio" data-section="inicio">🏠 Inicio</a>
+            <a href="#servicios" data-section="servicios">✨ Servicios</a>
+            <a href="#paquetes" data-section="paquetes">📦 Paquetes</a>
+            <a href="#galeria" data-section="galeria">📸 Galería</a>
+            <a href="#areas" data-section="areas">📍 Áreas</a>
+            <a href="#contacto" data-section="contacto">📞 Contacto</a>
+        </nav>
+        <div class="mobile-search">
+            <input type="text" class="mobile-search-input" placeholder="Buscar servicios..." id="mobile-search-input">
+        </div>
+    </div>
+
     <main>
-        <section class="hero">
+        <section class="hero" id="inicio">
             <div class="container">
                 <h1>¡Las Mejores Fiestas Infantiles en Panamá!</h1>
                 <p>Animación, shows de burbujas, pintacaritas, globoflexia y mucho más para hacer realidad la fiesta soñada de tus hijos</p>
                 <a href="#contacto" class="cta-button">¡Cotiza tu Fiesta Ahora!</a>
+            </div>
+        </section>
+
+        <!-- Nueva sección de Paquetes -->
+        <section id="paquetes" class="services">
+            <div class="container">
+                <h2>Paquetes Especiales</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">🎉</div>
+                        <h3>Paquete Básico</h3>
+                        <p><strong>$120</strong> - Perfecto para fiestas pequeñas: Animador + Pintacaritas + Globoflexia (2 horas)</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🌟</div>
+                        <h3>Paquete Premium</h3>
+                        <p><strong>$200</strong> - La experiencia completa: Todo lo básico + Show de Burbujas + Personaje Temático (3 horas)</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">👑</div>
+                        <h3>Paquete VIP</h3>
+                        <p><strong>$300</strong> - La fiesta de ensueño: Todo lo premium + Decoración + Show de Magia + Sorpresas (4 horas)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Nueva sección de Galería -->
+        <section id="galeria" class="services" style="background: #fff;">
+            <div class="container">
+                <h2>Galería de Momentos Mágicos</h2>
+                <div class="services-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                    <div class="service-card" style="padding: 0; overflow: hidden;">
+                        <img src="https://via.placeholder.com/300x200/ff6b6b/ffffff?text=Pintacaritas" alt="Pintacaritas" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 1rem;">
+                            <h4>Pintacaritas Mágicas</h4>
+                            <p>Transformamos a los niños en sus personajes favoritos</p>
+                        </div>
+                    </div>
+                    <div class="service-card" style="padding: 0; overflow: hidden;">
+                        <img src="https://via.placeholder.com/300x200/4ecdc4/ffffff?text=Burbujas" alt="Show de Burbujas" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 1rem;">
+                            <h4>Shows de Burbujas</h4>
+                            <p>Burbujas gigantes que crean momentos inolvidables</p>
+                        </div>
+                    </div>
+                    <div class="service-card" style="padding: 0; overflow: hidden;">
+                        <img src="https://via.placeholder.com/300x200/667eea/ffffff?text=Animacion" alt="Animación" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 1rem;">
+                            <h4>Animación Profesional</h4>
+                            <p>Nuestros animadores mantienen la diversión todo el tiempo</p>
+                        </div>
+                    </div>
+                    <div class="service-card" style="padding: 0; overflow: hidden;">
+                        <img src="https://via.placeholder.com/300x200/764ba2/ffffff?text=Personajes" alt="Personajes" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 1rem;">
+                            <h4>Personajes Temáticos</h4>
+                            <p>Los héroes favoritos cobran vida en tu fiesta</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -390,24 +727,236 @@
     </footer>
 
     <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
-                    behavior: 'smooth'
+        // App State
+        let currentSection = 'inicio';
+        
+        // Search data
+        const searchData = [
+            { title: 'Pintacaritas', section: 'servicios', keywords: ['pintar', 'cara', 'maquillaje', 'colores'] },
+            { title: 'Shows de Burbujas', section: 'servicios', keywords: ['burbujas', 'gigantes', 'show', 'espectáculo'] },
+            { title: 'Globoflexia', section: 'servicios', keywords: ['globos', 'figuras', 'animales', 'formas'] },
+            { title: 'Animación Infantil', section: 'servicios', keywords: ['animador', 'juegos', 'diversión', 'entretenimiento'] },
+            { title: 'Personajes Temáticos', section: 'servicios', keywords: ['personajes', 'superhéroes', 'princesas', 'disfraces'] },
+            { title: 'Shows de Magia', section: 'servicios', keywords: ['magia', 'trucos', 'mago', 'ilusiones'] },
+            { title: 'Paquete Básico', section: 'paquetes', keywords: ['básico', 'económico', '120', 'barato'] },
+            { title: 'Paquete Premium', section: 'paquetes', keywords: ['premium', 'completo', '200', 'medio'] },
+            { title: 'Paquete VIP', section: 'paquetes', keywords: ['vip', 'lujo', '300', 'completo', 'todo'] },
+            { title: 'Panamá Centro', section: 'areas', keywords: ['centro', 'ciudad', 'metropolitano'] },
+            { title: 'Arraiján', section: 'areas', keywords: ['arraijan', 'oeste'] },
+            { title: 'La Chorrera', section: 'areas', keywords: ['chorrera', 'oeste'] },
+            { title: 'Contacto', section: 'contacto', keywords: ['teléfono', 'whatsapp', 'contactar', 'llamar'] }
+        ];
+
+        // Navigation functionality
+        function updateActiveNavigation(section) {
+            // Update desktop navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.section === section) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Update mobile navigation
+            document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.section === section) {
+                    link.classList.add('active');
+                }
+            });
+
+            currentSection = section;
+            updateBreadcrumbs(section);
+        }
+
+        // Breadcrumbs functionality
+        function updateBreadcrumbs(section) {
+            const breadcrumbList = document.getElementById('breadcrumb-list');
+            const sectionNames = {
+                'inicio': 'Inicio',
+                'servicios': 'Servicios',
+                'paquetes': 'Paquetes',
+                'galeria': 'Galería',
+                'areas': 'Áreas de Cobertura',
+                'contacto': 'Contacto'
+            };
+
+            let breadcrumbHTML = `
+                <div class="breadcrumb-item">
+                    <a href="#inicio" class="breadcrumb-link">🏠 Inicio</a>
+                </div>
+            `;
+
+            if (section !== 'inicio') {
+                breadcrumbHTML += `
+                    <div class="breadcrumb-item">
+                        <span class="breadcrumb-separator">›</span>
+                        <span class="breadcrumb-current">${sectionNames[section] || section}</span>
+                    </div>
+                `;
+            }
+
+            breadcrumbList.innerHTML = breadcrumbHTML;
+        }
+
+        // Search functionality
+        function performSearch(query) {
+            if (!query.trim()) {
+                hideSearchResults();
+                return;
+            }
+
+            const results = searchData.filter(item => 
+                item.title.toLowerCase().includes(query.toLowerCase()) ||
+                item.keywords.some(keyword => keyword.toLowerCase().includes(query.toLowerCase()))
+            );
+
+            displaySearchResults(results, query);
+        }
+
+        function displaySearchResults(results, query) {
+            const searchResults = document.getElementById('search-results');
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="search-result-item">
+                        No se encontraron resultados para "${query}"
+                    </div>
+                `;
+            } else {
+                searchResults.innerHTML = results.map(result => `
+                    <div class="search-result-item" data-section="${result.section}">
+                        <strong>${result.title}</strong>
+                        <br><small>En: ${result.section}</small>
+                    </div>
+                `).join('');
+            }
+
+            searchResults.style.display = 'block';
+
+            // Add click listeners to search results
+            searchResults.querySelectorAll('.search-result-item[data-section]').forEach(item => {
+                item.addEventListener('click', () => {
+                    const section = item.dataset.section;
+                    navigateToSection(section);
+                    hideSearchResults();
+                    document.getElementById('search-input').value = '';
                 });
             });
-        });
+        }
 
-        // Add scroll effect to header
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(255, 107, 107, 0.95)';
-            } else {
-                header.style.background = 'linear-gradient(135deg, #ff6b6b, #4ecdc4)';
+        function hideSearchResults() {
+            document.getElementById('search-results').style.display = 'none';
+        }
+
+        // Navigation function
+        function navigateToSection(section) {
+            const element = document.getElementById(section);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                updateActiveNavigation(section);
             }
+        }
+
+        // Mobile menu functionality
+        function toggleMobileMenu(show) {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            if (show) {
+                menu.classList.add('open');
+                overlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.remove('open');
+                overlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('href').substring(1);
+                    navigateToSection(section);
+                });
+            });
+
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('main-header');
+                if (window.scrollY > 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+
+                // Update active section based on scroll position
+                const sections = ['inicio', 'paquetes', 'galeria', 'servicios', 'areas', 'contacto'];
+                let currentSectionScroll = 'inicio';
+
+                sections.forEach(section => {
+                    const element = document.getElementById(section);
+                    if (element) {
+                        const rect = element.getBoundingClientRect();
+                        if (rect.top <= 200 && rect.bottom >= 200) {
+                            currentSectionScroll = section;
+                        }
+                    }
+                });
+
+                if (currentSectionScroll !== currentSection) {
+                    updateActiveNavigation(currentSectionScroll);
+                }
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+
+            searchInput.addEventListener('input', (e) => {
+                performSearch(e.target.value);
+            });
+
+            mobileSearchInput.addEventListener('input', (e) => {
+                performSearch(e.target.value);
+            });
+
+            // Hide search results when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    hideSearchResults();
+                }
+            });
+
+            // Mobile menu controls
+            document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+                toggleMobileMenu(true);
+            });
+
+            document.getElementById('mobile-menu-close').addEventListener('click', () => {
+                toggleMobileMenu(false);
+            });
+
+            document.getElementById('mobile-overlay').addEventListener('click', () => {
+                toggleMobileMenu(false);
+            });
+
+            // Mobile navigation links
+            document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = link.dataset.section;
+                    navigateToSection(section);
+                    toggleMobileMenu(false);
+                });
+            });
+
+            // Initialize breadcrumbs
+            updateBreadcrumbs('inicio');
         });
     </script>
 </body>
