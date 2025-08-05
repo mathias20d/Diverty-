@@ -50,2072 +50,914 @@
             "name": "Catálogo de Servicios y Paquetes de Fiestas Infantiles en Panamá",
             "itemListElement": [
                 { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Pintacaritas para fiestas infantiles" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Globoflexia para cumpleaños" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Show de Burbujas Gigantes en Panamá" } },
-                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Paquetes de Animación con Payasos" } }
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Shows de burbujas gigantes" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Globoflexia y figuras con globos" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Animación infantil" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Personajes temáticos" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Juegos recreativos" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Shows de magia" } },
+                { "@type": "Offer", "itemOffered": { "@type": "Service", "name": "Música y sonido" } }
             ]
         },
-        "slogan": "¡Hacemos magia en tu fiesta infantil en Panamá!",
-        "description": "Diverty Eventos ofrece la mejor animación y shows para fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Especialistas en shows de burbujas, pintacaritas y paquetes de diversión inolvidable."
+        "areaServed": [
+            { "@type": "Place", "name": "Panamá Centro" },
+            { "@type": "Place", "name": "Arraiján" },
+            { "@type": "Place", "name": "La Chorrera" },
+            { "@type": "Place", "name": "Pacora" },
+            { "@type": "Place", "name": "Panamá Norte" }
+        ],
+        "serviceType": "Fiestas Infantiles",
+        "description": "Organizamos las mejores fiestas infantiles en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. Expertos en animación infantil, shows de burbujas, pintacaritas, globoflexia y personajes temáticos."
     }
     </script>
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
     <style>
-        /* Base styles */
-        body {
-            font-family: 'Quicksand', sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M0 0h3v3H0V0zm3 3h3v3H3V3z'/%3E%3C/g%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-size: 6px 6px;
-            background-attachment: fixed;
-        }
-        h1, h2, h3, h4 {
-            font-family: 'Poppins', sans-serif;
-            font-weight: 700;
-            letter-spacing: -0.02em;
+            box-sizing: border-box;
         }
 
-        /* Header Styles */
-        #mainHeader {
-            transition: background-color 0.4s ease-out, box-shadow 0.4s ease-out;
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
         }
-        #mainHeader.scrolled {
-            background-color: rgba(255, 255, 255, 0.95);
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            padding: 0.5rem 0;
+            background: rgba(255, 107, 107, 0.95);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
-        .nav-link {
-            transition: color 0.3s ease, border-bottom 0.3s ease;
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            transition: font-size 0.3s ease;
+        }
+
+        header.scrolled .logo {
+            font-size: 1.5rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
             position: relative;
-            padding-bottom: 4px;
         }
-        .nav-link.active {
-            color: #db2777; /* pink-600 */
-            font-weight: 700;
-            border-bottom: 2px solid #db2777;
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
-        .nav-link:hover { color: #db2777; }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: bold;
+        }
+
+        /* Search Bar Styles */
+        .search-container {
+            position: relative;
+            margin-left: 1rem;
+        }
+
+        .search-input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            width: 200px;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            width: 250px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.8rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1001;
+            display: none;
+        }
+
+        .search-result-item {
+            padding: 0.8rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            color: #333;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Breadcrumbs */
+        .breadcrumbs {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 0;
+            margin-top: 80px;
+            backdrop-filter: blur(5px);
+        }
+
+        .breadcrumb-list {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .breadcrumb-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb-link:hover {
+            color: white;
+        }
+
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .breadcrumb-current {
+            color: white;
+            font-weight: bold;
+        }
+
+        main {
+            margin-top: 120px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(255, 107, 107, 0.3);
+        }
+
+        .services {
+            padding: 4rem 0;
+            background: #f8f9fa;
+        }
+
+        .services h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .areas {
+            padding: 4rem 0;
+        }
+
+        .areas h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #333;
+        }
+
+        .areas-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .area-tag {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .contact {
+            background: #333;
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .contact-info {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .whatsapp-button {
+            display: inline-block;
+            background: #25d366;
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: transform 0.3s;
+        }
+
+        .whatsapp-button:hover {
+            transform: scale(1.05);
+        }
+
+        footer {
+            background: #222;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .search-container {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .breadcrumbs {
+                margin-top: 70px;
+            }
+
+            main {
+                margin-top: 70px;
+            }
+        }
 
         /* Mobile Menu Styles */
-        #mobileMenu {
+        .mobile-menu {
             position: fixed;
             top: 0;
             right: -100%;
             width: 80%;
-            max-width: 320px;
-            height: 100%;
-            background-color: white;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.1);
-            transition: right 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            z-index: 100;
+            max-width: 300px;
+            height: 100vh;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            z-index: 1002;
+            transition: right 0.3s ease;
+            padding: 2rem 1rem;
+        }
+
+        .mobile-menu.open {
+            right: 0;
+        }
+
+        .mobile-menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .mobile-menu-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-nav-links {
             display: flex;
             flex-direction: column;
-            padding: 1.5rem;
+            gap: 0.5rem;
         }
-        #mobileMenu.open { right: 0; }
-        #mobileMenuOverlay {
+
+        .mobile-nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 1rem;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-nav-links a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .mobile-search {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .mobile-search-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+
+        .mobile-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            z-index: 99;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1001;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
+            transition: all 0.3s ease;
         }
-        #mobileMenuOverlay.open {
+
+        .mobile-overlay.open {
             opacity: 1;
             visibility: visible;
         }
-        .mobile-nav-link {
-            font-family: 'Quicksand', sans-serif;
-            font-size: 1.125rem;
-            padding: 0.75rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-        .mobile-nav-link:hover, .mobile-nav-link.active {
-            background-color: #f3e8ff; /* purple-100 */
-            color: #7e22ce; /* purple-700 */
-        }
-
-        /* Floating WhatsApp Button */
-        @keyframes pulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 211, 102, 0); }
-        }
-        .whatsapp-float-button {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            z-index: 1000;
-            width: 56px;
-            height: 56px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 9999px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s ease;
-            background-image: linear-gradient(to bottom right, #25D366, #1DA851);
-            cursor: pointer;
-            animation: pulse 2s infinite;
-        }
-        .whatsapp-float-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            background-image: linear-gradient(to bottom right, #1DA851, #25D366);
-            animation: none;
-        }
-        .whatsapp-float-button .lucide { color: white; width: 2rem; height: 2rem; }
-
-        /* Form & Validation Styles */
-        .error-message { color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem; }
-        .input-error { border-color: #ef4444 !important; }
-
-        /* General Styles */
-        .lucide { width: 1em; height: 1em; vertical-align: -0.125em; margin-right: 0.4em; flex-shrink: 0; }
-        button .lucide { margin-right: 0.5rem; }
-
-        /* Animations */
-        @keyframes slideUpFadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-slide-up-fade-in { animation: slideUpFadeIn 0.6s ease-out forwards; opacity: 0; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
-
-        /* Toast Notification */
-        #toastNotification {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 10000;
-            padding: 12px 20px;
-            border-radius: 9999px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            color: white;
-            font-weight: 600;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out, transform 0.3s ease-in-out;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        #toastNotification.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
-        #toastNotification.success { background-color: #10B981; }
-        #toastNotification.info { background-color: #3B82F6; }
-        #toastNotification.error { background-color: #EF4444; }
-        #toastNotification .lucide { width: 1.2em; height: 1.2em; margin-right: 0; }
-
-        /* Hero Banner */
-        .hero-banner {
-            background-image: linear-gradient(to bottom right, #F8F4FF, #F3E8FF);
-            background-size: cover;
-            background-position: center;
-            min-height: 70vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border-radius: 2rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        .hero-banner-content {
-            position: relative;
-            z-index: 2;
-            color: #4A0082;
-            padding: 2rem;
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto;
-        }
-        .hero-banner-content h2, .hero-banner-content p { color: #4A0082; }
-        .hero-banner-content button { color: white; }
-
-        /* Modern Card & Button Styles */
-        .modern-card {
-            border-style: solid;
-            border-width: 4px;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .modern-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-        .modern-button {
-            font-weight: 700;
-            padding: 0.75rem 1.5rem;
-            border-radius: 9999px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
-            transition: all 0.3s ease;
-            border-width: 2px;
-            border-color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-        .modern-button:hover {
-            transform: translateY(-2px) scale(1.03);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
-        .modern-button.remove-button {
-            background-image: linear-gradient(to right, #EF4444, #DC2626);
-            border-color: #EF4444;
-        }
-        .modern-button.remove-button:hover { background-image: linear-gradient(to right, #DC2626, #EF4444); }
-
-        /* Blog Styles */
-        .blog-card {
-            background-color: white;
-            border-radius: 1.5rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            border: 4px solid #e9d5ff; /* purple-200 */
-        }
-        .blog-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
-        .blog-card img { width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid #e5e7eb; }
-        .blog-card-content { padding: 1.5rem; display: flex; flex-direction: column; flex-grow: 1; }
-        .blog-card h3 { font-family: 'Poppins', sans-serif; font-weight: 700; color: #6d28d9; margin-bottom: 0.75rem; }
-        .blog-card p { font-family: 'Quicksand', sans-serif; color: #4b5563; font-size: 0.95rem; line-height: 1.6; flex-grow: 1; margin-bottom: 1rem; }
-        .blog-card .modern-button { margin-top: auto; width: 100%; }
-        
-        /* Blog Post Modal Styles */
-        #blogPostModalContent { background-image: linear-gradient(to bottom right, #fdf4ff, #ffe4e6); border-color: #e9d5ff; color: #4b5563; }
-        #blogPostModalTitle { color: #6d28d9; }
-        #blogPostModalImage { border: 2px solid #fbcfe8; }
-        #blogPostModalText img { max-width: 100%; height: auto; border-radius: 0.75rem; margin: 1.5rem auto; display: block; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); border: 2px solid #fbcfe8; }
-        #blogPostModalText .video-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            overflow: hidden;
-            margin: 1.5rem auto;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            border: 2px solid #fbcfe8;
-        }
-        #blogPostModalText .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-        #blogPostModalText h3 { color: #db2777; font-size: 1.75rem; margin-top: 2rem; margin-bottom: 1rem; }
-        #blogPostModalText ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.5rem; color: #4b5563; }
-        #blogPostModalText li { margin-bottom: 0.5rem; }
-        #blogPostModalText p { margin-bottom: 1rem; color: #4b5563; line-height: 1.75; }
-        .share-button { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; transition: transform 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        .share-button:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
-        .share-button.whatsapp { background-color: #25D366; }
-        .share-button.facebook { background-color: #1877F2; }
-        .share-button.instagram { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
-        #relatedBlogPostsContainer .related-blog-item { background-color: #f3e8ff; border: 2px solid #d8b4fe; color: #6d28d9; }
-        #relatedBlogPostsContainer .related-blog-item h4 { color: #6d28d9; }
-        #relatedBlogPostsContainer .related-blog-item p { color: #4b5563; }
-        #relatedBlogPosts { border-color: #d8b4fe; }
-        #relatedBlogPosts h3 { color: #a78bfa; }
     </style>
 </head>
-<body class="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
-
-    <div id="infoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="modalMessage" aria-hidden="true">
-        <div id="infoModalContent" tabindex="-1" class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0">
-            <p id="modalMessage" class="text-xl font-bold mb-4 text-white"></p>
-            <button id="closeModalButton" class="bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto" aria-label="Entendido, cerrar mensaje">
-                ¡Entendido! <i data-lucide="check-circle" class="lucide"></i>
-            </button>
-        </div>
-    </div>
-
-    <div id="promoModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="promoMessage" aria-hidden="true">
-        <div id="promoModalContent" tabindex="-1" class="bg-gradient-to-br from-pink-600 to-pink-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-pink-500 transform transition-all duration-300 scale-95 opacity-0">
-            <h2 class="text-3xl font-extrabold text-white mb-4">¡Promoción del Mes! <i data-lucide="star" class="lucide inline-block"></i></h2>
-            <p id="promoCountdown" class="text-2xl font-extrabold text-yellow-300 mb-6"></p>
-            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <button id="viewPromoOfferButton" class="bg-gradient-to-br from-blue-500 via-blue-400 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Ver oferta de burbujas">
-                    Ver Oferta <i data-lucide="wind"></i>
-                </button>
-                <button id="closePromoModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Genial, cerrar promoción">
-                    ¡Genial! <i data-lucide="party-popper" class="lucide"></i>
-                </button>
+<body>
+    <header id="main-header">
+        <nav class="container">
+            <div class="logo">🎉 Diverty Eventos</div>
+            <ul class="nav-links">
+                <li><a href="#inicio" class="nav-link active" data-section="inicio">🏠 Inicio</a></li>
+                <li><a href="#servicios" class="nav-link" data-section="servicios">✨ Servicios</a></li>
+                <li><a href="#paquetes" class="nav-link" data-section="paquetes">📦 Paquetes</a></li>
+                <li><a href="#galeria" class="nav-link" data-section="galeria">📸 Galería</a></li>
+                <li><a href="#areas" class="nav-link" data-section="areas">📍 Áreas</a></li>
+                <li><a href="#contacto" class="nav-link" data-section="contacto">📞 Contacto</a></li>
+            </ul>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Buscar servicios..." id="search-input">
+                <div class="search-results" id="search-results"></div>
             </div>
-        </div>
-    </div>
-
-    <div id="bookingWarningModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="bookingWarningTitle" aria-hidden="true">
-        <div id="bookingWarningModalContent" tabindex="-1" class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0">
-            <h2 id="bookingWarningTitle" class="text-3xl font-extrabold text-white mb-4">¡Importante antes de Reservar! <i data-lucide="alert-triangle" class="lucide inline-block"></i></h2>
-            <p class="text-lg text-gray-100 mb-6">
-                Para asegurar la disponibilidad de la fecha y hora de tu evento, te recomendamos <span class="font-bold text-purple-200">verificar primero con nosotros vía WhatsApp</span>. ¡Así garantizamos la magia de tu día! <i data-lucide="sparkles" class="lucide inline-block"></i>
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-                <a href="https://wa.me/50766677965?text=¡Hola! Quiero consultar la disponibilidad de una fecha para un evento." target="_blank" class="bg-gradient-to-br from-green-500 via-green-400 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-full shadow-xl transition duration-300 flex items-center justify-center border-2 border-white cursor-pointer" aria-label="Contactar por WhatsApp para verificar disponibilidad">
-                    <i data-lucide="message-circle"></i> Contactar por WhatsApp
-                </a>
-                <button id="closeBookingWarningModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-full shadow-md transition duration-300 cursor-pointer" aria-label="Continuar con el formulario de reserva">
-                    Continuar con el Formulario
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="miniCartModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="miniCartTitle" aria-hidden="true">
-        <div id="miniCartModalContent" tabindex="-1" class="bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-xl shadow-2xl p-6 max-w-sm w-full text-center border-4 border-purple-500 transform transition-all duration-300 scale-95 opacity-0">
-            <h2 id="miniCartTitle" class="text-2xl font-extrabold text-white mb-4">Tu Carrito de Diversión <i data-lucide="shopping-cart"></i></h2>
-            <div id="miniCartItems" class="max-h-60 overflow-y-auto text-left mb-4 p-2 bg-purple-100 rounded-lg border border-purple-200 text-gray-800">
-                </div>
-            <div class="text-right font-bold text-white mb-4">
-                <p class="text-xl text-pink-200">Total: <span id="miniCartTotalPrice">$0.00</span></p>
-            </div>
-            <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-3">
-                <button id="closeMiniCartModalButton" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-5 rounded-full shadow-md transition duration-300 cursor-pointer flex items-center justify-center" aria-label="Cerrar carrito de compras">
-                    Cerrar
-                </button>
-                <button id="miniCartProceedToBookButton" class="bg-gradient-to-br from-cyan-500 via-blue-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="Proceed to book selected items">
-                    Reservar Ahora <i data-lucide="sparkles"></i>
-                </button>
-            </div>
-            <button id="clearCartButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-5 rounded-full shadow-md transition duration-300 cursor-pointer flex items-center justify-center mx-auto mt-4" aria-label="Empty the entire cart">
-                Vaciar Carrito <i data-lucide="trash-2"></i>
-            </button>
-        </div>
-    </div>
-
-    <div id="imageModal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="imageModalTitle" aria-hidden="true">
-        <div id="imageModalContent" tabindex="-1" class="relative bg-white rounded-lg shadow-2xl p-2 max-w-full max-h-full overflow-hidden flex flex-col items-center justify-center transform transition-all duration-300 scale-95 opacity-0">
-            <button id="closeImageModalButton" class="absolute top-2 right-2 bg-red-500 hover:bg-red-700 text-white rounded-full p-2 text-lg font-bold transition duration-300 z-10 w-8 h-8 flex items-center justify-center" aria-label="Close enlarged image">
-                &times;
-            </button>
-            <img id="modalImage" src="" alt="Enlarged service image" class="max-w-full max-h-[80vh] object-contain rounded-lg">
-        </div>
-    </div>
-
-    <div id="blogPostModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 p-4 hidden" role="dialog" aria-modal="true" aria-labelledby="blogPostModalTitle" aria-hidden="true">
-        <div id="blogPostModalContent" tabindex="-1" class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-xl shadow-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto text-center border-4 border-blue-500 transform transition-all duration-300 scale-95 opacity-0">
-            <h2 id="blogPostModalTitle" class="text-3xl font-extrabold text-white mb-4"></h2>
-            <p id="blogPostReadingTime" class="text-gray-300 text-sm mb-4 flex items-center justify-center"></p>
-            <img id="blogPostModalImage" src="" alt="" class="w-full h-48 object-cover rounded-lg mb-4">
-            <div id="blogPostModalText" class="text-lg text-gray-100 mb-6 text-left"></div>
-            <div class="flex justify-center space-x-4 my-6">
-                <a href="#" id="shareWhatsapp" target="_blank" class="share-button whatsapp" aria-label="Share on WhatsApp"><i data-lucide="message-circle"></i></a>
-                <a href="#" id="shareFacebook" target="_blank" class="share-button facebook" aria-label="Share on Facebook"><i data-lucide="facebook"></i></a>
-                <a href="#" id="shareInstagram" target="_blank" class="share-button instagram" aria-label="Share on Instagram"><i data-lucide="instagram"></i></a>
-            </div>
-            <div class="flex items-center justify-center space-x-2 mt-4 mb-6">
-                <input type="text" id="shortShareLink" class="flex-grow p-2 rounded-md border border-gray-300 text-gray-800 text-sm" readonly>
-                <button id="copyShortLinkButton" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300 flex items-center justify-center">
-                    <i data-lucide="copy"></i> Copiar
-                </button>
-            </div>
-            <button id="blogPostCtaButton" class="modern-button bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white w-full my-6">
-                ¡Reserva tu Evento Ahora! <i data-lucide="calendar-check"></i>
-            </button>
-            <div id="relatedBlogPosts" class="mt-8 pt-4 border-t-2 border-blue-400 text-left">
-                <h3 class="text-2xl font-extrabold text-blue-300 mb-4">Artículos Relacionados</h3>
-                <div id="relatedBlogPostsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-            </div>
-
-            <button id="closeBlogPostModalButton" class="bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-2 px-5 rounded-full shadow-xl transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center mx-auto mt-6" aria-label="Close blog post">
-                Cerrar <i data-lucide="x-circle" class="lucide"></i>
-            </button>
-        </div>
-    </div>
-
-    <header id="mainHeader" class="py-3 px-4 w-full sticky top-0 z-40">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="flex items-center">
-                <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Diverty Eventos Logo" class="w-24 h-24 sm:w-28 sm:h-28 mr-3 rounded-full object-cover border-2 border-pink-400 shadow-md" loading="eager">
-                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-purple-900">
-                    Diverty Eventos
-                </h1>
-            </div>
-            <nav class="hidden lg:flex items-center space-x-6" aria-label="Main Navigation">
-                <button id="navHome" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="home"></i> Inicio</button>
-                <button id="navServices" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="sparkles"></i> Servicios</button>
-                <button id="navAnimatorPackages" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="user-check"></i> Animadores</button>
-                <button id="navClownPackages" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="clown"></i> Payasos</button>
-                <button id="navBubblePackages" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="wind"></i> Burbujas</button>
-                <button id="navTestimonials" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="message-square"></i> Testimonios</button>
-                <button id="navGallery" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="image"></i> Galería</button>
-                <button id="navBlog" role="menuitem" class="nav-link text-gray-600 hover:text-pink-600 font-semibold flex items-center"><i data-lucide="book-open"></i> Blog</button>
-                <button id="navBooking" class="bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-5 rounded-full shadow-lg transition duration-300 transform hover:scale-105 flex items-center">
-                    <i data-lucide="calendar-check"></i> ¡Reserva Ahora!
-                </button>
-            </nav>
-            <button id="mobileMenuToggle" class="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer" aria-controls="mobileMenu" aria-expanded="false" aria-label="Open navigation menu">
-                <i data-lucide="menu" class="h-7 w-7"></i>
-            </button>
-        </div>
+            <button class="mobile-menu-btn" id="mobile-menu-btn">☰</button>
+        </nav>
     </header>
 
-    <div id="mobileMenuOverlay" aria-hidden="true"></div>
-    <nav id="mobileMenu" aria-label="Mobile Navigation">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-purple-800">Menú</h2>
-            <button id="closeMobileMenuButton" class="p-2 text-gray-600 hover:text-purple-800" aria-label="Close navigation menu">
-                <i data-lucide="x" class="h-7 w-7"></i>
-            </button>
-        </div>
-        <div class="flex flex-col space-y-2 overflow-y-auto flex-grow">
-            <button id="mobileNavHome" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="home"></i> Inicio</button>
-            <button id="mobileNavServices" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="sparkles"></i> Servicios</button>
-            <button id="mobileNavAnimatorPackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="user-check"></i> Paquetes Animadores</button>
-            <button id="mobileNavClownPackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="clown"></i> Paquetes Payasos</button>
-            <button id="mobileNavBubblePackages" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="wind"></i> Paquetes de Burbujas</button>
-            <button id="mobileNavTestimonials" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="message-square"></i> Testimonios</button>
-            <button id="mobileNavGallery" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="image"></i> Galería</button>
-            <button id="mobileNavBlog" class="mobile-nav-link text-gray-700 font-semibold flex items-center" role="menuitem"><i data-lucide="book-open"></i> Blog</button>
-            <button id="mobileNavBooking" class="mt-4 w-full bg-gradient-to-br from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-3 px-5 rounded-full shadow-lg transition duration-300 flex items-center justify-center" role="menuitem">
-                <i data-lucide="calendar-check"></i> ¡Reserva Ahora!
-            </button>
-        </div>
-    </nav>
-
-    <div id="cartSummary" class="bg-gradient-to-br from-purple-200 to-purple-300 text-purple-800 font-extrabold p-4 text-center rounded-b-3xl shadow-xl border-b-4 border-purple-400 hidden sticky top-[76px] lg:top-[72px] z-30 transition-all duration-300 ease-in-out flex flex-col sm:flex-row justify-between items-center" role="status" aria-live="polite">
-        <p class="text-xl sm:text-2xl mb-2 sm:mb-0 flex items-center">
-            <i data-lucide="shopping-cart"></i> Ítems: <span id="selectedItemsCount" class="text-purple-700 ml-2">0</span> | Total: <span id="totalPriceDisplay" class="text-pink-700 ml-2">$0.00</span>
-        </p>
-        <div class="flex space-x-3">
-            <button id="viewCartDetailsButton" class="bg-gradient-to-br from-purple-500 via-purple-400 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2 px-4 rounded-full shadow-md text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-center" aria-label="View cart details">
-                Ver Detalles <i data-lucide="shopping-cart"></i>
-            </button>
-            <button id="proceedToBookButton" class="bg-gradient-to-br from-cyan-500 via-blue-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-xl text-sm transition duration-300 border-2 border-white cursor-pointer flex items-center justify-content-center" aria-label="Proceed to booking">
-                Reservar <i data-lucide="sparkles"></i>
-            </button>
+    <!-- Breadcrumbs -->
+    <div class="breadcrumbs" id="breadcrumbs">
+        <div class="container">
+            <nav class="breadcrumb-list" id="breadcrumb-list">
+                <div class="breadcrumb-item">
+                    <a href="#inicio" class="breadcrumb-link">🏠 Inicio</a>
+                </div>
+            </nav>
         </div>
     </div>
 
-    <main id="mainContent" class="container mx-auto p-4 flex-grow">
-        </main>
+    <!-- Mobile Menu -->
+    <div class="mobile-overlay" id="mobile-overlay"></div>
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-header">
+            <div class="logo">🎉 Diverty</div>
+            <button class="mobile-menu-close" id="mobile-menu-close">✕</button>
+        </div>
+        <nav class="mobile-nav-links">
+            <a href="#inicio" data-section="inicio">🏠 Inicio</a>
+            <a href="#servicios" data-section="servicios">✨ Servicios</a>
+            <a href="#paquetes" data-section="paquetes">📦 Paquetes</a>
+            <a href="#galeria" data-section="galeria">📸 Galería</a>
+            <a href="#areas" data-section="areas">📍 Áreas</a>
+            <a href="#contacto" data-section="contacto">📞 Contacto</a>
+        </nav>
+        <div class="mobile-search">
+            <input type="text" class="mobile-search-input" placeholder="Buscar servicios..." id="mobile-search-input">
+        </div>
+    </div>
 
-    <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="whatsapp-float-button" target="_blank" aria-label="Contact via WhatsApp">
-        <i data-lucide="message-circle"></i>
-    </a>
-
-    <footer class="bg-purple-700 text-white py-8 px-4 text-center mt-8 rounded-t-xl shadow-inner w-full">
-        <div class="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-            <div class="flex flex-col items-center md:items-start">
-                <h3 class="text-xl font-bold mb-3 flex items-center"><i data-lucide="phone" class="mr-2"></i> Contáctanos</h3>
-                <p class="text-lg mb-2">Teléfono: <a href="tel:+50766677965" class="hover:underline">+507 6667-7965</a></p>
-                <p class="text-lg mb-2">Email: <a href="mailto:divertypty@gmail.com" class="hover:underline">divertypty@gmail.com</a></p>
+    <main>
+        <section class="hero" id="inicio">
+            <div class="container">
+                <h1>¡Las Mejores Fiestas Infantiles en Panamá!</h1>
+                <p>Animación, shows de burbujas, pintacaritas, globoflexia y mucho más para hacer realidad la fiesta soñada de tus hijos</p>
+                <a href="#contacto" class="cta-button">¡Cotiza tu Fiesta Ahora!</a>
             </div>
-            <div class="flex flex-col items-center">
-                <h3 class="text-xl font-bold mb-3 flex items-center"><i data-lucide="share-2" class="mr-2"></i> Síguenos</h3>
-                <div class="flex space-x-4">
-                    <a href="https://www.facebook.com/DivertyEventosPty" target="_blank" class="text-white hover:text-blue-400 transition-colors duration-300" aria-label="Visit our Facebook page"><i data-lucide="facebook" class="w-8 h-8"></i></a>
-                    <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="text-white hover:text-pink-400 transition-colors duration-300" aria-label="Visit our Instagram profile"><i data-lucide="instagram" class="w-8 h-8"></i></a>
-                    <a href="https://wa.me/50766677965" target="_blank" class="text-white hover:text-green-400 transition-colors duration-300" aria-label="Chat with us on WhatsApp"><i data-lucide="message-circle" class="w-8 h-8"></i></a>
+        </section>
+
+        <!-- Nueva sección de Paquetes -->
+        <section id="paquetes" class="services">
+            <div class="container">
+                <h2>Paquetes Especiales</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">🎉</div>
+                        <h3>Paquete Básico</h3>
+                        <p><strong>$120</strong> - Perfecto para fiestas pequeñas: Animador + Pintacaritas + Globoflexia (2 horas)</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🌟</div>
+                        <h3>Paquete Premium</h3>
+                        <p><strong>$200</strong> - La experiencia completa: Todo lo básico + Show de Burbujas + Personaje Temático (3 horas)</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">👑</div>
+                        <h3>Paquete VIP</h3>
+                        <p><strong>$300</strong> - La fiesta de ensueño: Todo lo premium + Decoración + Show de Magia + Sorpresas (4 horas)</p>
+                    </div>
                 </div>
             </div>
-            <div class="flex flex-col items-center md:items-end">
-                <h3 class="text-xl font-bold mb-3 flex items-center"><i data-lucide="sparkles" class="mr-2"></i> Nuestra Promesa</h3>
-                <p class="text-lg font-semibold mb-2">&copy; 2024 Diverty Eventos.</p>
-                <p class="text-base">¡Hacemos magia en cada fiesta infantil en Panamá!</p>
-                <a href="#" class="text-sm text-gray-300 hover:underline mt-2">Política de Privacidad</a>
+        </section>
+
+        <!-- Nueva sección de Galería -->
+        <section id="galeria" class="services" style="background: #fff;">
+            <div class="container">
+                <h2>Galería de Momentos Mágicos</h2>
+                <div class="services-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                    <div class="service-card" style="padding: 0; overflow: hidden;">
+                        <img src="https://via.placeholder.com/300x200/ff6b6b/ffffff?text=Pintacaritas" alt="Pintacaritas" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 1rem;">
+                            <h4>Pintacaritas Mágicas</h4>
+                            <p>Transformamos a los niños en sus personajes favoritos</p>
+                        </div>
+                    </div>
+                    <div class="service-card" style="padding: 0; overflow: hidden;">
+                        <img src="https://via.placeholder.com/300x200/4ecdc4/ffffff?text=Burbujas" alt="Show de Burbujas" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 1rem;">
+                            <h4>Shows de Burbujas</h4>
+                            <p>Burbujas gigantes que crean momentos inolvidables</p>
+                        </div>
+                    </div>
+                    <div class="service-card" style="padding: 0; overflow: hidden;">
+                        <img src="https://via.placeholder.com/300x200/667eea/ffffff?text=Animacion" alt="Animación" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 1rem;">
+                            <h4>Animación Profesional</h4>
+                            <p>Nuestros animadores mantienen la diversión todo el tiempo</p>
+                        </div>
+                    </div>
+                    <div class="service-card" style="padding: 0; overflow: hidden;">
+                        <img src="https://via.placeholder.com/300x200/764ba2/ffffff?text=Personajes" alt="Personajes" style="width: 100%; height: 200px; object-fit: cover;">
+                        <div style="padding: 1rem;">
+                            <h4>Personajes Temáticos</h4>
+                            <p>Los héroes favoritos cobran vida en tu fiesta</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </section>
+
+        <section id="servicios" class="services">
+            <div class="container">
+                <h2>Nuestros Servicios</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">🎨</div>
+                        <h3>Pintacaritas</h3>
+                        <p>Diseños creativos y seguros que harán brillar las caritas de los pequeños con colores vibrantes y divertidos.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🫧</div>
+                        <h3>Shows de Burbujas</h3>
+                        <p>Espectaculares shows con burbujas gigantes que crearán momentos mágicos e inolvidables para todos.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🎈</div>
+                        <h3>Globoflexia</h3>
+                        <p>Figuras increíbles con globos que sorprenderán a los niños y les darán recuerdos únicos para llevar a casa.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🎭</div>
+                        <h3>Animación Infantil</h3>
+                        <p>Animadores profesionales que mantendrán a los niños entretenidos con juegos, bailes y actividades divertidas.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🦸</div>
+                        <h3>Personajes Temáticos</h3>
+                        <p>Los personajes favoritos de los niños cobran vida para hacer de su fiesta una experiencia extraordinaria.</p>
+                    </div>
+                    <div class="service-card">
+                        <div class="service-icon">🎪</div>
+                        <h3>Shows de Magia</h3>
+                        <p>Trucos de magia adaptados para niños que los dejarán con la boca abierta y llenos de asombro.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="areas" class="areas">
+            <div class="container">
+                <h2>Áreas de Cobertura</h2>
+                <p style="text-align: center; margin-bottom: 2rem; font-size: 1.1rem;">Llevamos la diversión a toda el área metropolitana de Panamá</p>
+                <div class="areas-list">
+                    <span class="area-tag">Panamá Centro</span>
+                    <span class="area-tag">Arraiján</span>
+                    <span class="area-tag">La Chorrera</span>
+                    <span class="area-tag">Pacora</span>
+                    <span class="area-tag">Panamá Norte</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="contacto" class="contact">
+            <div class="container">
+                <h2>¡Contáctanos Ahora!</h2>
+                <div class="contact-info">
+                    <p>📱 Teléfono: +507 6667-7965</p>
+                    <p>🕒 Lun-Vie: 9:00 AM - 6:00 PM | Sáb-Dom: 10:00 AM - 5:00 PM</p>
+                </div>
+                <a href="https://wa.me/50766677965?text=Hola%20Diverty%20Eventos,%20me%20interesa%20cotizar%20una%20fiesta%20infantil" class="whatsapp-button" target="_blank">
+                    💬 Escribir por WhatsApp
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Diverty Eventos. Todos los derechos reservados. Las mejores fiestas infantiles en Panamá.</p>
         </div>
-        <p class="text-sm mt-6">Todos los derechos reservados. Servicios de <strong>animación infantil</strong> y <strong>shows para fiestas</strong> en todo Panamá.</p>
     </footer>
 
-    <div id="toastNotification" role="status" aria-live="polite"></div>
-
-<script>
-// --- Global Application State ---
-const appState = {
-    activeSection: 'home',
-    selectedItems: [],
-    promotedPackages: [],
-    selectedLocation: 'Panamá Centro',
-    hasShownBookingWarning: false,
-    infoModalCallback: null,
-    bookingFormData: {},
-    lastFocusedElement: null,
-    promoEndDate: null,
-    countdownInterval: null
-};
-
-// --- Data Definitions ---
-const servicesData = [
-    { id: 'S1', name: 'Pintacaritas', price: 45, description: 'Transforma a los niños en sus personajes favoritos con pinturas hipoalergénicas. Servicio por 1 hora, incluye mesa y silla profesional.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', icon: 'palette', type: 'standard_with_quantity' },
-    { id: 'S2', name: 'Globoflexia', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado. Servicio por 1 hora.', color: 'bg-gradient-to-br from-pink-100 to-pink-200 border-pink-300 text-pink-800', imageUrl: 'https://i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg', icon: 'balloon', type: 'standard' },
-    { id: 'S3', name: 'Decoraciones Temáticas', price: 100, description: 'Transforma cualquier espacio en un mundo mágico con nuestras decoraciones personalizadas. ¡Elige tu temática favorita!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', type: 'theme_selection', imageUrl: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg', icon: 'sparkles', themes: { ninas: ['Barbie', 'Sirenita', 'Cenicienta', 'Moana', 'Abejita', 'Luly Pampin', 'Stitch', 'Minnie', 'Plim Plim', 'Frozen', 'Bluey', 'Mariposas', 'Gatita Marie', 'Hello Kitty', 'Peppa', 'Merlina'], ninos: ['Real Madrid', 'Hot Wheels', 'Sonic', 'Bomberos', 'Legos', 'Dinosaurios', 'Batman', 'Granja', 'Fútbol', 'Mickey', 'Spiderman', 'Paw Patrol', 'Jefes en Pañales', 'Mario Bros', 'Avengers', 'Cristiano', 'Messi', 'Constructor'] } },
-    { id: 'S4', name: 'Personajes Temáticos', price: 75, description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige entre Mickey, Minnie y Mario Bros. Servicio por 1 hora.', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', type: 'character_selection', imageUrl: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg', icon: 'users', characters: [{ id: 'mickey', name: 'Mickey Mouse' }, { id: 'minnie', name: 'Minnie Mouse' }, { id: 'mario', name: 'Mario Bros.' }] },
-    { id: 'S5', name: 'Mini Taller de Manualidades', price: 12.50, description: 'Taller creativo con 2 manualidades, mobiliario, recreadora, materiales y música. Mínimo 10 niños. Precio por niño.', color: 'bg-gradient-to-br from-yellow-100 to-yellow-200 border-yellow-300 text-yellow-800', type: 'manualidades_workshop', imageUrl: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', icon: 'scissors' },
-    { id: 'S6', name: 'Máquinas de Snack', price: 100, description: 'Máquinas de algodón de azúcar y palomitas de maíz para endulzar tu evento. Servicio por 3 horas.', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', icon: 'popcorn', type: 'standard' },
-    { id: 'S7', name: 'Show de Magia Cómica', price: 100, description: '1.5 horas de un show interactivo de magia cómica que asombrará a todos. Incluye figuras con globos y la aparición de un conejo real (se regala al finalizar el show).', color: 'bg-gradient-to-br from-purple-100 to-purple-200 border-purple-300 text-purple-800', imageUrl: 'https://placehold.co/400x200/9333ea/ffffff?text=Show+de+Magia', icon: 'wand', type: 'standard' },
-    { id: 'S8', name: 'Alquiler de Inflables', price: 90, description: 'Alquiler por 4 horas. Inflables seguros y divertidos para que los niños salten y jueguen sin parar. Incluye instalación y desinstalación.', color: 'bg-gradient-to-br from-green-100 to-green-200 border-green-300 text-green-800', imageUrl: 'https://placehold.co/400x200/16a34a/ffffff?text=Inflables', icon: 'castle', type: 'standard' }
-];
-
-const animatorPackagesData = [
-    { id: 'P1', name: 'Plan Básico (Animador)', price: 70, services: ['1 Animador', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '1.5h de diversión: Animador, juegos, globos, piñata. ¡Rápido y alegre!', color: 'bg-gradient-to-br from-pink-200 to-pink-300 border-pink-400 text-pink-800', icon: 'rocket', type: 'standard' },
-    { id: 'P2', name: 'Plan Recreativo (Animador)', price: 85, services: ['Animador profesional', 'Pintacaritas básica (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '2h de aventura: Animador, pintacaritas básica, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', icon: 'rainbow', type: 'standard' }
-];
-
-const clownPackagesData = [
-    { id: 'C1', name: 'Paquete Circo', price: 85, services: ['Payaso profesional', 'Integración de niños y adultos', 'Juegos y concursos', 'Figuras básicas con globos', 'Canto de cumpleaños', 'Romper la piñata'], description: '1.5h de risas garantizadas con nuestro Payaso Risitas, lleno de juegos y humor para los más pequeños.', color: 'bg-gradient-to-br from-yellow-200 to-yellow-300 border-yellow-400 text-yellow-800', icon: 'smile', type: 'standard' },
-    { id: 'C2', name: 'Plan Recreativo (Payaso)', price: 110, services: ['1 Payasito', '1 Pintacaritas (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata', 'Canto de cumpleaños'], description: '2h de aventura: payasito, pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-800', icon: 'rainbow', type: 'standard' },
-    { id: 'P3', name: 'Plan Magic (Payaso)', price: 135, services: ['1 Payaso profesional', 'Animación, juegos y concursos (1.5 horas)', '1 Pintacaritas (1 hora)', 'Show de magia cómica', 'Asistencia para la piñata', 'Canto de cumpleaños'], description: '2.5h premium: Payaso, juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', color: 'bg-gradient-to-br from-purple-200 to-purple-300 border-purple-400 text-purple-800', icon: 'magic-wand', type: 'standard' },
-    { id: 'P4', name: 'Plan Diverty (Payaso)', price: 200, services: ['1 Payaso profesional', 'Juegos y concursos', '1 Pintacaritas', 'Globoflexia', 'Show de Burbujas Gigantes', 'Asistencia en la piñata', 'Canto de cumpleaños'], description: '3h de diversión completa: Payaso, juegos, pintacaritas, globoflexia, show de burbujas o magia, y asistencia piñata. ¡La magia garantizada!', color: 'bg-gradient-to-br from-green-200 to-green-300 border-green-400 text-green-800', icon: 'party-popper', type: 'standard' }
-];
-
-const bubblePackagesData = [
-    { id: 'B2', name: 'Paquete Fiesta Burbuja Completa', price: 190, services: ['Animación infantil', 'Juegos y concursos', 'Payasito o Animador', 'Show de Burbujas Gigantes', 'Romper la piñata'], description: '2 horas de diversión completa con animación, juegos, payasito, show de burbujas gigantes y piñata.', color: 'bg-gradient-to-br from-indigo-200 to-indigo-300 border-indigo-400 text-indigo-900', imageUrl: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg', icon: 'sparkles', type: 'standard' },
-    { id: 'BS1', name: 'Show de Burbujas Premium', price: 150, services: ['Burbujas gigantes', 'Humo', 'Burbujas LED', 'Interacción con el público', 'Fotos dentro de la burbuja', 'Trucos con burbujas', 'Burbujas de espuma'], description: '1 hora de show con burbujas gigantes, humo, LED, interacción, fotos, trucos y espuma.', color: 'bg-gradient-to-br from-blue-100 to-blue-200 border-blue-300 text-blue-800', imageUrl: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg', icon: 'droplets', type: 'standard' },
-    { id: 'BS3', name: 'Show Corporativo/Especial', price: 220, services: ['Show personalizado para centros comerciales, colegios o eventos grandes', 'Luces especiales'], description: '1 hora de show personalizable para eventos corporativos, centros comerciales o colegios, con luces especiales.', color: 'bg-gradient-to-br from-red-100 to-red-200 border-red-300 text-red-800', imageUrl: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg', icon: 'building', type: 'standard' }
-];
-
-const companyReferencesData = [
-    { name: 'Royal Decameron', imageUrl: 'https://i.ibb.co/dFHJR2p/Burbujas-gigantes-en-el-royal-decameron-fyp-espect-culos-showdeburbujas-burbujas-parati-payasitos-an.jpg' },
-    { name: 'Hotel Westin Playa Bonita', imageUrl: 'https://i.ibb.co/BHwfMchP/IMG-20250710-125312-157.jpg' },
-    { name: 'Feria del Bebé 2025', imageUrl: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg' },
-    { name: 'Canal de Panamá', imageUrl: 'https://i.ibb.co/5g1gk7jM/Show-de-burbujas-gigantes-en-el-canal-de-panama-JPG.jpg' },
-    { name: 'Santa María Country Club', imageUrl: 'https://i.ibb.co/8gFr1NqL/smcountryclub-3604355087222851995-JPG.jpg' }
-];
-
-const testimonialsData = [
-    { name: 'María G.', role: 'Mamá de Sofía', review: '¡La fiesta de Sofía fue mágica! Los pintacaritas y el show de burbujas fueron un éxito total. ¡Diverty Eventos superó nuestras expectativas!', imageUrl: 'https://placehold.co/100x100/A78BFA/FFFFFF?text=MG' },
-    { name: 'Carlos R.', role: 'Papá de Mateo', review: 'Contratamos el Plan Diverty y fue la mejor decisión. El animador mantuvo a todos los niños entretenidos. ¡Profesionales y divertidos!', imageUrl: 'https://placehold.co/100x100/F472B6/FFFFFF?text=CR' },
-    { name: 'Ana S.', role: 'Organizadora de Eventos', review: 'Para nuestros eventos corporativos, Diverty Eventos es siempre la primera opción. Su show de burbujas es espectacular.', imageUrl: 'https://placehold.co/100x100/60A5FA/FFFFFF?text=AS' }
-];
-
-const galleryData = [
-    { imageUrl: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', alt: 'Pintacaritas en acción' },
-    { imageUrl: 'https://i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg', alt: 'Figuras de globoflexia' },
-    { imageUrl: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg', alt: 'Decoración temática de fiesta' },
-    { imageUrl: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg', alt: 'Personaje temático en evento' },
-    { imageUrl: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', alt: 'Taller de manualidades para niños' },
-    { imageUrl: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg', alt: 'Show de burbujas gigantes' },
-    { imageUrl: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg', alt: 'Burbujas premium con luces LED' },
-    { imageUrl: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg', alt: 'Evento corporativo con show de burbujas' }
-];
-
-const blogPostsData = [
-    { id: 'blog3', title: 'Errores comunes al planear una fiesta infantil (y cómo evitarlos)', description: 'Descubre los errores más frecuentes al organizar una fiesta infantil y cómo Diverty Eventos te ayuda a evitarlos para una celebración perfecta.', imageUrl: 'https://i.ibb.co/gb4WkYzD/aichat-423527.jpg', icon: 'alert-triangle', content: `
-        <p>Planear la fiesta infantil perfecta puede ser un desafío. Queremos que todo salga mágico, pero a menudo se cometen errores que pueden convertir la diversión en estrés. Aquí te mostramos los más comunes y cómo evitarlos:</p>
+    <script>
+        // App State
+        let currentSection = 'inicio';
         
-        <h3>1. No tener un plan o presupuesto claro</h3>
-        <p>Uno de los mayores errores es empezar sin una idea clara de lo que quieres y cuánto puedes gastar. Esto puede llevar a gastos excesivos o a olvidar elementos importantes.</p>
-        <p><strong>Cómo evitarlo:</strong> Define un tema, haz una lista de invitados y establece un presupuesto realista. Prioriza lo esencial y busca opciones que se ajusten a tus límites.</p>
-        <button data-target-section="animatorPackages" class="modern-button bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white w-full my-4">
-            <i data-lucide="package"></i> Explora nuestros paquetes para simplificar la planificación
-        </button>
+        // Search data
+        const searchData = [
+            { title: 'Pintacaritas', section: 'servicios', keywords: ['pintar', 'cara', 'maquillaje', 'colores'] },
+            { title: 'Shows de Burbujas', section: 'servicios', keywords: ['burbujas', 'gigantes', 'show', 'espectáculo'] },
+            { title: 'Globoflexia', section: 'servicios', keywords: ['globos', 'figuras', 'animales', 'formas'] },
+            { title: 'Animación Infantil', section: 'servicios', keywords: ['animador', 'juegos', 'diversión', 'entretenimiento'] },
+            { title: 'Personajes Temáticos', section: 'servicios', keywords: ['personajes', 'superhéroes', 'princesas', 'disfraces'] },
+            { title: 'Shows de Magia', section: 'servicios', keywords: ['magia', 'trucos', 'mago', 'ilusiones'] },
+            { title: 'Paquete Básico', section: 'paquetes', keywords: ['básico', 'económico', '120', 'barato'] },
+            { title: 'Paquete Premium', section: 'paquetes', keywords: ['premium', 'completo', '200', 'medio'] },
+            { title: 'Paquete VIP', section: 'paquetes', keywords: ['vip', 'lujo', '300', 'completo', 'todo'] },
+            { title: 'Panamá Centro', section: 'areas', keywords: ['centro', 'ciudad', 'metropolitano'] },
+            { title: 'Arraiján', section: 'areas', keywords: ['arraijan', 'oeste'] },
+            { title: 'La Chorrera', section: 'areas', keywords: ['chorrera', 'oeste'] },
+            { title: 'Contacto', section: 'contacto', keywords: ['teléfono', 'whatsapp', 'contactar', 'llamar'] }
+        ];
 
-        <h3>2. Ignorar la edad de los niños</h3>
-        <p>Lo que divierte a un niño de 3 años no es lo mismo que a uno de 8. Elegir actividades o decoraciones inadecuadas para la edad puede resultar en aburrimiento o caos.</p>
-        <p><strong>Cómo evitarlo:</strong> Adapta los juegos, el entretenimiento y la temática a la edad promedio de los invitados. Si hay un rango amplio de edades, planea actividades variadas.</p>
-        <button data-target-section="services" class="modern-button bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700 text-white w-full my-4">
-            <i data-lucide="sparkles"></i> Descubre nuestros servicios adaptados a cada edad
-        </button>
+        // Navigation functionality
+        function updateActiveNavigation(section) {
+            // Update desktop navigation
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.section === section) {
+                    link.classList.add('active');
+                }
+            });
 
-        <h3>3. Subestimar el entretenimiento</h3>
-        <p>Una fiesta infantil sin entretenimiento adecuado puede decaer rápidamente. Los niños necesitan estar activos y comprometidos.</p>
-        <p><strong>Cómo evitarlo:</strong> Contrata profesionales. Un animador, payaso o un show de burbujas gigante puede mantener a todos los niños (¡y adultos!) cautivados y felices.</p>
-        <button data-target-section="clownPackages" class="modern-button bg-gradient-to-br from-yellow-600 via-yellow-400 to-yellow-700 text-white w-full my-4">
-            <i data-lucide="clown"></i> Conoce a nuestros animadores profesionales y payasos
-        </button>
+            // Update mobile navigation
+            document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+                link.classList.remove('active');
+                if (link.dataset.section === section) {
+                    link.classList.add('active');
+                }
+            });
 
-        <h3>4. Mala elección del lugar</h3>
-        <p>Un espacio demasiado pequeño o demasiado grande, sin las comodidades necesarias, puede afectar la experiencia de la fiesta.</p>
-        <p><strong>Cómo evitarlo:</strong> Considera el número de invitados, las actividades planeadas y las condiciones climáticas. Asegúrate de que el lugar tenga suficiente espacio para jugar y comodidades como baños y áreas de sombra.</p>
-
-        <h3>5. Olvidar los pequeños detalles</h3>
-        <p>A veces, nos enfocamos tanto en lo grande que pasamos por alto esos pequeños toques que hacen la diferencia: la música, los dulces, los recuerdos para los invitados.</p>
-        <p><strong>Cómo evitarlo:</strong> Haz una lista de verificación detallada. Piensa en la experiencia completa, desde la llegada de los invitados hasta su despedida. Considera añadir servicios como pintacaritas o globoflexia para un toque extra de diversión.</p>
-        <button data-target-section="services" class="modern-button bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700 text-white w-full my-4">
-            <i data-lucide="palette"></i> No olvides nuestros servicios adicionales como pintacaritas y globoflexia
-        </button>
-
-        <h3>6. No tener un plan B (especialmente para el clima)</h3>
-        <p>En Panamá, la lluvia puede aparecer sin previo aviso. No tener un plan alternativo para una fiesta al aire libre es un riesgo.</p>
-        <p><strong>Cómo evitarlo:</strong> Siempre ten un plan de respaldo. Si la fiesta es al aire libre, busca una opción bajo techo cercana o ten carpas disponibles. Comunica este plan a tus invitados si es necesario.</p>
-
-        <p>En Diverty Eventos, estamos aquí para ayudarte a evitar estos errores y garantizar que la fiesta de tus hijos sea un éxito rotundo, llena de alegría y momentos inolvidables. ¡Déjanos la planificación a nosotros!</p>
-        <button data-target-section="booking" class="modern-button bg-gradient-to-br from-cyan-500 to-blue-600 text-white w-full my-6">
-            <i data-lucide="calendar-check"></i> ¡Contáctanos para una fiesta sin estrés!
-        </button>
-    `, createdAt: new Date('2025-07-24T23:55:00Z') }, // New blog post
-    { id: 'blog1', title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025', description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. ¡Inspírate para el cumpleaños de tus hijos!', imageUrl: 'https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png', icon: 'party-popper', content: `<p>Organizar una fiesta infantil es una aventura. Para 2025, las tendencias en Panamá son emocionantes. Aquí te presentamos las 7 temáticas más pedidas:</p><h3>1. El Mundo Mágico de Encanto:</h3><p>Inspirada en Disney, esta temática llena de color es perfecta para soñadores.</p><img src="https://i.ibb.co/r2LBjgK1/adba4d9aaf271ec62615fc8e6b007595.jpg" alt=""><h3>2. Aventura con Bluey:</h3><p>La popular perrita Bluey trae juegos interactivos y diversión sin fin, ideal para fiestas al aire libre.</p><img src="https://i.ibb.co/DgVTvtx3/0e49621b9692a3a1123c9851ea949b5b.jpg" alt=""><h3>3. Superhéroes al Rescate:</h3><p>Los clásicos nunca pasan de moda. Spiderman, Batman y la Mujer Maravilla siguen siendo los favoritos.</p><img src="https://i.ibb.co/BH81xkr5/0d8fb8ceec25c799b7940be2676403b7.jpg" alt=""><h3>4. Princesas con un Toque Moderno:</h3><p>Las princesas de Disney reinventadas con actividades que empoderan a las niñas.</p><img src="https://i.ibb.co/PZRDS59F/23cf8a3fabc519f35d1a5d86a2ab3415.jpg" alt=""><h3>5. Exploradores de Dinosaurios:</h3><p>Un viaje prehistórico lleno de descubrimientos y aventuras, con decoraciones de dinosaurios.</p><img src="https://i.ibb.co/ccYm6vjT/bc791435645b56bf0604dbc76e85d151.jpg" alt=""><h3>6. Fiesta de Videojuegos (Minecraft/Mario Bros):</h3><p>Para los amantes de los videojuegos, una fiesta inspirada en Minecraft o Mario Bros. es garantía de diversión.</p><img src="https://i.ibb.co/FLpDsmB9/a401ccd2bc95f03f39ac0f8132229235.jpg" alt=""><h3>7. Unicornios y Fantasía:</h3><p>La magia de los unicornios y arcoíris sigue cautivando, creando un ambiente de ensueño.</p><img src="https://i.ibb.co/twTKk0CQ/68ba5b96c1f01abc1ca18d5d7df10b17.jpg" alt=""> <p>En Diverty Eventos, podemos ayudarte a hacer realidad cualquiera de estas temáticas. ¡Contáctanos!</p>`, createdAt: new Date('2025-07-20T10:00:00Z') },
-    { id: 'blog2', title: 'Shows de Burbujas Gigantes: La Tendencia que Enamorará a Todos', description: 'Descubre por qué los shows de burbujas gigantes son el entretenimiento más buscado para fiestas infantiles en Panamá.', imageUrl: 'https://i.ibb.co/7J5JM84n/file-000000003a0461fa918e3a8f30f312e2.png', icon: 'wind', content: `<p>Si buscas un show que deje a todos con la boca abierta, ¡el show de burbujas gigantes es la respuesta! Ha ganado una popularidad inmensa por su capacidad de asombrar.</p><img src="https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg" alt=""><h3>¿Qué lo hace tan especial?</h3><ul><li><strong>Magia Visual:</strong> Burbujas de tamaños increíbles crean un espectáculo hipnotizante.</li><img src="https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg" alt=""><li><strong>Interactividad:</strong> Los niños no solo observan, ¡participan! Pueden entrar en una burbuja gigante para una foto inolvidable.</li><li><strong>Momentos Únicos:</strong> Las fotos son recuerdos que durarán para siempre.</li><li><strong>Diversión para Todas las Edades:</strong> Es un entretenimiento que une a toda la familia.</li></ul><p>En Diverty Eventos, somos expertos en shows de burbujas gigantes. ¡Añade este toque mágico a tu fiesta!</p>`, createdAt: new Date('2025-07-15T14:30:00Z') }
-].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-
-blogPostsData.forEach(post => {
-    const wordsPerMinute = 200;
-    const textWithoutHtml = post.content.replace(/<[^>]*>/g, '');
-    const wordCount = textWithoutHtml.split(/\s+/).filter(Boolean).length;
-    const minutes = Math.ceil(wordCount / wordsPerMinute);
-    post.readingTime = minutes <= 1 ? '1 min de lectura' : `${minutes} min de lectura`;
-});
-
-const transportFeesByLocation = { 'Panamá Centro': 0, 'Arraiján': 10, 'La Chorrera': 15, 'Pacora': 10, 'Panamá Norte': 10 };
-
-// --- Helper & Core Functions ---
-/**
- * Renders the given HTML content into the main content area.
- * @param {string} sectionHtml - The HTML string to render.
- */
-function renderSection(sectionHtml) {
-    const mainContent = document.getElementById('mainContent');
-    if (mainContent) {
-        mainContent.innerHTML = sectionHtml;
-        lucide.createIcons();
-    } else {
-        console.error('renderSection: #mainContent not found.');
-    }
-}
-
-/**
- * Sets the active section of the website and renders its content.
- * @param {string} sectionName - The name of the section to activate (e.g., 'home', 'services').
- */
-function setActiveSection(sectionName) {
-    appState.activeSection = sectionName;
-    toggleMobileMenu(false); // Close mobile menu when navigating
-
-    // Update active class for navigation links
-    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => link.classList.remove('active'));
-    const desktopBtn = document.getElementById(`nav${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)}`);
-    const mobileBtn = document.getElementById(`mobileNav${sectionName.charAt(0).toUpperCase() + sectionName.slice(1)}`);
-    if (desktopBtn) desktopBtn.classList.add('active');
-    if (mobileBtn) mobileBtn.classList.add('active');
-    
-    // Mapping section names to their rendering functions
-    const sectionRenderers = {
-        home: renderHomeSection,
-        services: renderServicesSection,
-        animatorPackages: renderAnimatorPackagesSection,
-        clownPackages: renderClownPackagesSection,
-        bubblePackages: () => { renderBubblePackagesSection(); renderCompanyReferencesSection(); }, // Render both for bubble section
-        testimonials: renderTestimonialsSection,
-        gallery: renderGallerySection,
-        blog: renderBlogSection,
-        booking: () => {
-            renderBookingSection();
-            // Show booking warning modal only once per session
-            if (!appState.hasShownBookingWarning) {
-                showBookingWarningModal();
-                appState.hasShownBookingWarning = true;
-            }
+            currentSection = section;
+            updateBreadcrumbs(section);
         }
-    };
 
-    // Execute the corresponding renderer, or log an error if not found
-    (sectionRenderers[sectionName] || console.error(`No renderer for ${sectionName}`))();
-    updateCartSummary(); // Always update cart summary after section change
-}
-
-/**
- * Calculates the adjusted price for an item, considering special pricing for 'Pintacaritas'
- * and promotions for 'promotedPackages'.
- * @param {object} item - The item object from selectedItems.
- * @returns {number} The calculated price for the item.
- */
-function getAdjustedItemPrice(item) {
-    if (item.quantity <= 0) return 0; // Return 0 if quantity is zero or less
-
-    let basePrice = item.price;
-    // Special pricing for 'Pintacaritas' based on quantity
-    if (item.name.startsWith('Pintacaritas')) {
-        return item.quantity === 1 ? 45 : 45 + (item.quantity - 1) * 40;
-    }
-    // Apply 10% discount for promoted packages
-    if (appState.promotedPackages.includes(item.name.split(':')[0].trim())) { // Check base name for promotion
-        basePrice *= 0.90;
-    }
-    return basePrice * item.quantity;
-}
-
-/**
- * Updates the global selected items state based on the action type and item details.
- * Re-renders the current section and shows a toast notification.
- * @param {object} item - The item object to add/remove/update.
- * @param {string} actionType - The type of action ('add', 'set_quantity', 'remove_all', 'toggle').
- * @param {number} [quantity=1] - The quantity for 'add' or 'set_quantity' actions.
- */
-function handleCartAction(item, actionType, quantity = 1) {
-    const existingItemIndex = appState.selectedItems.findIndex(selected => selected.name === item.name);
-    let message = '', toastType = 'info';
-
-    if (actionType === 'add') {
-        if (existingItemIndex > -1) {
-            appState.selectedItems[existingItemIndex].quantity += quantity;
-        } else {
-            appState.selectedItems.push({ ...item, quantity });
-        }
-        message = `"${item.name}" añadido al carrito.`;
-        toastType = 'success';
-    } else if (actionType === 'set_quantity') {
-        if (quantity <= 0) {
-            appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
-            message = `"${item.name}" eliminado.`;
-            toastType = 'info';
-        } else if (existingItemIndex > -1) {
-            appState.selectedItems[existingItemIndex].quantity = quantity;
-            message = `Cantidad de "${item.name}" actualizada.`;
-            toastType = 'success';
-        } else {
-            appState.selectedItems.push({ ...item, quantity });
-            message = `"${item.name}" añadido (x${quantity}).`;
-            toastType = 'success';
-        }
-    } else if (actionType === 'remove_all') {
-        appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
-        message = `"${item.name}" eliminado.`;
-        toastType = 'info';
-    } else if (actionType === 'toggle') {
-        if (existingItemIndex > -1) {
-            appState.selectedItems = appState.selectedItems.filter(selected => selected.name !== item.name);
-            message = `"${item.name}" eliminado.`;
-        } else {
-            appState.selectedItems.push({ ...item, quantity: 1 }); // Default to quantity 1 for toggle
-            message = `"${item.name}" añadido.`;
-            toastType = 'success';
-        }
-    }
-
-    // Re-render the current section to reflect cart changes
-    setActiveSection(appState.activeSection);
-    showToast(message, toastType);
-}
-
-/**
- * Updates the cart summary display (item count and total price).
- * Hides the summary if no items are selected or if on the booking page.
- */
-function updateCartSummary() {
-    const cartSummaryDiv = document.getElementById('cartSummary');
-    // Hide cart summary on the booking page
-    if (appState.activeSection === 'booking') {
-        if (cartSummaryDiv) cartSummaryDiv.classList.add('hidden');
-        return;
-    }
-
-    // Calculate total price including transport fees
-    let currentTotalPrice = appState.selectedItems.reduce((sum, item) => sum + getAdjustedItemPrice(item), 0);
-    currentTotalPrice += transportFeesByLocation[appState.selectedLocation] || 0;
-
-    const countSpan = document.getElementById('selectedItemsCount');
-    const priceSpan = document.getElementById('totalPriceDisplay'); // This is the header's total price display
-    if (countSpan && priceSpan && cartSummaryDiv) {
-        const totalItems = appState.selectedItems.reduce((total, item) => total + item.quantity, 0);
-        if (totalItems > 0) {
-            cartSummaryDiv.classList.remove('hidden');
-            countSpan.textContent = totalItems;
-            priceSpan.textContent = `$${currentTotalPrice.toFixed(2)}`;
-        } else {
-            cartSummaryDiv.classList.add('hidden');
-        }
-    }
-}
-
-/**
- * Retrieves the image URL for a given item name.
- * @param {string} itemName - The name of the item.
- * @returns {string} The URL of the item's image, or a placeholder if not found.
- */
-function getItemImageUrl(itemName) {
-    const allItems = [...servicesData, ...animatorPackagesData, ...clownPackagesData, ...bubblePackagesData];
-    // Find item by exact name or by starting with the base name (for complex items like "Decoraciones Temáticas: Barbie")
-    const item = allItems.find(i => i.name === itemName || itemName.startsWith(i.name + ':'));
-    return item?.imageUrl || 'https://placehold.co/40x40/E0F2F7/000000?text=Item';
-}
-
-// --- Modal Functions ---
-/**
- * Toggles the visibility of a modal and manages focus/scroll.
- * @param {HTMLElement} modal - The modal element.
- * @param {HTMLElement} content - The modal content element (for transition effects).
- * @param {boolean} show - True to show, false to hide.
- * @param {function} [callback=null] - Optional callback to run after hiding.
- */
-function toggleModal(modal, content, show, callback = null) {
-    if (!modal || !content) return console.error("Modal elements not found.");
-    if (show) {
-        appState.lastFocusedElement = document.activeElement; // Save focused element
-        modal.classList.remove('hidden'); // This is the key line
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden'; // Prevent scrolling body
-        setTimeout(() => {
-            content.classList.remove('scale-95', 'opacity-0');
-            content.classList.add('scale-100', 'opacity-100');
-            content.focus(); // Focus modal content for accessibility
-            console.log(`Modal ${modal.id} visibility after setTimeout: ${!modal.classList.contains('hidden')}`); // Debugging
-        }, 10);
-        document.addEventListener('keydown', handleEscapeKey); // Add escape key listener
-        appState.infoModalCallback = callback; // Store callback for info modal
-    } else {
-        content.classList.remove('scale-100', 'opacity-100');
-        content.classList.add('scale-95', 'opacity-0');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-            modal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = ''; // Restore body scrolling
-            if (appState.lastFocusedElement) appState.lastFocusedElement.focus(); // Restore focus
-            document.removeEventListener('keydown', handleEscapeKey); // Remove escape key listener
-            if (callback) callback(); // Execute provided callback
-            if (appState.infoModalCallback) { // Execute info modal specific callback
-                appState.infoModalCallback();
-                appState.infoModalCallback = null;
-            }
-        }, 300); // Match CSS transition duration
-    }
-}
-
-/**
- * Handles the Escape key press to close open modals.
- * @param {KeyboardEvent} event - The keyboard event.
- */
-function handleEscapeKey(event) {
-    if (event.key === 'Escape') {
-        const modals = ['infoModal', 'promoModal', 'bookingWarningModal', 'miniCartModal', 'imageModal', 'blogPostModal'];
-        // Find the first open modal and close it
-        const openModalId = modals.find(id => !document.getElementById(id).classList.contains('hidden'));
-        if (openModalId) {
-            // Dynamically call the close function for the open modal
-            const closeFnName = `close${openModalId.charAt(0).toUpperCase() + openModalId.slice(1).replace('Modal', '')}Modal`;
-            if (window[closeFnName]) {
-                window[closeFnName]();
-            }
-        }
-    }
-}
-
-/**
- * Shows a generic information modal.
- * @param {string} message - The message to display.
- * @param {function} [callback=null] - Optional callback to run after closing.
- */
-function showInfoModal(message, callback = null) {
-    document.getElementById('modalMessage').innerHTML = message;
-    toggleModal(document.getElementById('infoModal'), document.getElementById('infoModalContent'), true, callback);
-}
-/** Closes the generic information modal. */
-function closeModal() { toggleModal(document.getElementById('infoModal'), document.getElementById('infoModalContent'), false); }
-
-/**
- * Shows the promotion information modal with a countdown.
- * @param {string} message - The promotion message.
- */
-function showPromoInfoModal(message) {
-    const promoModal = document.getElementById('promoModal');
-    const promoModalContent = document.getElementById('promoModalContent');
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 7); // Set promo to end 7 days from now
-    appState.promoEndDate = endDate;
-    const formattedEndDate = endDate.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-    document.getElementById('promoCountdown').innerHTML = `${message}<br>Oferta válida hasta el <strong>${formattedEndDate}</strong>.`;
-    // Add bubble packages to promoted items for discount calculation
-    appState.promotedPackages = bubblePackagesData.map(pkg => pkg.name);
-    updateCartSummary(); // Update cart summary to reflect potential discounts
-    setActiveSection(appState.activeSection); // Re-render current section to show discounted prices
-    toggleModal(promoModal, promoModalContent, true);
-    if (appState.countdownInterval) clearInterval(appState.countdownInterval); // Clear any existing countdown
-    updateCountdown(); // Initial countdown update
-    appState.countdownInterval = setInterval(updateCountdown, 1000); // Start countdown interval
-
-    // Add event listener for the new "View Offer" button
-    const viewOfferButton = document.getElementById('viewPromoOfferButton');
-    if (viewOfferButton) {
-        viewOfferButton.onclick = () => {
-            closePromoModal(); // Close the promo modal
-            setActiveSection('bubblePackages'); // Navigate to bubble packages
-        };
-    }
-}
-
-/** Updates the countdown timer displayed in the promo modal. */
-function updateCountdown() {
-    const countdownEl = document.getElementById('promoCountdown');
-    if (!countdownEl || !appState.promoEndDate) return clearInterval(appState.countdownInterval);
-    const distance = appState.promoEndDate.getTime() - new Date().getTime();
-    if (distance < 0) {
-        clearInterval(appState.countdownInterval);
-        countdownEl.textContent = "¡Oferta Finalizada!";
-        return;
-    }
-    // Calculate days, hours, minutes, seconds
-    const d = Math.floor(distance / 86400000);
-    const h = Math.floor((distance % 86400000) / 3600000);
-    const m = Math.floor((distance % 3600000) / 60000);
-    const s = Math.floor((distance % 60000) / 1000);
-    countdownEl.textContent = `¡Quedan ${d}d ${h}h ${m}m ${s}s!`;
-}
-/** Closes the promotion modal and stops its countdown. */
-function closePromoModal() {
-    toggleModal(document.getElementById('promoModal'), document.getElementById('promoModalContent'), false);
-    if (appState.countdownInterval) clearInterval(appState.countdownInterval);
-}
-
-/** Shows the booking warning modal. */
-function showBookingWarningModal() { toggleModal(document.getElementById('bookingWarningModal'), document.getElementById('bookingWarningModalContent'), true); }
-/** Closes the booking warning modal. */
-function closeBookingWarningModal() { toggleModal(document.getElementById('bookingWarningModal'), document.getElementById('bookingWarningModalContent'), false); }
-
-/** Shows the mini cart modal, displaying selected items and total price. */
-function showMiniCartModal() {
-    const itemsDiv = document.getElementById('miniCartItems');
-    const totalPriceSpan = document.getElementById('miniCartTotalPrice');
-    if (appState.selectedItems.length === 0) {
-        itemsDiv.innerHTML = '<p class="text-gray-600 text-center">Tu carrito está vacío.</p>';
-    } else {
-        // Generate HTML for each item in the cart
-        itemsDiv.innerHTML = appState.selectedItems.map(item => {
-            const itemTotalPrice = getAdjustedItemPrice(item);
-            const itemImageUrl = getItemImageUrl(item.name);
-            return `<div class="flex justify-between items-center py-1 border-b last:border-b-0">
-                        <div class="flex items-center"><img src="${itemImageUrl}" alt="" class="w-10 h-10 object-cover rounded-md mr-2" loading="lazy">
-                            <span class="font-semibold text-gray-800 text-sm">${item.name} (x${item.quantity})</span></div>
-                        <div class="flex items-center"><span class="font-bold text-pink-600 text-base whitespace-nowrap">$${itemTotalPrice.toFixed(2)}</span>
-                            <button class="remove-item-from-minicart-button text-red-500 hover:text-red-700 ml-2" data-item-name="${item.name}" aria-label="Quitar ${item.name}"><i data-lucide="x-circle"></i></button></div></div>`;
-        }).join('');
-    }
-    // Calculate and display total price for items in cart
-    const totalItemsPrice = appState.selectedItems.reduce((sum, item) => sum + getAdjustedItemPrice(item), 0);
-    totalPriceSpan.textContent = `$${totalItemsPrice.toFixed(2)}`;
-    toggleModal(document.getElementById('miniCartModal'), document.getElementById('miniCartModalContent'), true);
-    // Add event listeners for remove buttons within the mini cart
-    document.querySelectorAll('.remove-item-from-minicart-button').forEach(button => {
-        button.onclick = (event) => {
-            const itemName = event.currentTarget.dataset.itemName;
-            const itemToRemove = appState.selectedItems.find(item => item.name === itemName);
-            if (itemToRemove) {
-                handleCartAction(itemToRemove, 'remove_all');
-                showMiniCartModal(); // Refresh modal after removal
-            }
-        };
-    });
-    lucide.createIcons(); // Re-render Lucide icons for new elements
-}
-/** Closes the mini cart modal. */
-function closeMiniCartModal() { toggleModal(document.getElementById('miniCartModal'), document.getElementById('miniCartModalContent'), false); }
-
-/** Clears all items from the cart and updates the UI. */
-function clearCart() {
-    appState.selectedItems = [];
-    setActiveSection(appState.activeSection); // Re-render current section to reflect empty cart
-    showToast('Carrito vaciado.', 'info');
-    closeMiniCartModal(); // Close the mini cart after clearing
-}
-
-/**
- * Shows an image in a modal for a larger view.
- * @param {string} imageUrl - The URL of the image to display.
- * @param {string} altText - The alt text for the image.
- */
-function showImageModal(imageUrl, altText) {
-    const modalImage = document.getElementById('modalImage');
-    modalImage.src = imageUrl;
-    modalImage.alt = altText;
-    toggleModal(document.getElementById('imageModal'), document.getElementById('imageModalContent'), true);
-}
-/** Closes the image modal. */
-function closeImageModal() { toggleModal(document.getElementById('imageModal'), document.getElementById('imageModalContent'), false, () => document.getElementById('modalImage').src = ''); }
-
-/**
- * Displays a toast notification with a message and type.
- * @param {string} message - The message to display.
- * @param {string} [type='info'] - The type of toast ('success', 'info', 'error').
- */
-function showToast(message, type = 'info') {
-    const toast = document.getElementById('toastNotification');
-    if (!toast) return;
-    toast.className = ''; // Clear existing classes
-    toast.classList.add('show', type); // Add show and type classes
-    // Set icon based on type
-    toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : (type === 'error' ? 'x-circle' : 'info')}"></i> ${message}`;
-    lucide.createIcons(); // Re-render Lucide icons
-    setTimeout(() => toast.classList.remove('show'), 3000); // Hide after 3 seconds
-}
-
-/**
- * Displays the content of a blog post in a modal.
- * @param {object} post - The blog post object.
-  */
-function showBlogPostContent(post) {
-    console.log("Attempting to show blog post modal for:", post.id);
-    const modal = document.getElementById('blogPostModal');
-    const modalContent = document.getElementById('blogPostModalContent');
-
-    if (!modal || !modalContent) {
-        console.error("showBlogPostContent: Modal or modal content elements not found!");
-        showToast("Error al cargar el blog. Elementos de la ventana modal no encontrados.", "error");
-        return;
-    }
-
-    document.getElementById('blogPostModalTitle').textContent = post.title;
-    document.getElementById('blogPostReadingTime').innerHTML = `<i data-lucide="clock" class="w-5 h-5 mr-2"></i> ${post.readingTime}`;
-    const imgEl = document.getElementById('blogPostModalImage');
-    imgEl.src = post.imageUrl;
-    imgEl.alt = post.title;
-    
-    // Set the innerHTML first
-    const blogPostModalTextDiv = document.getElementById('blogPostModalText');
-    blogPostModalTextDiv.innerHTML = post.content;
-
-    // Attach event listeners to buttons within the dynamically loaded content
-    blogPostModalTextDiv.querySelectorAll('button[data-target-section]').forEach(button => {
-        const targetSection = button.dataset.targetSection;
-        // Remove any existing inline onclick to prevent double execution or issues
-        button.removeAttribute('onclick');
-        button.onclick = (event) => {
-            event.preventDefault(); // Prevent default button behavior if any
-            closeBlogPostModal(); // Close the blog post modal
-            setActiveSection(targetSection); // Navigate to the target section
-        };
-    });
-
-    // Update Open Graph meta tags for sharing
-    const shareableUrl = `${window.location.origin}${window.location.pathname}#${post.id}`;
-    history.pushState({ id: post.id }, post.title, `#${post.id}`); // Update URL hash
-    document.getElementById('ogTitle').setAttribute('content', post.title);
-    document.getElementById('ogDescription').setAttribute('content', post.description);
-    document.getElementById('ogImage').setAttribute('content', post.imageUrl); // This is the key line
-    document.getElementById('ogImageAlt').setAttribute('content', post.title); // Update og:image:alt
-    document.getElementById('ogUrl').setAttribute('content', shareableUrl);
-    document.getElementById('ogType').setAttribute('content', 'article');
-
-    // Set up sharing links
-    const encodedText = encodeURIComponent(`¡Mira este artículo de Diverty Eventos: "${post.title}"!`);
-    const encodedUrl = encodeURIComponent(shareableUrl);
-    document.getElementById('shareWhatsapp').href = `https://wa.me/?text=${encodedText}%20${encodedUrl}`;
-    document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`; // Updated Facebook share link
-    document.getElementById('shareInstagram').href = `https://www.instagram.com/diverty_eventos_pty`; // Generic Instagram link, user will manually share
-    
-    // Set short link and copy functionality
-    const shortShareLinkInput = document.getElementById('shortShareLink');
-    const copyShortLinkButton = document.getElementById('copyShortLinkButton');
-    if (shortShareLinkInput && copyShortLinkButton) {
-        shortShareLinkInput.value = shareableUrl;
-        copyShortLinkButton.onclick = () => {
-            // Use document.execCommand('copy') as navigator.clipboard.writeText() may not work due to iFrame restrictions.
-            shortShareLinkInput.select();
-            document.execCommand('copy'); 
-            showToast('Enlace copiado al portapapeles.', 'success');
-        };
-    }
-    
-    // Set CTA button action for the main modal CTA (outside the dynamic content)
-    document.getElementById('blogPostCtaButton').onclick = () => { closeBlogPostModal(); setActiveSection('booking'); };
-    
-    // Render related blog posts
-    const relatedContainer = document.getElementById('relatedBlogPostsContainer');
-    const relatedPosts = blogPostsData.filter(p => p.id !== post.id).sort(() => 0.5 - Math.random()).slice(0, 2); // Get 2 random related posts
-    if (relatedPosts.length > 0) {
-        relatedContainer.innerHTML = relatedPosts.map(p => 
-            `<div class="related-blog-item p-4 rounded-lg cursor-pointer hover:bg-purple-200 transition" data-blog-id="${p.id}">
-                <h4 class="text-lg font-bold mb-2">${p.title}</h4>
-                <p class="text-sm">${p.description.substring(0, 80)}...</p>
-            </div>`
-        ).join('');
-        // Add click listeners to related posts
-        document.querySelectorAll('.related-blog-item').forEach(item => {
-            item.onclick = (event) => {
-                event.preventDefault(); // Prevent default link behavior
-                showBlogPostContent(blogPostsData.find(p => p.id === item.dataset.blogId));
+        // Breadcrumbs functionality
+        function updateBreadcrumbs(section) {
+            const breadcrumbList = document.getElementById('breadcrumb-list');
+            const sectionNames = {
+                'inicio': 'Inicio',
+                'servicios': 'Servicios',
+                'paquetes': 'Paquetes',
+                'galeria': 'Galería',
+                'areas': 'Áreas de Cobertura',
+                'contacto': 'Contacto'
             };
-        });
-    } else {
-        relatedContainer.innerHTML = ''; // Clear if no related posts
-    }
 
-    // Scroll to the top of the modal content
-    modalContent.scrollTop = 0;
-
-    toggleModal(modal, modalContent, true);
-    console.log("Modal visibility after toggle:", !modal.classList.contains('hidden')); // Debugging
-    lucide.createIcons();
-}
-
-/** Closes the blog post modal and resets Open Graph meta tags. */
-function closeBlogPostModal() {
-    toggleModal(document.getElementById('blogPostModal'), document.getElementById('blogPostModalContent'), false, () => {
-        // Reset URL hash and Open Graph meta tags to default
-        history.pushState({}, document.title, window.location.pathname);
-        document.getElementById('ogTitle').setAttribute('content', 'Diverty Eventos | Fiestas Infantiles en Panamá');
-        document.getElementById('ogDescription').setAttribute('content', 'Organizamos las mejores fiestas infantiles en Panamá.');
-        document.getElementById('ogImage').setAttribute('content', 'https://divertypanama.netlify.app/android-chrome-512x512.png');
-        document.getElementById('ogImageAlt').setAttribute('content', 'Logo de Diverty Eventos, para fiestas infantiles en Panamá'); // Reset og:image:alt
-        document.getElementById('ogUrl').setAttribute('content', 'https://divertypanama.netlify.app/');
-        document.getElementById('ogType').setAttribute('content', 'website');
-    });
-}
-
-// --- Section Rendering Functions ---
-/**
- * Generates the HTML for package cards, used by animator, clown, and bubble sections.
- * @param {Array<object>} packagesArray - Array of package data.
- * @param {boolean} includeImage - Whether to include an image in the card.
- * @returns {string} HTML string for package cards.
- */
-function generatePackageCardsHtml(packagesArray, includeImage = true) {
-    return packagesArray.map((pkg, index) => {
-        const isSelected = appState.selectedItems.some(item => item.name === pkg.name);
-        const buttonText = isSelected ? 'Quitar del Carrito <i data-lucide="minus"></i>' : 'Añadir al Carrito <i data-lucide="plus"></i>';
-        
-        const baseColorMatch = pkg.color.match(/border-(\w+)-/);
-        const baseColor = baseColorMatch ? baseColorMatch[1] : 'purple'; // Default to purple
-        const buttonClassColor = isSelected ? 'modern-button remove-button' : `modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 text-white`;
-
-        let displayPrice = getAdjustedItemPrice({ ...pkg, quantity: 1 });
-        let originalPriceHtml = '';
-        // Show original price with strikethrough if a discount is applied
-        if (appState.promotedPackages.includes(pkg.name) && Math.abs(displayPrice - pkg.price) > 0.001) {
-            originalPriceHtml = `<span class="line-through text-gray-500 text-2xl">$${pkg.price.toFixed(2)}</span> `;
-        }
-        
-        const packageImageHtml = includeImage && pkg.imageUrl ? `<img src="${pkg.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy">` : '';
-
-        return `<div class="${pkg.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-                    ${packageImageHtml}
-                    <div class="p-6 sm:p-8 flex flex-col flex-grow">
-                        <h4 class="text-xl sm:text-2xl font-bold mb-4 ${pkg.color.split(' ').find(cls => cls.startsWith('text-'))}">${pkg.name} <i data-lucide="${pkg.icon}"></i></h4>
-                        <p class="text-sm text-gray-700 mb-5 flex-grow">${pkg.description}</p>
-                        <ul class="list-disc list-inside text-sm text-gray-700 mb-5">
-                            ${pkg.services.map(service => `<li>${service}</li>`).join('')}
-                        </ul>
-                        <p class="text-3xl font-extrabold text-pink-600 mb-5">${originalPriceHtml}$${displayPrice.toFixed(2)}</p>
-                    </div>
-                    <div class="p-6 pt-0">
-                        <button data-item-name="${pkg.name}" data-item-price="${pkg.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto ${buttonClassColor}" aria-label="${isSelected ? 'Remove' : 'Add'} ${pkg.name}">
-                            ${buttonText}
-                        </button>
-                    </div>
-                </div>`;
-    }).join('');
-}
-
-/** Renders the home section with hero banner and call-to-action buttons. */
-function renderHomeSection() {
-    const html = `<section class="hero-banner my-8 animate-slide-up-fade-in">
-            <div class="hero-banner-content">
-                <h2 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 drop-shadow-lg">🎉 ¡Las Mejores Fiestas Infantiles en Panamá! 🎈</h2>
-                <p class="text-lg sm:text-xl lg:text-2xl mb-10 px-4 drop-shadow-md">Animación, shows de burbujas y más. ¡La magia comienza aquí!</p>
-                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mt-10">
-                    <button id="homeExploreServices" class="modern-button bg-gradient-to-br from-pink-600 via-pink-400 to-pink-700">¡Ver Servicios! <i data-lucide="sparkles"></i></button>
-                    <button id="homeExploreAnimatorPackages" class="modern-button bg-gradient-to-br from-purple-600 via-purple-400 to-purple-700">¡Paquetes de Animadores! <i data-lucide="user-check"></i></button>
-                </div>
-                <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-6 mt-6">
-                     <button id="homeExploreClownPackages" class="modern-button bg-gradient-to-br from-orange-600 via-orange-400 to-orange-700">¡Paquetes de Payasos! <i data-lucide="clown"></i></button>
-                    <button id="homeExploreBubblePackages" class="modern-button bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700">¡Paquetes de Burbujas! <i data-lucide="wind"></i></button>
-                </div>
-                <div class="flex justify-center mt-6">
-                    <button id="homePromoButton" class="modern-button bg-gradient-to-br from-pink-500 via-purple-400 to-purple-600"><i data-lucide="award"></i> Promoción del Mes <i data-lucide="award"></i></button>
-                </div>
-            </div>
-        </section>`;
-    renderSection(html);
-    // Attach event listeners for home section buttons
-    document.getElementById('homeExploreServices').onclick = () => setActiveSection('services');
-    document.getElementById('homeExploreAnimatorPackages').onclick = () => setActiveSection('animatorPackages');
-    document.getElementById('homeExploreClownPackages').onclick = () => setActiveSection('clownPackages');
-    document.getElementById('homeExploreBubblePackages').onclick = () => setActiveSection('bubblePackages');
-    document.getElementById('homePromoButton').onclick = () => showPromoInfoModal('¡Este mes, disfruta de un 10% de descuento EXCLUSIVO en todos nuestros paquetes de burbujas! 🫧');
-}
-
-/** Renders the services section with dynamic cards for different service types. */
-function renderServicesSection() {
-    const cardsHtml = servicesData.map((service, index) => {
-        const serviceImageHtml = service.imageUrl ? `<img src="${service.imageUrl}" alt="" class="w-full h-40 object-cover rounded-t-lg mb-4 border-b-2 border-gray-300 shadow-sm cursor-pointer service-image" loading="lazy" data-image-url="${service.imageUrl}" data-alt-text="${service.name}">` : '';
-        
-        const baseColorMatch = service.color.match(/border-(\w+)-/);
-        const baseColor = baseColorMatch ? baseColorMatch[1] : 'purple';
-        const textColorClass = service.color.split(' ').find(cls => cls.startsWith('text-'));
-
-        let actionAreaHtml = '';
-        let currentItemInCart = appState.selectedItems.find(item => item.name.startsWith(service.name));
-
-        if (service.type === 'theme_selection') {
-            const selectedGender = currentItemInCart ? (currentItemInCart.name.includes('Niñas') ? 'ninas' : 'ninos') : 'ninas';
-            const selectedTheme = currentItemInCart ? currentItemInCart.name.split(': ')[1] : service.themes[selectedGender][0];
-
-            actionAreaHtml = `
-                <div class="flex flex-col space-y-3">
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <select id="gender-${service.id}" class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-${baseColor}-500 text-gray-700 bg-white">
-                            <option value="ninas" ${selectedGender === 'ninas' ? 'selected' : ''}>Temática para Niñas</option>
-                            <option value="ninos" ${selectedGender === 'ninos' ? 'selected' : ''}>Temática para Niños</option>
-                        </select>
-                        <select id="theme-${service.id}" class="flex-1 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-${baseColor}-500 text-gray-700 bg-white">
-                            ${service.themes[selectedGender].map(theme => `<option value="${theme}" ${selectedTheme === theme ? 'selected' : ''}>${theme}</option>`).join('')}
-                        </select>
-                    </div>
-                    <button data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price}" data-service-type="${service.type}" class="add-complex-service-button modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 text-white w-full">
-                        ${currentItemInCart ? 'Actualizar Decoración <i data-lucide="edit"></i>' : 'Añadir Decoración <i data-lucide="plus"></i>'}
-                    </button>
-                    ${currentItemInCart ? `<button data-item-name="${currentItemInCart.name}" data-action-type="remove_all" class="remove-item-button modern-button remove-button w-full mt-2">Quitar Decoración <i data-lucide="trash-2"></i></button>` : ''}
+            let breadcrumbHTML = `
+                <div class="breadcrumb-item">
+                    <a href="#inicio" class="breadcrumb-link">🏠 Inicio</a>
                 </div>
             `;
-        } else if (service.type === 'character_selection') {
-            const selectedCharacter = currentItemInCart ? currentItemInCart.name.split(': ')[1] : service.characters[0].name;
 
-            actionAreaHtml = `
-                <div class="flex flex-col space-y-3">
-                    <select id="character-${service.id}" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-${baseColor}-500 text-gray-700 bg-white">
-                        ${service.characters.map(char => `<option value="${char.name}" ${selectedCharacter === char.name ? 'selected' : ''}>${char.name}</option>`).join('')}
-                    </select>
-                    <button data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price}" data-service-type="${service.type}" class="add-complex-service-button modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 text-white w-full">
-                        ${currentItemInCart ? 'Actualizar Personaje <i data-lucide="edit"></i>' : 'Añadir Personaje <i data-lucide="plus"></i>'}
-                    </button>
-                    ${currentItemInCart ? `<button data-item-name="${currentItemInCart.name}" data-action-type="remove_all" class="remove-item-button modern-button remove-button w-full mt-2">Quitar Personaje <i data-lucide="trash-2"></i></button>` : ''}
-                </div>
-            `;
-        } else if (service.type === 'manualidades_workshop' || service.type === 'standard_with_quantity') {
-            const currentQuantity = currentItemInCart ? currentItemInCart.quantity : (service.type === 'manualidades_workshop' ? 10 : 1);
-            const minQuantity = service.type === 'manualidades_workshop' ? 10 : 1;
-            const maxQuantity = service.type === 'manualidades_workshop' ? 100 : 5; // Arbitrary max for Pintacaritas (5 hours)
-
-            actionAreaHtml = `
-                <div class="flex items-center justify-center space-x-2 mb-4">
-                    <button class="quantity-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded-full" data-action="decrease" data-service-id="${service.id}" aria-label="Disminuir cantidad"><i data-lucide="minus"></i></button>
-                    <input type="number" id="quantity-${service.id}" value="${currentQuantity}" min="${minQuantity}" max="${maxQuantity}" class="w-20 text-center border border-gray-300 rounded-md text-gray-800" aria-label="Cantidad de ${service.name}">
-                    <button class="quantity-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-1 px-3 rounded-full" data-action="increase" data-service-id="${service.id}" aria-label="Aumentar cantidad"><i data-lucide="plus"></i></button>
-                </div>
-                <button data-service-id="${service.id}" data-service-name="${service.name}" data-service-price="${service.price}" data-service-type="${service.type}" class="add-complex-service-button modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 text-white w-full">
-                    ${currentItemInCart ? 'Actualizar Cantidad <i data-lucide="edit"></i>' : 'Añadir al Carrito <i data-lucide="plus"></i>'}
-                </button>
-                ${currentItemInCart ? `<button data-item-name="${currentItemInCart.name}" data-action-type="remove_all" class="remove-item-button modern-button remove-button w-full mt-2">Quitar del Carrito <i data-lucide="trash-2"></i></button>` : ''}
-            `;
-        } else { // Standard services
-            const isSelected = appState.selectedItems.some(item => item.name === service.name);
-            const buttonText = isSelected ? 'Quitar del Carrito <i data-lucide="minus"></i>' : 'Añadir al Carrito <i data-lucide="plus"></i>';
-            const buttonClassColor = isSelected ? 'modern-button remove-button' : `modern-button bg-gradient-to-br from-${baseColor}-600 via-${baseColor}-400 to-${baseColor}-700 text-white`;
-
-            actionAreaHtml = `
-                <button data-item-name="${service.name}" data-item-price="${service.price}" data-action-type="toggle" class="add-remove-button w-full mt-auto ${buttonClassColor}" aria-label="${isSelected ? 'Remove' : 'Add'} ${service.name}">
-                    ${buttonText}
-                </button>
-            `;
-        }
-
-        let displayPrice = getAdjustedItemPrice({ ...service, quantity: 1 }); // Default to 1 for display
-        if (service.type === 'manualidades_workshop') {
-            displayPrice = service.price; // Display price per child
-        }
-        let priceLabel = service.type === 'manualidades_workshop' ? `$${displayPrice.toFixed(2)} / niño` : `$${displayPrice.toFixed(2)}`;
-
-        return `<div class="${service.color} modern-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-                    ${serviceImageHtml}
-                    <div class="p-6 sm:p-8 flex flex-col flex-grow">
-                        <h4 class="text-xl sm:text-2xl font-bold mb-4 ${textColorClass}">${service.name} <i data-lucide="${service.icon}"></i></h4>
-                        <p class="text-sm text-gray-700 mb-5 flex-grow">${service.description}</p>
-                        <p class="text-3xl font-extrabold text-pink-600 mb-5">${priceLabel}</p>
+            if (section !== 'inicio') {
+                breadcrumbHTML += `
+                    <div class="breadcrumb-item">
+                        <span class="breadcrumb-separator">›</span>
+                        <span class="breadcrumb-current">${sectionNames[section] || section}</span>
                     </div>
-                    <div class="p-6 pt-0">
-                        ${actionAreaHtml}
-                    </div>
-                </div>`;
-    }).join('');
-
-    const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-12">Nuestros Servicios <i data-lucide="sparkles"></i></h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                ${cardsHtml}
-            </div>
-        </section>`;
-    renderSection(html);
-
-    // Attach event listeners for service cards
-    document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
-        button.onclick = () => {
-            const { itemName, itemPrice, actionType } = button.dataset;
-            handleCartAction({ name: itemName, price: parseFloat(itemPrice) }, actionType);
-        };
-    });
-
-    document.querySelectorAll('.service-image').forEach(img => {
-        img.onclick = (event) => showImageModal(event.target.dataset.imageUrl, event.target.dataset.altText);
-    });
-
-    // Event listeners for complex service types
-    document.querySelectorAll('.add-complex-service-button').forEach(button => {
-        button.onclick = (event) => {
-            const { serviceId, serviceName, servicePrice, serviceType } = event.currentTarget.dataset;
-            const service = servicesData.find(s => s.id === serviceId);
-            if (!service) return;
-
-            let itemName = serviceName;
-            let quantity = 1;
-
-            if (service.type === 'theme_selection') {
-                const genderSelect = document.getElementById(`gender-${service.id}`);
-                const themeSelect = document.getElementById(`theme-${service.id}`);
-                if (!genderSelect || !themeSelect || !themeSelect.value) {
-                    showToast('Por favor, selecciona una temática.', 'error');
-                    return;
-                }
-                itemName = `${serviceName}: ${themeSelect.value}`;
-            } else if (service.type === 'character_selection') {
-                const characterSelect = document.getElementById(`character-${service.id}`);
-                if (!characterSelect || !characterSelect.value) {
-                    showToast('Por favor, selecciona un personaje.', 'error');
-                    return;
-                }
-                itemName = `${serviceName}: ${characterSelect.value}`;
-            } else if (service.type === 'manualidades_workshop' || service.type === 'standard_with_quantity') {
-                const quantityInput = document.getElementById(`quantity-${service.id}`);
-                if (!quantityInput || quantityInput.value < (service.type === 'manualidades_workshop' ? 10 : 1)) {
-                    showToast(`La cantidad mínima para ${service.name} es ${service.type === 'manualidades_workshop' ? '10 niños' : '1'}.`, 'error');
-                    return;
-                }
-                quantity = parseInt(quantityInput.value, 10);
-                if (service.type === 'standard_with_quantity') {
-                    itemName = `${service.name} (${quantity} hora${quantity > 1 ? 's' : ''})`;
-                }
+                `;
             }
 
-            handleCartAction({ id: service.id, name: itemName, price: parseFloat(servicePrice) }, 'set_quantity', quantity);
-        };
-    });
-
-    document.querySelectorAll('.remove-item-button').forEach(button => {
-        button.onclick = (event) => {
-            const { itemName, actionType } = event.currentTarget.dataset;
-            const itemToRemove = appState.selectedItems.find(item => item.name === itemName);
-            if (itemToRemove) {
-                handleCartAction(itemToRemove, actionType);
-            }
-        };
-    });
-
-    // Event listeners for quantity buttons for workshop/pintacaritas
-    document.querySelectorAll('.quantity-button').forEach(button => {
-        button.onclick = (event) => {
-            const serviceId = event.currentTarget.dataset.serviceId;
-            const action = event.currentTarget.dataset.action;
-            const quantityInput = document.getElementById(`quantity-${serviceId}`);
-            if (quantityInput) {
-                let currentVal = parseInt(quantityInput.value, 10);
-                const minVal = parseInt(quantityInput.min, 10);
-                const maxVal = parseInt(quantityInput.max, 10);
-                if (action === 'increase') {
-                    quantityInput.value = Math.min(currentVal + 1, maxVal);
-                } else if (action === 'decrease') {
-                    quantityInput.value = Math.max(currentVal - 1, minVal);
-                }
-                // No need to call handleCartAction here, it's done by the main add/update button
-            }
-        };
-    });
-
-    // Event listeners for theme/character selection changes to update options
-    document.querySelectorAll('select[id^="gender-"]').forEach(select => {
-        select.onchange = (event) => {
-            const serviceId = event.target.id.replace('gender-', '');
-            const service = servicesData.find(s => s.id === serviceId);
-            if (service && service.type === 'theme_selection') {
-                const themeSelect = document.getElementById(`theme-${service.id}`);
-                const selectedGender = event.target.value;
-                themeSelect.innerHTML = service.themes[selectedGender].map(theme => `<option value="${theme}">${theme}</option>`).join('');
-            }
-        };
-    });
-}
-
-/** Renders the animator packages section. */
-function renderAnimatorPackagesSection() {
-    const cardsHtml = generatePackageCardsHtml(animatorPackagesData, false); // No images for these
-    const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-indigo-400 animate-fade-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-indigo-700 text-center mb-12">Paquetes de Animadores <i data-lucide="user-check"></i></h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                ${cardsHtml}
-            </div>
-        </section>`;
-    renderSection(html);
-    // Attach event listeners for add/remove buttons
-    document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
-        button.onclick = () => {
-            const { itemName, itemPrice, actionType } = button.dataset;
-            handleCartAction({ name: itemName, price: parseFloat(itemPrice) }, actionType);
-        };
-    });
-}
-
-/** Renders the clown packages section. */
-function renderClownPackagesSection() {
-    const cardsHtml = generatePackageCardsHtml(clownPackagesData, false); // No images for these
-    const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-yellow-400 animate-fade-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-yellow-700 text-center mb-12">Paquetes de Payasos <i data-lucide="clown"></i></h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                ${cardsHtml}
-            </div>
-        </section>`;
-    renderSection(html);
-    // Attach event listeners for add/remove buttons
-    document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
-        button.onclick = () => {
-            const { itemName, itemPrice, actionType } = button.dataset;
-            handleCartAction({ name: itemName, price: parseFloat(itemPrice) }, actionType);
-        };
-    });
-}
-
-/** Renders the bubble packages section. */
-function renderBubblePackagesSection() {
-    const cardsHtml = generatePackageCardsHtml(bubblePackagesData);
-    const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-blue-400 animate-fade-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-blue-700 text-center mb-12">Paquetes de Burbujas <i data-lucide="wind"></i></h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                ${cardsHtml}
-            </div>
-        </section>`;
-    renderSection(html);
-    // Attach event listeners for add/remove buttons
-    document.querySelectorAll('#mainContent .add-remove-button').forEach(button => {
-        button.onclick = () => {
-            const { itemName, itemPrice, actionType } = button.dataset;
-            handleCartAction({ name: itemName, price: parseFloat(itemPrice) }, actionType);
-        };
-    });
-    // Attach event listeners for image modals
-    document.querySelectorAll('.service-image').forEach(img => {
-        img.onclick = (event) => showImageModal(event.target.src, event.target.alt);
-    });
-}
-
-/** Renders the company references section. */
-function renderCompanyReferencesSection() {
-    const cardsHtml = companyReferencesData.map((company, index) => `
-        <div class="bg-white modern-card flex flex-col items-center justify-center p-6 border-gray-200 animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-            <img src="${company.imageUrl}" alt="" class="w-full h-32 object-contain rounded-lg mb-4" loading="lazy">
-            <h3 class="text-lg font-bold text-gray-800 text-center">${company.name}</h3>
-        </div>`).join('');
-    const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-green-400 animate-fade-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-green-700 text-center mb-12">Nuestros Clientes Corporativos <i data-lucide="building"></i></h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10">${cardsHtml}</div>
-        </section>`;
-    // Append to main content, not replace
-    document.getElementById('mainContent').insertAdjacentHTML('beforeend', html);
-}
-
-/** Renders the testimonials section. */
-function renderTestimonialsSection() {
-    const testimonialsHtml = testimonialsData.map((testimonial, index) => `
-        <div class="bg-white modern-card p-8 flex flex-col items-center text-center border-pink-200 animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-            <img src="${testimonial.imageUrl}" alt="" class="w-24 h-24 rounded-full object-cover mb-4 border-4 border-pink-400 shadow-md" loading="lazy">
-            <p class="text-gray-700 text-lg italic mb-4">"${testimonial.review}"</p>
-            <p class="font-bold text-purple-700 text-lg">${testimonial.name}</p>
-            <p class="text-gray-500 text-sm">${testimonial.role}</p>
-        </div>`).join('');
-    const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-pink-400 animate-fade-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-12">Lo Que Dicen Nuestros Clientes <i data-lucide="message-square"></i></h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">${testimonialsHtml}</div>
-        </section>`;
-    renderSection(html);
-}
-
-/** Renders the gallery section. */
-function renderGallerySection() {
-    const galleryImagesHtml = galleryData.map((image, index) => `
-        <div class="relative group rounded-xl overflow-hidden shadow-lg border-2 border-gray-200 transition duration-300 hover:scale-[1.02] hover:shadow-xl animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-            <img src="${image.imageUrl}" alt="" class="w-full h-48 object-cover transition duration-300 group-hover:opacity-80 cursor-pointer gallery-image" loading="lazy">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                <p class="text-white text-sm font-semibold">${image.alt}</p>
-            </div>
-        </div>`).join('');
-    const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-blue-400 animate-fade-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-12">Galería de Momentos Mágicos <i data-lucide="image"></i></h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">${galleryImagesHtml}</div>
-            <div class="text-center mt-10">
-                <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="modern-button bg-gradient-to-br from-pink-600 via-purple-500 to-indigo-600 text-white"><i data-lucide="instagram"></i> Ver más en Instagram</a>
-            </div>
-        </section>`;
-    renderSection(html);
-    // Attach event listeners for gallery image modals
-    document.querySelectorAll('.gallery-image').forEach(img => {
-        img.onclick = (event) => showImageModal(event.target.src, event.target.alt);
-    });
-}
-
-/** Renders the blog section with recent blog posts. */
-function renderBlogSection() {
-    const blogPostsHtml = blogPostsData.map((post, index) => `
-        <div class="blog-card animate-slide-up-fade-in" style="animation-delay: ${index * 100}ms;">
-            <img src="${post.imageUrl}" alt="" class="blog-image cursor-pointer" loading="lazy">
-            <div class="blog-card-content">
-                <h3>${post.title} <i data-lucide="${post.icon || 'book-open'}"></i></h3>
-                <p class="text-gray-500 text-xs mt-2 mb-2 flex items-center"><i data-lucide="clock" class="w-4 h-4 mr-1"></i> ${post.readingTime}</p>
-                <p>${post.description}</p>
-                <button class="read-more-blog-button modern-button bg-gradient-to-br from-blue-600 via-blue-400 to-blue-700 text-white" data-blog-id="${post.id}" aria-label="Read more about ${post.title}">Leer Más <i data-lucide="arrow-right"></i></button>
-            </div>
-        </div>`).join('');
-    const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
-            <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-12">Nuestro Blog de Ideas <i data-lucide="book-open"></i></h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">${blogPostsHtml}</div>
-        </section>`;
-    renderSection(html);
-    // Attach event listeners for blog post modals
-    document.querySelectorAll('.read-more-blog-button, .blog-image').forEach(el => {
-        el.onclick = (event) => {
-            const blogId = event.currentTarget.dataset.blogId || event.currentTarget.closest('.blog-card').querySelector('.read-more-blog-button').dataset.blogId;
-            const post = blogPostsData.find(p => p.id === blogId);
-            if (post) showBlogPostContent(post);
-        };
-    });
-}
-
-/**
- * Updates the booking summary section (selected items, transport fee, total price)
- * without re-rendering the entire form.
- */
-function updateBookingSummaryUI() {
-    console.log("--- DEBUG: Inicia Actualización de Resumen de Reserva ---");
-    const selectedItemsListContainer = document.getElementById('selectedItemsListHtmlContainer');
-    const transportFeeDisplay = document.getElementById('transportFeeDisplay');
-    // IMPORTANT: Changed ID here to target the correct element in the booking form
-    const bookingTotalPriceDisplayElement = document.getElementById('bookingTotalPriceDisplay'); 
-
-    if (!selectedItemsListContainer || !transportFeeDisplay || !bookingTotalPriceDisplayElement) {
-        console.warn("DEBUG: Elementos del resumen de reserva no encontrados. La página podría no ser la de reserva o los IDs HTML son incorrectos.");
-        return;
-    }
-
-    // Calculate total price for selected items
-    const itemsTotalPrice = appState.selectedItems.reduce((sum, item) => sum + getAdjustedItemPrice(item), 0);
-    console.log("DEBUG: Precio total de ítems seleccionados (antes de transporte):", itemsTotalPrice.toFixed(2));
-
-    // Calculate transport fee based on selected location
-    // Ensure appState.selectedLocation is correctly initialized, perhaps from localStorage on load
-    const currentSelectedLocation = appState.selectedLocation || 'Panamá Centro'; // Default if not set
-    const transportFee = transportFeesByLocation[currentSelectedLocation] || 0;
-    console.log("DEBUG: Ubicación seleccionada (appState.selectedLocation):", appState.selectedLocation);
-    console.log("DEBUG: Tarifa de transporte para", currentSelectedLocation, ":", transportFee.toFixed(2));
-
-    // Total price including items and transport
-    const finalTotalPrice = itemsTotalPrice + transportFee;
-    console.log("DEBUG: Precio total final (ítems + transporte):", finalTotalPrice.toFixed(2));
-    console.log("DEBUG: Elemento de UI a actualizar (ID):", bookingTotalPriceDisplayElement.id);
-
-
-    // Generate HTML for selected items in the booking summary
-    const selectedItemsListHtml = appState.selectedItems.length === 0 ?
-        `<p class="text-red-600 text-center">No has seleccionado ningún servicio.</p>` :
-        `<div class="space-y-3">${appState.selectedItems.map(item =>
-            `<div class="flex items-center justify-between bg-white p-3 rounded-lg shadow-sm">
-                <span class="font-semibold text-gray-800">${item.name} (x${item.quantity})</span>
-                <span class="font-bold text-pink-600">$${getAdjustedItemPrice(item).toFixed(2)}</span>
-            </div>`
-        ).join('')}</div>`;
-    
-    const transportFeeHtml = transportFee > 0 ?
-        `<p class="font-bold text-gray-700 mt-4">Transporte (${currentSelectedLocation}): <span class="text-orange-600">$${transportFee.toFixed(2)}</span></p>` :
-        `<p class="font-bold text-gray-700 mt-4">Transporte: <span class="text-green-600">¡Gratis en Panamá Centro!</span></p>`;
-    
-    selectedItemsListContainer.innerHTML = selectedItemsListHtml;
-    transportFeeDisplay.innerHTML = transportFeeHtml;
-    bookingTotalPriceDisplayElement.textContent = `$${finalTotalPrice.toFixed(2)}`; // Use the renamed element
-
-    lucide.createIcons(); // Re-render Lucide icons if any were added/removed in the summary
-    console.log("--- DEBUG: Fin Actualización de Resumen de Reserva ---");
-}
-
-
-/** Renders the booking section with the form and selected items summary. */
-function renderBookingSection() {
-    console.log("--- DEBUG: Inicia renderBookingSection ---");
-    console.log("DEBUG: appState.bookingFormData al inicio de renderBookingSection:", appState.bookingFormData);
-    console.log("DEBUG: Valor de eventType en bookingFormData:", appState.bookingFormData.eventType);
-    console.log("DEBUG: Valor de eventDate en bookingFormData:", appState.bookingFormData.eventDate);
-
-    const html = `<section class="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl p-6 sm:p-10 my-8 border-4 border-purple-400 animate-fade-in">
-        <h2 class="text-3xl sm:text-4xl font-extrabold text-purple-700 text-center mb-12">Reserva tu Evento <i data-lucide="calendar-check"></i></h2>
-        <div class="bg-gradient-to-br from-purple-100 to-purple-200 p-6 sm:p-10 rounded-3xl shadow-2xl border-4 border-purple-400">
-            <form id="bookingForm" class="space-y-6" novalidate>
-                <div class="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-2xl shadow-xl border-4 border-pink-300 mb-6">
-                    <h4 class="text-lg font-bold text-pink-700 mb-4">Tu Selección:</h4>
-                    <div id="selectedItemsListHtmlContainer">
-                        <!-- Selected items will be rendered here by updateBookingSummaryUI -->
-                    </div>
-                    <div id="transportFeeDisplay">
-                        <!-- Transport fee will be rendered here by updateBookingSummaryUI -->
-                    </div>
-                    <p class="text-xl font-bold text-purple-700 mt-4">Total a Pagar: <span id="bookingTotalPriceDisplay" class="text-pink-600">$0.00</span></p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="fullName" class="block text-gray-700 font-semibold mb-2">Nombre Completo <span class="text-red-500">*</span></label>
-                        <input type="text" id="fullName" name="fullName" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" placeholder="Tu nombre y apellido" required aria-required="true" value="${appState.bookingFormData.fullName || ''}">
-                        <p id="fullName-error" class="error-message"></p>
-                    </div>
-                    <div>
-                        <label for="email" class="block text-gray-700 font-semibold mb-2">Email <span class="text-red-500">*</span></label>
-                        <input type="email" id="email" name="email" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" placeholder="tu@email.com" required aria-required="true" value="${appState.bookingFormData.email || ''}">
-                        <p id="email-error" class="error-message"></p>
-                    </div>
-                    <div>
-                        <label for="phone" class="block text-gray-700 font-semibold mb-2">Teléfono <span class="text-red-500">*</span></label>
-                        <input type="tel" id="phone" name="phone" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" placeholder="+507 6XXX-XXXX" required aria-required="true" value="${appState.bookingFormData.phone || ''}">
-                        <p id="phone-error" class="error-message"></p>
-                    </div>
-                    <div>
-                        <label for="eventType" class="block text-gray-700 font-semibold mb-2">Tipo de Evento <span class="text-red-500">*</span></label>
-                        <select id="eventType" name="eventType" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" required aria-required="true">
-                            <option value="">Selecciona un tipo</option>
-                            <option value="Cumpleaños" ${appState.bookingFormData.eventType === 'Cumpleaños' ? 'selected' : ''}>Cumpleaños</option>
-                            <option value="Bautizo" ${appState.bookingFormData.eventType === 'Bautizo' ? 'selected' : ''}>Bautizo</option>
-                            <option value="Baby Shower" ${appState.bookingFormData.eventType === 'Baby Shower' ? 'selected' : ''}>Baby Shower</option>
-                            <option value="Evento Escolar" ${appState.bookingFormData.eventType === 'Evento Escolar' ? 'selected' : ''}>Evento Escolar</option>
-                            <option value="Evento Corporativo" ${appState.bookingFormData.eventType === 'Evento Corporativo' ? 'selected' : ''}>Evento Corporativo</option>
-                            <option value="Otro" ${appState.bookingFormData.eventType === 'Otro' ? 'selected' : ''}>Otro</option>
-                        </select>
-                        <p id="eventType-error" class="error-message"></p>
-                    </div>
-                    <div>
-                        <label for="eventDate" class="block text-gray-700 font-semibold mb-2">Fecha del Evento <span class="text-red-500">*</span></label>
-                        <input type="date" id="eventDate" name="eventDate" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" required aria-required="true" value="${appState.bookingFormData.eventDate || ''}">
-                        <p id="eventDate-error" class="error-message"></p>
-                    </div>
-                    <div>
-                        <label for="eventTime" class="block text-gray-700 font-semibold mb-2">Hora del Evento <span class="text-red-500">*</span></label>
-                        <input type="time" id="eventTime" name="eventTime" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" required aria-required="true" value="${appState.bookingFormData.eventTime || ''}">
-                        <p id="eventTime-error" class="error-message"></p>
-                    </div>
-                    <div>
-                        <label for="eventLocation" class="block text-gray-700 font-semibold mb-2">Ubicación del Evento (Área) <span class="text-red-500">*</span></label>
-                        <select id="eventLocation" name="eventLocation" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" required aria-required="true">
-                            <option value="">Selecciona una ubicación</option>
-                            ${Object.keys(transportFeesByLocation).map(loc => `<option value="${loc}" ${appState.bookingFormData.eventLocation === loc ? 'selected' : ''}>${loc} ${transportFeesByLocation[loc] > 0 ? `(+$${transportFeesByLocation[loc].toFixed(2)} transporte)` : '(Gratis)'}</option>`).join('')}
-                        </select>
-                        <p id="eventLocation-error" class="error-message"></p>
-                    </div>
-                    <div>
-                        <label for="numChildren" class="block text-gray-700 font-semibold mb-2">Número Estimado de Niños</label>
-                        <input type="number" id="numChildren" name="numChildren" min="0" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" placeholder="Ej: 20" value="${appState.bookingFormData.numChildren || ''}">
-                        <p id="numChildren-error" class="error-message"></p>
-                    </div>
-                </div>
-                <div>
-                    <label for="exactEventLocation" class="block text-gray-700 font-semibold mb-2">Ubicación Exacta del Evento (Dirección Completa)</label>
-                    <input type="text" id="exactEventLocation" name="exactEventLocation" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 text-gray-800" placeholder="Ej: Calle Principal, Casa #123, Edificio X, Apartamento Y" value="${appState.bookingFormData.exactEventLocation || ''}">
-                    <p id="exactEventLocation-error" class="error-message"></p>
-                </div>
-                
-                <button type="submit" class="w-full modern-button bg-gradient-to-br from-cyan-500 to-blue-600 text-white py-3">¡Confirmar Reserva Mágica! <i data-lucide="sparkles"></i></button>
-            </form>
-        </div>
-    </section>`;
-    renderSection(html);
-
-    // Attach event listeners for form fields and validation
-    const form = document.getElementById('bookingForm');
-    if (form) {
-        form.onsubmit = handleBookingSubmit;
-        // Add input event listeners for real-time validation
-        ['fullName', 'email', 'phone', 'eventType', 'eventDate', 'eventTime', 'eventLocation', 'exactEventLocation'].forEach(id => {
-            const input = document.getElementById(id);
-            if (input) {
-                input.oninput = () => validateField(id, true);
-                input.onblur = () => validateField(id); // Validate on blur
-            }
-        });
-        // Special handling for eventLocation to update total price
-        const eventLocationSelect = document.getElementById('eventLocation');
-        if (eventLocationSelect) {
-            eventLocationSelect.onchange = (event) => {
-                appState.selectedLocation = event.target.value;
-                console.log("DEBUG: Ubicación del evento cambiada a:", appState.selectedLocation);
-                updateBookingSummaryUI(); // Only update the summary, not the whole section
-            };
+            breadcrumbList.innerHTML = breadcrumbHTML;
         }
-    }
-    console.log("DEBUG: Llamando a updateBookingSummaryUI desde renderBookingSection.");
-    // Call updateBookingSummaryUI initially to populate the summary section
-    updateBookingSummaryUI();
-    console.log("--- DEBUG: Fin renderBookingSection ---");
-}
 
+        // Search functionality
+        function performSearch(query) {
+            if (!query.trim()) {
+                hideSearchResults();
+                return;
+            }
 
-// --- Form Handling & Persistence ---
-/** Saves the current booking form data to localStorage. */
-function saveBookingFormData() {
-    const form = document.getElementById('bookingForm');
-    if (form) {
-        const formData = new FormData(form);
-        const data = {};
-        for (const [key, value] of formData.entries()) {
-            data[key] = value;
+            const results = searchData.filter(item => 
+                item.title.toLowerCase().includes(query.toLowerCase()) ||
+                item.keywords.some(keyword => keyword.toLowerCase().includes(query.toLowerCase()))
+            );
+
+            displaySearchResults(results, query);
         }
-        // Ensure to save the new field and remove the old one
-        data.exactEventLocation = document.getElementById('exactEventLocation')?.value || '';
-        delete data.specialRequests; // Explicitly remove the old field if it somehow persisted
 
-        appState.bookingFormData = data;
-        localStorage.setItem('bookingFormData', JSON.stringify(data));
-        console.log("DEBUG: Datos del formulario de reserva guardados:", appState.bookingFormData);
-    }
-}
+        function displaySearchResults(results, query) {
+            const searchResults = document.getElementById('search-results');
+            
+            if (results.length === 0) {
+                searchResults.innerHTML = `
+                    <div class="search-result-item">
+                        No se encontraron resultados para "${query}"
+                    </div>
+                `;
+            } else {
+                searchResults.innerHTML = results.map(result => `
+                    <div class="search-result-item" data-section="${result.section}">
+                        <strong>${result.title}</strong>
+                        <br><small>En: ${result.section}</small>
+                    </div>
+                `).join('');
+            }
 
-/** Loads booking form data from localStorage into appState. */
-function loadBookingFormData() {
-    const savedData = localStorage.getItem('bookingFormData');
-    if (savedData) {
-        appState.bookingFormData = JSON.parse(savedData);
-        // Ensure selectedLocation is loaded if available
-        if (appState.bookingFormData.eventLocation) {
-            appState.selectedLocation = appState.bookingFormData.eventLocation;
-            console.log("DEBUG: Ubicación seleccionada cargada desde localStorage:", appState.selectedLocation);
+            searchResults.style.display = 'block';
+
+            // Add click listeners to search results
+            searchResults.querySelectorAll('.search-result-item[data-section]').forEach(item => {
+                item.addEventListener('click', () => {
+                    const section = item.dataset.section;
+                    navigateToSection(section);
+                    hideSearchResults();
+                    document.getElementById('search-input').value = '';
+                });
+            });
         }
-        console.log("DEBUG: Datos del formulario de reserva cargados:", appState.bookingFormData);
-    } else {
-        console.log("DEBUG: No se encontraron datos de formulario de reserva en localStorage.");
-    }
-}
 
-/**
- * Validates a specific form field.
- * @param {string} fieldId - The ID of the field to validate.
- * @param {boolean} isInputEvent - True if called from an input event (for partial validation).
- * @returns {boolean} True if valid, false otherwise.
- */
-function validateField(fieldId, isInputEvent = false) {
-    const field = document.getElementById(fieldId);
-    if (!field) return true; // Field not found, consider valid
-    const value = field.value.trim();
-    let isValid = true;
-    let errorMessage = '';
+        function hideSearchResults() {
+            document.getElementById('search-results').style.display = 'none';
+        }
 
-    clearFieldError(fieldId); // Clear previous error
+        // Navigation function
+        function navigateToSection(section) {
+            const element = document.getElementById(section);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+                updateActiveNavigation(section);
+            }
+        }
 
-    if (field.hasAttribute('required') && !value) {
-        isValid = false;
-        errorMessage = 'Este campo es obligatorio.';
-    } else {
-        switch (fieldId) {
-            case 'email':
-                if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                    isValid = false;
-                    errorMessage = 'Por favor, introduce un email válido.';
+        // Mobile menu functionality
+        function toggleMobileMenu(show) {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-overlay');
+            
+            if (show) {
+                menu.classList.add('open');
+                overlay.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            } else {
+                menu.classList.remove('open');
+                overlay.classList.remove('open');
+                document.body.style.overflow = '';
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Smooth scrolling for navigation links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const section = this.getAttribute('href').substring(1);
+                    navigateToSection(section);
+                });
+            });
+
+            // Header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('main-header');
+                if (window.scrollY > 100) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
                 }
-                break;
-            case 'phone':
-                // Basic phone validation for Panama (e.g., 8 digits, starts with 6)
-                if (value && !/^\+?507\s?[6]\d{3}-?\d{4}$/.test(value) && !/^[6]\d{7}$/.test(value)) {
-                    isValid = false;
-                    errorMessage = 'Introduce un número de teléfono válido de Panamá (ej: 6XXX-XXXX o +507 6XXX-XXXX).';
-                }
-                break;
-            case 'eventDate':
-                if (value) {
-                    const selectedDate = new Date(value);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0); // Reset time for comparison
-                    if (selectedDate < today) {
-                        isValid = false;
-                        errorMessage = 'La fecha del evento no puede ser en el pasado.';
+
+                // Update active section based on scroll position
+                const sections = ['inicio', 'paquetes', 'galeria', 'servicios', 'areas', 'contacto'];
+                let currentSectionScroll = 'inicio';
+
+                sections.forEach(section => {
+                    const element = document.getElementById(section);
+                    if (element) {
+                        const rect = element.getBoundingClientRect();
+                        if (rect.top <= 200 && rect.bottom >= 200) {
+                            currentSectionScroll = section;
+                        }
                     }
+                });
+
+                if (currentSectionScroll !== currentSection) {
+                    updateActiveNavigation(currentSectionScroll);
                 }
-                break;
-            case 'numChildren':
-                if (value && (parseInt(value, 10) < 0 || isNaN(parseInt(value, 10)))) {
-                    isValid = false;
-                    errorMessage = 'El número de niños debe ser un valor positivo.';
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('search-input');
+            const mobileSearchInput = document.getElementById('mobile-search-input');
+
+            searchInput.addEventListener('input', (e) => {
+                performSearch(e.target.value);
+            });
+
+            mobileSearchInput.addEventListener('input', (e) => {
+                performSearch(e.target.value);
+            });
+
+            // Hide search results when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    hideSearchResults();
                 }
-                break;
-            case 'exactEventLocation':
-                // This field is currently optional. Add validation if it becomes required.
-                break;
-        }
-    }
+            });
 
-    if (!isValid && !isInputEvent) { // Only show error message on blur or submit
-        showFieldError(fieldId, errorMessage);
-    }
-    return isValid;
-}
+            // Mobile menu controls
+            document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+                toggleMobileMenu(true);
+            });
 
-/**
- * Formats a date string from YYYY-MM-DD to MM/DD/YYYY.
- * @param {string} dateString - The date string in YYYY-MM-DD format.
- * @returns {string} The date string in MM/DD/YYYY format, or an empty string if input is invalid.
- */
-function formatDateForJotForm(dateString) {
-    if (!dateString) return '';
-    const parts = dateString.split('-'); // Expects YYYY-MM-DD
-    if (parts.length === 3) {
-        const [year, month, day] = parts;
-        return `${month}/${day}/${year}`;
-    }
-    return dateString; // Return original if format is unexpected
-}
+            document.getElementById('mobile-menu-close').addEventListener('click', () => {
+                toggleMobileMenu(false);
+            });
 
-/**
- * Handles the booking form submission.
- * @param {Event} event - The form submission event.
- */
-async function handleBookingSubmit(event) {
-    event.preventDefault(); // Prevent default form submission
-    console.log("--- DEBUG: Iniciando envío de formulario de reserva ---");
+            document.getElementById('mobile-overlay').addEventListener('click', () => {
+                toggleMobileMenu(false);
+            });
 
-    clearFormErrors(); // Clear all previous errors
+            // Mobile navigation links
+            document.querySelectorAll('.mobile-nav-links a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = link.dataset.section;
+                    navigateToSection(section);
+                    toggleMobileMenu(false);
+                });
+            });
 
-    let formIsValid = true;
-    // Validate all required fields
-    const requiredFields = ['fullName', 'email', 'phone', 'eventType', 'eventDate', 'eventTime', 'eventLocation'];
-    for (const fieldId of requiredFields) {
-        if (!validateField(fieldId)) {
-            formIsValid = false;
-            console.log(`DEBUG: Campo '${fieldId}' no válido.`);
-        }
-    }
-
-    // Validate optional fields if they have values
-    if (document.getElementById('numChildren').value) {
-        if (!validateField('numChildren')) {
-            formIsValid = false;
-            console.log("DEBUG: Campo 'numChildren' no válido.");
-        }
-    }
-    // Validate new exactEventLocation if it has a value (currently optional)
-    if (document.getElementById('exactEventLocation').value) {
-        if (!validateField('exactEventLocation')) {
-            formIsValid = false;
-            console.log("DEBUG: Campo 'exactEventLocation' no válido.");
-        }
-    }
-
-
-    if (appState.selectedItems.length === 0) {
-        showInfoModal('¡Tu carrito de diversión está vacío! Por favor, selecciona al menos un servicio o paquete antes de reservar.');
-        formIsValid = false;
-        console.log("DEBUG: Carrito vacío, formulario no válido.");
-    }
-
-    if (formIsValid) {
-        saveBookingFormData(); // Save data before processing
-
-        const form = document.getElementById('bookingForm');
-        const formData = new FormData(form);
-        const bookingDetails = {};
-        for (const [key, value] of formData.entries()) {
-            bookingDetails[key] = value;
-        }
-
-        // Add selected items and total price to booking details
-        bookingDetails.selectedServices = appState.selectedItems.map(item => ({
-            name: item.name,
-            quantity: item.quantity,
-            price: getAdjustedItemPrice(item) // Use adjusted price for the final booking
-        }));
-        bookingDetails.totalPrice = (appState.selectedItems.reduce((sum, item) => sum + getAdjustedItemPrice(item), 0) + transportFeesByLocation[appState.selectedLocation]).toFixed(2);
-        
-        console.log("DEBUG: Detalles de la reserva para JotForm:", bookingDetails);
-        console.log("DEBUG: bookingDetails.eventType antes de JotForm:", bookingDetails.eventType);
-        console.log("DEBUG: bookingDetails.eventDate antes de JotForm:", bookingDetails.eventDate); // Specific log for eventDate
-
-        // --- JOTFORM REDIRECTION LOGIC ---
-        // IMPORTANT: Replace 'YOUR_JOTFORM_URL_HERE' with your actual JotForm URL.
-        // Use the direct form URL, not the JS embed URL.
-        const jotformBaseUrl = 'https://form.jotform.com/251611549526054'; 
-
-        // IMPORTANT: Map your form field IDs from JotForm here.
-        // You can find these by inspecting your JotForm or using JotForm's pre-fill feature.
-        // These are examples based on common JotForm field names. Adjust them to your actual form!
-        const jotformFieldMap = {
-            fullName: 'q1_fullName', // Example: 'q1_fullName[first]' for first name, 'q1_fullName[last]' for last if split
-            email: 'q3_email',
-            phone: 'q4_phone', // Common JotForm phone field name
-            eventType: 'q5_eventType', // Assuming a dropdown or single choice
-            eventDate: 'q6_eventDate', // Assuming a date picker
-            eventTime: 'q7_eventTime', // Assuming a time field
-            eventLocation: 'q8_eventLocation', // Assuming a dropdown or single choice
-            numChildren: 'q9_numChildren', // Assuming a number field
-            exactEventLocation: 'q13_exactEventLocation', // New field for exact location (adjust ID based on your JotForm)
-            selectedServicesList: 'q11_selectedServicesList', // Assuming a long text area for the list of services
-            totalPrice: 'q12_totalPrice' // Assuming a number or short text field for total price
-        };
-
-        let jotformParams = new URLSearchParams();
-
-        // Populate JotForm parameters using the mapped field names
-        if (bookingDetails.fullName) jotformParams.append(jotformFieldMap.fullName, bookingDetails.fullName);
-        if (bookingDetails.email) jotformParams.append(jotformFieldMap.email, bookingDetails.email);
-        if (bookingDetails.phone) jotformParams.append(jotformFieldMap.phone, bookingDetails.phone);
-        if (bookingDetails.eventType) jotformParams.append(jotformFieldMap.eventType, bookingDetails.eventType);
-        
-        // Format eventDate for JotForm
-        if (bookingDetails.eventDate) {
-            const formattedDate = formatDateForJotForm(bookingDetails.eventDate);
-            console.log("DEBUG: Valor de eventDate FORMATEADO para JotForm:", formattedDate); // Log formatted date
-            jotformParams.append(jotformFieldMap.eventDate, formattedDate);
-        }
-        
-        if (bookingDetails.eventTime) jotformParams.append(jotformFieldMap.eventTime, bookingDetails.eventTime);
-        if (bookingDetails.eventLocation) jotformParams.append(jotformFieldMap.eventLocation, bookingDetails.eventLocation);
-        if (bookingDetails.numChildren) jotformParams.append(jotformFieldMap.numChildren, bookingDetails.numChildren);
-        if (bookingDetails.exactEventLocation) jotformParams.append(jotformFieldMap.exactEventLocation, bookingDetails.exactEventLocation); // Add new field
-        
-        // Format selected services for a single text area in JotForm
-        let servicesListText = '';
-        if (bookingDetails.selectedServices.length > 0) {
-            servicesListText = bookingDetails.selectedServices.map(service => 
-                `- ${service.name} (x${service.quantity}) - $${service.price.toFixed(2)}`
-            ).join('\n');
-        } else {
-            servicesListText = 'Ningún servicio seleccionado.';
-        }
-        jotformParams.append(jotformFieldMap.selectedServicesList, servicesListText);
-        jotformParams.append(jotformFieldMap.totalPrice, bookingDetails.totalPrice);
-
-        const jotformUrl = `${jotformBaseUrl}?${jotformParams.toString()}`;
-        console.log("DEBUG: URL de JotForm generada:", jotformUrl);
-
-        showInfoModal('¡Tu solicitud de reserva ha sido enviada! Te redirigiremos a JotForm para finalizar los detalles.', () => {
-            // Clear cart and form data after successful submission
-            appState.selectedItems = [];
-            appState.bookingFormData = {};
-            localStorage.removeItem('bookingFormData');
-            setActiveSection('home'); // Go back to home page
-            window.open(jotformUrl, '_blank'); // Open JotForm in new tab
+            // Initialize breadcrumbs
+            updateBreadcrumbs('inicio');
         });
-    } else {
-        showToast('Por favor, corrige los errores en el formulario.', 'error');
-        console.log("DEBUG: Errores en el formulario, envío cancelado.");
-    }
-    console.log("--- DEBUG: Fin envío de formulario de reserva ---");
-}
-
-/** Clears all error messages and input error styles from the form. */
-function clearFormErrors() {
-    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-}
-
-/**
- * Displays an error message for a specific form field.
- * @param {string} fieldId - The ID of the field.
- * @param {string} message - The error message to display.
- */
-function showFieldError(fieldId, message) {
-    const errorElement = document.getElementById(`${fieldId}-error`);
-    const inputElement = document.getElementById(fieldId);
-    if (errorElement) {
-        errorElement.textContent = message;
-    }
-    if (inputElement) {
-        inputElement.classList.add('input-error');
-    }
-}
-
-/**
- * Clears the error message and error style for a specific form field.
- * @param {string} fieldId - The ID of the field.
- */
-function clearFieldError(fieldId) {
-    const errorElement = document.getElementById(`${fieldId}-error`);
-    const inputElement = document.getElementById(fieldId);
-    if (errorElement) {
-        errorElement.textContent = '';
-    }
-    if (inputElement) {
-        inputElement.classList.remove('input-error');
-    }
-}
-
-// --- Mobile Menu & Header Scroll ---
-/**
- * Toggles the visibility of the mobile menu and its overlay.
- * @param {boolean} show - True to show, false to hide.
- */
-function toggleMobileMenu(show) {
-    const menu = document.getElementById('mobileMenu');
-    const overlay = document.getElementById('mobileMenuOverlay');
-    if (show) {
-        appState.lastFocusedElement = document.activeElement; // Save currently focused element
-        overlay.classList.add('open');
-        menu.classList.add('open');
-        menu.focus(); // Focus the menu for accessibility
-        document.body.style.overflow = 'hidden'; // Prevent scrolling on body
-    } else {
-        overlay.classList.remove('open');
-        menu.classList.remove('open');
-        if (appState.lastFocusedElement) appState.lastFocusedElement.focus(); // Restore focus
-        document.body.style.overflow = ''; // Restore body scrolling
-    }
-}
-/** Handles header styling on scroll (adds/removes 'scrolled' class). */
-function handleHeaderScroll() {
-    document.getElementById('mainHeader').classList.toggle('scrolled', window.scrollY > 50);
-}
-
-// --- App Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
-    loadBookingFormData(); // Load any saved form data
-
-    // Setup all modal close button event listeners
-    document.getElementById('closeModalButton').onclick = closeModal;
-    document.getElementById('closePromoModalButton').onclick = closePromoModal;
-    document.getElementById('closeBookingWarningModalButton').onclick = closeBookingWarningModal;
-    document.getElementById('closeMiniCartModalButton').onclick = closeMiniCartModal;
-    document.getElementById('closeImageModalButton').onclick = closeImageModal;
-    document.getElementById('closeBlogPostModalButton').onclick = closeBlogPostModal;
-    document.getElementById('clearCartButton').onclick = clearCart;
-    
-    // Setup mobile menu toggle buttons
-    document.getElementById('mobileMenuToggle').onclick = () => toggleMobileMenu(true);
-    document.getElementById('closeMobileMenuButton').onclick = () => toggleMobileMenu(false);
-    document.getElementById('mobileMenuOverlay').onclick = () => toggleMobileMenu(false); // Close menu when clicking outside
-
-    window.addEventListener('scroll', handleHeaderScroll); // Add scroll listener for header
-
-    // Map navigation buttons to their respective section rendering functions
-    const navMapping = {
-        Home: 'home', Services: 'services', AnimatorPackages: 'animatorPackages', ClownPackages: 'clownPackages',
-        BubblePackages: 'bubblePackages', Testimonials: 'testimonials', Gallery: 'gallery', Blog: 'blog', Booking: 'booking'
-    };
-    Object.keys(navMapping).forEach(key => {
-        const section = navMapping[key];
-        const desktopBtn = document.getElementById(`nav${key}`);
-        const mobileBtn = document.getElementById(`mobileNav${key}`);
-        if(desktopBtn) desktopBtn.onclick = () => setActiveSection(section);
-        if(mobileBtn) mobileBtn.onclick = () => setActiveSection(section);
-    });
-
-    // Setup cart summary buttons
-    document.getElementById('proceedToBookButton').onclick = () => setActiveSection('booking');
-    document.getElementById('miniCartProceedToBookButton').onclick = () => { closeMiniCartModal(); setActiveSection('booking'); };
-    document.getElementById('viewCartDetailsButton').onclick = showMiniCartModal;
-    
-    // Check for blog post hash in URL on load
-    const hash = window.location.hash.substring(1);
-    const postFromHash = blogPostsData.find(p => p.id === hash);
-    if (postFromHash) {
-        setActiveSection('blog');
-        setTimeout(() => showBlogPostContent(postFromHash), 100); // Small delay to ensure modal is rendered
-    } else {
-        setActiveSection('home'); // Default to home section
-    }
-    
-    updateCartSummary(); // Initial update of cart summary
-    lucide.createIcons(); // Initialize Lucide icons
-    console.log('Diverty Eventos App Initialized!');
-});
-
-</script>
+    </script>
 </body>
 </html>
