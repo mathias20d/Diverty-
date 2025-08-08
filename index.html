@@ -674,41 +674,40 @@
                     break;
             }
         }
+        
         async function callGeminiAPI(chatHistory) {
-            const apiKey = ""; 
+            // Se ha insertado la clave de API directamente.
+            // ADVERTENCIA: Esto no es seguro para producción.
+            const apiKey = "AIzaSyC4ZbDsL8QS101zjyrQ77MiYROeuZ-N7Ys"; 
+
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            const allServices = [...services, ...animatorPackages, ...clownPackages, ...bubblePackages];
-            const knowledgeBase = `
-                - **Servicios/Paquetes:** ${JSON.stringify(allServices.map(s => ({id: s.id, name: s.name, price: s.price, isHourly: !!s.isHourly, isPerChild: !!s.isPerChild})))}
-                - **Zonas/Transporte:** ${JSON.stringify(locations)}
-                - **Contacto:** WhatsApp +507 6667-7965
-            `;
+            
             const systemInstruction = `Eres "DivertyBot", el asistente virtual de "Diverty Eventos" en Panamá. Tu personalidad es súper amigable, rápida y eficiente.
 
-**TUS REGLAS DE ORO (¡MUY IMPORTANTES!):**
-1.  **RESPUESTAS ULTRA CORTAS:** Sé extremadamente breve. Responde en 1 o 2 oraciones MÁXIMO. Ve directo al grano.
-2.  **NUNCA CÓDIGO NI FORMATO:** Jamás uses markdown, asteriscos (*), guiones (-), ni ningún tipo de código. Solo texto plano y emojis.
-3.  **SÉ PROACTIVO, NO UN LISTADO:** En lugar de listar todo, haz preguntas para guiar al usuario.
-    -   *Ejemplo MALO:* "Tenemos el Paquete Circo por $85, el Plan Recreativo por $110..."
-    -   *Ejemplo BUENO:* "¡Tenemos varios paquetes de payasos! 🤡 ¿Buscas algo sencillo o uno con más actividades como pintacaritas y magia?"
-4.  **MANEJA CANTIDADES:** Si el usuario pide una cantidad (ej. "2 horas de pintacaritas"), inclúyela en la acción.
-5.  **USA TUS HERRAMIENTAS:** Si el usuario quiere añadir algo al carrito o ver una sección, ¡hazlo por él! Responde **ÚNICAMENTE** con el objeto JSON, sin \`\`\`json.
+    **TUS REGLAS DE ORO (¡MUY IMPORTANTES!):**
+    1.  **RESPUESTAS ULTRA CORTAS:** Sé extremadamente breve. Responde en 1 o 2 oraciones MÁXIMO. Ve directo al grano.
+    2.  **NUNCA CÓDIGO NI FORMATO:** Jamás uses markdown, asteriscos (*), guiones (-), ni ningún tipo de código. Solo texto plano y emojis.
+    3.  **SÉ PROACTIVO, NO UN LISTADO:** En lugar de listar todo, haz preguntas para guiar al usuario.
+        -   *Ejemplo MALO:* "Tenemos el Paquete Circo por $85, el Plan Recreativo por $110..."
+        -   *Ejemplo BUENO:* "¡Tenemos varios paquetes de payasos! 🤡 ¿Buscas algo sencillo o uno con más actividades como pintacaritas y magia?"
+    4.  **MANEJA CANTIDADES:** Si el usuario pide una cantidad (ej. "2 horas de pintacaritas"), inclúyela en la acción.
+    5.  **USA TUS HERRAMIENTAS:** Si el usuario quiere añadir algo al carrito o ver una sección, ¡hazlo por él! Responde **ÚNICAMENTE** con el objeto JSON, sin \`\`\`json.
 
-**FORMATO PARA ACCIONES (SOLO EL JSON, SIN NADA MÁS):**
-{
-  "responseText": "¡Listo! Añadí 2 horas de Pintacaritas a tu carrito. ¿Algo más?",
-  "action": {
-    "type": "addToCart",
-    "itemId": "S1",
-    "quantity": 2
-  }
-}
+    **FORMATO PARA ACCIONES (SOLO EL JSON, SIN NADA MÁS):**
+    {
+      "responseText": "¡Listo! Añadí 2 horas de Pintacaritas a tu carrito. ¿Algo más?",
+      "action": {
+        "type": "addToCart",
+        "itemId": "S1",
+        "quantity": 2
+      }
+    }
 
-**Acciones que puedes hacer:**
-- \`"type": "addToCart"\`: Usa el \`itemId\` exacto. Si aplica, incluye \`quantity\`.
-- \`"type": "navigateTo"\`: Usa el \`sectionId\` (ej: 'gallery', 'booking').
+    **Acciones que puedes hacer:**
+    - \`"type": "addToCart"\`: Usa el \`itemId\` exacto. Si aplica, incluye \`quantity\`.
+    - \`"type": "navigateTo"\`: Usa el \`sectionId\` (ej: 'gallery', 'booking').
 
-Si no sabes la respuesta o te piden algo fuera de fiestas infantiles, di amablemente: "Esa es una buena pregunta, pero está un poco fuera de mi especialidad. ¿Te gustaría que te contacte un agente por WhatsApp? 😊"`;
+    Si no sabes la respuesta o te piden algo fuera de fiestas infantiles, di amablemente: "Esa es una buena pregunta, pero está un poco fuera de mi especialidad. ¿Te gustaría que te contacte un agente por WhatsApp? 😊"`;
 
             const payload = {
                 contents: chatHistory.map(turn => ({ role: turn.role, parts: [{ text: turn.text }] })),
@@ -725,6 +724,7 @@ Si no sabes la respuesta o te piden algo fuera de fiestas infantiles, di amablem
                 return "¡Ups! 🎈 Tuve un pequeño problema para conectarme. Por favor, intenta de nuevo o contacta a un agente por WhatsApp al +507 6667-7965.";
             }
         }
+
         function initChat() {
             const chatInput = $('#chatInput');
             const sendBtn = $('#sendChat');
@@ -980,7 +980,7 @@ Si no sabes la respuesta o te piden algo fuera de fiestas infantiles, di amablem
             const finalTotal = subtotal + transportCost;
             const cartSummary = app.cart.length === 0 ? `<p class="text-red-600 text-center text-lg">No has seleccionado ningún servicio. <a href="#services" class="text-purple-600 underline nav-action">Ver servicios</a></p>` : app.cart.map(item => `<div class="flex justify-between bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl shadow-sm mb-3"><span class="font-semibold">${item.name} (x${item.quantity})</span><span class="font-bold text-pink-600">$${(item.price * item.quantity).toFixed(2)}</span></div>`).join('');
             const locationOptionsHtml = locations.map(opt => `<option value="${opt.value}" ${app.location === opt.value ? 'selected' : ''}>${opt.label}</option>`).join('');
-            $('#mainContent').innerHTML = `<section class="premium-card p-8 lg:p-12 my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Reserva tu Fiesta en Panamá <i data-lucide="calendar-check" class="inline-block text-purple-600"></i></h2><div class="bg-gradient-to-br from-pink-50 to-purple-50 p-8 rounded-3xl mb-8 border-2 border-pink-200"><h3 class="text-2xl font-bold text-pink-700 mb-6">Tu Selección:</h3>${cartSummary}${app.cart.length > 0 ? `<div class="mt-6 pt-6 border-t-2 border-pink-200 space-y-2 text-right"><p class="text-lg">Subtotal: <span class="font-bold">$${subtotal.toFixed(2)}</span></p><p class="text-lg">Transporte: <span class="font-bold">$${transportCost.toFixed(2)}</span></p><p class="text-3xl font-bold text-purple-700">Total Final: <span class="font-extrabold">$${finalTotal.toFixed(2)}</span></p></div>` : ''}</div>${app.cart.length > 0 ? `<form id="bookingForm" class="space-y-6"><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="form-group"><label class="form-label">Nombre *</label><input type="text" name="name" required class="form-input"></div><div class="form-group"><label class="form-label">Email *</label><input type="email" name="email" required class="form-input"></div><div class="form-group"><label class="form-label">Teléfono *</label><input type="tel" name="phone" required class="form-input"></div><div class="form-group"><label class="form-label">Fecha *</label><input type="date" name="date" required class="form-input" min="${new Date().toISOString().split('T')[0]}"></div><div class="form-group"><label class="form-label">Tipo de Evento *</label><select name="eventType" required class="form-input"><option value="">Selecciona</option><option value="cumpleanos">Cumpleaños</option><option value="escolar">Evento Escolar</option></select></div><div class="form-group"><label class="form-label">Ubicación *</label><select name="location" required class="form-input">${locationOptionsHtml}</select></div></div><div class="form-group"><label class="form-label">Dirección Completa *</label><textarea name="address" required class="form-input" rows="3"></textarea></div><div class="form-group"><label class="form-label">Comentarios</label><textarea name="comments" class="form-input" rows="4"></textarea></div><button type="submit" class="w-full btn-premium btn-primary py-4 text-xl"><i data-lucide="sparkles"></i>Enviar Reserva</button></form>` : `<div class="text-center py-12"><div class="text-6xl mb-6">🛒</div><h3 class="text-2xl font-bold">Tu carrito está vacío</h3><p class="mb-8">Selecciona servicios para reservar.</p><a href="#services" class="btn-premium btn-primary nav-action"><i data-lucide="sparkles"></i>Ver Servicios</a></div>`}</section>`;
+            $('#mainContent').innerHTML = `<section class="premium-card p-8 lg:p-12 my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Reserva tu Fiesta en Panamá <i data-lucide="calendar-check" class="inline-block text-purple-600"></i></h2><div class="bg-gradient-to-br from-pink-50 to-purple-50 p-8 rounded-3xl mb-8 border-2 border-pink-200"><h3 class="text-2xl font-bold text-pink-700 mb-6">Tu Selección:</h3>${cartSummary}${app.cart.length > 0 ? `<div class="mt-6 pt-6 border-t-2 border-pink-200 space-y-2 text-right"><p class="text-lg">Subtotal: <span class="font-bold">$${subtotal.toFixed(2)}</span></p><p class="text-lg">Transporte: <span class="font-bold">$${transportCost.toFixed(2)}</span></p><p class="text-3xl font-bold text-purple-700">Total Final: <span class="font-extrabold">$${finalTotal.toFixed(2)}</span></p></div>` : ''}</div>${app.cart.length > 0 ? `<form id="bookingForm" class="space-y-6"><div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="form-group"><label class="form-label">Nombre *</label><input type="text" name="name" required class="form-input"></div><div class="form-group"><label class="form-label">Email *</label><input type="email" name="email" required class="form-input"></div><div class="form-group"><label class="form-label">Teléfono *</label><input type="tel" name="phone" required class="form-input"></div><div class="form-group"><label class="form-label">Fecha *</label><input type="date" name="date" required class="form-input" min="${new Date().toISOString().split('T')[0]}"></div><div class="form-group"><label class="form-label">Tipo de Evento *</label><select name="eventType" required class="form-input"><option value="">Selecciona una opción</option><option value="cumpleanos">🎉 Cumpleaños</option><option value="bautizo">🕊️ Bautizo</option><option value="comunion">✝️ Comunión</option><option value="evento_escolar">🎒 Evento Escolar</option><option value="evento_corporativo">🏢 Evento Corporativo</option><option value="dia_del_nino">🎈 Día del Niño</option><option value="otro">⭐ Otro</option></select></div><div class="form-group"><label class="form-label">Ubicación *</label><select name="location" required class="form-input">${locationOptionsHtml}</select></div></div><div class="form-group"><label class="form-label">Dirección Completa *</label><textarea name="address" required class="form-input" rows="3"></textarea></div><div class="form-group"><label class="form-label">Comentarios</label><textarea name="comments" class="form-input" rows="4"></textarea></div><button type="submit" class="w-full btn-premium btn-primary py-4 text-xl"><i data-lucide="sparkles"></i>Enviar Reserva</button></form>` : `<div class="text-center py-12"><div class="text-6xl mb-6">🛒</div><h3 class="text-2xl font-bold">Tu carrito está vacío</h3><p class="mb-8">Selecciona servicios para reservar.</p><a href="#services" class="btn-premium btn-primary nav-action"><i data-lucide="sparkles"></i>Ver Servicios</a></div>`}</section>`;
             if (app.cart.length > 0) {
                 $('#bookingForm').onsubmit = handleBookingSubmit;
                 $('select[name="location"]').onchange = (e) => { app.location = e.target.value; renderBooking(); };
