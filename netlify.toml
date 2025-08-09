@@ -1,0 +1,9 @@
+# netlify.toml
+
+[build]
+  # This tells Netlify where your serverless functions are located.
+  functions = "netlify/functions"
+
+[functions]
+  # This ensures Node.js dependencies for your function are installed.
+  node_bundler = "esbuild"
