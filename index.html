@@ -747,7 +747,8 @@
             // WARNING: This is not secure for production.
             // Your API key is visible to anyone who views the page source.
             // Please use Netlify Environment Variables and Serverless Functions for a secure setup.
-            const apiKey = "AIzaSyAJvpQ69QXin7V1cu5k90lRkymQ6o1lpDE";
+            // La clave API ha sido añadida temporalmente a petición del usuario.
+            const apiKey = "AIzaSyAJvpQ69QXin7V1cu5k90lRkymQ6o1lpDE"; // Clave API proporcionada por el usuario
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             
             const payload = { contents: chatHistory };
@@ -1185,7 +1186,7 @@
             const modal = document.createElement('div');
             modal.className = 'modal-backdrop show';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-            modal.innerHTML = `<div class="modal-content bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"><h2 class="text-3xl font-bold mb-6">${post.title}</h2><img src="${post.image}" alt="${post.title}" class="w-full h-64 object-cover rounded-2xl mb-6" loading="lazy" width="800" height="256" onerror="this.onerror=null;this.src='https://placehold.co/800x256/cccccc/ffffff?text=Error';"><div class="prose max-w-none mb-8">${post.content}</div><div class="flex justify-center"><button onclick="this.closest('.modal-backdrop').remove()" class="btn-premium btn-primary"><i data-lucide="x-circle"></i>Cerrar</button></div></div>`;
+            modal.innerHTML = `<div class="modal-content bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"><h2 class="text-3xl font-bold mb-6">${post.title}</h2><img src="${post.image}" alt="${post.title}" class="w-full h-64 object-cover rounded-2xl mb-6" loading="lazy" width="800" height="256" onerror="this.onerror=null;this.src='https://placehold.co/800x256/cccccc/ffffff?text=Error';"></img><div class="prose max-w-none mb-8">${post.content}</div><div class="flex justify-center"><button onclick="this.closest('.modal-backdrop').remove()" class="btn-premium btn-primary"><i data-lucide="x-circle"></i>Cerrar</button></div></div>`;
             document.body.appendChild(modal);
             lucide.createIcons();
         }
