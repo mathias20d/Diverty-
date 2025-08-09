@@ -742,9 +742,12 @@
             calculatorItems = [];
         }
 
-        // --- GEMINI API LOGIC ---
+        // --- GEMINI API LOGIC (WITH TEMPORARY KEY) ---
         async function callGeminiAPI(chatHistory, generationConfig = null) {
-            const apiKey = ""; // API key will be injected by the environment
+            // WARNING: This is not secure for production.
+            // Your API key is visible to anyone who views the page source.
+            // Please use Netlify Environment Variables and Serverless Functions for a secure setup.
+            const apiKey = "AIzaSyAJvpQ69QXin7V1cu5k90lRkymQ6o1lpDE";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             
             const payload = { contents: chatHistory };
@@ -753,24 +756,49 @@
             }
 
             try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                const response = await fetch(apiUrl, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' }, 
+                    body: JSON.stringify(payload) 
+                });
+
                 const result = await response.json();
+
+                if (!response.ok) {
+                    const errorMessage = result?.error?.message || `Error de API: ${response.status}`;
+                    throw new Error(errorMessage);
+                }
                 
                 const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
                 if (textResponse) {
                     if (generationConfig && generationConfig.responseMimeType === "application/json") {
-                        return JSON.parse(textResponse);
+                        try {
+                            return JSON.parse(textResponse);
+                        } catch (jsonError) {
+                            console.error("Fallo al procesar JSON de la API:", jsonError, "Texto recibido:", textResponse);
+                            throw new Error("La IA devolvió una respuesta en un formato inesperado.");
+                        }
                     }
                     return textResponse;
                 }
-                throw new Error("No text response from API");
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                if (generationConfig && generationConfig.responseMimeType === "application/json") {
-                    return { responseText: "¡Ups! 🎈 Tuve un pequeño problema para conectarme. Por favor, intenta de nuevo." };
+                
+                const finishReason = result.candidates?.[0]?.finishReason;
+                if (finishReason && finishReason !== 'STOP') {
+                     throw new Error(`La IA finalizó por una razón inesperada: ${finishReason}. Intenta reformular tu pregunta.`);
                 }
-                return "¡Ups! 🎈 Tuvimos un problema para generar la respuesta. Por favor, intenta de nuevo.";
+                
+                throw new Error("No se recibió una respuesta de texto de la IA.");
+
+            } catch (error) {
+                console.error("Error al llamar a la API de Gemini:", error);
+                const userFriendlyMessage = error.message.includes("API key not valid") 
+                    ? "La clave de la API no es válida. Revisa la configuración."
+                    : "¡Ups! 🎈 Tuve un pequeño problema para conectarme. Por favor, intenta de nuevo.";
+
+                return { 
+                    error: true, 
+                    responseText: userFriendlyMessage
+                };
             }
         }
 
@@ -779,7 +807,6 @@
             if (!action || !action.type) return;
             switch (action.type) {
                 case 'addToCart':
-                    const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
                     const itemToAdd = allServices.find(s => s.id === action.itemId);
                     if (itemToAdd) {
                         const quantity = action.quantity || 1;
@@ -798,7 +825,7 @@
                         }
                         showModal('cartModal');
                     } else {
-                        console.error("Chatbot tried to add an item that does not exist:", action.itemId);
+                        console.error("Chatbot intentó agregar un item que no existe:", action.itemId);
                     }
                     break;
                 case 'navigateTo':
@@ -828,6 +855,13 @@
                 const messageText = chatInput.value.trim();
                 if (!messageText) return;
                 addMessage(messageText, 'user');
+
+                if (chatHistory.length === 0) {
+                    const systemPrompt = `Eres DivertyBot, un asistente amigable y útil para "Diverty Eventos", una empresa de planificación de fiestas infantiles en Panamá. Tu objetivo es responder preguntas, ayudar a los usuarios a navegar por el sitio y agregar servicios al carrito. Conoces los siguientes servicios y paquetes: ${JSON.stringify(allServices)}. Conoces las siguientes ubicaciones: ${JSON.stringify(locations)}. Sé breve y divertido. Debes responder siempre en el formato JSON solicitado.`;
+                    chatHistory.push({ role: 'user', parts: [{ text: systemPrompt }] });
+                    chatHistory.push({ role: 'model', parts: [{ text: "¡Entendido! Estoy listo para ayudar a planificar la mejor fiesta en Panamá y responderé en formato JSON." }] });
+                }
+
                 chatHistory.push({ role: 'user', parts: [{ text: messageText }] });
                 chatInput.value = '';
                 
@@ -861,11 +895,14 @@
                 const response = await callGeminiAPI(chatHistory, chatbotGenerationConfig);
                 loadingMsg.remove();
 
-                addMessage(response.responseText, 'model');
-                chatHistory.push({ role: 'model', parts: [{ text: response.responseText }] });
-                
-                if (response.action) {
-                    executeBotAction(response.action);
+                if (response && response.responseText && !response.error) {
+                    addMessage(response.responseText, 'model');
+                    chatHistory.push({ role: 'model', parts: [{ text: JSON.stringify(response) }] });
+                    if (response.action) {
+                        executeBotAction(response.action);
+                    }
+                } else {
+                    addMessage(response.responseText || "Lo siento, no pude procesar tu solicitud en este momento.", 'model');
                 }
 
                 if (chatHistory.length > 8) chatHistory = chatHistory.slice(-8);
@@ -1241,7 +1278,6 @@
         window.submitToJotForm = submitToJotForm;
 
         function handleAddToCartClick(itemId) {
-            const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
             const item = allServices.find(s => s.id === itemId);
             if (item) {
                 addToCart(item);
@@ -1284,7 +1320,7 @@
             addToCart(item);
         };
 
-        // --- NEW GEMINI FEATURES ---
+        // --- NEW GEMINI FEATURES (REVISED) ---
         function renderIdeaGenerator() {
             $('#mainContent').innerHTML = `
                 <section class="premium-card p-4 sm:p-8 lg:p-12 my-8">
@@ -1316,17 +1352,40 @@
 
             const button = $('#generate-ideas');
             button.disabled = true;
-            button.innerHTML = '<div class="loading-spinner !w-6 !h-6 !border-2"></div> Generando...';
+            button.innerHTML = '<div class="loading-spinner !w-6 !h-6 !border-2 !border-t-white"></div> Generando...';
             
             const resultsContainer = $('#idea-results');
-            resultsContainer.innerHTML = '<div class="flex justify-center items-center"><div class="loading-spinner"></div></div>';
+            resultsContainer.innerHTML = '<div class="flex justify-center items-center p-8"><div class="loading-spinner"></div></div>';
 
-            const prompt = `Actúa como un experto en planificación de fiestas infantiles en Panamá, con conocimiento de las últimas tendencias de 2025. Genera un plan conciso y creativo para una fiesta con la temática de "${theme}" para un niño/a de ${age} años con ${guests} invitados. Incluye personajes populares de 2025 si aplica. Estructura la respuesta en tres secciones claras con viñetas: 'Juegos Divertidos', 'Decoración Mágica', y 'Comida Temática'.`;
-            
+            const prompt = `Como un experto en fiestas infantiles en Panamá, crea un plan para una fiesta de "${theme}" para un niño/a de ${age} años con ${guests} invitados. Completa el siguiente JSON.`;
+
+            const generationConfig = {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: {
+                        "juegos": { "type": "ARRAY", "description": "Lista de 3-4 juegos temáticos divertidos.", "items": { "type": "STRING" } },
+                        "decoracion": { "type": "ARRAY", "description": "Lista de 3-4 ideas de decoración mágica.", "items": { "type": "STRING" } },
+                        "comida": { "type": "ARRAY", "description": "Lista de 3-4 ideas de comida y snacks temáticos.", "items": { "type": "STRING" } }
+                    },
+                    required: ["juegos", "decoracion", "comida"]
+                }
+            };
+
             const chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
-            const ideas = await callGeminiAPI(chatHistory);
+            const ideas = await callGeminiAPI(chatHistory, generationConfig);
 
-            resultsContainer.innerHTML = ideas.replace(/\*\*(.*?)\*\*/g, '<h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">$1</h4>').replace(/\*/g, '<li class="ml-5 list-disc">').replace(/\n/g, '<br>');
+            if (ideas && ideas.juegos && !ideas.error) {
+                resultsContainer.innerHTML = `
+                    <h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">Juegos Divertidos</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-700">${ideas.juegos.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">Decoración Mágica</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-700">${ideas.decoracion.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">Comida Temática</h4>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-700">${ideas.comida.map(item => `<li>${item}</li>`).join('')}</ul>`;
+            } else {
+                resultsContainer.innerHTML = `<p class="text-red-600 text-center">${ideas.responseText || 'No se pudieron generar ideas. Intenta de nuevo.'}</p>`;
+            }
             
             button.disabled = false;
             button.innerHTML = '<i data-lucide="wand-2"></i>Generar Ideas Mágicas';
@@ -1342,23 +1401,35 @@
             
             const button = $('#get-package-suggestion');
             button.disabled = true;
-            button.innerHTML = '<div class="loading-spinner !w-6 !h-6 !border-2"></div> Analizando...';
+            button.innerHTML = '<div class="loading-spinner !w-6 !h-6 !border-2 !border-t-white"></div> Analizando...';
 
             const packageList = allServices.filter(s => s.services).map(p => `- ${p.name} (id: ${p.id})`).join('\n');
-            const prompt = `Como experto en planificación de fiestas infantiles en Panamá y conociendo las tendencias de 2025, analiza la siguiente descripción: "${description}". Basado en esto, recomienda el paquete de Diverty Eventos que mejor se adapte. Considera las actividades mencionadas (pintacaritas, burbujas, magia, etc.), la edad y el tipo de fiesta. Responde únicamente con el ID del paquete más adecuado de la siguiente lista:\n${packageList}`;
+            const prompt = `Como experto en fiestas infantiles en Panamá, analiza la descripción: "${description}". Recomienda el paquete de Diverty Eventos que mejor se adapte de la lista y responde con el ID en formato JSON. Lista de paquetes:\n${packageList}`;
+
+            const generationConfig = {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: { "packageId": { "type": "STRING", "description": "El ID del paquete recomendado (ej: 'clown_magic')." } },
+                    required: ["packageId"]
+                }
+            };
 
             const chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
-            const suggestedId = await callGeminiAPI(chatHistory);
-            
-            const suggestedPackage = allServices.find(s => s.id === suggestedId.trim());
+            const response = await callGeminiAPI(chatHistory, generationConfig);
 
-            if (suggestedPackage) {
-                app.cart = []; // Clear cart before adding suggestion
-                addToCart(suggestedPackage);
-                showToast(`¡Te recomendamos el ${suggestedPackage.name}! Lo hemos añadido a tu reserva.`, 'success');
-                renderBooking(); // Re-render to show the new item in the cart
+            if (response && response.packageId && !response.error) {
+                const suggestedPackage = allServices.find(s => s.id === response.packageId.trim());
+                if (suggestedPackage) {
+                    app.cart = []; // Clear cart before adding suggestion
+                    addToCart(suggestedPackage);
+                    showToast(`¡Te recomendamos el ${suggestedPackage.name}! Lo hemos añadido a tu reserva.`, 'success');
+                    renderBooking(); // Re-render to show the new item in the cart
+                } else {
+                     showToast(`La IA sugirió un paquete inválido (${response.packageId}). ¡Intenta con otra descripción!`, 'error');
+                }
             } else {
-                showToast('No pudimos encontrar un paquete perfecto. ¡Intenta con una descripción diferente!', 'error');
+                showToast(response.responseText || 'No pudimos encontrar un paquete perfecto. ¡Intenta con una descripción diferente!', 'error');
             }
 
             button.disabled = false;
