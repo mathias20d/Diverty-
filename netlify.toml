@@ -1,9 +1,10 @@
-# netlify.toml
-
 [build]
-  # This tells Netlify where your serverless functions are located.
-  functions = "netlify/functions"
+  command = "npm run build"  # o el comando que uses para construir tu proyecto
+  publish = "public"         # carpeta donde se publica tu sitio, ajústalo si es necesario
+
+[build.environment]
+  NODE_VERSION = "16"        # Cambia por la versión que uses
 
 [functions]
-  # This ensures Node.js dependencies for your function are installed.
   node_bundler = "esbuild"
+  external_node_modules = ["@google/generative-ai"]
