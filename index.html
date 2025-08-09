@@ -252,6 +252,12 @@
             transform: translateY(-4px) scale(1.05);
             box-shadow: var(--shadow-strong);
         }
+        .btn-premium:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
         .btn-primary { background: var(--gradient-secondary); color: white; }
         .btn-secondary { background: var(--gradient-primary); color: white; }
         .btn-tertiary { background: var(--gradient-tertiary); color: white; }
@@ -327,20 +333,42 @@
         .card-detailed ul li i {
             flex-shrink: 0; /* Prevents icons from shrinking */
         }
+
+        /* --- PROMO BANNER --- */
+        #promo-banner {
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out, max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+            max-height: 100px;
+            overflow: hidden;
+        }
+        #promo-banner.hide {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
     </style>
 </head>
 <body class="min-h-screen text-gray-800 flex flex-col">
+
+    <!-- =========== PROMO BANNER =========== -->
+    <div id="promo-banner" class="bg-gradient-to-r from-pink-500 to-orange-400 text-white p-3 text-center font-bold text-sm sm:text-base relative flex items-center justify-center">
+        <span>¡Promociones de Agosto! ☀️ 15% OFF en Plan Diverty y 10% OFF en todos los Paquetes de Burbujas.</span>
+        <button id="close-promo-banner" class="absolute right-2 sm:right-4 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors" aria-label="Cerrar promoción">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+    </div>
 
     <!-- =========== HEADER =========== -->
     <header id="mainHeader" class="py-4 px-4 w-full sticky top-0 z-40">
         <div class="container mx-auto flex justify-between items-center">
             <a href="#home" class="flex items-center logo-container nav-action" aria-label="Página de inicio de Diverty Eventos">
-                <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Diverty Eventos - Fiestas Infantiles Panamá" class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mr-3 rounded-full object-cover border-3 border-pink-400 shadow-lg float-animation" loading="lazy">
+                <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Diverty Eventos - Fiestas Infantiles Panamá" class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mr-3 rounded-full object-cover border-3 border-pink-400 shadow-lg float-animation" loading="lazy" width="96" height="96" onerror="this.onerror=null;this.src='https://placehold.co/96x96/7c3aed/ffffff?text=Diverty';">
                 <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-purple-900">Diverty Eventos</h1>
             </a>
             <nav class="hidden lg:flex items-center space-x-2">
                 <a href="#home" id="navHome" class="nav-link text-gray-600"><i data-lucide="home" class="w-4 h-4 mr-2"></i>Inicio</a>
                 <a href="#services" id="navServices" class="nav-link text-gray-600"><i data-lucide="sparkles" class="w-4 h-4 mr-2"></i>Servicios</a>
+                <a href="#ideas" id="navIdeas" class="nav-link text-gray-600"><i data-lucide="lightbulb" class="w-4 h-4 mr-2"></i>✨ Ideas</a>
                 <a href="#animators" id="navAnimators" class="nav-link text-gray-600"><i data-lucide="user-check" class="w-4 h-4 mr-2"></i>Animadores</a>
                 <a href="#clowns" id="navClowns" class="nav-link text-gray-600"><i data-lucide="smile" class="w-4 h-4 mr-2"></i>Payasos</a>
                 <a href="#bubbles" id="navBubbles" class="nav-link text-gray-600"><i data-lucide="wind" class="w-4 h-4 mr-2"></i>Burbujas</a>
@@ -383,6 +411,7 @@
             <div class="space-y-2">
                 <a href="#home" id="mobileHome" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="home" class="w-5 h-5"></i>Inicio</a>
                 <a href="#services" id="mobileServices" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="sparkles" class="w-5 h-5"></i>Servicios</a>
+                <a href="#ideas" id="mobileIdeas" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="lightbulb" class="w-5 h-5"></i>✨ Ideas</a>
                 <a href="#animators" id="mobileAnimators" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="user-check" class="w-5 h-5"></i>Animadores</a>
                 <a href="#clowns" id="mobileClowns" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="smile" class="w-5 h-5"></i>Payasos</a>
                 <a href="#bubbles" id="mobileBubbles" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="wind" class="w-5 h-5"></i>Burbujas</a>
@@ -425,9 +454,9 @@
             <i data-lucide="image" class="w-6 h-6"></i>
             <span class="text-xs font-medium">Galería</span>
         </a>
-        <a href="#reviews" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
-            <i data-lucide="star" class="w-6 h-6"></i>
-            <span class="text-xs font-medium">Reseñas</span>
+        <a href="#ideas" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
+            <i data-lucide="lightbulb" class="w-6 h-6"></i>
+            <span class="text-xs font-medium">Ideas</span>
         </a>
     </nav>
 
@@ -515,30 +544,56 @@
             { value: 'ancon', label: 'Ancón (+$10)', cost: 10 }
         ];
         const services = [
-            { id: 'S1', name: 'Pintacaritas', price: 45, description: 'Servicio profesional de pintacaritas en Panamá con pinturas hipoalergénicas. Transformamos a los niños en sus personajes favoritos. Servicio por 1 hora.', image: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', isHourly: true },
-            { id: 'S2', name: 'Globoflexia', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado en Panamá. Arte con globos profesional. Servicio por 1 hora.', image: 'https://i.ibb.co/LjtnV7D/1000156690-f40525f3ffe7fcc4f65d41f55096c0bc-Editado-20250808-161453-0000.jpg', isHourly: true },
-            { id: 'S3', name: 'Decoraciones Temáticas', price: 100, description: 'Decoraciones profesionales para fiestas infantiles en Panamá. Transformamos cualquier espacio en un mundo mágico.', image: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg' },
-            { id: 'S4', name: 'Personajes Temáticos', price: 75, description: '¡Sorprende a todos con la visita de tu personaje favorito! Mickey, Minnie y Mario Bros.', image: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg' },
-            { id: 'S5', name: 'Mini Taller de Manualidades', price: 12.00, description: 'Taller creativo con 2 manualidades, mobiliario, recreadora y materiales. Mínimo 10 niños.', image: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', isPerChild: true },
-            { id: 'S6', name: 'Máquinas de Snack', price: 100, description: 'Alquiler de máquinas de algodón de azúcar y palomitas para fiestas en Panamá. Servicio por 3 horas.', image: 'https://placehold.co/600x400/e9d5ff/7c3aed?text=Snacks' },
-            { id: 'S7', name: 'Show de Magia Cómica', price: 100, description: '1.5 horas de espectáculo interactivo que asombrará a todos. Incluye figuras con globos.', image: 'https://placehold.co/600x400/e9d5ff/7c3aed?text=Magia' },
-            { id: 'S8', name: 'Alquiler de Inflables', price: 90, description: 'Alquiler de inflables seguros para fiestas infantiles en Panamá por 4 horas.', image: 'https://placehold.co/600x400/dcfce7/16a34a?text=Inflable' }
+            { id: 'service_facepaint', name: 'Pintacaritas', price: 45, description: 'Servicio profesional de pintacaritas en Panamá con pinturas hipoalergénicas. Transformamos a los niños en sus personajes favoritos. Servicio por 1 hora.', image: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', isHourly: true },
+            { id: 'service_balloons', name: 'Globoflexia', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado en Panamá. Arte con globos profesional. Servicio por 1 hora.', image: 'https://i.ibb.co/LjtnV7D/1000156690-f40525f3ffe7fcc4f65d41f55096c0bc-Editado-20250808-161453-0000.jpg', isHourly: true },
+            { id: 'service_decor', name: 'Decoraciones Temáticas', price: 100, description: 'Decoraciones profesionales para fiestas infantiles en Panamá. Transformamos cualquier espacio en un mundo mágico.', image: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg' },
+            { id: 'service_characters', name: 'Personajes Temáticos', price: 75, description: '¡Sorprende a todos con la visita de tu personaje favorito! Mickey, Minnie y Mario Bros.', image: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg' },
+            { id: 'service_workshop', name: 'Mini Taller de Manualidades', price: 12.00, description: 'Taller creativo con 2 manualidades, mobiliario, recreadora y materiales. Mínimo 10 niños.', image: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', isPerChild: true },
+            { id: 'service_snacks', name: 'Máquinas de Snack', price: 100, description: 'Alquiler de máquinas de algodón de azúcar y palomitas para fiestas en Panamá. Servicio por 3 horas.', image: 'https://placehold.co/400x267/e9d5ff/7c3aed?text=Snacks' },
+            { id: 'service_magic', name: 'Show de Magia Cómica', price: 100, description: '1.5 horas de espectáculo interactivo que asombrará a todos. Incluye figuras con globos.', image: 'https://placehold.co/400x267/e9d5ff/7c3aed?text=Magia' },
+            { id: 'service_inflatable', name: 'Alquiler de Inflables', price: 90, description: 'Alquiler de inflables seguros para fiestas infantiles en Panamá por 4 horas.', image: 'https://placehold.co/400x267/dcfce7/16a34a?text=Inflable' }
         ];
         const animatorPackages = [
-            { id: 'P1', name: 'Plan Básico (Animador)', price: 70, services: ['1 Animador profesional', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '1.5h de diversión con animador profesional en Panamá: juegos, globos, piñata. ¡Rápido y alegre!', image: 'https://i.ibb.co/Kcz1xx4K/IMG-20240420-WA0038.jpg' },
-            { id: 'P2', name: 'Plan Recreativo (Animador)', price: 85, services: ['Animador profesional', 'Pintacaritas básica (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '2h de aventura con animador en Panamá: pintacaritas básica, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/tTZzG8GC/1000166059-19d1c374d1a4d6d9e0386ce90dc0be60-Editado-Editado-20250808-142449-0000.jpg' }
+            { id: 'animator_basic', name: 'Plan Básico (Animador)', price: 70, services: ['1 Animador profesional', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '1.5h de diversión con animador profesional en Panamá: juegos, globos, piñata. ¡Rápido y alegre!', image: 'https://i.ibb.co/Kcz1xx4K/IMG-20240420-WA0038.jpg' },
+            { id: 'animator_recreative', name: 'Plan Recreativo (Animador)', price: 85, services: ['Animador profesional', 'Pintacaritas básica (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '2h de aventura con animador en Panamá: pintacaritas básica, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/tTZzG8GC/1000166059-19d1c374d1a4d6d9e0386ce90dc0be60-Editado-Editado-20250808-142449-0000.jpg' }
         ];
         const clownPackages = [
-            { id: 'C1', name: 'Paquete Circo', price: 85, services: ['Payaso profesional', 'Integración de niños y adultos', 'Juegos y concursos', 'Figuras básicas con globos', 'Canto de cumpleaños', 'Romper la piñata'], description: '1.5h de risas garantizadas en Panamá con nuestro Payaso Risitas, lleno de juegos y humor profesional.', image: 'https://i.ibb.co/XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg' },
-            { id: 'C2', name: 'Plan Recreativo (Payaso)', price: 110, services: ['1 Payasito profesional', '1 Pintacaritas (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata', 'Canto de cumpleaños'], description: '2h de aventura con payaso en Panamá: pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/2w26tSZ/2913b329-e65a-4574-846d-03d72a8ed6e1-20250808-145823-0000.jpg' },
-            { id: 'P3', name: 'Plan Magic (Payaso)', price: 135, services: ['1 Payaso profesional', 'Animación, juegos y concursos (1.5 horas)', '1 Pintacaritas (1 hora)', 'Show de magia cómica', 'Asistencia para la piñata', 'Canto de cumpleaños'], description: '2.5h premium con payaso en Panamá: juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', image: 'https://i.ibb.co/WvR9bMVz/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg' },
-            { id: 'P4', name: 'Plan Diverty (Payaso)', price: 200, services: ['1 Payaso profesional', 'Juegos y concursos', '1 Pintacaritas', 'Globoflexia', 'Show de Burbujas Gigantes', 'Asistencia en la piñata', 'Canto de cumpleaños'], description: '3h de diversión completa en Panamá: Payaso, juegos, pintacaritas, globoflexia, show de burbujas, y asistencia piñata. ¡La magia garantizada!', image: 'https://i.ibb.co/HDvvDCLk/1000099577-6bef3c87bff7ee22e2b0606e02467bf8-Editado-20250808-150335-0000.jpg' }
+            { id: 'clown_circus', name: 'Paquete Circo', price: 85, services: ['Payaso profesional', 'Integración de niños y adultos', 'Juegos y concursos', 'Figuras básicas con globos', 'Canto de cumpleaños', 'Romper la piñata'], description: '1.5h de risas garantizadas en Panamá con nuestro Payaso Risitas, lleno de juegos y humor profesional.', image: 'https://i.ibb.co/XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg' },
+            { id: 'clown_recreative', name: 'Plan Recreativo (Payaso)', price: 110, services: ['1 Payasito profesional', '1 Pintacaritas (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata', 'Canto de cumpleaños'], description: '2h de aventura con payaso en Panamá: pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/2w26tSZ/2913b329-e65a-4574-846d-03d72a8ed6e1-20250808-145823-0000.jpg' },
+            { id: 'clown_magic', name: 'Plan Magic (Payaso)', price: 135, services: ['1 Payaso profesional', 'Animación, juegos y concursos (1.5 horas)', '1 Pintacaritas (1 hora)', 'Show de magia cómica', 'Asistencia para la piñata', 'Canto de cumpleaños'], description: '2.5h premium con payaso en Panamá: juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', image: 'https://i.ibb.co/WvR9bMVz/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg' },
+            { id: 'clown_diverty', name: 'Plan Diverty (Payaso)', price: 200, services: ['1 Payaso profesional', 'Juegos y concursos', '1 Pintacaritas', 'Globoflexia', 'Show de Burbujas Gigantes', 'Asistencia en la piñata', 'Canto de cumpleaños'], description: '3h de diversión completa en Panamá: Payaso, juegos, pintacaritas, globoflexia, show de burbujas, y asistencia piñata. ¡La magia garantizada!', image: 'https://i.ibb.co/HDvvDCLk/1000099577-6bef3c87bff7ee22e2b0606e02467bf8-Editado-20250808-150335-0000.jpg' }
         ];
         const bubblePackages = [
-            { id: 'B2', name: 'Paquete Fiesta Burbuja Completa', price: 190, services: ['Animación infantil', 'Juegos y concursos', 'Payasito o Animador', 'Show de Burbujas Gigantes', 'Romper la piñata'], description: '2 horas de diversión completa en Panamá con animación, juegos, payasito, show de burbujas gigantes y piñata.', image: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg' },
-            { id: 'BS1', name: 'Show de Burbujas Premium', price: 150, services: ['Burbujas gigantes', 'Humo', 'Burbujas LED', 'Interacción con el público', 'Fotos dentro de la burbuja', 'Trucos con burbujas', 'Burbujas de espuma'], description: '1 hora de show profesional en Panamá con burbujas gigantes, humo, LED, interacción, fotos, trucos y espuma.', image: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg' },
-            { id: 'BS3', name: 'Show Corporativo/Especial', price: 220, services: ['Show personalizado para centros comerciales, colegios o eventos grandes', 'Luces especiales'], description: '1 hora de show personalizable en Panamá para eventos corporativos, centros comerciales o colegios, con luces especiales.', image: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg' }
+            { id: 'bubble_party', name: 'Paquete Fiesta Burbuja Completa', price: 190, services: ['Animación infantil', 'Juegos y concursos', 'Payasito o Animador', 'Show de Burbujas Gigantes', 'Romper la piñata'], description: '2 horas de diversión completa en Panamá con animación, juegos, payasito, show de burbujas gigantes y piñata.', image: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg' },
+            { id: 'bubble_premium', name: 'Show de Burbujas Premium', price: 150, services: ['Burbujas gigantes', 'Humo', 'Burbujas LED', 'Interacción con el público', 'Fotos dentro de la burbuja', 'Trucos con burbujas', 'Burbujas de espuma'], description: '1 hora de show profesional en Panamá con burbujas gigantes, humo, LED, interacción, fotos, trucos y espuma.', image: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg' },
+            { id: 'bubble_corporate', name: 'Show Corporativo/Especial', price: 220, services: ['Show personalizado para centros comerciales, colegios o eventos grandes', 'Luces especiales'], description: '1 hora de show personalizable en Panamá para eventos corporativos, centros comerciales o colegios, con luces especiales.', image: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg' }
         ];
+        
+        // --- DISCOUNT LOGIC ---
+        const applyPromotions = (packages, discountRate, packageIds = []) => {
+            const currentDate = new Date();
+            const isAugust = currentDate.getMonth() === 7; // 7 = August (0-indexed)
+
+            if (isAugust) {
+                return packages.map(pkg => {
+                    if (packageIds.length === 0 || packageIds.includes(pkg.id)) {
+                        return {
+                            ...pkg,
+                            originalPrice: pkg.price,
+                            price: parseFloat((pkg.price * (1 - discountRate)).toFixed(2)),
+                            discountApplied: true,
+                            discountMessage: `¡${Math.round(discountRate * 100)}% OFF!`
+                        };
+                    }
+                    return pkg;
+                });
+            }
+            return packages;
+        };
+        const bubblePackagesWithDiscount = applyPromotions(bubblePackages, 0.10);
+        const clownPackagesWithDiscount = applyPromotions(clownPackages, 0.15, ['clown_diverty']);
+        const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
+
         const gallery = [
             { image: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', alt: 'Pintacaritas profesional en fiesta infantil Panamá', category: 'pintacaritas' },
             { image: 'https://i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg', alt: 'Globoflexia creativa en evento Panamá', category: 'globoflexia' },
@@ -550,17 +605,17 @@
             { image: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg', alt: 'Evento corporativo profesional Panamá', category: 'corporativo' }
         ];
         const blogPosts = [
-            { id: 'blog1', title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025', description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. Guía completa para padres panameños.', image: 'https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png', date: '2024-12-15', author: 'Equipo Diverty Panamá', content: `<p>Organizar una fiesta infantil en Panamá es una aventura emocionante. Para 2025, las tendencias en el país son fascinantes. Aquí te presentamos las 7 temáticas más pedidas en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte:</p><h3>1. El Mundo Mágico de Encanto</h3><p>Inspirada en la película de Disney, esta temática llena de color colombiano es perfecta para soñadores panameños. Muy popular en Panamá Centro.</p><h3>2. Aventura con Bluey</h3><p>La popular perrita Bluey trae juegos interactivos perfectos para el clima de Panamá. Ideal para fiestas al aire libre en Arraiján y Pacora.</p><h3>3. Superhéroes al Rescate</h3><p>Los clásicos nunca pasan de moda en Panamá. Spiderman, Batman y la Mujer Maravilla siguen siendo los favoritos en La Chorrera y Panamá Norte.</p><h3>4. Princesas con un Toque Moderno</h3><p>Las princesas de Disney reinventadas con actividades que empoderan a las niñas panameñas. Muy solicitado en todas nuestras zonas de cobertura.</p><h3>5. Exploradores de Dinosaurios</h3><p>Un viaje prehistórico perfecto para el clima tropical de Panamá, con decoraciones de dinosaurios que fascinan a los niños.</p><h3>6. Fiesta de Videojuegos (Minecraft/Mario Bros)</h3><p>Para los pequeños gamers panameños, una fiesta inspirada en Minecraft o Mario Bros es garantía de diversión en cualquier zona de Panamá.</p><h3>7. Unicornios y Fantasía</h3><p>La magia de los unicornios y arcoíris sigue cautivando a las niñas panameñas, creando un ambiente de ensueño tropical.</p><p>En Diverty Eventos Panamá, podemos ayudarte a hacer realidad cualquiera de estas temáticas en Panamá Centro, Arraiján, La Chorrera, Pacora o Panamá Norte. ¡Contáctanos!</p>`},
+            { id: 'blog1', title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025', description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. Guía completa para padres panameños.', image: 'https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png', date: '2024-12-15', author: 'Equipo Diverty Panamá', content: `<p>Organizar una fiesta infantil en Panamá es una aventura emocionante. Para 2025, las tendencias en el país son fascinantes. Aquí te presentamos las 7 temáticas más pedidas en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte:</p><h3>1. El Mundo Mágico de Encanto</h3><p>Inspirada en la película de Disney, esta temática llena de color colombiano es perfecta para soñadores panameños. Muy popular en Panamá Centro.</p><h3>2. Aventura con Bluey</h3><p>La popular perrita Bluey trae juegos interactivos perfectos para el clima de Panamá. Ideal para fiestas al aire libre en Arraiján y Pacora.</p><h3>3. Superhéroes al Rescate</h3><p>Los clásicos nunca pasan de moda en Panamá. Spiderman, Batman y la Mujer Maravilla siguen siendo los favoritos en La Chorrera y Panamá Norte.</p><h3>4. Princesas con un Toque Moderno</h3><p>Las princesas de Disney reinventadas con actividades que empoderan a las niñas panameñas. Muy solicitado en todas nuestras zonas de cobertura.</p><h3>5. Exploradores de Dinosaurios</h3><p>Un viaje prehistórico perfecto para el clima tropical de Panamá, con decoraciones de dinosaurios que fascinan a los niños.</p><h3>6. Fiesta de Videojuegos (Minecraft/Mario Bros)</h3><p>Para los pequeños gamers panameños, una fiesta inspirada en Minecraft o Mario Bros es garantía de diversión en cualquier zona de Panamá.</p><h3>7. Unicornios y Fantasía</h3><p>La magia de los unicornios y arcoíris sigue cautivando a las niñas panameñas, creando un ambiente de ensueño tropical.</p><p>En Diverty Eventos Panamá, podemos ayudarte a hacer realidad cualquiera de estas temáticas en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. ¡Contáctanos!</p>`},
             { id: 'blog2', title: 'Shows de Burbujas Gigantes en Panamá: La Tendencia que Enamorará a Todos', description: 'Descubre por qué los shows de burbujas gigantes son el entretenimiento más buscado para fiestas infantiles en Panamá.', image: 'https://i.ibb.co/7J5JM84n/file-000000003a0461fa918e3a8f30f312e2.png', date: '2024-12-10', author: 'Equipo Diverty Panamá', content: `<p>Si buscas un show que deje a todos con la boca abierta en Panamá, ¡el show de burbujas gigantes es la respuesta perfecta! Ha ganado una popularidad inmensa en todo el país por su capacidad de asombrar tanto a niños como adultos.</p><h3>¿Qué lo hace tan especial en Panamá?</h3><ul><li><strong>Magia Visual Tropical:</strong> Las burbujas de tamaños increíbles crean un espectáculo hipnotizante perfecto para el ambiente panameño.</li><li><strong>Interactividad Total:</strong> Los niños panameños no solo observan, ¡participan! Pueden entrar en una burbuja gigante para una foto inolvidable.</li><li><strong>Momentos Únicos:</strong> Las fotos con burbujas son recuerdos que durarán para siempre en las familias panameñas.</li><li><strong>Diversión para Todas las Edades:</strong> Es un entretenimiento que une a toda la familia panameña, desde los más pequeños hasta los abuelos.</li><li><strong>Perfecto para el Clima:</strong> Funciona excelentemente tanto en interiores como exteriores, adaptándose al clima tropical de Panamá.</li></ul><p>En Diverty Eventos, somos los especialistas en shows de burbujas gigantes en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. ¡Añade este toque mágico a tu fiesta panameña!</p>`},
             { id: 'blog3', title: 'Errores Comunes al Planear una Fiesta Infantil en Panamá (y Cómo Evitarlos)', description: 'Guía práctica para padres panameños: descubre los errores más frecuentes al organizar una fiesta infantil en Panamá y cómo evitarlos.', image: 'https://i.ibb.co/gb4WkYzD/aichat-423527.jpg', date: '2024-12-05', author: 'Equipo Diverty Panamá', content: `<p>Planear la fiesta infantil perfecta en Panamá puede ser un desafío único. El clima tropical, las tradiciones locales y las expectativas familiares pueden complicar la organización. Queremos que todo salga mágico, pero a menudo se cometen errores que pueden convertir la diversión en estrés. Aquí te mostramos los más comunes en Panamá y cómo evitarlos:</p><h3>1. No considerar el clima tropical de Panamá</h3><p>Uno de los mayores errores es no planificar considerando el calor y la humedad típicos de Panamá.</p><p><strong>Cómo evitarlo:</strong> Elige horarios más frescos (mañana temprano o tarde), asegura buena ventilación, y ten bebidas frescas siempre disponibles.</p><h3>2. No tener un presupuesto adaptado a Panamá</h3><p>Los costos en Panamá pueden variar según la zona. Lo que cuesta en Panamá Centro puede ser diferente en Arraiján o La Chorrera.</p><p><strong>Cómo evitarlo:</strong> Investiga precios locales, considera costos de transporte entre zonas, y establece un presupuesto realista para tu área.</p><h3>3. Ignorar las tradiciones panameñas</h3><p>No incorporar elementos culturales panameños puede hacer que la fiesta se sienta genérica.</p><p><strong>Cómo evitarlo:</strong> Incluye música típica panameña, comidas tradicionales adaptadas para niños, y celebra la rica cultura local.</p><h3>4. Subestimar el entretenimiento profesional</h3><p>Una fiesta infantil en Panamá sin entretenimiento adecuado puede decaer rápidamente, especialmente con el calor.</p><p><strong>Cómo evitarlo:</strong> Contrata profesionales locales como Diverty Eventos. Un animador, payaso o show de burbujas panameño puede mantener a todos frescos y entretenidos.</p><p>En Diverty Eventos Panamá, conocemos perfectamente estos desafíos y estamos aquí para ayudarte a evitar estos errores. Servimos en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte, garantizando que la fiesta de tus hijos sea un éxito rotundo adaptado a nuestra hermosa cultura panameña.</p>`}
         ];
         const customerReviews = [
-            { id: 1, name: "María González - Panamá Centro", rating: 5, comment: "Excelente servicio en Panamá Centro, los niños quedaron encantados con el show de burbujas. Muy profesionales y puntuales. Recomendado 100% para fiestas en Panamá.", date: "2024-11-20", service: "Show de Burbujas Premium", avatar: "https://i.pravatar.cc/150?img=1", location: "Panamá Centro" },
-            { id: 2, name: "Carlos Mendoza - Arraiján", rating: 5, comment: "Muy profesionales en Arraiján, llegaron puntuales y la animación fue increíble. Los niños no pararon de reír. Diverty es lo mejor en fiestas infantiles de Panamá.", date: "2024-11-15", service: "Plan Recreativo (Payaso)", avatar: "https://i.pravatar.cc/150?img=2", location: "Arraiján" },
-            { id: 3, name: "Ana Rodríguez - La Chorrera", rating: 5, comment: "La pintacaritas en La Chorrera fue un éxito total. Los diseños eran hermosos y los niños estaban felices. El mejor servicio de entretenimiento infantil en Panamá.", date: "2024-11-10", service: "Pintacaritas", avatar: "https://i.pravatar.cc/150?img=3", location: "La Chorrera" },
-            { id: 4, name: "Roberto Silva - Pacora", rating: 5, comment: "Contratamos el Plan Diverty para una fiesta en Pacora y fue espectacular. Vale cada centavo, súper recomendado para toda la familia panameña.", date: "2024-11-05", service: "Plan Diverty (Payaso)", avatar: "https://i.pravatar.cc/150?img=4", location: "Pacora" },
-            { id: 5, name: "Lucía Herrera - Panamá Norte", rating: 5, comment: "El taller de manualidades en Panamá Norte fue perfecto para el cumpleaños de mi hija. Muy organizados y los niños aprendieron mucho. Excelente servicio panameño.", date: "2024-10-28", service: "Mini Taller de Manualidades", avatar: "https://i.pravatar.cc/150?img=5", location: "Panamá Norte" },
-            { id: 6, name: "Diego Morales - Panamá Centro", rating: 5, comment: "Los inflables fueron un hit en nuestra fiesta en Panamá Centro. Los niños jugaron todo el tiempo y los padres pudimos relajarnos. Diverty es lo máximo.", date: "2024-10-20", service: "Alquiler de Inflables", avatar: "https://i.pravatar.cc/150?img=6", location: "Panamá Centro" }
+            { id: 1, name: "María González - Panamá Centro", rating: 5, comment: "Excelente servicio en Panamá Centro, los niños quedaron encantados con el show de burbujas. Muy profesionales y puntuales. Recomendado 100% para fiestas en Panamá.", date: "2024-11-20", service: "Show de Burbujas Premium", avatar: "https://i.pravatar.cc/48?img=1", location: "Panamá Centro" },
+            { id: 2, name: "Carlos Mendoza - Arraiján", rating: 5, comment: "Muy profesionales en Arraiján, llegaron puntuales y la animación fue increíble. Los niños no pararon de reír. Diverty es lo mejor en fiestas infantiles de Panamá.", date: "2024-11-15", service: "Plan Recreativo (Payaso)", avatar: "https://i.pravatar.cc/48?img=2", location: "Arraiján" },
+            { id: 3, name: "Ana Rodríguez - La Chorrera", rating: 5, comment: "La pintacaritas en La Chorrera fue un éxito total. Los diseños eran hermosos y los niños estaban felices. El mejor servicio de entretenimiento infantil en Panamá.", date: "2024-11-10", service: "Pintacaritas", avatar: "https://i.pravatar.cc/48?img=3", location: "La Chorrera" },
+            { id: 4, name: "Roberto Silva - Pacora", rating: 5, comment: "Contratamos el Plan Diverty para una fiesta en Pacora y fue espectacular. Vale cada centavo, súper recomendado para toda la familia panameña.", date: "2024-11-05", service: "Plan Diverty (Payaso)", avatar: "https://i.pravatar.cc/48?img=4", location: "Pacora" },
+            { id: 5, name: "Lucía Herrera - Panamá Norte", rating: 5, comment: "El taller de manualidades en Panamá Norte fue perfecto para el cumpleaños de mi hija. Muy organizados y los niños aprendieron mucho. Excelente servicio panameño.", date: "2024-10-28", service: "Mini Taller de Manualidades", avatar: "https://i.pravatar.cc/48?img=5", location: "Panamá Norte" },
+            { id: 6, name: "Diego Morales - Panamá Centro", rating: 5, comment: "Los inflables fueron un hit en nuestra fiesta en Panamá Centro. Los niños jugaron todo el tiempo y los padres pudimos relajarnos. Diverty es lo máximo.", date: "2024-10-20", service: "Alquiler de Inflables", avatar: "https://i.pravatar.cc/48?img=6", location: "Panamá Centro" }
         ];
 
         // --- UTILITY FUNCTIONS ---
@@ -639,7 +694,7 @@
             updateCalculatorTotal();
         }
         function renderCalculatorServices() {
-            const allServices = [...services, ...animatorPackages, ...clownPackages, ...bubblePackages];
+            const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
             const servicesHtml = allServices.map(service => `
                 <div class="bg-white bg-opacity-20 rounded-xl p-4 mb-3">
                     <div class="flex justify-between items-center mb-2">
@@ -656,7 +711,7 @@
             lucide.createIcons();
         }
         function changeCalculatorQuantity(serviceId, change) {
-            const allServices = [...services, ...animatorPackages, ...clownPackages, ...bubblePackages];
+            const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
             const service = allServices.find(s => s.id === serviceId);
             if (!service) return;
             const existingItem = calculatorItems.find(item => item.id === serviceId);
@@ -687,12 +742,44 @@
             calculatorItems = [];
         }
 
+        // --- GEMINI API LOGIC ---
+        async function callGeminiAPI(chatHistory, generationConfig = null) {
+            const apiKey = ""; // API key will be injected by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            
+            const payload = { contents: chatHistory };
+            if (generationConfig) {
+                payload.generationConfig = generationConfig;
+            }
+
+            try {
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                const result = await response.json();
+                
+                const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (textResponse) {
+                    if (generationConfig && generationConfig.responseMimeType === "application/json") {
+                        return JSON.parse(textResponse);
+                    }
+                    return textResponse;
+                }
+                throw new Error("No text response from API");
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                if (generationConfig && generationConfig.responseMimeType === "application/json") {
+                    return { responseText: "¡Ups! 🎈 Tuve un pequeño problema para conectarme. Por favor, intenta de nuevo." };
+                }
+                return "¡Ups! 🎈 Tuvimos un problema para generar la respuesta. Por favor, intenta de nuevo.";
+            }
+        }
+
         // --- CHATBOT LOGIC ---
         function executeBotAction(action) {
             if (!action || !action.type) return;
             switch (action.type) {
                 case 'addToCart':
-                    const allServices = [...services, ...animatorPackages, ...clownPackages, ...bubblePackages];
+                    const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
                     const itemToAdd = allServices.find(s => s.id === action.itemId);
                     if (itemToAdd) {
                         const quantity = action.quantity || 1;
@@ -710,6 +797,8 @@
                             addToCart(itemToAdd, quantity);
                         }
                         showModal('cartModal');
+                    } else {
+                        console.error("Chatbot tried to add an item that does not exist:", action.itemId);
                     }
                     break;
                 case 'navigateTo':
@@ -718,56 +807,6 @@
             }
         }
         
-        async function callGeminiAPI(chatHistory) {
-            // Se ha insertado la clave de API directamente.
-            // ADVERTENCIA: Esto no es seguro para producción.
-            const apiKey = "AIzaSyC4ZbDsL8QS101zjyrQ77MiYROeuZ-N7Ys"; 
-
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            
-            const systemInstruction = `Eres "DivertyBot", el asistente virtual de "Diverty Eventos" en Panamá. Tu personalidad es súper amigable, rápida y eficiente.
-
-    **TUS REGLAS DE ORO (¡MUY IMPORTANTES!):**
-    1.  **RESPUESTAS ULTRA CORTAS:** Sé extremadamente breve. Responde en 1 o 2 oraciones MÁXIMO. Ve directo al grano.
-    2.  **NUNCA CÓDIGO NI FORMATO:** Jamás uses markdown, asteriscos (*), guiones (-), ni ningún tipo de código. Solo texto plano y emojis.
-    3.  **SÉ PROACTIVO, NO UN LISTADO:** En lugar de listar todo, haz preguntas para guiar al usuario.
-        -   *Ejemplo MALO:* "Tenemos el Paquete Circo por $85, el Plan Recreativo por $110..."
-        -   *Ejemplo BUENO:* "¡Tenemos varios paquetes de payasos! 🤡 ¿Buscas algo sencillo o uno con más actividades como pintacaritas y magia?"
-    4.  **MANEJA CANTIDADES:** Si el usuario pide una cantidad (ej. "2 horas de pintacaritas"), inclúyela en la acción.
-    5.  **USA TUS HERRAMIENTAS:** Si el usuario quiere añadir algo al carrito o ver una sección, ¡hazlo por él! Responde **ÚNICAMENTE** con el objeto JSON, sin \`\`\`json.
-
-    **FORMATO PARA ACCIONES (SOLO EL JSON, SIN NADA MÁS):**
-    {
-      "responseText": "¡Listo! Añadí 2 horas de Pintacaritas a tu carrito. ¿Algo más?",
-      "action": {
-        "type": "addToCart",
-        "itemId": "S1",
-        "quantity": 2
-      }
-    }
-
-    **Acciones que puedes hacer:**
-    - \`"type": "addToCart"\`: Usa el \`itemId\` exacto. Si aplica, incluye \`quantity\`.
-    - \`"type": "navigateTo"\`: Usa el \`sectionId\` (ej: 'gallery', 'booking').
-
-    Si no sabes la respuesta o te piden algo fuera de fiestas infantiles, di amablemente: "Esa es una buena pregunta, pero está un poco fuera de mi especialidad. ¿Te gustaría que te contacte un agente por WhatsApp? 😊"`;
-
-            const payload = {
-                contents: chatHistory.map(turn => ({ role: turn.role, parts: [{ text: turn.text }] })),
-                systemInstruction: { parts: [{ text: systemInstruction }] }
-            };
-            
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                if (!response.ok) throw new Error(`API request failed`);
-                const result = await response.json();
-                return result.candidates?.[0]?.content?.parts?.[0]?.text || "No pude procesar la respuesta. Intenta de nuevo.";
-            } catch (error) {
-                console.error("Error calling Gemini API:", error);
-                return "¡Ups! 🎈 Tuve un pequeño problema para conectarme. Por favor, intenta de nuevo o contacta a un agente por WhatsApp al +507 6667-7965.";
-            }
-        }
-
         function initChat() {
             const chatInput = $('#chatInput');
             const sendBtn = $('#sendChat');
@@ -789,7 +828,7 @@
                 const messageText = chatInput.value.trim();
                 if (!messageText) return;
                 addMessage(messageText, 'user');
-                chatHistory.push({ role: 'user', text: messageText });
+                chatHistory.push({ role: 'user', parts: [{ text: messageText }] });
                 chatInput.value = '';
                 
                 const loadingMsg = document.createElement('div');
@@ -799,29 +838,36 @@
                 messagesContainer.appendChild(loadingMsg);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 lucide.createIcons();
-
-                const responseText = await callGeminiAPI(chatHistory);
+                
+                const chatbotGenerationConfig = {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "responseText": { "type": "STRING", "description": "Tu respuesta corta y amigable para el usuario, sin mencionar precios." },
+                            "action": {
+                                "type": "OBJECT",
+                                "description": "La acción a ejecutar (opcional).",
+                                "properties": {
+                                    "type": { "type": "STRING", "enum": ["addToCart", "navigateTo"], "description": "El tipo de acción." },
+                                    "itemId": { "type": "STRING", "description": "El ID único del servicio a agregar (ej: 'clown_magic')." },
+                                    "quantity": { "type": "NUMBER", "description": "La cantidad (para servicios por hora o por niño)." },
+                                    "sectionId": { "type": "STRING", "description": "El ID de la sección a la que navegar (ej: 'clowns')." }
+                                }
+                            }
+                        }
+                    }
+                };
+                const response = await callGeminiAPI(chatHistory, chatbotGenerationConfig);
                 loadingMsg.remove();
 
-                let botResponseText = responseText;
-                let action = null;
-
-                try {
-                    const jsonMatch = responseText.match(/(\{[\s\S]*\})/);
-                    if (jsonMatch && jsonMatch[1]) {
-                        const jsonResponse = JSON.parse(jsonMatch[1]);
-                        botResponseText = jsonResponse.responseText;
-                        action = jsonResponse.action;
-                    } else {
-                         botResponseText = responseText.replace(/```(json)?/g, '');
-                    }
-                } catch (e) {
-                     botResponseText = responseText.replace(/```(json)?/g, '');
+                addMessage(response.responseText, 'model');
+                chatHistory.push({ role: 'model', parts: [{ text: response.responseText }] });
+                
+                if (response.action) {
+                    executeBotAction(response.action);
                 }
 
-                addMessage(botResponseText, 'model');
-                chatHistory.push({ role: 'model', text: botResponseText });
-                if (action) executeBotAction(action);
                 if (chatHistory.length > 8) chatHistory = chatHistory.slice(-8);
             }
             
@@ -841,11 +887,11 @@
             setTimeout(() => {
                 app.activeSection = sectionId;
                 $$('.nav-link, .mobile-nav-link, .mobile-nav-link-bottom').forEach(link => link.classList.remove('active'));
-                const navMap = { home: ['#navHome', '#mobileHome'], services: ['#navServices', '#mobileServices'], animators: ['#navAnimators', '#mobileAnimators'], clowns: ['#navClowns', '#mobileClowns'], bubbles: ['#navBubbles', '#mobileBubbles'], gallery: ['#navGallery', '#mobileGallery'], blog: ['#navBlog', '#mobileBlog'], reviews: ['#navReviews', '#mobileReviews'], booking: ['#navBooking', '#mobileBooking'] };
+                const navMap = { home: ['#navHome', '#mobileHome'], services: ['#navServices', '#mobileServices'], ideas: ['#navIdeas', '#mobileIdeas'], animators: ['#navAnimators', '#mobileAnimators'], clowns: ['#navClowns', '#mobileClowns'], bubbles: ['#navBubbles', '#mobileBubbles'], gallery: ['#navGallery', '#mobileGallery'], blog: ['#navBlog', '#mobileBlog'], reviews: ['#navReviews', '#mobileReviews'], booking: ['#navBooking', '#mobileBooking'] };
                 navMap[sectionId]?.forEach(selector => $(selector)?.classList.add('active'));
                 $$(`.mobile-nav-link-bottom[href="#${sectionId}"]`).forEach(link => link.classList.add('active'));
 
-                const sections = { home: renderHome, services: renderServices, animators: renderAnimators, clowns: renderClowns, bubbles: renderBubbles, gallery: renderGallery, blog: renderBlog, reviews: renderReviews, booking: renderBooking };
+                const sections = { home: renderHome, services: renderServices, ideas: renderIdeaGenerator, animators: renderAnimators, clowns: renderClowns, bubbles: renderBubbles, gallery: renderGallery, blog: renderBlog, reviews: renderReviews, booking: renderBooking };
                 sections[sectionId]?.();
                 toggleMobileMenu(false);
                 hideLoading();
@@ -861,11 +907,11 @@
                         <p class="text-lg sm:text-xl lg:text-2xl mb-10 opacity-90">Especialistas en animación, shows de burbujas y entretenimiento infantil en Panamá Centro, Panamá Este, Arraiján, La Chorrera, Ancón, Pacora y Panamá Norte. ¡Más de 500 fiestas realizadas!</p>
                         <div class="flex flex-col sm:flex-row justify-center gap-4 lg:gap-6 mb-6">
                             <a href="#services" class="btn-premium btn-primary nav-action"><i data-lucide="sparkles"></i>¡Ver Servicios en Panamá!</a>
-                            <a href="#animators" class="btn-premium btn-secondary nav-action"><i data-lucide="user-check"></i>Planes con Animadores</a>
+                             <a href="#ideas" class="btn-premium btn-tertiary nav-action"><i data-lucide="lightbulb"></i>✨ Generador de Ideas</a>
                         </div>
                         <div class="flex flex-col sm:flex-row justify-center gap-4 lg:gap-6">
                             <a href="#clowns" class="btn-premium btn-warning nav-action"><i data-lucide="smile"></i>Planes con Payasos</a>
-                            <a href="#bubbles" class="btn-premium btn-tertiary nav-action"><i data-lucide="wind"></i>¡Shows de Burbujas!</a>
+                            <a href="#bubbles" class="btn-premium btn-secondary nav-action"><i data-lucide="wind"></i>¡Shows de Burbujas!</a>
                         </div>
                     </div>
                 </section>
@@ -897,12 +943,29 @@
             const isPackage = !!item.services;
             const isBlog = !!item.author;
             const title = item.name || item.title;
-            const price = item.price ? `$${item.price.toFixed(0)}` : '';
+            
+            let priceDisplayHTML = '';
+            if (item.price) {
+                if (item.discountApplied) {
+                    priceDisplayHTML = `
+                        <div class="absolute top-4 right-4 text-right">
+                             <span class="bg-pink-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">${item.discountMessage}</span>
+                             <div class="mt-2 bg-white/80 backdrop-blur-sm p-2 rounded-lg">
+                                 <span class="text-gray-500 line-through text-xl font-poppins">$${item.originalPrice.toFixed(0)}</span>
+                                 <span class="text-green-600 text-3xl font-bold font-poppins ml-2">$${item.price.toFixed(0)}</span>
+                             </div>
+                        </div>
+                    `;
+                } else {
+                    priceDisplayHTML = `<div class="absolute top-4 right-4 bg-purple-600 text-white text-lg font-bold font-poppins py-2 px-4 rounded-full shadow-lg">$${item.price.toFixed(0)}${item.isHourly ? '/hr' : ''}${item.isPerChild ? '/niño' : ''}</div>`;
+                }
+            }
+
 
             const imageHTML = item.image ? `
                 <div class="relative">
-                    <img src="${item.image}" alt="${title}" class="w-full h-48 object-cover" loading="lazy">
-                    ${price && !isBlog ? `<div class="absolute top-4 right-4 bg-purple-600 text-white text-lg font-bold font-poppins py-2 px-4 rounded-full shadow-lg">${price}${item.isHourly ? '/hr' : ''}${item.isPerChild ? '/niño' : ''}</div>` : ''}
+                    <img src="${item.image}" alt="${title}" class="w-full h-48 object-cover" loading="lazy" width="400" height="267" onerror="this.onerror=null;this.src='https://placehold.co/400x267/cccccc/ffffff?text=Imagen+no+disponible';">
+                    ${priceDisplayHTML}
                 </div>` : '';
             
             let actionButton;
@@ -913,7 +976,7 @@
             } else if (item.isPerChild) {
                 actionButton = `<div class="mt-auto"><div class="form-group mb-4"><label for="qty-${item.id}" class="form-label text-center text-sm font-semibold text-gray-600 block mb-2"># de Niños (mín. 10):</label><input type="number" id="qty-${item.id}" class="form-input text-center w-full" value="10" min="10"></div><button onclick="addToCartFromWorkshopCard('${item.id}')" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400">Añadir</button></div>`;
             } else {
-                actionButton = `<button onclick='addToCart(${JSON.stringify(item).replace(/"/g, '&quot;')})' class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400 mt-auto">Añadir al Carrito</button>`;
+                actionButton = `<button onclick="handleAddToCartClick('${item.id}')" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400 mt-auto">Añadir al Carrito</button>`;
             }
 
             const servicesListHTML = isPackage ? `<ul class="space-y-2 text-gray-700 text-sm mb-6 flex-grow">${item.services.map(s => `<li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500 mt-1 flex-shrink-0"></i><span>${s}</span></li>`).join('')}</ul>` : '';
@@ -940,14 +1003,14 @@
 
         const renderServices = () => renderSection(services, 'Nuestros Servicios', 'sparkles');
         const renderAnimators = () => renderSection(animatorPackages, 'Paquetes de Animadores', 'user-check');
-        const renderClowns = () => renderSection(clownPackages, 'Paquetes de Payasos', 'smile');
-        const renderBubbles = () => renderSection(bubblePackages, 'Paquetes de Burbujas', 'wind');
+        const renderClowns = () => renderSection(clownPackagesWithDiscount, 'Paquetes de Payasos', 'smile');
+        const renderBubbles = () => renderSection(bubblePackagesWithDiscount, 'Paquetes de Burbujas', 'wind');
         const renderBlog = () => renderSection(blogPosts, 'Blog de Fiestas Infantiles', 'book-open');
         
         function renderGallery() {
             const categories = [...new Set(gallery.map(item => item.category))];
             const categoryButtons = categories.map(cat => `<button onclick="filterGallery('${cat}')" class="btn-premium btn-secondary text-sm filter-btn" data-category="${cat}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</button>`).join('');
-            const galleryHtml = gallery.map((item, index) => `<div class="gallery-item animate-slide-up" style="animation-delay: ${index * 100}ms;" data-category="${item.category}"><a href="${item.image}" data-lightbox="gallery" data-title="${item.alt}"><img src="${item.image}" alt="${item.alt}" loading="lazy"></a></div>`).join('');
+            const galleryHtml = gallery.map((item, index) => `<div class="gallery-item animate-slide-up" style="animation-delay: ${index * 100}ms;" data-category="${item.category}"><a href="${item.image}" data-lightbox="gallery" data-title="${item.alt}"><img src="${item.image}" alt="${item.alt}" loading="lazy" width="300" height="300" onerror="this.onerror=null;this.src='https://placehold.co/300x300/cccccc/ffffff?text=Error';"></a></div>`).join('');
             $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Galería de Momentos Mágicos <i data-lucide="image" class="inline-block text-purple-600"></i></h2><div class="flex flex-wrap justify-center gap-3 mb-8"><button onclick="filterGallery('all')" class="btn-premium btn-primary text-sm filter-btn active" data-category="all">Todos</button>${categoryButtons}</div><div id="galleryGrid" class="gallery-grid">${galleryHtml}</div><div class="text-center mt-12"><a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="btn-premium btn-tertiary" rel="noopener noreferrer"><i data-lucide="instagram"></i>Ver más en Instagram</a></div></section>`;
             lucide.createIcons();
         }
@@ -957,7 +1020,7 @@
         }
         
         function renderReviews() {
-            const reviewsHtml = customerReviews.map((review, index) => `<div class="premium-card p-6 animate-slide-up" style="animation-delay: ${index * 100}ms;"><div class="flex items-center mb-4"><img src="${review.avatar}" alt="${review.name}" class="w-12 h-12 rounded-full mr-4" loading="lazy"><div><h4 class="font-bold">${review.name}</h4><div class="text-yellow-500 text-lg">${'⭐'.repeat(review.rating)}</div><p class="text-xs text-gray-500">${review.location}</p></div></div><p class="text-gray-700 mb-4 italic">"${review.comment}"</p><div class="text-sm text-gray-500"><p><strong>Servicio:</strong> ${review.service}</p><p><strong>Fecha:</strong> ${review.date}</p></div></div>`).join('');
+            const reviewsHtml = customerReviews.map((review, index) => `<div class="premium-card p-6 animate-slide-up" style="animation-delay: ${index * 100}ms;"><div class="flex items-center mb-4"><img src="${review.avatar}" alt="${review.name}" class="w-12 h-12 rounded-full mr-4" loading="lazy" width="48" height="48"><div><h4 class="font-bold">${review.name}</h4><div class="text-yellow-500 text-lg">${'⭐'.repeat(review.rating)}</div><p class="text-xs text-gray-500">${review.location}</p></div></div><p class="text-gray-700 mb-4 italic">"${review.comment}"</p><div class="text-sm text-gray-500"><p><strong>Servicio:</strong> ${review.service}</p><p><strong>Fecha:</strong> ${review.date}</p></div></div>`).join('');
             $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">⭐ Reseñas de Familias Panameñas</h2><div class="text-center mb-12"><div class="text-6xl font-bold text-yellow-500 mb-2">4.9</div><div class="text-3xl mb-2">⭐⭐⭐⭐⭐</div><p class="text-gray-600 text-lg">Basado en 127+ reseñas verificadas</p></div><div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">${reviewsHtml}</div><div class="text-center mt-12"><a href="https://www.google.com/search?q=diverty+eventos+panama+reseñas" target="_blank" class="btn-premium btn-tertiary" rel="noopener noreferrer"><i data-lucide="external-link"></i>Ver más reseñas</a></div></section>`;
             lucide.createIcons();
         }
@@ -1019,14 +1082,22 @@
             
             $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8">
                 <h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Reserva tu Fiesta en Panamá <i data-lucide="calendar-check" class="inline-block text-purple-600"></i></h2>
+                
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 sm:p-8 rounded-3xl mb-8 border-2 border-blue-200">
+                    <h3 class="text-2xl font-bold text-blue-700 mb-4 flex items-center gap-2"><i data-lucide="sparkles"></i> Asistente de Fiestas IA</h3>
+                    <p class="text-gray-600 mb-4">¿No estás seguro de qué paquete elegir? Describe la fiesta de tus sueños y nuestra IA te sugerirá el mejor paquete.</p>
+                    <textarea id="party-description" class="form-input mb-4" rows="3" placeholder="Ej: 'Una fiesta para mi hija de 5 años, le encantan las princesas y las burbujas, serán unos 15 niños...'"></textarea>
+                    <button id="get-package-suggestion" class="btn-premium btn-tertiary"><i data-lucide="wand-2"></i>Sugerir Paquete Mágico ✨</button>
+                </div>
+
                 <div class="bg-gradient-to-br from-pink-50 to-purple-50 p-6 sm:p-8 rounded-3xl mb-8 border-2 border-pink-200">
                     <h3 class="text-2xl font-bold text-pink-700 mb-6">Tu Selección:</h3>
-                    ${cartSummary}
-                    ${app.cart.length > 0 ? `<div class="mt-6 pt-6 border-t-2 border-pink-200 space-y-2 text-right">
+                    <div id="booking-cart-summary">${cartSummary}</div>
+                    ${app.cart.length > 0 ? `<div id="booking-totals" class="mt-6 pt-6 border-t-2 border-pink-200 space-y-2 text-right">
                         <p class="text-lg">Subtotal: <span class="font-bold">$${subtotal.toFixed(2)}</span></p>
                         <p class="text-lg">Transporte: <span class="font-bold">$${transportCost.toFixed(2)}</span></p>
                         <p class="text-3xl font-bold text-purple-700">Total Final: <span class="font-extrabold">$${finalTotal.toFixed(2)}</span></p>
-                    </div>` : ''}
+                    </div>` : '<div id="booking-totals"></div>'}
                 </div>
                 ${app.cart.length > 0 ? `<form id="bookingForm" class="space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1045,6 +1116,9 @@
                 </form>` : `<div class="text-center py-12"><div class="text-6xl mb-6">🛒</div><h3 class="text-2xl font-bold">Tu carrito está vacío</h3><p class="mb-8">Selecciona servicios para reservar.</p><a href="#services" class="btn-premium btn-primary nav-action"><i data-lucide="sparkles"></i>Ver Servicios</a></div>`}
             </section>`;
 
+            if ($('#get-package-suggestion')) {
+                $('#get-package-suggestion').onclick = getPackageSuggestion;
+            }
             if (app.cart.length > 0) {
                 $('#bookingForm').onsubmit = handleBookingSubmit;
                 $('select[name="location"]').onchange = (e) => { app.location = e.target.value; renderBooking(); };
@@ -1074,7 +1148,7 @@
             const modal = document.createElement('div');
             modal.className = 'modal-backdrop show';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-            modal.innerHTML = `<div class="modal-content bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"><h2 class="text-3xl font-bold mb-6">${post.title}</h2><img src="${post.image}" alt="${post.title}" class="w-full h-64 object-cover rounded-2xl mb-6" loading="lazy"><div class="prose max-w-none mb-8">${post.content}</div><div class="flex justify-center"><button onclick="this.closest('.modal-backdrop').remove()" class="btn-premium btn-primary"><i data-lucide="x-circle"></i>Cerrar</button></div></div>`;
+            modal.innerHTML = `<div class="modal-content bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"><h2 class="text-3xl font-bold mb-6">${post.title}</h2><img src="${post.image}" alt="${post.title}" class="w-full h-64 object-cover rounded-2xl mb-6" loading="lazy" width="800" height="256" onerror="this.onerror=null;this.src='https://placehold.co/800x256/cccccc/ffffff?text=Error';"><div class="prose max-w-none mb-8">${post.content}</div><div class="flex justify-center"><button onclick="this.closest('.modal-backdrop').remove()" class="btn-premium btn-primary"><i data-lucide="x-circle"></i>Cerrar</button></div></div>`;
             document.body.appendChild(modal);
             lucide.createIcons();
         }
@@ -1139,6 +1213,16 @@
                     if ($('#calculatorModal').classList.contains('show')) updateCalculatorTotal();
                 }
             });
+            // Promo Banner Logic
+            const promoBanner = $('#promo-banner');
+            const closePromoBtn = $('#close-promo-banner');
+            if (localStorage.getItem('promoBannerDismissed')) {
+                promoBanner.classList.add('hide');
+            }
+            closePromoBtn.onclick = () => {
+                promoBanner.classList.add('hide');
+                localStorage.setItem('promoBannerDismissed', 'true');
+            };
         }
         document.addEventListener('DOMContentLoaded', () => {
             setupEventListeners();
@@ -1155,6 +1239,18 @@
         window.filterGallery = filterGallery;
         window.changeCalculatorQuantity = changeCalculatorQuantity;
         window.submitToJotForm = submitToJotForm;
+
+        function handleAddToCartClick(itemId) {
+            const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
+            const item = allServices.find(s => s.id === itemId);
+            if (item) {
+                addToCart(item);
+            } else {
+                console.error("handleAddToCartClick: Item not found for ID:", itemId);
+            }
+        }
+        window.handleAddToCartClick = handleAddToCartClick;
+
         window.changeServiceQuantity = function(serviceId, change) {
             const qtyElement = document.getElementById(`qty-${serviceId}`);
             if (qtyElement) {
@@ -1187,6 +1283,88 @@
             const item = { ...service, id: `${service.id}_${quantity}kids`, name: `${service.name} (${quantity} niños)`, price: service.price * quantity, quantity: 1 };
             addToCart(item);
         };
+
+        // --- NEW GEMINI FEATURES ---
+        function renderIdeaGenerator() {
+            $('#mainContent').innerHTML = `
+                <section class="premium-card p-4 sm:p-8 lg:p-12 my-8">
+                    <h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">✨ Generador de Ideas para Fiestas con IA</h2>
+                    <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">¿Sin inspiración? Describe tu fiesta ideal y deja que nuestra IA cree un plan mágico para ti. ¡Es rápido, fácil y divertido!</p>
+                    <div class="max-w-3xl mx-auto">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                            <div><label class="form-label">Temática (ej. Superhéroes)</label><input id="idea-theme" type="text" class="form-input" placeholder="Princesas, Dinosaurios..."></div>
+                            <div><label class="form-label">Edad del niño/a</label><input id="idea-age" type="number" class="form-input" placeholder="5"></div>
+                            <div><label class="form-label"># de Invitados</label><input id="idea-guests" type="number" class="form-input" placeholder="15"></div>
+                        </div>
+                        <button id="generate-ideas" class="w-full btn-premium btn-primary py-4 text-xl"><i data-lucide="wand-2"></i>Generar Ideas Mágicas</button>
+                        <div id="idea-results" class="mt-8 p-6 bg-white/50 rounded-2xl shadow-inner min-h-[200px]"></div>
+                    </div>
+                </section>`;
+            $('#generate-ideas').onclick = generatePartyIdeas;
+            lucide.createIcons();
+        }
+
+        async function generatePartyIdeas() {
+            const theme = $('#idea-theme').value.trim();
+            const age = $('#idea-age').value.trim();
+            const guests = $('#idea-guests').value.trim();
+
+            if (!theme || !age || !guests) {
+                showToast('Por favor, completa todos los campos.', 'error');
+                return;
+            }
+
+            const button = $('#generate-ideas');
+            button.disabled = true;
+            button.innerHTML = '<div class="loading-spinner !w-6 !h-6 !border-2"></div> Generando...';
+            
+            const resultsContainer = $('#idea-results');
+            resultsContainer.innerHTML = '<div class="flex justify-center items-center"><div class="loading-spinner"></div></div>';
+
+            const prompt = `Actúa como un experto en planificación de fiestas infantiles en Panamá, con conocimiento de las últimas tendencias de 2025. Genera un plan conciso y creativo para una fiesta con la temática de "${theme}" para un niño/a de ${age} años con ${guests} invitados. Incluye personajes populares de 2025 si aplica. Estructura la respuesta en tres secciones claras con viñetas: 'Juegos Divertidos', 'Decoración Mágica', y 'Comida Temática'.`;
+            
+            const chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
+            const ideas = await callGeminiAPI(chatHistory);
+
+            resultsContainer.innerHTML = ideas.replace(/\*\*(.*?)\*\*/g, '<h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">$1</h4>').replace(/\*/g, '<li class="ml-5 list-disc">').replace(/\n/g, '<br>');
+            
+            button.disabled = false;
+            button.innerHTML = '<i data-lucide="wand-2"></i>Generar Ideas Mágicas';
+            lucide.createIcons();
+        }
+        
+        async function getPackageSuggestion() {
+            const description = $('#party-description').value.trim();
+            if (!description) {
+                showToast('Por favor, describe la fiesta de tus sueños.', 'error');
+                return;
+            }
+            
+            const button = $('#get-package-suggestion');
+            button.disabled = true;
+            button.innerHTML = '<div class="loading-spinner !w-6 !h-6 !border-2"></div> Analizando...';
+
+            const packageList = allServices.filter(s => s.services).map(p => `- ${p.name} (id: ${p.id})`).join('\n');
+            const prompt = `Como experto en planificación de fiestas infantiles en Panamá y conociendo las tendencias de 2025, analiza la siguiente descripción: "${description}". Basado en esto, recomienda el paquete de Diverty Eventos que mejor se adapte. Considera las actividades mencionadas (pintacaritas, burbujas, magia, etc.), la edad y el tipo de fiesta. Responde únicamente con el ID del paquete más adecuado de la siguiente lista:\n${packageList}`;
+
+            const chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
+            const suggestedId = await callGeminiAPI(chatHistory);
+            
+            const suggestedPackage = allServices.find(s => s.id === suggestedId.trim());
+
+            if (suggestedPackage) {
+                app.cart = []; // Clear cart before adding suggestion
+                addToCart(suggestedPackage);
+                showToast(`¡Te recomendamos el ${suggestedPackage.name}! Lo hemos añadido a tu reserva.`, 'success');
+                renderBooking(); // Re-render to show the new item in the cart
+            } else {
+                showToast('No pudimos encontrar un paquete perfecto. ¡Intenta con una descripción diferente!', 'error');
+            }
+
+            button.disabled = false;
+            button.innerHTML = '<i data-lucide="wand-2"></i>Sugerir Paquete Mágico ✨';
+            lucide.createIcons();
+        }
     </script>
 </body>
 </html>
