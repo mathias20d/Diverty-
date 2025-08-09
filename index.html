@@ -742,25 +742,21 @@
             calculatorItems = [];
         }
 
-        // --- GEMINI API LOGIC (WITH TEMPORARY KEY) ---
+        // --- GEMINI API LOGIC (SECURE Replit VERSION) ---
         async function callGeminiAPI(chatHistory, generationConfig = null) {
-            // WARNING: This is not secure for production.
-            // Your API key is visible to anyone who views the page source.
-            // Please use Netlify Environment Variables and Serverless Functions for a secure setup.
-            // La clave API ha sido añadida temporalmente a petición del usuario.
-            const apiKey = "AIzaSyAJvpQ69QXin7V1cu5k90lRkymQ6o1lpDE"; // Clave API proporcionada por el usuario
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            
+            // Your secure Replit URL is now here!
+            const replitUrl = 'https://701832df-8313-4e3d-bb6c-5642c540f0f3-00-30attqtap1ync.picard.replit.dev/';
+
             const payload = { contents: chatHistory };
             if (generationConfig) {
                 payload.generationConfig = generationConfig;
             }
 
             try {
-                const response = await fetch(apiUrl, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(payload) 
+                const response = await fetch(replitUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
                 const result = await response.json();
@@ -769,37 +765,25 @@
                     const errorMessage = result?.error?.message || `Error de API: ${response.status}`;
                     throw new Error(errorMessage);
                 }
-                
+
                 const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
                 if (textResponse) {
                     if (generationConfig && generationConfig.responseMimeType === "application/json") {
                         try {
                             return JSON.parse(textResponse);
                         } catch (jsonError) {
-                            console.error("Fallo al procesar JSON de la API:", jsonError, "Texto recibido:", textResponse);
                             throw new Error("La IA devolvió una respuesta en un formato inesperado.");
                         }
                     }
                     return textResponse;
                 }
                 
-                const finishReason = result.candidates?.[0]?.finishReason;
-                if (finishReason && finishReason !== 'STOP') {
-                     throw new Error(`La IA finalizó por una razón inesperada: ${finishReason}. Intenta reformular tu pregunta.`);
-                }
-                
                 throw new Error("No se recibió una respuesta de texto de la IA.");
 
             } catch (error) {
-                console.error("Error al llamar a la API de Gemini:", error);
-                const userFriendlyMessage = error.message.includes("API key not valid") 
-                    ? "La clave de la API no es válida. Revisa la configuración."
-                    : "¡Ups! 🎈 Tuve un pequeño problema para conectarme. Por favor, intenta de nuevo.";
-
-                return { 
-                    error: true, 
-                    responseText: userFriendlyMessage
-                };
+                console.error("Error al llamar al proxy de Replit:", error);
+                const userFriendlyMessage = "¡Ups! 🎈 Tuve un pequeño problema para conectarme. Por favor, intenta de nuevo.";
+                return { error: true, responseText: userFriendlyMessage };
             }
         }
 
