@@ -139,7 +139,7 @@
             height: 100vh;
             background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
             box-shadow: -20px 0 60px rgba(0,0,0,0.2);
-            transition: right 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: right 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Faster animation */
             z-index: 1000;
             display: flex;
             flex-direction: column;
@@ -317,6 +317,14 @@
             padding-top: 0;
             padding-bottom: 0;
         }
+        /* Styles for swipeable carousel */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
     </style>
 </head>
 <body class="min-h-screen text-gray-800 flex flex-col">
@@ -327,7 +335,7 @@
     ================================================================
     -->
     <div id="promo-banner" class="bg-gradient-to-r from-pink-500 to-orange-400 text-white p-3 text-center font-bold text-sm sm:text-base relative flex items-center justify-center">
-        <span>¡Promociones de Agosto! ☀️ 15% OFF en Plan Diverty y 10% OFF en todos los Paquetes de Burbujas.</span>
+        <span>¡Promociones de Agosto! ☀️ 10% OFF en Plan Diverty y Paquetes de Burbujas.</span>
         <button id="close-promo-banner" class="absolute right-2 sm:right-4 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors" aria-label="Cerrar promoción">
             <i data-lucide="x" class="w-5 h-5"></i>
         </button>
@@ -542,25 +550,36 @@
 
         const services = [
             { id: 'service_facepaint', name: 'Pintacaritas', price: 45, description: 'Servicio profesional de pintacaritas en Panamá con pinturas hipoalergénicas. Transformamos a los niños en sus personajes favoritos. Servicio por 1 hora.', image: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', isHourly: true },
-            { id: 'service_balloons', name: 'Globoflexia', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado en Panamá. Arte con globos profesional. Servicio por 1 hora.', image: 'https://i.ibb.co/LjtnV7D/1000156690-f40525f3ffe7fcc4f65d41f55096c0bc-Editado-20250808-161453-0000.jpg', isHourly: true },
-            { id: 'service_decor', name: 'Decoraciones Temáticas', price: 100, description: 'Decoraciones profesionales para fiestas infantiles en Panamá. Transformamos cualquier espacio en un mundo mágico.', image: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg' },
-            { id: 'service_characters', name: 'Personajes Temáticos', price: 75, description: '¡Sorprende a todos con la visita de tu personaje favorito! Mickey, Minnie y Mario Bros.', image: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg' },
+            { id: 'service_balloons', name: 'Globoflexia', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado en Panamá. Arte con globos profesional. Servicio por 1 hora.', image: 'https://i.ibb.co/3nNBDNh/1000156690-f40525f3ffe7fcc4f65d41f55096c0bc-Editado-20250808-161453-0000.jpg', isHourly: true },
+            { id: 'service_snacks', name: 'Máquinas de Snack', price: 100, description: 'Alquiler de máquinas de algodón de azúcar y palomitas para fiestas en Panamá. Servicio por 3 horas.', image: 'https://i.ibb.co/ycF665wh/1000166060-468200627b3f51bc4bbb7d47cc634544-Editado-20250812-132914-0000.jpg' },
+            { id: 'service_inflatable', name: 'Alquiler de Inflables', price: 90, description: 'Alquiler de inflables seguros para fiestas infantiles en Panamá por 4 horas.', image: 'https://i.ibb.co/zWqyrbKP/1000171895-1915883b5932d9d77d10e75b74d8102b-Editado-20250812-133521-0000.jpg' },
+            { id: 'service_magic', name: 'Show de Magia Cómica', price: 100, description: '1.5 horas de espectáculo interactivo que asombrará a todos. Incluye figuras con globos.', image: 'https://i.ibb.co/Gvwbr34b/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg' },
+            { 
+                id: 'service_characters', 
+                name: 'Personajes Temáticos', 
+                type: 'character-group',
+                description: '¡Sorprende a todos con la visita de tu personaje favorito! Elige los que quieras y añádelos a tu carrito.',
+                characters: [
+                    { id: 'char_mickey', name: 'Personaje: Mickey Mouse', price: 75, image: 'https://i.ibb.co/qMzjGmVP/1000115409-2be9f20a9f4b71257a0ef39431ce5e81-Editado-20250812-145651-0000.jpg' },
+                    { id: 'char_minnie', name: 'Personaje: Minnie Mouse', price: 75, image: 'https://i.ibb.co/7J86Pshb/1000173618-c8140aed0fade6ffd165667c35177481-Editado-20250812-152335-0000.jpg' },
+                    { id: 'char_mario', name: 'Personaje: Mario Bros', price: 75, image: 'https://i.ibb.co/V0L3smxc/9bc62c03-03f6-4693-be31-1ee6fc9cabaf-20250812-145204-0000.jpg' },
+                    { id: 'char_stitch', name: 'Personaje: Stitch', price: 75, image: 'https://i.ibb.co/39pNmTvD/1000173616-67a0a0a93ba9656714e1d4090d078cf7-Editado-20250812-145043-0000.jpg' }
+                ]
+            },
             { id: 'service_workshop', name: 'Mini Taller de Manualidades', price: 12.00, description: 'Taller creativo con 2 manualidades, mobiliario, recreadora y materiales. Mínimo 10 niños.', image: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', isPerChild: true },
-            { id: 'service_snacks', name: 'Máquinas de Snack', price: 100, description: 'Alquiler de máquinas de algodón de azúcar y palomitas para fiestas en Panamá. Servicio por 3 horas.', image: 'https://placehold.co/400x267/e9d5ff/7c3aed?text=Snacks' },
-            { id: 'service_magic', name: 'Show de Magia Cómica', price: 100, description: '1.5 horas de espectáculo interactivo que asombrará a todos. Incluye figuras con globos.', image: 'https://placehold.co/400x267/e9d5ff/7c3aed?text=Magia' },
-            { id: 'service_inflatable', name: 'Alquiler de Inflables', price: 90, description: 'Alquiler de inflables seguros para fiestas infantiles en Panamá por 4 horas.', image: 'https://placehold.co/400x267/dcfce7/16a34a?text=Inflable' }
+            { id: 'service_decor', name: 'Decoraciones Temáticas', price: 100, description: 'Decoraciones profesionales para fiestas infantiles en Panamá. Transformamos cualquier espacio en un mundo mágico.', image: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg' }
         ];
 
         const animatorPackages = [
             { id: 'animator_basic', name: 'Plan Básico (Animador)', price: 70, services: ['1 Animador profesional', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '1h de diversión con animador profesional en Panamá: juegos, globos, piñata. ¡Rápido y alegre!', image: 'https://i.ibb.co/Kcz1xx4K/IMG-20240420-WA0038.jpg' },
-            { id: 'animator_recreative', name: 'Plan Recreativo (Animador)', price: 85, services: ['Animador profesional', 'Pintacaritas básica (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '2h de aventura con animador en Panamá: pintacaritas básica, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/tTZzG8GC/1000166059-19d1c374d1a4d6d9e0386ce90dc0be60-Editado-Editado-20250808-142449-0000.jpg' }
+            { id: 'animator_recreative', name: 'Plan Recreativo (Animador)', price: 95, services: ['Animador profesional', 'Pintacaritas básica (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '2h de aventura con animador en Panamá: pintacaritas básica, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/KzqY2dxd/1000166059-19d1c374d1a4d6d9e0386ce90dc0be60-Editado-Editado-20250808-142449-0000.jpg' }
         ];
 
         const clownPackages = [
             { id: 'clown_circus', name: 'Paquete Circo', price: 85, services: ['Payaso profesional', 'Integración de niños y adultos', 'Juegos y concursos', 'Figuras básicas con globos', 'Canto de cumpleaños', 'Romper la piñata'], description: '1.5h de risas garantizadas en Panamá con nuestro Payaso Risitas, lleno de juegos y humor profesional.', image: 'https://i.ibb.co/XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg' },
-            { id: 'clown_recreative', name: 'Plan Recreativo (Payaso)', price: 110, services: ['1 Payasito profesional', '1 Pintacaritas (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata', 'Canto de cumpleaños'], description: '2h de aventura con payaso en Panamá: pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/2w26tSZ/2913b329-e65a-4574-846d-03d72a8ed6e1-20250808-145823-0000.jpg' },
-            { id: 'clown_magic', name: 'Plan Magic (Payaso)', price: 135, services: ['1 Payaso profesional', 'Animación, juegos y concursos (1.5 horas)', '1 Pintacaritas (1 hora)', 'Show de magia cómica', 'Asistencia para la piñata', 'Canto de cumpleaños'], description: '2.5h premium con payaso en Panamá: juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', image: 'https://i.ibb.co/WvR9bMVz/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg' },
-            { id: 'clown_diverty', name: 'Plan Diverty (Payaso)', price: 200, services: ['1 Payaso profesional', 'Juegos y concursos', '1 Pintacaritas', 'Globoflexia', 'Show de Burbujas Gigantes', 'Asistencia en la piñata', 'Canto de cumpleaños'], description: '3h de diversión completa en Panamá: Payaso, juegos, pintacaritas, globoflexia, show de burbujas, y asistencia piñata. ¡La magia garantizada!', image: 'https://i.ibb.co/HDvvDCLk/1000099577-6bef3c87bff7ee22e2b0606e02467bf8-Editado-20250808-150335-0000.jpg' }
+            { id: 'clown_recreative', name: 'Plan Recreativo (Payaso)', price: 110, services: ['1 Payasito profesional', '1 Pintacaritas (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata', 'Canto de cumpleaños'], description: '2h de aventura con payaso en Panamá: pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/ZRBN0mb5/2913b329-e65a-4574-846d-03d72a8ed6e1-20250808-145823-0000.jpg' },
+            { id: 'clown_magic', name: 'Plan Magic (Payaso)', price: 135, services: ['1 Payaso profesional', 'Animación, juegos y concursos (1.5 horas)', '1 Pintacaritas (1 hora)', 'Show de magia cómica', 'Asistencia para la piñata', 'Canto de cumpleaños'], description: '2.5h premium con payaso en Panamá: juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', image: 'https://i.ibb.co/Gvwbr34b/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg' },
+            { id: 'clown_diverty', name: 'Plan Diverty (Payaso)', price: 200, services: ['1 Payaso profesional', 'Juegos y concursos', '1 Pintacaritas', 'Globoflexia', 'Show de Burbujas Gigantes', 'Asistencia en la piñata', 'Canto de cumpleaños'], description: '3h de diversión completa en Panamá: Payaso, juegos, pintacaritas, globoflexia, show de burbujas, y asistencia piñata. ¡La magia garantizada!', image: 'https://i.ibb.co/JXbv2Hy/1000099577-6bef3c87bff7ee22e2b0606e02467bf8-Editado-20250808-150335-0000.jpg' }
         ];
 
         const bubblePackages = [
@@ -611,7 +630,7 @@
             const isAugust = currentDate.getMonth() === 7;
             if (isAugust) {
                 return packages.map(pkg => {
-                    if (packageIds.length === 0 || packageIds.includes(pkg.id)) {
+                    if (packageIds.includes(pkg.id)) {
                         return { ...pkg, originalPrice: pkg.price, price: parseFloat((pkg.price * (1 - discountRate)).toFixed(2)), discountApplied: true, discountMessage: `¡${Math.round(discountRate * 100)}% OFF!` };
                     }
                     return pkg;
@@ -621,9 +640,12 @@
         };
 
         const bubblePackagesWithDiscount = applyPromotions(bubblePackages, 0.10);
-        // FIXED: No promotions applied to clown packages
-        const clownPackagesWithDiscount = clownPackages;
+        const clownPackagesWithDiscount = applyPromotions(clownPackages, 0.10, ['clown_diverty']);
         const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
+        
+        const characterItems = services.find(s => s.type === 'character-group')?.characters || [];
+        const allPurchasableItems = [...services.filter(s => s.type !== 'character-group'), ...animatorPackages, ...clownPackages, ...bubblePackages, ...characterItems];
+
 
         const $ = (selector) => document.querySelector(selector);
         const $$ = (selector) => document.querySelectorAll(selector);
@@ -691,7 +713,8 @@
                 } else {
                     cartItemsContainer.innerHTML = app.cart.map(item => `
                         <div class="flex justify-between items-center py-3 border-b border-white border-opacity-20">
-                            <span class="text-sm">${item.name} (x${item.quantity})</span>
+                            <img src="${item.image}" alt="Imagen de ${item.name}" class="w-12 h-12 object-cover rounded-lg mr-4" loading="lazy">
+                            <span class="text-sm flex-1">${item.name} (x${item.quantity})</span>
                             <div class="flex items-center gap-3">
                                 <span class="font-bold">$${(item.price * item.quantity).toFixed(2)}</span>
                                 <button data-action="remove-from-cart" data-item-id="${item.id}" class="text-red-300 hover:text-red-100" aria-label="Eliminar ${item.name}"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
@@ -952,8 +975,8 @@
                             </div>
                         </div>
                         <div class="p-6">
-                            <h3 class="text-sm font-bold uppercase text-purple-500 tracking-widest mb-2">Paquete Destacado del Mes</h3>
-                            <h2 class="text-2xl font-extrabold text-gray-800 mb-3 font-poppins">${featuredPackage.name}</h2>
+                            <h2 class="text-sm font-bold uppercase text-purple-500 tracking-widest mb-2">Paquete Destacado del Mes</h2>
+                            <h3 class="text-2xl font-extrabold text-gray-800 mb-3 font-poppins">${featuredPackage.name}</h3>
                             <p class="text-gray-600 mb-4 text-sm">${featuredPackage.description}</p>
                             <ul class="space-y-2 text-gray-700 text-sm mb-6">
                                 ${featuredPackage.services.map(s => `<li class="flex items-center"><i data-lucide="check" class="w-5 h-5 mr-3 text-green-500 flex-shrink-0"></i><span>${s}</span></li>`).join('')}
@@ -991,16 +1014,23 @@
         function createDetailedCardHTML(item, index) {
             const isPackage = !!item.services;
             const isBlog = !!item.author;
+            const isCharacterSelector = item.type === 'character-group';
             const title = item.name || item.title;
             let priceDisplayHTML = '';
-            if (item.price) {
+            
+            if (item.price || (isCharacterSelector && item.characters[0].price)) {
+                const price = isCharacterSelector ? item.characters[0].price : item.price;
                 if (item.discountApplied) {
                     priceDisplayHTML = `<div class="absolute top-4 right-4 text-right"><span class="bg-pink-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">${item.discountMessage}</span><div class="mt-2 bg-white/80 backdrop-blur-sm p-2 rounded-lg"><span class="text-gray-500 line-through text-xl font-poppins">$${item.originalPrice.toFixed(0)}</span><span class="text-green-600 text-3xl font-bold font-poppins ml-2">$${item.price.toFixed(0)}</span></div></div>`;
                 } else {
-                    priceDisplayHTML = `<div class="absolute top-4 right-4 bg-purple-600 text-white text-lg font-bold font-poppins py-2 px-4 rounded-full shadow-lg">$${item.price.toFixed(0)}${item.isHourly ? '/hr' : ''}${item.isPerChild ? '/niño' : ''}</div>`;
+                    priceDisplayHTML = `<div class="absolute top-4 right-4 bg-purple-600 text-white text-lg font-bold font-poppins py-2 px-4 rounded-full shadow-lg">$${price.toFixed(0)}${item.isHourly ? '/hr' : ''}${item.isPerChild ? '/niño' : ''}</div>`;
                 }
             }
-            const imageHTML = item.image ? `<div class="relative"><img src="${item.image}" alt="${title}" class="w-full h-48 object-cover" loading="lazy" width="400" height="267" onerror="this.onerror=null;this.src='https://placehold.co/400x267/cccccc/ffffff?text=Imagen+no+disponible';">${priceDisplayHTML}</div>` : '';
+
+            const imageHTML = isCharacterSelector 
+                ? '' // No main image for the group card
+                : item.image ? `<div class="relative"><img src="${item.image}" alt="${title}" class="w-full h-48 object-cover" loading="lazy" width="400" height="267" onerror="this.onerror=null;this.src='https://placehold.co/400x267/cccccc/ffffff?text=Imagen+no+disponible';">${priceDisplayHTML}</div>` : '';
+            
             let actionButton;
             if (isBlog) {
                 actionButton = `<button data-action="show-blog" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-purple-500 to-indigo-500 mt-auto">Leer Más</button>`;
@@ -1008,17 +1038,35 @@
                 actionButton = `<div class="mt-auto"><div class="flex items-center justify-center gap-4 mb-4"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">-</button><span id="qty-${item.id}" class="text-2xl font-bold w-12 text-center">1</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">+</button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400">Añadir</button></div>`;
             } else if (item.isPerChild) {
                 actionButton = `<div class="mt-auto"><div class="form-group mb-4"><label for="qty-${item.id}" class="form-label text-center text-sm font-semibold text-gray-600 block mb-2"># de Niños (mín. 10):</label><input type="number" id="qty-${item.id}" class="form-input text-center w-full" value="10" min="10"></div><button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400">Añadir</button></div>`;
+            } else if (isCharacterSelector) {
+                const characterCardsHTML = item.characters.map(char => `
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-2">
+                        <img src="${char.image}" alt="${char.name}" class="w-16 h-16 rounded-md object-cover mr-4" loading="lazy">
+                        <div class="flex-1">
+                            <p class="font-bold text-gray-800">${char.name.replace('Personaje: ', '')}</p>
+                            <p class="font-bold text-purple-600">$${char.price.toFixed(2)}</p>
+                        </div>
+                        <button data-action="add-to-cart" data-item-id="${char.id}" class="btn-premium btn-secondary !p-0 !w-12 !h-12 !rounded-full"><i data-lucide="plus"></i></button>
+                    </div>
+                `).join('');
+                return `<div class="card-detailed bg-white rounded-3xl shadow-lg flex flex-col h-full overflow-hidden animate-slide-up w-[85vw] sm:w-auto md:w-full flex-shrink-0 snap-center" style="animation-delay: ${index * 100}ms;">
+                            <div class="p-6 flex flex-col flex-grow">
+                                <h3 class="text-2xl font-bold mb-2 text-gray-800 font-poppins">${title}</h3>
+                                <p class="text-gray-600 mb-4 text-sm leading-relaxed">${item.description}</p>
+                                <div class="mt-auto">${characterCardsHTML}</div>
+                            </div>
+                        </div>`;
             } else {
                 actionButton = `<button data-action="add-to-cart" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400 mt-auto">Añadir al Carrito</button>`;
             }
             const servicesListHTML = isPackage ? `<ul class="space-y-2 text-gray-700 text-sm mb-6 flex-grow">${item.services.map(s => `<li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500 mt-1 flex-shrink-0"></i><span>${s}</span></li>`).join('')}</ul>` : '';
             const blogMetaHTML = isBlog ? `<div class="flex items-center text-xs text-gray-500 mb-3"><i data-lucide="calendar" class="w-4 h-4 mr-2"></i>${item.date}<span class="mx-2">|</span><i data-lucide="user" class="w-4 h-4 mr-2"></i>${item.author}</div>` : '';
-            return `<div class="card-detailed bg-white rounded-3xl shadow-lg flex flex-col h-full overflow-hidden animate-slide-up" style="animation-delay: ${index * 100}ms;">${imageHTML}<div class="p-6 flex flex-col flex-grow">${blogMetaHTML}<h3 class="text-2xl font-bold mb-2 text-gray-800 font-poppins">${title}</h3><p class="text-gray-600 mb-4 text-sm leading-relaxed ${!isPackage && !isBlog && !item.isHourly && !item.isPerChild ? 'flex-grow' : ''}">${item.description}</p>${servicesListHTML}${actionButton}</div></div>`;
+            return `<div class="card-detailed bg-white rounded-3xl shadow-lg flex flex-col h-full overflow-hidden animate-slide-up w-[85vw] sm:w-auto md:w-full flex-shrink-0 snap-center" style="animation-delay: ${index * 100}ms;">${imageHTML}<div class="p-6 flex flex-col flex-grow">${blogMetaHTML}<h3 class="text-2xl font-bold mb-2 text-gray-800 font-poppins">${title}</h3><p class="text-gray-600 mb-4 text-sm leading-relaxed ${!isPackage && !isBlog && !item.isHourly && !item.isPerChild ? 'flex-grow' : ''}">${item.description}</p>${servicesListHTML}${actionButton}</div></div>`;
         }
 
         function renderSection(items, title, icon) {
             const itemsHtml = items.map(createDetailedCardHTML).join('');
-            $('#mainContent').innerHTML = `<section class="my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">${title} en Panamá <i data-lucide="${icon}" class="inline-block text-purple-600"></i></h2><div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">${itemsHtml}</div></section>`;
+            $('#mainContent').innerHTML = `<section class="my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">${title} en Panamá <i data-lucide="${icon}" class="inline-block text-purple-600"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 gap-4 md:grid md:grid-cols-2 xl:grid-cols-3 hide-scrollbar -mx-4 px-4">${itemsHtml}</div></section>`;
             lucide.createIcons();
         }
 
@@ -1179,7 +1227,7 @@
 
             switch (action) {
                 case 'add-to-cart':
-                    const item = allServices.find(s => s.id === itemId);
+                    const item = allPurchasableItems.find(s => s.id === itemId);
                     if (item) addToCart(item);
                     break;
                 case 'remove-from-cart':
@@ -1339,10 +1387,61 @@
             lucide.createIcons();
         }
 
+        function initializeSchemas() {
+            // EventPlanner Schema
+            $('#schema-event-planner').textContent = JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "EventPlanner",
+                "name": "Diverty Eventos",
+                "url": "https://divertypanama.netlify.app/",
+                "telephone": "+50766677965",
+                "priceRange": "$40-$220",
+                "address": {
+                    "@type": "PostalAddress",
+                    "addressLocality": "Panamá Centro",
+                    "addressRegion": "Panamá",
+                    "addressCountry": "PA"
+                },
+                "areaServed": ["Panamá Centro", "Arraiján", "La Chorrera", "Panamá Este", "Panamá Norte", "Ancón"]
+            });
+
+            // FAQ Schema
+            $('#schema-faq').textContent = JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": [
+                    { "@type": "Question", "name": "¿En qué zonas de Panamá ofrecen sus servicios?", "acceptedAnswer": { "@type": "Answer", "text": "Ofrecemos nuestros servicios de fiestas infantiles en Panamá Centro (sin costo de transporte), Arraiján (+$15), La Chorrera (+$15), Panamá Este (+$10), Panamá Norte (+$10) y Ancón (+$10)." } },
+                    { "@type": "Question", "name": "¿Cuánto cuesta una fiesta infantil en Panamá?", "acceptedAnswer": { "@type": "Answer", "text": "Nuestros precios van desde $40 para servicios individuales como globoflexia, hasta $220 para paquetes completos." } }
+                ]
+            });
+
+            // Product Schema
+            const productSchema = allPurchasableItems.map(service => ({
+                "@context": "https://schema.org",
+                "@type": "Product",
+                "name": service.name,
+                "image": service.image,
+                "description": service.description,
+                "brand": {
+                    "@type": "Brand",
+                    "name": "Diverty Eventos"
+                },
+                "offers": {
+                    "@type": "Offer",
+                    "url": `https://divertypanama.netlify.app/#services`,
+                    "priceCurrency": "USD",
+                    "price": service.price,
+                    "availability": "https://schema.org/InStock"
+                }
+            }));
+            $('#schema-products').textContent = JSON.stringify(productSchema);
+        }
+
         // --- INITIALIZE APP ---
         setupEventListeners();
         initChat();
         populateLocationSelects();
+        initializeSchemas();
         setActiveSection(window.location.hash.substring(1) || 'home');
         updateCartUI();
         lucide.createIcons();
