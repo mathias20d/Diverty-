@@ -6,7 +6,7 @@
     <title>Fiestas Infantiles en Panamá | Animación y Shows | Diverty Eventos</title>
     <meta name="description" content="Organizamos las mejores fiestas infantiles en Panamá Centro, Panamá Este, Arraiján, La Chorrera, Ancón, Pacora y Panamá Norte. Expertos en animación infantil, shows de burbujas, pintacaritas, globoflexia y personajes temáticos.">
     
-    <!-- SEO Meta Tags -->
+    <!-- SEO, PWA, and other meta tags -->
     <meta name="keywords" content="fiestas infantiles panama, animacion infantil panama centro, payasos panama, shows burbujas panama, pintacaritas arraijan, globoflexia la chorrera, eventos infantiles pacora, animadores panama norte, cumpleanos panama, entretenimiento infantil panama, decoraciones fiestas panama, personajes tematicos panama, magos panama, recreacion infantil panama, fiestas infantiles ancon, fiestas infantiles panama este">
     <meta name="geo.region" content="PA">
     <meta name="geo.placename" content="Panama City">
@@ -14,67 +14,44 @@
     <meta name="ICBM" content="8.9824, -79.5199">
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
     <link rel="canonical" href="https://divertypanama.netlify.app/">
-
-    <!-- Open Graph & Twitter Cards -->
     <meta property="og:title" content="Diverty Eventos | Las Mejores Fiestas Infantiles en Panamá">
     <meta property="og:description" content="Especialistas en fiestas infantiles en Panamá Centro, Panamá Este, Arraiján, La Chorrera, Ancón, Pacora y Panamá Norte. Shows de burbujas, animación, pintacaritas y más. ¡Más de 500 fiestas realizadas!">
     <meta property="og:image" content="https://divertypanama.netlify.app/android-chrome-512x512.png">
     <meta property="og:url" content="https://divertypanama.netlify.app/">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
-
-    <!-- PWA & Theme -->
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRGl2ZXJ0eSBFdmVudG9zIiwic2hvcnRfbmFtZSI6IkRpdmVydHkiLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzc5MjJjZSIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2RpdmVydHlwYW5hbWEubmV0bGlmeS5hcHAvYW5kcm9pZC1jaHJvbWUtNTEyeDUxMi5wbmciLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dfQ==">
     <meta name="theme-color" content="#7922ce">
+
+    <!-- Preload critical resources for faster loading -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" as="style">
+    <link rel="preload" href="https://divertypanama.netlify.app/android-chrome-512x512.png" as="image">
 
     <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css">
-
-    <!-- Structured Data (Schema.org) -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "EventPlanner",
-        "name": "Diverty Eventos",
-        "alternateName": "Diverty Eventos Panamá",
-        "description": "Empresa especializada en organización de fiestas infantiles y entretenimiento en Panamá.",
-        "image": "https://divertypanama.netlify.app/android-chrome-512x512.png",
-        "url": "https://divertypanama.netlify.app/",
-        "telephone": "+50766677965",
-        "priceRange": "$40-$220",
-        "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Panamá Centro",
-            "addressRegion": "Panamá",
-            "addressCountry": "PA"
-        },
-        "areaServed": ["Panamá Centro", "Arraiján", "La Chorrera", "Panamá Este", "Panamá Norte", "Ancón"]
-    }
-    </script>
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-            { "@type": "Question", "name": "¿En qué zonas de Panamá ofrecen sus servicios?", "acceptedAnswer": { "@type": "Answer", "text": "Ofrecemos nuestros servicios de fiestas infantiles en Panamá Centro (sin costo de transporte), Arraiján (+$15), La Chorrera (+$15), Panamá Este (+$10), Panamá Norte (+$10) y Ancón (+$10)." } },
-            { "@type": "Question", "name": "¿Cuánto cuesta una fiesta infantil en Panamá?", "acceptedAnswer": { "@type": "Answer", "text": "Nuestros precios van desde $40 para servicios individuales como globoflexia, hasta $220 para paquetes completos." } }
-        ]
-    }
-    </script>
-
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBYYJTHTEF"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-SBYYJTHTEF');
-    </script>
     
-    <!-- Internal Stylesheet -->
+    <!-- Structured Data (Schema.org) will be added dynamically by app.js -->
+    <script type="application/ld+json" id="schema-event-planner"></script>
+    <script type="application/ld+json" id="schema-faq"></script>
+    <script type="application/ld+json" id="schema-products"></script>
+
+    <!-- Google Tag Manager -->
+    <script>
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-XXXXXXX'); // Replace GTM-XXXXXXX with your GTM ID
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <!-- 
+    ================================================================
+    |                        STYLES (CSS)                          |
+    ================================================================
+    -->
     <style>
         :root {
             --primary-purple: #7c3aed;
@@ -177,9 +154,9 @@
             overflow: hidden;
         }
         .mobile-nav-link { 
-            padding: 1.25rem 1.5rem;
-            margin: 0.25rem 1rem;
-            border-radius: 16px;
+            padding: 0.75rem 1.5rem;
+            margin: 0.1rem 1rem;
+            border-radius: 12px;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
@@ -309,8 +286,6 @@
         #toast.error { background: linear-gradient(135deg, #EF4444, #DC2626); }
         .loading-spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-purple); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* --- MOBILE NAVIGATION STYLES --- */
         #mobile-nav {
             transition: transform 0.3s ease-in-out;
         }
@@ -321,8 +296,6 @@
             color: var(--primary-purple);
             transform: translateY(-4px);
         }
-        
-        /* --- NEW CARD STYLES --- */
         .card-detailed {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -333,8 +306,6 @@
         .card-detailed ul li i {
             flex-shrink: 0; /* Prevents icons from shrinking */
         }
-
-        /* --- PROMO BANNER --- */
         #promo-banner {
             transition: transform 0.5s ease-out, opacity 0.5s ease-out, max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
             max-height: 100px;
@@ -350,7 +321,11 @@
 </head>
 <body class="min-h-screen text-gray-800 flex flex-col">
 
-    <!-- =========== PROMO BANNER =========== -->
+    <!-- 
+    ================================================================
+    |                        BODY (HTML)                           |
+    ================================================================
+    -->
     <div id="promo-banner" class="bg-gradient-to-r from-pink-500 to-orange-400 text-white p-3 text-center font-bold text-sm sm:text-base relative flex items-center justify-center">
         <span>¡Promociones de Agosto! ☀️ 15% OFF en Plan Diverty y 10% OFF en todos los Paquetes de Burbujas.</span>
         <button id="close-promo-banner" class="absolute right-2 sm:right-4 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors" aria-label="Cerrar promoción">
@@ -358,12 +333,11 @@
         </button>
     </div>
 
-    <!-- =========== HEADER =========== -->
     <header id="mainHeader" class="py-4 px-4 w-full sticky top-0 z-40">
         <div class="container mx-auto flex justify-between items-center">
             <a href="#home" class="flex items-center logo-container nav-action" aria-label="Página de inicio de Diverty Eventos">
                 <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Diverty Eventos - Fiestas Infantiles Panamá" class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mr-3 rounded-full object-cover border-3 border-pink-400 shadow-lg float-animation" loading="lazy" width="96" height="96" onerror="this.onerror=null;this.src='https://placehold.co/96x96/7c3aed/ffffff?text=Diverty';">
-                <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-purple-900">Diverty Eventos</h1>
+                <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-purple-900">Diverty Eventos</div>
             </a>
             <nav class="hidden lg:flex items-center space-x-2">
                 <a href="#home" id="navHome" class="nav-link text-gray-600"><i data-lucide="home" class="w-4 h-4 mr-2"></i>Inicio</a>
@@ -381,7 +355,6 @@
         </div>
     </header>
     
-    <!-- =========== CART SUMMARY BAR (CORRECT POSITION) =========== -->
     <div id="cartSummary" class="hidden sticky top-20 z-30 bg-white bg-opacity-95 backdrop-blur-sm border-b border-purple-200 p-4 shadow-lg">
         <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-4 text-purple-800 font-bold">
@@ -395,7 +368,6 @@
         </div>
     </div>
 
-    <!-- =========== MOBILE MENU =========== -->
     <div id="mobileMenuOverlay" class="fixed inset-0 bg-black bg-opacity-60 z-[999] opacity-0 visibility-hidden transition-all duration-400"></div>
     <nav id="mobileMenu">
         <div class="mobile-menu-header">
@@ -408,7 +380,7 @@
             </div>
         </div>
         <div class="flex-1 p-6">
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <a href="#home" id="mobileHome" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="home" class="w-5 h-5"></i>Inicio</a>
                 <a href="#services" id="mobileServices" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="sparkles" class="w-5 h-5"></i>Servicios</a>
                 <a href="#ideas" id="mobileIdeas" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="lightbulb" class="w-5 h-5"></i>✨ Ideas</a>
@@ -425,10 +397,15 @@
         </div>
     </nav>
 
-    <!-- =========== MAIN CONTENT CONTAINER =========== -->
-    <main id="mainContent" class="container mx-auto p-4 flex-grow"></main>
+    <main id="mainContent" class="container mx-auto p-4 flex-grow">
+        <div id="loading-placeholder" class="flex items-center justify-center h-full pt-20">
+             <div class="text-center">
+                <div class="loading-spinner"></div>
+                <p class="mt-6 text-purple-700 font-semibold text-lg">Cargando la Magia...</p>
+            </div>
+        </div>
+    </main>
 
-    <!-- =========== FOOTER =========== -->
     <footer class="bg-gray-800 text-white">
         <div class="container mx-auto px-6 py-8 text-center">
             <p class="font-bold text-lg">Diverty<span class="text-[#14B8A6]">Eventos</span></p>
@@ -436,7 +413,6 @@
         </div>
     </footer>
     
-    <!-- =========== MOBILE BOTTOM NAVIGATION =========== -->
     <nav id="mobile-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg flex justify-around items-center h-16 z-40">
         <a href="#home" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
             <i data-lucide="home" class="w-6 h-6"></i>
@@ -460,16 +436,14 @@
         </a>
     </nav>
 
-
-    <!-- =========== UI ELEMENTS & MODALS =========== -->
     <div class="floating-buttons">
-        <button id="chatToggle" class="floating-btn chat-btn" title="Chat de ayuda"><i data-lucide="message-circle" class="text-white w-6 h-6"></i></button>
-        <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="floating-btn whatsapp-btn" target="_blank" rel="noopener noreferrer" title="WhatsApp"><i data-lucide="phone" class="text-white w-7 h-7"></i></a>
+        <button id="chatToggle" class="floating-btn chat-btn" aria-label="Abrir chat de ayuda"><i data-lucide="message-circle" class="text-white w-6 h-6"></i></button>
+        <a href="https://wa.me/50766677965?text=¡Hola! Tengo una consulta sobre Diverty Eventos." class="floating-btn whatsapp-btn" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp"><i data-lucide="phone" class="text-white w-7 h-7"></i></a>
     </div>
     <div id="infoModal" class="modal-backdrop">
         <div class="modal-content bg-gradient-to-br from-purple-600 to-purple-800 text-white rounded-3xl shadow-2xl p-8 max-w-md w-full text-center">
             <div class="mb-6"><div class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4"><i data-lucide="check-circle" class="w-10 h-10"></i></div><p id="modalMessage" class="text-xl font-bold mb-4"></p></div>
-            <button id="closeModal" class="btn-premium bg-white text-purple-700 w-full"><i data-lucide="thumbs-up"></i>¡Entendido!</button>
+            <button id="closeModal" class="btn-premium bg-white text-purple-700 w-full" aria-label="Cerrar mensaje"><i data-lucide="thumbs-up"></i>¡Entendido!</button>
         </div>
     </div>
     <div id="cartModal" class="modal-backdrop">
@@ -478,7 +452,7 @@
             <div id="cartItems" class="max-h-60 overflow-y-auto text-left mb-6 p-4 bg-white bg-opacity-10 rounded-2xl backdrop-blur-sm"></div>
             <div class="text-left mb-4"><label for="cartLocation" class="font-bold text-purple-200">Ubicación del Evento:</label><select id="cartLocation" class="w-full mt-2 p-3 rounded-xl text-gray-800 font-semibold"></select></div>
             <div class="text-right font-bold mb-6 space-y-2"><p class="text-lg text-purple-200">Subtotal: <span id="cartTotal">$0.00</span></p><p class="text-sm text-purple-300">Transporte: <span id="transportCost">$0.00</span></p><p class="text-2xl text-yellow-300 border-t border-white border-opacity-20 pt-3">Total Final: <span id="finalTotal">$0.00</span></p></div>
-            <div class="flex gap-4"><button id="closeCart" class="btn-premium bg-gray-400 text-gray-800 flex-1"><i data-lucide="x"></i>Cerrar</button><a href="#booking" id="proceedBooking" class="btn-premium btn-tertiary flex-1 nav-action"><i data-lucide="sparkles"></i>Reservar</a></div>
+            <div class="flex gap-4"><button id="closeCart" class="btn-premium bg-gray-400 text-gray-800 flex-1" aria-label="Cerrar carrito"><i data-lucide="x"></i>Cerrar</button><a href="#booking" id="proceedBooking" class="btn-premium btn-tertiary flex-1 nav-action"><i data-lucide="sparkles"></i>Reservar</a></div>
         </div>
     </div>
     <div id="calculatorModal" class="modal-backdrop">
@@ -491,7 +465,7 @@
                 <div class="flex justify-between items-center mb-3"><span class="text-lg font-bold">Costo de Transporte:</span><span id="calcTransport" class="text-2xl font-bold">$0.00</span></div>
                 <div class="border-t-2 border-gray-700 pt-3"><div class="flex justify-between items-center"><span class="text-xl font-bold">TOTAL ESTIMADO:</span><span id="calcTotal" class="text-3xl font-bold">$0.00</span></div></div>
             </div>
-            <div class="flex gap-4"><button id="closeCalculator" class="btn-premium bg-gray-400 text-gray-800 flex-1"><i data-lucide="x"></i>Cerrar</button><button id="addCalculatedToCart" class="btn-premium btn-tertiary flex-1"><i data-lucide="shopping-cart"></i>Agregar al Carrito</button></div>
+            <div class="flex gap-4"><button id="closeCalculator" class="btn-premium bg-gray-400 text-gray-800 flex-1" aria-label="Cerrar calculadora"><i data-lucide="x"></i>Cerrar</button><button id="addCalculatedToCart" class="btn-premium btn-tertiary flex-1"><i data-lucide="shopping-cart"></i>Agregar al Carrito</button></div>
         </div>
     </div>
     <div id="chatModal" class="modal-backdrop">
@@ -499,7 +473,7 @@
             <div class="chat-header">
                 <div class="flex justify-between items-center relative z-10">
                     <div class="flex items-center gap-3"><div class="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center"><i data-lucide="bot" class="w-5 h-5"></i></div><div><h3 class="font-bold">DivertyBot</h3><p class="text-xs opacity-90">Asistente Virtual</p></div></div>
-                    <button id="closeChat" class="text-white hover:text-gray-200 p-2 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+                    <button id="closeChat" class="text-white hover:text-gray-200 p-2 transition-colors" aria-label="Cerrar chat"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
             </div>
             <div class="chat-messages" id="chatMessages">
@@ -518,23 +492,45 @@
             </div>
         </div>
     </div>
+    <div id="bookingConfirmModal" class="modal-backdrop">
+        <div class="modal-content text-center p-8 max-w-md w-full bg-white rounded-3xl shadow-2xl">
+            <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="alert-triangle" class="w-10 h-10 text-yellow-500"></i>
+            </div>
+            <h2 class="text-2xl font-bold mb-4 text-gray-800">¡Un Momento!</h2>
+            <p class="text-gray-600 mb-8">
+                Importante: Antes de realizar la reserva, por favor consulte la disponibilidad de la fecha por WhatsApp para asegurar que podamos celebrar con usted.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a href="https://wa.me/50766677965?text=¡Hola! Quiero consultar la disponibilidad para una fecha." target="_blank" class="btn-premium btn-success flex-1">
+                    <i data-lucide="phone"></i>Consultar por WhatsApp
+                </a>
+                <button id="continueToBookingBtn" class="btn-premium btn-secondary flex-1">
+                    Continuar a la Reserva
+                </button>
+            </div>
+        </div>
+    </div>
     <div id="toast"></div>
     <div id="loadingOverlay" class="fixed inset-0 bg-white bg-opacity-95 flex items-center justify-center z-50 hidden">
         <div class="text-center"><div class="loading-spinner"></div><p class="mt-6 text-purple-700 font-semibold text-lg">Cargando...</p></div>
     </div>
 
     <!-- =========== SCRIPTS =========== -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
+    <!-- jQuery y Lightbox ya no son necesarios -->
+    
+    <!-- 
+    ================================================================
+    |                     JAVASCRIPT LOGIC                         |
+    ================================================================
+    -->
     <script>
-        // --- APP STATE & DATA ---
-        const app = { 
-            activeSection: 'home', 
-            cart: [], 
-            location: 'panama-centro', 
-            chatOpen: false
-        };
-        let bookingFormState = {};
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // ================================================================
+        // |               DATOS DE LA APLICACIÓN (data.js)               |
+        // |   Para cambiar precios o paquetes, edita esta sección.       |
+        // ================================================================
         const locations = [
             { value: 'panama-centro', label: 'Panamá Centro (Gratis)', cost: 0 },
             { value: 'arraijan', label: 'Arraiján (+$15)', cost: 15 },
@@ -543,6 +539,7 @@
             { value: 'panama-este', label: 'Panamá Este (+$10)', cost: 10 },
             { value: 'ancon', label: 'Ancón (+$10)', cost: 10 }
         ];
+
         const services = [
             { id: 'service_facepaint', name: 'Pintacaritas', price: 45, description: 'Servicio profesional de pintacaritas en Panamá con pinturas hipoalergénicas. Transformamos a los niños en sus personajes favoritos. Servicio por 1 hora.', image: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', isHourly: true },
             { id: 'service_balloons', name: 'Globoflexia', price: 40, description: 'Figuras divertidas y creativas hechas con globos para cada invitado en Panamá. Arte con globos profesional. Servicio por 1 hora.', image: 'https://i.ibb.co/LjtnV7D/1000156690-f40525f3ffe7fcc4f65d41f55096c0bc-Editado-20250808-161453-0000.jpg', isHourly: true },
@@ -553,62 +550,42 @@
             { id: 'service_magic', name: 'Show de Magia Cómica', price: 100, description: '1.5 horas de espectáculo interactivo que asombrará a todos. Incluye figuras con globos.', image: 'https://placehold.co/400x267/e9d5ff/7c3aed?text=Magia' },
             { id: 'service_inflatable', name: 'Alquiler de Inflables', price: 90, description: 'Alquiler de inflables seguros para fiestas infantiles en Panamá por 4 horas.', image: 'https://placehold.co/400x267/dcfce7/16a34a?text=Inflable' }
         ];
+
         const animatorPackages = [
-            { id: 'animator_basic', name: 'Plan Básico (Animador)', price: 70, services: ['1 Animador profesional', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '1.5h de diversión con animador profesional en Panamá: juegos, globos, piñata. ¡Rápido y alegre!', image: 'https://i.ibb.co/Kcz1xx4K/IMG-20240420-WA0038.jpg' },
+            { id: 'animator_basic', name: 'Plan Básico (Animador)', price: 70, services: ['1 Animador profesional', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '1h de diversión con animador profesional en Panamá: juegos, globos, piñata. ¡Rápido y alegre!', image: 'https://i.ibb.co/Kcz1xx4K/IMG-20240420-WA0038.jpg' },
             { id: 'animator_recreative', name: 'Plan Recreativo (Animador)', price: 85, services: ['Animador profesional', 'Pintacaritas básica (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata'], description: '2h de aventura con animador en Panamá: pintacaritas básica, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/tTZzG8GC/1000166059-19d1c374d1a4d6d9e0386ce90dc0be60-Editado-Editado-20250808-142449-0000.jpg' }
         ];
+
         const clownPackages = [
             { id: 'clown_circus', name: 'Paquete Circo', price: 85, services: ['Payaso profesional', 'Integración de niños y adultos', 'Juegos y concursos', 'Figuras básicas con globos', 'Canto de cumpleaños', 'Romper la piñata'], description: '1.5h de risas garantizadas en Panamá con nuestro Payaso Risitas, lleno de juegos y humor profesional.', image: 'https://i.ibb.co/XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg' },
             { id: 'clown_recreative', name: 'Plan Recreativo (Payaso)', price: 110, services: ['1 Payasito profesional', '1 Pintacaritas (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata', 'Canto de cumpleaños'], description: '2h de aventura con payaso en Panamá: pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/2w26tSZ/2913b329-e65a-4574-846d-03d72a8ed6e1-20250808-145823-0000.jpg' },
             { id: 'clown_magic', name: 'Plan Magic (Payaso)', price: 135, services: ['1 Payaso profesional', 'Animación, juegos y concursos (1.5 horas)', '1 Pintacaritas (1 hora)', 'Show de magia cómica', 'Asistencia para la piñata', 'Canto de cumpleaños'], description: '2.5h premium con payaso en Panamá: juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', image: 'https://i.ibb.co/WvR9bMVz/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg' },
             { id: 'clown_diverty', name: 'Plan Diverty (Payaso)', price: 200, services: ['1 Payaso profesional', 'Juegos y concursos', '1 Pintacaritas', 'Globoflexia', 'Show de Burbujas Gigantes', 'Asistencia en la piñata', 'Canto de cumpleaños'], description: '3h de diversión completa en Panamá: Payaso, juegos, pintacaritas, globoflexia, show de burbujas, y asistencia piñata. ¡La magia garantizada!', image: 'https://i.ibb.co/HDvvDCLk/1000099577-6bef3c87bff7ee22e2b0606e02467bf8-Editado-20250808-150335-0000.jpg' }
         ];
+
         const bubblePackages = [
             { id: 'bubble_party', name: 'Paquete Fiesta Burbuja Completa', price: 190, services: ['Animación infantil', 'Juegos y concursos', 'Payasito o Animador', 'Show de Burbujas Gigantes', 'Romper la piñata'], description: '2 horas de diversión completa en Panamá con animación, juegos, payasito, show de burbujas gigantes y piñata.', image: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg' },
             { id: 'bubble_premium', name: 'Show de Burbujas Premium', price: 150, services: ['Burbujas gigantes', 'Humo', 'Burbujas LED', 'Interacción con el público', 'Fotos dentro de la burbuja', 'Trucos con burbujas', 'Burbujas de espuma'], description: '1 hora de show profesional en Panamá con burbujas gigantes, humo, LED, interacción, fotos, trucos y espuma.', image: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg' },
             { id: 'bubble_corporate', name: 'Show Corporativo/Especial', price: 220, services: ['Show personalizado para centros comerciales, colegios o eventos grandes', 'Luces especiales'], description: '1 hora de show personalizable en Panamá para eventos corporativos, centros comerciales o colegios, con luces especiales.', image: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg' }
         ];
-        
-        // --- DISCOUNT LOGIC ---
-        const applyPromotions = (packages, discountRate, packageIds = []) => {
-            const currentDate = new Date();
-            const isAugust = currentDate.getMonth() === 7; // 7 = August (0-indexed)
-
-            if (isAugust) {
-                return packages.map(pkg => {
-                    if (packageIds.length === 0 || packageIds.includes(pkg.id)) {
-                        return {
-                            ...pkg,
-                            originalPrice: pkg.price,
-                            price: parseFloat((pkg.price * (1 - discountRate)).toFixed(2)),
-                            discountApplied: true,
-                            discountMessage: `¡${Math.round(discountRate * 100)}% OFF!`
-                        };
-                    }
-                    return pkg;
-                });
-            }
-            return packages;
-        };
-        const bubblePackagesWithDiscount = applyPromotions(bubblePackages, 0.10);
-        const clownPackagesWithDiscount = applyPromotions(clownPackages, 0.15, ['clown_diverty']);
-        const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
 
         const gallery = [
-            { image: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', alt: 'Pintacaritas profesional en fiesta infantil Panamá', category: 'pintacaritas' },
-            { image: 'https://i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg', alt: 'Globoflexia creativa en evento Panamá', category: 'globoflexia' },
-            { image: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg', alt: 'Show de burbujas gigantes en Panamá', category: 'burbujas' },
-            { image: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg', alt: 'Decoración temática para fiesta Panamá', category: 'decoracion' },
-            { image: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg', alt: 'Personaje temático en evento Panamá', category: 'personajes' },
-            { image: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', alt: 'Taller de manualidades para niños Panamá', category: 'talleres' },
-            { image: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg', alt: 'Fiesta completa con burbujas Panamá', category: 'burbujas' },
-            { image: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg', alt: 'Evento corporativo profesional Panamá', category: 'corporativo' }
+            { image: 'https://i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg', alt: 'Pintacaritas profesional de mariposa en fiesta infantil en Panamá', category: 'pintacaritas' },
+            { image: 'https://i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg', alt: 'Animador creando figuras con globos para niños en La Chorrera', category: 'globoflexia' },
+            { image: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg', alt: 'Espectacular show de burbujas gigantes en evento en Panamá Centro', category: 'burbujas' },
+            { image: 'https://i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg', alt: 'Decoración de cumpleaños temática de superhéroes en Arraiján', category: 'decoracion' },
+            { image: 'https://i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg', alt: 'Personaje de Mario Bros animando fiesta infantil en Panamá Norte', category: 'personajes' },
+            { image: 'https://i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg', alt: 'Niños participando en taller de manualidades en Pacora, Panamá', category: 'talleres' },
+            { image: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg', alt: 'Fiesta completa con payaso y show de burbujas en Panamá Este', category: 'burbujas' },
+            { image: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg', alt: 'Show de Diverty Eventos para evento corporativo en Ancón', category: 'corporativo' }
         ];
+
         const blogPosts = [
-            { id: 'blog1', title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025', description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. Guía completa para padres panameños.', image: 'https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png', date: '2024-12-15', author: 'Equipo Diverty Panamá', content: `<p>Organizar una fiesta infantil en Panamá es una aventura emocionante. Para 2025, las tendencias en el país son fascinantes. Aquí te presentamos las 7 temáticas más pedidas en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte:</p><h3>1. El Mundo Mágico de Encanto</h3><p>Inspirada en la película de Disney, esta temática llena de color colombiano es perfecta para soñadores panameños. Muy popular en Panamá Centro.</p><h3>2. Aventura con Bluey</h3><p>La popular perrita Bluey trae juegos interactivos perfectos para el clima de Panamá. Ideal para fiestas al aire libre en Arraiján y Pacora.</p><h3>3. Superhéroes al Rescate</h3><p>Los clásicos nunca pasan de moda en Panamá. Spiderman, Batman y la Mujer Maravilla siguen siendo los favoritos en La Chorrera y Panamá Norte.</p><h3>4. Princesas con un Toque Moderno</h3><p>Las princesas de Disney reinventadas con actividades que empoderan a las niñas panameñas. Muy solicitado en todas nuestras zonas de cobertura.</p><h3>5. Exploradores de Dinosaurios</h3><p>Un viaje prehistórico perfecto para el clima tropical de Panamá, con decoraciones de dinosaurios que fascinan a los niños.</p><h3>6. Fiesta de Videojuegos (Minecraft/Mario Bros)</h3><p>Para los pequeños gamers panameños, una fiesta inspirada en Minecraft o Mario Bros es garantía de diversión en cualquier zona de Panamá.</p><h3>7. Unicornios y Fantasía</h3><p>La magia de los unicornios y arcoíris sigue cautivando a las niñas panameñas, creando un ambiente de ensueño tropical.</p><p>En Diverty Eventos Panamá, podemos ayudarte a hacer realidad cualquiera de estas temáticas en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. ¡Contáctanos!</p>`},
-            { id: 'blog2', title: 'Shows de Burbujas Gigantes en Panamá: La Tendencia que Enamorará a Todos', description: 'Descubre por qué los shows de burbujas gigantes son el entretenimiento más buscado para fiestas infantiles en Panamá.', image: 'https://i.ibb.co/7J5JM84n/file-000000003a0461fa918e3a8f30f312e2.png', date: '2024-12-10', author: 'Equipo Diverty Panamá', content: `<p>Si buscas un show que deje a todos con la boca abierta en Panamá, ¡el show de burbujas gigantes es la respuesta perfecta! Ha ganado una popularidad inmensa en todo el país por su capacidad de asombrar tanto a niños como adultos.</p><h3>¿Qué lo hace tan especial en Panamá?</h3><ul><li><strong>Magia Visual Tropical:</strong> Las burbujas de tamaños increíbles crean un espectáculo hipnotizante perfecto para el ambiente panameño.</li><li><strong>Interactividad Total:</strong> Los niños panameños no solo observan, ¡participan! Pueden entrar en una burbuja gigante para una foto inolvidable.</li><li><strong>Momentos Únicos:</strong> Las fotos con burbujas son recuerdos que durarán para siempre en las familias panameñas.</li><li><strong>Diversión para Todas las Edades:</strong> Es un entretenimiento que une a toda la familia panameña, desde los más pequeños hasta los abuelos.</li><li><strong>Perfecto para el Clima:</strong> Funciona excelentemente tanto en interiores como exteriores, adaptándose al clima tropical de Panamá.</li></ul><p>En Diverty Eventos, somos los especialistas en shows de burbujas gigantes en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. ¡Añade este toque mágico a tu fiesta panameña!</p>`},
-            { id: 'blog3', title: 'Errores Comunes al Planear una Fiesta Infantil en Panamá (y Cómo Evitarlos)', description: 'Guía práctica para padres panameños: descubre los errores más frecuentes al organizar una fiesta infantil en Panamá y cómo evitarlos.', image: 'https://i.ibb.co/gb4WkYzD/aichat-423527.jpg', date: '2024-12-05', author: 'Equipo Diverty Panamá', content: `<p>Planear la fiesta infantil perfecta en Panamá puede ser un desafío único. El clima tropical, las tradiciones locales y las expectativas familiares pueden complicar la organización. Queremos que todo salga mágico, pero a menudo se cometen errores que pueden convertir la diversión en estrés. Aquí te mostramos los más comunes en Panamá y cómo evitarlos:</p><h3>1. No considerar el clima tropical de Panamá</h3><p>Uno de los mayores errores es no planificar considerando el calor y la humedad típicos de Panamá.</p><p><strong>Cómo evitarlo:</strong> Elige horarios más frescos (mañana temprano o tarde), asegura buena ventilación, y ten bebidas frescas siempre disponibles.</p><h3>2. No tener un presupuesto adaptado a Panamá</h3><p>Los costos en Panamá pueden variar según la zona. Lo que cuesta en Panamá Centro puede ser diferente en Arraiján o La Chorrera.</p><p><strong>Cómo evitarlo:</strong> Investiga precios locales, considera costos de transporte entre zonas, y establece un presupuesto realista para tu área.</p><h3>3. Ignorar las tradiciones panameñas</h3><p>No incorporar elementos culturales panameños puede hacer que la fiesta se sienta genérica.</p><p><strong>Cómo evitarlo:</strong> Incluye música típica panameña, comidas tradicionales adaptadas para niños, y celebra la rica cultura local.</p><h3>4. Subestimar el entretenimiento profesional</h3><p>Una fiesta infantil en Panamá sin entretenimiento adecuado puede decaer rápidamente, especialmente con el calor.</p><p><strong>Cómo evitarlo:</strong> Contrata profesionales locales como Diverty Eventos. Un animador, payaso o show de burbujas panameño puede mantener a todos frescos y entretenidos.</p><p>En Diverty Eventos Panamá, conocemos perfectamente estos desafíos y estamos aquí para ayudarte a evitar estos errores. Servimos en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte, garantizando que la fiesta de tus hijos sea un éxito rotundo adaptado a nuestra hermosa cultura panameña.</p>`}
+            { id: 'blog1', title: 'Las 7 Temáticas de Fiestas Infantiles más Pedidas en Panamá para 2025', description: 'Descubre las temáticas que están arrasando en las fiestas infantiles de Panamá este año. Guía completa para padres panameños.', image: 'https://i.ibb.co/LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png', date: '2024-12-15', author: 'Equipo Diverty Panamá', content: `<p>Organizar una fiesta infantil en Panamá es una aventura emocionante. Para 2025, las tendencias en el país son fascinantes. Aquí te presentamos las 7 temáticas más pedidas en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte:</p><h3>1. El Mundo Mágico de Encanto</h3><p>Inspirada en la película de Disney, esta temática llena de color colombiano es perfecta para soñadores panameños. Muy popular en Panamá Centro.</p><h3>2. Aventura con Bluey</h3><p>La popular perrita Bluey trae juegos interactivos perfectos para el clima de Panamá. Ideal para fiestas al aire libre en Arraiján y Pacora.</p><h3>3. Superhéroes al Rescate</h3><p>Los clásicos nunca pasan de moda en Panamá. Spiderman, Batman y la Mujer Maravilla siguen siendo los favoritos en La Chorrera y Panamá Norte.</p><h3>4. Princesas con un Toque Moderno</h3><p>Las princesas de Disney reinventadas con actividades que empoderan a las niñas panameñas. Muy solicitado en todas nuestras zonas de cobertura.</p><h3>5. Exploradores de Dinosaurios</h3><p>Un viaje prehistórico perfecto para el clima tropical de Panamá, con decoraciones de dinosaurios que fascinan a los niños.</p><h3>6. Fiesta de Videojuegos (Minecraft/Mario Bros)</h3><p>Para los pequeños gamers panameños, una fiesta inspirada en Minecraft o Mario Bros es garantía de diversión en cualquier zona de Panamá.</p><h3>7. Unicornios y Fantasía</h3><p>La magia de los unicornios y arcoíris sigue cautivando a las niñas panameñas, creando un ambiente de ensueño tropical.</p><p>En Diverty Eventos Panamá, podemos ayudarte a hacer realidad cualquiera de estas temáticas en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. ¡Contáctanos!</p><a href="#clowns" class="btn-premium btn-primary nav-action mt-6">Ver Paquetes de Personajes</a>`},
+            { id: 'blog2', title: 'Shows de Burbujas Gigantes en Panamá: La Tendencia que Enamorará a Todos', description: 'Descubre por qué los shows de burbujas gigantes son el entretenimiento más buscado para fiestas infantiles en Panamá.', image: 'https://i.ibb.co/7J5JM84n/file-000000003a0461fa918e3a8f30f312e2.png', date: '2024-12-10', author: 'Equipo Diverty Panamá', content: `<p>Si buscas un show que deje a todos con la boca abierta en Panamá, ¡el show de burbujas gigantes es la respuesta perfecta! Ha ganado una popularidad inmensa en todo el país por su capacidad de asombrar tanto a niños como adultos.</p><h3>¿Qué lo hace tan especial en Panamá?</h3><ul><li><strong>Magia Visual Tropical:</strong> Las burbujas de tamaños increíbles crean un espectáculo hipnotizante perfecto para el ambiente panameño.</li><li><strong>Interactividad Total:</strong> Los niños panameños no solo observan, ¡participan! Pueden entrar en una burbuja gigante para una foto inolvidable.</li><li><strong>Momentos Únicos:</strong> Las fotos con burbujas son recuerdos que durarán para siempre en las familias panameñas.</li><li><strong>Diversión para Todas las Edades:</strong> Es un entretenimiento que une a toda la familia panameña, desde los más pequeños hasta los abuelos.</li><li><strong>Perfecto para el Clima:</strong> Funciona excelentemente tanto en interiores como exteriores, adaptándose al clima tropical de Panamá.</li></ul><p>En Diverty Eventos, somos los especialistas en shows de burbujas gigantes en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte. ¡Añade este toque mágico a tu fiesta panameña!</p><a href="#bubbles" class="btn-premium btn-secondary nav-action mt-6">Ver Shows de Burbujas</a>`},
+            { id: 'blog3', title: 'Errores Comunes al Planear una Fiesta Infantil en Panamá (y Cómo Evitarlos)', description: 'Guía práctica para padres panameños: descubre los errores más frecuentes al organizar una fiesta infantil en Panamá y cómo evitarlos.', image: 'https://i.ibb.co/gb4WkYzD/aichat-423527.jpg', date: '2024-12-05', author: 'Equipo Diverty Panamá', content: `<p>Planear la fiesta infantil perfecta en Panamá puede ser un desafío único. El clima tropical, las tradiciones locales y las expectativas familiares pueden complicar la organización. Queremos que todo salga mágico, pero a menudo se cometen errores que pueden convertir la diversión en estrés. Aquí te mostramos los más comunes en Panamá y cómo evitarlos:</p><h3>1. No considerar el clima tropical de Panamá</h3><p>Uno de los mayores errores es no planificar considerando el calor y la humedad típicos de Panamá.</p><p><strong>Cómo evitarlo:</strong> Elige horarios más frescos (mañana temprano o tarde), asegura buena ventilación, y ten bebidas frescas siempre disponibles.</p><h3>2. No tener un presupuesto adaptado a Panamá</h3><p>Los costos en Panamá pueden variar según la zona. Lo que cuesta en Panamá Centro puede ser diferente en Arraiján o La Chorrera.</p><p><strong>Cómo evitarlo:</strong> Investiga precios locales, considera costos de transporte entre zonas, y establece un presupuesto realista para tu área.</p><h3>3. Ignorar las tradiciones panameñas</h3><p>No incorporar elementos culturales panameños puede hacer que la fiesta se sienta genérica.</p><p><strong>Cómo evitarlo:</strong> Incluye música típica panameña, comidas tradicionales adaptadas para niños, y celebra la rica cultura local.</p><h3>4. Subestimar el entretenimiento profesional</h3><p>Una fiesta infantil en Panamá sin entretenimiento adecuado puede decaer rápidamente, especialmente con el calor.</p><p><strong>Cómo evitarlo:</strong> Contrata profesionales locales como Diverty Eventos. Un animador, payaso o show de burbujas panameño puede mantener a todos frescos y entretenidos.</p><p>En Diverty Eventos Panamá, conocemos perfectamente estos desafíos y estamos aquí para ayudarte a evitar estos errores. Servimos en Panamá Centro, Arraiján, La Chorrera, Pacora y Panamá Norte, garantizando que la fiesta de tus hijos sea un éxito rotundo adaptado a nuestra hermosa cultura panameña.</p><a href="#services" class="btn-premium btn-tertiary nav-action mt-6">Ver Todos los Servicios</a>`}
         ];
+
         const customerReviews = [
             { id: 1, name: "María González - Panamá Centro", rating: 5, comment: "Excelente servicio en Panamá Centro, los niños quedaron encantados con el show de burbujas. Muy profesionales y puntuales. Recomendado 100% para fiestas en Panamá.", date: "2024-11-20", service: "Show de Burbujas Premium", avatar: "https://i.pravatar.cc/48?img=1", location: "Panamá Centro" },
             { id: 2, name: "Carlos Mendoza - Arraiján", rating: 5, comment: "Muy profesionales en Arraiján, llegaron puntuales y la animación fue increíble. Los niños no pararon de reír. Diverty es lo mejor en fiestas infantiles de Panamá.", date: "2024-11-15", service: "Plan Recreativo (Payaso)", avatar: "https://i.pravatar.cc/48?img=2", location: "Arraiján" },
@@ -618,13 +595,41 @@
             { id: 6, name: "Diego Morales - Panamá Centro", rating: 5, comment: "Los inflables fueron un hit en nuestra fiesta en Panamá Centro. Los niños jugaron todo el tiempo y los padres pudimos relajarnos. Diverty es lo máximo.", date: "2024-10-20", service: "Alquiler de Inflables", avatar: "https://i.pravatar.cc/48?img=6", location: "Panamá Centro" }
         ];
 
-        // --- UTILITY FUNCTIONS ---
+        // ================================================================
+        // |               LÓGICA DE LA APLICACIÓN (app.js)               |
+        // ================================================================
+        const app = { 
+            activeSection: 'home', 
+            cart: [], 
+            location: 'panama-centro', 
+            chatOpen: false
+        };
+        let bookingFormState = {};
+
+        const applyPromotions = (packages, discountRate, packageIds = []) => {
+            const currentDate = new Date();
+            const isAugust = currentDate.getMonth() === 7;
+            if (isAugust) {
+                return packages.map(pkg => {
+                    if (packageIds.length === 0 || packageIds.includes(pkg.id)) {
+                        return { ...pkg, originalPrice: pkg.price, price: parseFloat((pkg.price * (1 - discountRate)).toFixed(2)), discountApplied: true, discountMessage: `¡${Math.round(discountRate * 100)}% OFF!` };
+                    }
+                    return pkg;
+                });
+            }
+            return packages;
+        };
+
+        const bubblePackagesWithDiscount = applyPromotions(bubblePackages, 0.10);
+        // FIXED: No promotions applied to clown packages
+        const clownPackagesWithDiscount = clownPackages;
+        const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
+
         const $ = (selector) => document.querySelector(selector);
         const $$ = (selector) => document.querySelectorAll(selector);
-        const show = (el) => el.classList.remove('hidden');
-        const hide = (el) => el.classList.add('hidden');
-        const showLoading = () => show($('#loadingOverlay'));
-        const hideLoading = () => hide($('#loadingOverlay'));
+        const show = (el) => el && el.classList.remove('hidden');
+        const hide = (el) => el && el.classList.add('hidden');
+        
         function showToast(message, type = 'info') {
             const toast = $('#toast');
             toast.className = `show ${type}`;
@@ -635,7 +640,6 @@
         const showModal = (modalId) => $(`#${modalId}`).classList.add('show');
         const hideModal = (modalId) => $(`#${modalId}`).classList.remove('show');
 
-        // --- CART & PRICING LOGIC ---
         function addToCart(item, quantity = 1) {
             const existing = app.cart.find(i => i.id === item.id);
             if (existing) {
@@ -645,16 +649,31 @@
             }
             updateCartUI();
             showToast(`${item.name} añadido al carrito`, 'success');
+            // GTM Event
+            window.dataLayer.push({
+                event: 'add_to_cart',
+                ecommerce: {
+                    items: [{
+                        item_id: item.id,
+                        item_name: item.name,
+                        price: item.price,
+                        quantity: quantity
+                    }]
+                }
+            });
         }
+
         function removeFromCart(itemId) {
             app.cart = app.cart.filter(i => i.id !== itemId);
             updateCartUI();
             showToast('Producto eliminado', 'info');
         }
+
         function calculateTransportCost(locationValue) {
             const location = locations.find(l => l.value === locationValue);
             return location ? location.cost : 0;
         }
+
         function updateCartUI() {
             const count = app.cart.reduce((sum, item) => sum + item.quantity, 0);
             const total = app.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -666,35 +685,36 @@
             count > 0 ? show($('#cartSummary')) : hide($('#cartSummary'));
 
             const cartItemsContainer = $('#cartItems');
-            if (app.cart.length === 0) {
-                cartItemsContainer.innerHTML = '<p class="text-center opacity-70">Tu carrito está vacío</p>';
-            } else {
-                cartItemsContainer.innerHTML = app.cart.map(item => `
-                    <div class="flex justify-between items-center py-3 border-b border-white border-opacity-20">
-                        <span class="text-sm">${item.name} (x${item.quantity})</span>
-                        <div class="flex items-center gap-3">
-                            <span class="font-bold">$${(item.price * item.quantity).toFixed(2)}</span>
-                            <button onclick="removeFromCart('${item.id}')" class="text-red-300 hover:text-red-100" aria-label="Eliminar ${item.name}"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
-                        </div>
-                    </div>`).join('');
+            if (cartItemsContainer) {
+                if (app.cart.length === 0) {
+                    cartItemsContainer.innerHTML = '<p class="text-center opacity-70">Tu carrito está vacío</p>';
+                } else {
+                    cartItemsContainer.innerHTML = app.cart.map(item => `
+                        <div class="flex justify-between items-center py-3 border-b border-white border-opacity-20">
+                            <span class="text-sm">${item.name} (x${item.quantity})</span>
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold">$${(item.price * item.quantity).toFixed(2)}</span>
+                                <button data-action="remove-from-cart" data-item-id="${item.id}" class="text-red-300 hover:text-red-100" aria-label="Eliminar ${item.name}"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>`).join('');
+                }
             }
             $('#cartTotal').textContent = `$${total.toFixed(2)}`;
             $('#transportCost').textContent = `$${transportCost.toFixed(2)}`;
             $('#finalTotal').textContent = `$${finalTotal.toFixed(2)}`;
             populateLocationSelects();
-            $('#cartLocation').value = app.location;
+            if ($('#cartLocation')) $('#cartLocation').value = app.location;
             lucide.createIcons();
         }
-        
-        // --- CALCULATOR LOGIC ---
+
         let calculatorItems = [];
         function openCalculator() {
             showModal('calculatorModal');
             renderCalculatorServices();
             updateCalculatorTotal();
         }
+
         function renderCalculatorServices() {
-            const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
             const servicesHtml = allServices.map(service => `
                 <div class="bg-white bg-opacity-20 rounded-xl p-4 mb-3">
                     <div class="flex justify-between items-center mb-2">
@@ -702,16 +722,16 @@
                         <span class="text-lg font-bold text-yellow-300">$${service.price}</span>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="changeCalculatorQuantity('${service.id}', -1)" class="w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                        <button data-action="change-calc-qty" data-item-id="${service.id}" data-change="-1" class="w-8 h-8 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center"><i data-lucide="minus" class="w-4 h-4"></i></button>
                         <span id="calc-qty-${service.id}" class="text-lg font-bold min-w-[2rem] text-center">0</span>
-                        <button onclick="changeCalculatorQuantity('${service.id}', 1)" class="w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                        <button data-action="change-calc-qty" data-item-id="${service.id}" data-change="1" class="w-8 h-8 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center"><i data-lucide="plus" class="w-4 h-4"></i></button>
                     </div>
                 </div>`).join('');
             $('#calculatorServices').innerHTML = servicesHtml;
             lucide.createIcons();
         }
+
         function changeCalculatorQuantity(serviceId, change) {
-            const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
             const service = allServices.find(s => s.id === serviceId);
             if (!service) return;
             const existingItem = calculatorItems.find(item => item.id === serviceId);
@@ -725,6 +745,7 @@
             if(qtyElement) qtyElement.textContent = calculatorItems.find(item => item.id === serviceId)?.quantity || 0;
             updateCalculatorTotal();
         }
+
         function updateCalculatorTotal() {
             const subtotal = calculatorItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const location = $('#calculatorLocation').value;
@@ -734,6 +755,7 @@
             $('#calcTransport').textContent = `$${transportCost.toFixed(2)}`;
             $('#calcTotal').textContent = `$${total.toFixed(2)}`;
         }
+
         function addCalculatedToCart() {
             if (calculatorItems.length === 0) { showToast('Selecciona al menos un servicio', 'error'); return; }
             calculatorItems.forEach(item => { if(item.quantity > 0) addToCart(item, item.quantity); });
@@ -742,68 +764,30 @@
             calculatorItems = [];
         }
 
-        // --- GEMINI API LOGIC (WITH TEMPORARY KEY) ---
         async function callGeminiAPI(chatHistory, generationConfig = null) {
-            // WARNING: This is not secure for production.
-            // Your API key is visible to anyone who views the page source.
-            // Please use Netlify Environment Variables and Serverless Functions for a secure setup.
-            // La clave API ha sido añadida temporalmente a petición del usuario.
-            const apiKey = "AIzaSyAJvpQ69QXin7V1cu5k90lRkymQ6o1lpDE"; // Clave API proporcionada por el usuario
+            const apiKey = "AIzaSyAJvpQ69QXin7V1cu5k90lRkymQ6o1lpDE";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            
             const payload = { contents: chatHistory };
-            if (generationConfig) {
-                payload.generationConfig = generationConfig;
-            }
-
+            if (generationConfig) payload.generationConfig = generationConfig;
             try {
-                const response = await fetch(apiUrl, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(payload) 
-                });
-
+                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const result = await response.json();
-
-                if (!response.ok) {
-                    const errorMessage = result?.error?.message || `Error de API: ${response.status}`;
-                    throw new Error(errorMessage);
-                }
-                
+                if (!response.ok) throw new Error(result?.error?.message || `Error de API: ${response.status}`);
                 const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
                 if (textResponse) {
-                    if (generationConfig && generationConfig.responseMimeType === "application/json") {
-                        try {
-                            return JSON.parse(textResponse);
-                        } catch (jsonError) {
-                            console.error("Fallo al procesar JSON de la API:", jsonError, "Texto recibido:", textResponse);
-                            throw new Error("La IA devolvió una respuesta en un formato inesperado.");
-                        }
+                    if (generationConfig?.responseMimeType === "application/json") {
+                        try { return JSON.parse(textResponse); }
+                        catch (e) { throw new Error("La IA devolvió una respuesta en un formato inesperado."); }
                     }
                     return textResponse;
                 }
-                
-                const finishReason = result.candidates?.[0]?.finishReason;
-                if (finishReason && finishReason !== 'STOP') {
-                     throw new Error(`La IA finalizó por una razón inesperada: ${finishReason}. Intenta reformular tu pregunta.`);
-                }
-                
                 throw new Error("No se recibió una respuesta de texto de la IA.");
-
             } catch (error) {
                 console.error("Error al llamar a la API de Gemini:", error);
-                const userFriendlyMessage = error.message.includes("API key not valid") 
-                    ? "La clave de la API no es válida. Revisa la configuración."
-                    : "¡Ups! 🎈 Tuve un pequeño problema para conectarme. Por favor, intenta de nuevo.";
-
-                return { 
-                    error: true, 
-                    responseText: userFriendlyMessage
-                };
+                return { error: true, responseText: "¡Ups! 🎈 Tuve un problema para conectarme. Por favor, intenta de nuevo." };
             }
         }
 
-        // --- CHATBOT LOGIC ---
         function executeBotAction(action) {
             if (!action || !action.type) return;
             switch (action.type) {
@@ -815,18 +799,13 @@
                             const hourlyItem = { ...itemToAdd, id: `${itemToAdd.id}_${quantity}h`, name: `${itemToAdd.name} (${quantity} horas)`, price: itemToAdd.price * quantity, quantity: 1 };
                             addToCart(hourlyItem);
                         } else if (itemToAdd.isPerChild) {
-                            if (quantity < 10) {
-                                showToast('El taller requiere un mínimo de 10 niños.', 'error');
-                                return;
-                            }
+                            if (quantity < 10) { showToast('El taller requiere un mínimo de 10 niños.', 'error'); return; }
                             const workshopItem = { ...itemToAdd, id: `${itemToAdd.id}_${quantity}kids`, name: `${itemToAdd.name} (${quantity} niños)`, price: itemToAdd.price * quantity, quantity: 1 };
                             addToCart(workshopItem);
                         } else {
                             addToCart(itemToAdd, quantity);
                         }
                         showModal('cartModal');
-                    } else {
-                        console.error("Chatbot intentó agregar un item que no existe:", action.itemId);
                     }
                     break;
                 case 'navigateTo':
@@ -834,13 +813,12 @@
                     break;
             }
         }
-        
+
         function initChat() {
             const chatInput = $('#chatInput');
             const sendBtn = $('#sendChat');
             const messagesContainer = $('#chatMessages');
             let chatHistory = [];
-
             function addMessage(text, role) {
                 const messageDiv = document.createElement('div');
                 const isUser = role === 'user';
@@ -851,21 +829,17 @@
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 lucide.createIcons();
             }
-
             async function sendMessage() {
                 const messageText = chatInput.value.trim();
                 if (!messageText) return;
                 addMessage(messageText, 'user');
-
                 if (chatHistory.length === 0) {
                     const systemPrompt = `Eres DivertyBot, un asistente amigable y útil para "Diverty Eventos", una empresa de planificación de fiestas infantiles en Panamá. Tu objetivo es responder preguntas, ayudar a los usuarios a navegar por el sitio y agregar servicios al carrito. Conoces los siguientes servicios y paquetes: ${JSON.stringify(allServices)}. Conoces las siguientes ubicaciones: ${JSON.stringify(locations)}. Sé breve y divertido. Debes responder siempre en el formato JSON solicitado.`;
                     chatHistory.push({ role: 'user', parts: [{ text: systemPrompt }] });
                     chatHistory.push({ role: 'model', parts: [{ text: "¡Entendido! Estoy listo para ayudar a planificar la mejor fiesta en Panamá y responderé en formato JSON." }] });
                 }
-
                 chatHistory.push({ role: 'user', parts: [{ text: messageText }] });
                 chatInput.value = '';
-                
                 const loadingMsg = document.createElement('div');
                 loadingMsg.id = 'loading-message';
                 loadingMsg.className = 'mb-4 p-4 rounded-2xl bg-purple-100 text-purple-800 mr-8';
@@ -873,7 +847,6 @@
                 messagesContainer.appendChild(loadingMsg);
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 lucide.createIcons();
-                
                 const chatbotGenerationConfig = {
                     responseMimeType: "application/json",
                     responseSchema: {
@@ -881,8 +854,7 @@
                         properties: {
                             "responseText": { "type": "STRING", "description": "Tu respuesta corta y amigable para el usuario, sin mencionar precios." },
                             "action": {
-                                "type": "OBJECT",
-                                "description": "La acción a ejecutar (opcional).",
+                                "type": "OBJECT", "description": "La acción a ejecutar (opcional).",
                                 "properties": {
                                     "type": { "type": "STRING", "enum": ["addToCart", "navigateTo"], "description": "El tipo de acción." },
                                     "itemId": { "type": "STRING", "description": "El ID único del servicio a agregar (ej: 'clown_magic')." },
@@ -895,70 +867,109 @@
                 };
                 const response = await callGeminiAPI(chatHistory, chatbotGenerationConfig);
                 loadingMsg.remove();
-
                 if (response && response.responseText && !response.error) {
                     addMessage(response.responseText, 'model');
                     chatHistory.push({ role: 'model', parts: [{ text: JSON.stringify(response) }] });
-                    if (response.action) {
-                        executeBotAction(response.action);
-                    }
+                    if (response.action) executeBotAction(response.action);
                 } else {
                     addMessage(response.responseText || "Lo siento, no pude procesar tu solicitud en este momento.", 'model');
                 }
-
                 if (chatHistory.length > 8) chatHistory = chatHistory.slice(-8);
             }
-            
             sendBtn.onclick = sendMessage;
             chatInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
             $$('.quick-question').forEach(btn => {
-                btn.onclick = () => {
-                    chatInput.value = btn.dataset.question;
-                    sendMessage();
-                };
+                btn.onclick = () => { chatInput.value = btn.dataset.question; sendMessage(); };
             });
         }
-        
-        // --- UI RENDERING & PAGE LOGIC ---
+
         function setActiveSection(sectionId) {
-            showLoading();
+            if (!sectionId) sectionId = 'home';
+
+            const noticeShown = sessionStorage.getItem('bookingNoticeShown');
+            if (sectionId === 'booking' && !noticeShown) {
+                sessionStorage.setItem('bookingNoticeShown', 'true');
+                showModal('bookingConfirmModal');
+                return;
+            }
+
+            const mainContent = $('#mainContent');
+            mainContent.innerHTML = `<div id="loading-placeholder" class="flex items-center justify-center h-full pt-20"><div class="text-center"><div class="loading-spinner"></div><p class="mt-6 text-purple-700 font-semibold text-lg">Cargando...</p></div></div>`;
+            
             setTimeout(() => {
                 app.activeSection = sectionId;
                 $$('.nav-link, .mobile-nav-link, .mobile-nav-link-bottom').forEach(link => link.classList.remove('active'));
                 const navMap = { home: ['#navHome', '#mobileHome'], services: ['#navServices', '#mobileServices'], ideas: ['#navIdeas', '#mobileIdeas'], animators: ['#navAnimators', '#mobileAnimators'], clowns: ['#navClowns', '#mobileClowns'], bubbles: ['#navBubbles', '#mobileBubbles'], gallery: ['#navGallery', '#mobileGallery'], blog: ['#navBlog', '#mobileBlog'], reviews: ['#navReviews', '#mobileReviews'], booking: ['#navBooking', '#mobileBooking'] };
                 navMap[sectionId]?.forEach(selector => $(selector)?.classList.add('active'));
                 $$(`.mobile-nav-link-bottom[href="#${sectionId}"]`).forEach(link => link.classList.add('active'));
-
                 const sections = { home: renderHome, services: renderServices, ideas: renderIdeaGenerator, animators: renderAnimators, clowns: renderClowns, bubbles: renderBubbles, gallery: renderGallery, blog: renderBlog, reviews: renderReviews, booking: renderBooking };
-                sections[sectionId]?.();
+                if (sections[sectionId]) {
+                    sections[sectionId]();
+                } else {
+                    renderHome();
+                }
                 toggleMobileMenu(false);
-                hideLoading();
                 window.scrollTo(0, 0);
-                gtag('config', 'G-SBYYJTHTEF', { page_title: sectionId, page_path: `#${sectionId}` });
-            }, 300);
+                if (typeof gtag === 'function') {
+                    gtag('config', 'G-SBYYJTHTEF', { page_title: sectionId, page_path: `#${sectionId}` });
+                }
+            }, 250);
         }
+
         function renderHome() {
+            const featuredPackage = allServices.find(s => s.id === 'clown_diverty');
+            let priceHTML = `<span class="text-3xl font-bold text-gray-800">$${featuredPackage.price.toFixed(0)}</span>`;
+            if (featuredPackage.discountApplied) {
+                priceHTML = `
+                    <div class="flex items-baseline justify-center gap-3">
+                        <span class="text-2xl font-bold text-gray-400 line-through">$${featuredPackage.originalPrice.toFixed(0)}</span>
+                        <span class="text-4xl font-extrabold text-green-600">$${featuredPackage.price.toFixed(0)}</span>
+                    </div>
+                `;
+            }
+
             $('#mainContent').innerHTML = `
                 <section class="hero-section animate-slide-up">
                     <div class="hero-content">
-                        <h2 class="text-3xl sm:text-4xl lg:text-6xl font-bold mb-6">🎉 ¡Las Mejores Fiestas Infantiles en Panamá! 🎈</h2>
+                        <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mb-6">🎉 ¡Las Mejores Fiestas Infantiles en Panamá! 🎈</h1>
                         <p class="text-lg sm:text-xl lg:text-2xl mb-10 opacity-90">Especialistas en animación, shows de burbujas y entretenimiento infantil en Panamá Centro, Panamá Este, Arraiján, La Chorrera, Ancón, Pacora y Panamá Norte. ¡Más de 500 fiestas realizadas!</p>
-                        <div class="flex flex-col sm:flex-row justify-center gap-4 lg:gap-6 mb-6">
-                            <a href="#services" class="btn-premium btn-primary nav-action"><i data-lucide="sparkles"></i>¡Ver Servicios en Panamá!</a>
-                             <a href="#ideas" class="btn-premium btn-tertiary nav-action"><i data-lucide="lightbulb"></i>✨ Generador de Ideas</a>
-                        </div>
-                        <div class="flex flex-col sm:flex-row justify-center gap-4 lg:gap-6">
-                            <a href="#clowns" class="btn-premium btn-warning nav-action"><i data-lucide="smile"></i>Planes con Payasos</a>
-                            <a href="#bubbles" class="btn-premium btn-secondary nav-action"><i data-lucide="wind"></i>¡Shows de Burbujas!</a>
+                        <div class="grid grid-cols-2 sm:flex sm:flex-row justify-center gap-4">
+                            <a href="#services" class="btn-premium btn-primary nav-action text-sm sm:text-base"><i data-lucide="sparkles"></i>Servicios</a>
+                            <a href="#animators" class="btn-premium btn-tertiary nav-action text-sm sm:text-base"><i data-lucide="user-check"></i>Animadores</a>
+                            <a href="#clowns" class="btn-premium btn-warning nav-action text-sm sm:text-base"><i data-lucide="smile"></i>Payasos</a>
+                            <a href="#bubbles" class="btn-premium btn-secondary nav-action text-sm sm:text-base"><i data-lucide="wind"></i>Burbujas</a>
                         </div>
                     </div>
                 </section>
+
+                <section class="my-12 animate-slide-up">
+                    <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+                        <div class="relative">
+                            <img src="${featuredPackage.image}" alt="${featuredPackage.name}" class="w-full h-64 object-cover" loading="lazy">
+                            ${featuredPackage.discountApplied ? `<div class="absolute top-4 right-4 bg-pink-500 text-white text-sm font-bold px-4 py-1.5 rounded-full shadow-lg animate-pulse">${featuredPackage.discountMessage}</div>` : ''}
+                            <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl text-center shadow-md">
+                                ${priceHTML}
+                            </div>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-sm font-bold uppercase text-purple-500 tracking-widest mb-2">Paquete Destacado del Mes</h3>
+                            <h2 class="text-2xl font-extrabold text-gray-800 mb-3 font-poppins">${featuredPackage.name}</h2>
+                            <p class="text-gray-600 mb-4 text-sm">${featuredPackage.description}</p>
+                            <ul class="space-y-2 text-gray-700 text-sm mb-6">
+                                ${featuredPackage.services.map(s => `<li class="flex items-center"><i data-lucide="check" class="w-5 h-5 mr-3 text-green-500 flex-shrink-0"></i><span>${s}</span></li>`).join('')}
+                            </ul>
+                            <button data-action="add-to-cart" data-item-id="${featuredPackage.id}" class="w-full btn-premium btn-primary py-4 text-lg"><i data-lucide="shopping-cart"></i>¡Lo Quiero!</button>
+                        </div>
+                    </div>
+                </section>
+
                 <div class="stats-grid">
                     <div class="stat-card animate-slide-up"><div class="stat-number">500+</div><div class="text-gray-600 font-semibold">Fiestas en Panamá</div><div class="text-xs text-green-600 mt-2">✅ Todas las zonas</div></div>
                     <div class="stat-card animate-slide-up"><div class="stat-number">4.9⭐</div><div class="text-gray-600 font-semibold">Calificación</div><div class="text-xs text-blue-600 mt-2">📈 127+ reseñas</div></div>
                     <div class="stat-card animate-slide-up"><div class="stat-number">6</div><div class="text-gray-600 font-semibold">Zonas de Panamá</div><div class="text-xs text-purple-600 mt-2">🚗 Centro, Este, Oeste, Norte, Ancón</div></div>
                     <div class="stat-card animate-slide-up"><div class="stat-number">24/7</div><div class="text-gray-600 font-semibold">Atención</div><div class="text-xs text-orange-600 mt-2">📱 WhatsApp +507 6667-7965</div></div>
                 </div>
+                
                 <section class="coverage-area animate-slide-up">
                     <div class="relative z-10">
                         <h2 class="text-3xl lg:text-4xl font-bold mb-4">🗺️ Zonas que Cubrimos en Panamá</h2>
@@ -976,61 +987,33 @@
                 </section>`;
             lucide.createIcons();
         }
-        
+
         function createDetailedCardHTML(item, index) {
             const isPackage = !!item.services;
             const isBlog = !!item.author;
             const title = item.name || item.title;
-            
             let priceDisplayHTML = '';
             if (item.price) {
                 if (item.discountApplied) {
-                    priceDisplayHTML = `
-                        <div class="absolute top-4 right-4 text-right">
-                             <span class="bg-pink-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">${item.discountMessage}</span>
-                             <div class="mt-2 bg-white/80 backdrop-blur-sm p-2 rounded-lg">
-                                 <span class="text-gray-500 line-through text-xl font-poppins">$${item.originalPrice.toFixed(0)}</span>
-                                 <span class="text-green-600 text-3xl font-bold font-poppins ml-2">$${item.price.toFixed(0)}</span>
-                             </div>
-                        </div>
-                    `;
+                    priceDisplayHTML = `<div class="absolute top-4 right-4 text-right"><span class="bg-pink-500 text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg animate-pulse">${item.discountMessage}</span><div class="mt-2 bg-white/80 backdrop-blur-sm p-2 rounded-lg"><span class="text-gray-500 line-through text-xl font-poppins">$${item.originalPrice.toFixed(0)}</span><span class="text-green-600 text-3xl font-bold font-poppins ml-2">$${item.price.toFixed(0)}</span></div></div>`;
                 } else {
                     priceDisplayHTML = `<div class="absolute top-4 right-4 bg-purple-600 text-white text-lg font-bold font-poppins py-2 px-4 rounded-full shadow-lg">$${item.price.toFixed(0)}${item.isHourly ? '/hr' : ''}${item.isPerChild ? '/niño' : ''}</div>`;
                 }
             }
-
-
-            const imageHTML = item.image ? `
-                <div class="relative">
-                    <img src="${item.image}" alt="${title}" class="w-full h-48 object-cover" loading="lazy" width="400" height="267" onerror="this.onerror=null;this.src='https://placehold.co/400x267/cccccc/ffffff?text=Imagen+no+disponible';">
-                    ${priceDisplayHTML}
-                </div>` : '';
-            
+            const imageHTML = item.image ? `<div class="relative"><img src="${item.image}" alt="${title}" class="w-full h-48 object-cover" loading="lazy" width="400" height="267" onerror="this.onerror=null;this.src='https://placehold.co/400x267/cccccc/ffffff?text=Imagen+no+disponible';">${priceDisplayHTML}</div>` : '';
             let actionButton;
             if (isBlog) {
-                actionButton = `<button onclick="showBlogPost('${item.id}')" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-purple-500 to-indigo-500 mt-auto">Leer Más</button>`;
+                actionButton = `<button data-action="show-blog" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-purple-500 to-indigo-500 mt-auto">Leer Más</button>`;
             } else if (item.isHourly) {
-                actionButton = `<div class="mt-auto"><div class="flex items-center justify-center gap-4 mb-4"><button onclick="changeServiceQuantity('${item.id}', -1)" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">-</button><span id="qty-${item.id}" class="text-2xl font-bold w-12 text-center">1</span><button onclick="changeServiceQuantity('${item.id}', 1)" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">+</button></div><button onclick="addToCartFromServiceCard('${item.id}')" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400">Añadir</button></div>`;
+                actionButton = `<div class="mt-auto"><div class="flex items-center justify-center gap-4 mb-4"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">-</button><span id="qty-${item.id}" class="text-2xl font-bold w-12 text-center">1</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">+</button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400">Añadir</button></div>`;
             } else if (item.isPerChild) {
-                actionButton = `<div class="mt-auto"><div class="form-group mb-4"><label for="qty-${item.id}" class="form-label text-center text-sm font-semibold text-gray-600 block mb-2"># de Niños (mín. 10):</label><input type="number" id="qty-${item.id}" class="form-input text-center w-full" value="10" min="10"></div><button onclick="addToCartFromWorkshopCard('${item.id}')" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400">Añadir</button></div>`;
+                actionButton = `<div class="mt-auto"><div class="form-group mb-4"><label for="qty-${item.id}" class="form-label text-center text-sm font-semibold text-gray-600 block mb-2"># de Niños (mín. 10):</label><input type="number" id="qty-${item.id}" class="form-input text-center w-full" value="10" min="10"></div><button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400">Añadir</button></div>`;
             } else {
-                actionButton = `<button onclick="handleAddToCartClick('${item.id}')" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400 mt-auto">Añadir al Carrito</button>`;
+                actionButton = `<button data-action="add-to-cart" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400 mt-auto">Añadir al Carrito</button>`;
             }
-
             const servicesListHTML = isPackage ? `<ul class="space-y-2 text-gray-700 text-sm mb-6 flex-grow">${item.services.map(s => `<li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500 mt-1 flex-shrink-0"></i><span>${s}</span></li>`).join('')}</ul>` : '';
             const blogMetaHTML = isBlog ? `<div class="flex items-center text-xs text-gray-500 mb-3"><i data-lucide="calendar" class="w-4 h-4 mr-2"></i>${item.date}<span class="mx-2">|</span><i data-lucide="user" class="w-4 h-4 mr-2"></i>${item.author}</div>` : '';
-
-            return `
-                <div class="card-detailed bg-white rounded-3xl shadow-lg flex flex-col h-full overflow-hidden animate-slide-up" style="animation-delay: ${index * 100}ms;">
-                    ${imageHTML}
-                    <div class="p-6 flex flex-col flex-grow">
-                        ${blogMetaHTML}
-                        <h3 class="text-2xl font-bold mb-2 text-gray-800 font-poppins">${title}</h3>
-                        <p class="text-gray-600 mb-4 text-sm leading-relaxed ${!isPackage && !isBlog && !item.isHourly && !item.isPerChild ? 'flex-grow' : ''}">${item.description}</p>
-                        ${servicesListHTML}
-                        ${actionButton}
-                    </div>
-                </div>`;
+            return `<div class="card-detailed bg-white rounded-3xl shadow-lg flex flex-col h-full overflow-hidden animate-slide-up" style="animation-delay: ${index * 100}ms;">${imageHTML}<div class="p-6 flex flex-col flex-grow">${blogMetaHTML}<h3 class="text-2xl font-bold mb-2 text-gray-800 font-poppins">${title}</h3><p class="text-gray-600 mb-4 text-sm leading-relaxed ${!isPackage && !isBlog && !item.isHourly && !item.isPerChild ? 'flex-grow' : ''}">${item.description}</p>${servicesListHTML}${actionButton}</div></div>`;
         }
 
         function renderSection(items, title, icon) {
@@ -1044,17 +1027,18 @@
         const renderClowns = () => renderSection(clownPackagesWithDiscount, 'Paquetes de Payasos', 'smile');
         const renderBubbles = () => renderSection(bubblePackagesWithDiscount, 'Paquetes de Burbujas', 'wind');
         const renderBlog = () => renderSection(blogPosts, 'Blog de Fiestas Infantiles', 'book-open');
-        
+
         function renderGallery() {
-            const categories = [...new Set(gallery.map(item => item.category))];
-            const categoryButtons = categories.map(cat => `<button onclick="filterGallery('${cat}')" class="btn-premium btn-secondary text-sm filter-btn" data-category="${cat}">${cat.charAt(0).toUpperCase() + cat.slice(1)}</button>`).join('');
-            const galleryHtml = gallery.map((item, index) => `<div class="gallery-item animate-slide-up" style="animation-delay: ${index * 100}ms;" data-category="${item.category}"><a href="${item.image}" data-lightbox="gallery" data-title="${item.alt}"><img src="${item.image}" alt="${item.alt}" loading="lazy" width="300" height="300" onerror="this.onerror=null;this.src='https://placehold.co/300x300/cccccc/ffffff?text=Error';"></a></div>`).join('');
-            $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Galería de Momentos Mágicos <i data-lucide="image" class="inline-block text-purple-600"></i></h2><div class="flex flex-wrap justify-center gap-3 mb-8"><button onclick="filterGallery('all')" class="btn-premium btn-primary text-sm filter-btn active" data-category="all">Todos</button>${categoryButtons}</div><div id="galleryGrid" class="gallery-grid">${galleryHtml}</div><div class="text-center mt-12"><a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="btn-premium btn-tertiary" rel="noopener noreferrer"><i data-lucide="instagram"></i>Ver más en Instagram</a></div></section>`;
+            const galleryHtml = gallery.map((item, index) => `<a href="${item.image}" data-lightbox="gallery" data-title="${item.alt}" class="gallery-item animate-slide-up" style="animation-delay: ${index * 50}ms;"><img src="${item.image}" alt="${item.alt}" loading="lazy" width="300" height="300" onerror="this.onerror=null;this.src='https://placehold.co/300x300/cccccc/ffffff?text=Error';"></a>`).join('');
+            $('#mainContent').innerHTML = `<section class="my-8 animate-slide-up">
+                <h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Momentos Mágicos en Instagram</h2>
+                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">¡Síguenos en <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="text-pink-500 font-bold hover:underline">@diverty_eventos_pty</a> para ver nuestras últimas fiestas y promociones!</p>
+                <div class="gallery-grid">${galleryHtml}</div>
+                <div class="text-center mt-12">
+                    <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="btn-premium btn-primary" rel="noopener noreferrer"><i data-lucide="instagram"></i>Ver más en Instagram</a>
+                </div>
+            </section>`;
             lucide.createIcons();
-        }
-        function filterGallery(category) {
-            $$('.gallery-item').forEach(item => { item.style.display = (category === 'all' || item.dataset.category === category) ? 'block' : 'none'; });
-            $$('.filter-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.category === category));
         }
         
         function renderReviews() {
@@ -1062,6 +1046,7 @@
             $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">⭐ Reseñas de Familias Panameñas</h2><div class="text-center mb-12"><div class="text-6xl font-bold text-yellow-500 mb-2">4.9</div><div class="text-3xl mb-2">⭐⭐⭐⭐⭐</div><p class="text-gray-600 text-lg">Basado en 127+ reseñas verificadas</p></div><div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">${reviewsHtml}</div><div class="text-center mt-12"><a href="https://www.google.com/search?q=diverty+eventos+panama+reseñas" target="_blank" class="btn-premium btn-tertiary" rel="noopener noreferrer"><i data-lucide="external-link"></i>Ver más reseñas</a></div></section>`;
             lucide.createIcons();
         }
+
         function saveBookingFormState() {
             const form = $('#bookingForm');
             if (form) {
@@ -1078,26 +1063,12 @@
             }
         }
         function createJotFormData(formData, cartData) {
-            const services = cartData.map(item => `${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`).join('\n');
+            const servicesText = cartData.map(item => `${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`).join('\n');
             const total = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const transportCost = calculateTransportCost(app.location);
             const finalTotal = total + transportCost;
-
             return {
-                'nombreCompleto': formData.get('name') || '',
-                'emailCliente': formData.get('email') || '',
-                'telefonoCliente': formData.get('phone') || '',
-                'fechaEvento': formData.get('date') || '',
-                'tipoEvento': formData.get('eventType') || '',
-                'ubicacionPanama': formData.get('location') || '',
-                'numeroInvitados': formData.get('guests') || '',
-                'horaEvento': formData.get('time') || '',
-                'direccionCompleta': formData.get('address') || '',
-                'serviciosSeleccionados': services,
-                'subtotalReserva': `$${total.toFixed(2)}`,
-                'costoTransporte': `$${transportCost.toFixed(2)}`,
-                'totalFinal': `$${finalTotal.toFixed(2)}`,
-                'comentariosAdicionales': formData.get('comments') || ''
+                'nombreCompleto': formData.get('name') || '', 'emailCliente': formData.get('email') || '', 'telefonoCliente': formData.get('phone') || '', 'fechaEvento': formData.get('date') || '', 'tipoEvento': formData.get('eventType') || '', 'ubicacionPanama': formData.get('location') || '', 'numeroInvitados': formData.get('guests') || '', 'horaEvento': formData.get('time') || '', 'direccionCompleta': formData.get('address') || '', 'serviciosSeleccionados': servicesText, 'subtotalReserva': `$${total.toFixed(2)}`, 'costoTransporte': `$${transportCost.toFixed(2)}`, 'totalFinal': `$${finalTotal.toFixed(2)}`, 'comentariosAdicionales': formData.get('comments') || ''
             };
         }
         function submitToJotForm(formData, cartData) {
@@ -1110,32 +1081,23 @@
             const finalUrl = `${jotformBaseUrl}?${params.toString()}`;
             window.open(finalUrl, '_blank');
         }
+
         function renderBooking() {
             saveBookingFormState();
             const subtotal = app.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const transportCost = calculateTransportCost(app.location);
             const finalTotal = subtotal + transportCost;
-            const cartSummary = app.cart.length === 0 ? `<p class="text-red-600 text-center text-lg">No has seleccionado ningún servicio. <a href="#services" class="text-purple-600 underline nav-action">Ver servicios</a></p>` : app.cart.map(item => `<div class="flex justify-between bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl shadow-sm mb-3"><span class="font-semibold">${item.name} (x${item.quantity})</span><span class="font-bold text-pink-600">$${(item.price * item.quantity).toFixed(2)}</span></div>`).join('');
+            const cartSummary = app.cart.length === 0 ? 
+                `<div class="text-center py-6"><div class="text-6xl mb-6">🛒</div><h3 class="text-2xl font-bold">Tu carrito está vacío</h3><p class="mb-8 text-gray-600">Añade uno de nuestros paquetes más populares para empezar:</p><div class="flex flex-col sm:flex-row justify-center gap-4"><a href="#clowns" class="btn-premium btn-warning nav-action"><i data-lucide="smile"></i>Paquetes de Payasos</a><a href="#bubbles" class="btn-premium btn-secondary nav-action"><i data-lucide="wind"></i>Shows de Burbujas</a></div></div>` 
+                : app.cart.map(item => `<div class="flex justify-between bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl shadow-sm mb-3"><span class="font-semibold">${item.name} (x${item.quantity})</span><span class="font-bold text-pink-600">$${(item.price * item.quantity).toFixed(2)}</span></div>`).join('');
             const locationOptionsHtml = locations.map(opt => `<option value="${opt.value}" ${app.location === opt.value ? 'selected' : ''}>${opt.label}</option>`).join('');
             
             $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8">
                 <h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Reserva tu Fiesta en Panamá <i data-lucide="calendar-check" class="inline-block text-purple-600"></i></h2>
-                
-                <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 sm:p-8 rounded-3xl mb-8 border-2 border-blue-200">
-                    <h3 class="text-2xl font-bold text-blue-700 mb-4 flex items-center gap-2"><i data-lucide="sparkles"></i> Asistente de Fiestas IA</h3>
-                    <p class="text-gray-600 mb-4">¿No estás seguro de qué paquete elegir? Describe la fiesta de tus sueños y nuestra IA te sugerirá el mejor paquete.</p>
-                    <textarea id="party-description" class="form-input mb-4" rows="3" placeholder="Ej: 'Una fiesta para mi hija de 5 años, le encantan las princesas y las burbujas, serán unos 15 niños...'"></textarea>
-                    <button id="get-package-suggestion" class="btn-premium btn-tertiary"><i data-lucide="wand-2"></i>Sugerir Paquete Mágico ✨</button>
-                </div>
-
                 <div class="bg-gradient-to-br from-pink-50 to-purple-50 p-6 sm:p-8 rounded-3xl mb-8 border-2 border-pink-200">
                     <h3 class="text-2xl font-bold text-pink-700 mb-6">Tu Selección:</h3>
                     <div id="booking-cart-summary">${cartSummary}</div>
-                    ${app.cart.length > 0 ? `<div id="booking-totals" class="mt-6 pt-6 border-t-2 border-pink-200 space-y-2 text-right">
-                        <p class="text-lg">Subtotal: <span class="font-bold">$${subtotal.toFixed(2)}</span></p>
-                        <p class="text-lg">Transporte: <span class="font-bold">$${transportCost.toFixed(2)}</span></p>
-                        <p class="text-3xl font-bold text-purple-700">Total Final: <span class="font-extrabold">$${finalTotal.toFixed(2)}</span></p>
-                    </div>` : '<div id="booking-totals"></div>'}
+                    ${app.cart.length > 0 ? `<div id="booking-totals" class="mt-6 pt-6 border-t-2 border-pink-200 space-y-2 text-right"><p class="text-lg">Subtotal: <span class="font-bold">$${subtotal.toFixed(2)}</span></p><p class="text-lg">Transporte: <span class="font-bold">$${transportCost.toFixed(2)}</span></p><p class="text-3xl font-bold text-purple-700">Total Final: <span class="font-extrabold">$${finalTotal.toFixed(2)}</span></p></div>` : ''}
                 </div>
                 ${app.cart.length > 0 ? `<form id="bookingForm" class="space-y-6">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1151,12 +1113,8 @@
                     <div class="form-group"><label class="form-label">Dirección Completa *</label><textarea name="address" required class="form-input" rows="3"></textarea></div>
                     <div class="form-group"><label class="form-label">Comentarios</label><textarea name="comments" class="form-input" rows="4" placeholder="¿Alguna petición especial o detalle importante?"></textarea></div>
                     <button type="submit" class="w-full btn-premium btn-primary py-4 text-xl"><i data-lucide="sparkles"></i>Enviar Reserva</button>
-                </form>` : `<div class="text-center py-12"><div class="text-6xl mb-6">🛒</div><h3 class="text-2xl font-bold">Tu carrito está vacío</h3><p class="mb-8">Selecciona servicios para reservar.</p><a href="#services" class="btn-premium btn-primary nav-action"><i data-lucide="sparkles"></i>Ver Servicios</a></div>`}
+                </form>` : ''}
             </section>`;
-
-            if ($('#get-package-suggestion')) {
-                $('#get-package-suggestion').onclick = getPackageSuggestion;
-            }
             if (app.cart.length > 0) {
                 $('#bookingForm').onsubmit = handleBookingSubmit;
                 $('select[name="location"]').onchange = (e) => { app.location = e.target.value; renderBooking(); };
@@ -1164,32 +1122,30 @@
             }
             lucide.createIcons();
         }
+
         function handleBookingSubmit(e) {
             e.preventDefault();
             if (app.cart.length === 0) { showToast('Selecciona al menos un servicio', 'error'); return; }
-            showLoading();
-            setTimeout(() => {
-                hideLoading();
-                const formData = new FormData(e.target);
-                submitToJotForm(formData, app.cart);
-                showModal('infoModal');
-                $('#modalMessage').textContent = '¡Reserva enviada! Te contactaremos pronto para confirmar.';
-                app.cart = [];
-                bookingFormState = {};
-                updateCartUI();
-                renderBooking();
-            }, 1000);
+            const formData = new FormData(e.target);
+            submitToJotForm(formData, app.cart);
+            showModal('infoModal');
+            $('#modalMessage').textContent = '¡Reserva enviada! Te contactaremos pronto para confirmar.';
+            app.cart = [];
+            bookingFormState = {};
+            updateCartUI();
+            renderBooking();
         }
+
         function showBlogPost(postId) {
             const post = blogPosts.find(p => p.id === postId);
             if (!post) return;
             const modal = document.createElement('div');
             modal.className = 'modal-backdrop show';
-            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-            modal.innerHTML = `<div class="modal-content bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"><h2 class="text-3xl font-bold mb-6">${post.title}</h2><img src="${post.image}" alt="${post.title}" class="w-full h-64 object-cover rounded-2xl mb-6" loading="lazy" width="800" height="256" onerror="this.onerror=null;this.src='https://placehold.co/800x256/cccccc/ffffff?text=Error';"></img><div class="prose max-w-none mb-8">${post.content}</div><div class="flex justify-center"><button onclick="this.closest('.modal-backdrop').remove()" class="btn-premium btn-primary"><i data-lucide="x-circle"></i>Cerrar</button></div></div>`;
+            modal.innerHTML = `<div class="modal-content bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto"><button data-action="close-modal" class="absolute top-4 right-4 p-2 rounded-full bg-gray-200 hover:bg-gray-300"><i data-lucide="x"></i></button><h2 class="text-3xl font-bold mb-6">${post.title}</h2><img src="${post.image}" alt="${post.title}" class="w-full h-64 object-cover rounded-2xl mb-6" loading="lazy" width="800" height="256" onerror="this.onerror=null;this.src='https://placehold.co/800x256/cccccc/ffffff?text=Error';"></img><div class="prose max-w-none mb-8">${post.content}</div><div class="flex justify-center"><button data-action="close-modal" class="btn-premium btn-primary"><i data-lucide="x-circle"></i>Cerrar</button></div></div>`;
             document.body.appendChild(modal);
             lucide.createIcons();
         }
+
         function toggleMobileMenu(show) {
             const menu = $('#mobileMenu');
             const overlay = $('#mobileMenuOverlay');
@@ -1203,6 +1159,7 @@
                 menu.classList.remove('open');
             }
         }
+
         function populateLocationSelects() {
             const optionsHtml = locations.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join('');
             $$('#cartLocation, #calculatorLocation, select[name="location"]').forEach(select => {
@@ -1213,16 +1170,77 @@
                 }
             });
         }
+        
+        function handleGlobalClick(e) {
+            const target = e.target.closest('[data-action]');
+            if (!target) return;
+
+            const { action, itemId, change, category } = target.dataset;
+
+            switch (action) {
+                case 'add-to-cart':
+                    const item = allServices.find(s => s.id === itemId);
+                    if (item) addToCart(item);
+                    break;
+                case 'remove-from-cart':
+                    removeFromCart(itemId);
+                    break;
+                case 'add-hourly-to-cart':
+                    const serviceHourly = services.find(s => s.id === itemId);
+                    const quantityHourly = parseInt($(`#qty-${itemId}`).textContent);
+                    if (serviceHourly && quantityHourly > 0) {
+                        const item = { ...serviceHourly, id: `${serviceHourly.id}_${quantityHourly}h`, name: `${serviceHourly.name} (${quantityHourly} horas)`, price: serviceHourly.price * quantityHourly, quantity: 1 };
+                        addToCart(item);
+                    }
+                    break;
+                case 'add-workshop-to-cart':
+                    const serviceWorkshop = services.find(s => s.id === itemId);
+                    let quantityWorkshop = parseInt($(`#qty-${item.id}`).value);
+                    if (!serviceWorkshop) return;
+                    if (quantityWorkshop < 10) {
+                        showToast('El taller requiere un mínimo de 10 niños.', 'error');
+                        quantityWorkshop = 10;
+                        $(`#qty-${item.id}`).value = 10;
+                    }
+                    const itemWorkshop = { ...serviceWorkshop, id: `${serviceWorkshop.id}_${quantityWorkshop}kids`, name: `${serviceWorkshop.name} (${quantityWorkshop} niños)`, price: serviceWorkshop.price * quantityWorkshop, quantity: 1 };
+                    addToCart(itemWorkshop);
+                    break;
+                case 'change-service-qty':
+                    const qtyElement = $(`#qty-${itemId}`);
+                    if (qtyElement) {
+                        let currentQty = parseInt(qtyElement.textContent);
+                        const newQty = Math.max(1, currentQty + parseInt(change));
+                        qtyElement.textContent = newQty;
+                    }
+                    break;
+                case 'change-calc-qty':
+                    changeCalculatorQuantity(itemId, parseInt(change));
+                    break;
+                case 'show-blog':
+                    showBlogPost(itemId);
+                    break;
+                case 'filter-gallery':
+                    filterGallery(category);
+                    break;
+                case 'close-modal':
+                    const modal = target.closest('.modal-backdrop');
+                    if(modal) modal.remove();
+                    break;
+            }
+        }
 
         function setupEventListeners() {
+            document.body.addEventListener('click', handleGlobalClick);
+            
             document.body.addEventListener('click', (e) => {
-                const navLink = e.target.closest('.nav-link, .mobile-nav-link, .nav-action');
+                const navLink = e.target.closest('.nav-action');
                 if (navLink && navLink.hash) {
                     e.preventDefault();
                     e.target.closest('.modal-backdrop')?.classList.remove('show');
                     setActiveSection(navLink.hash.substring(1));
                 }
             });
+
             $('#mobileToggle').onclick = () => toggleMobileMenu(true);
             $('#closeMobile').onclick = () => toggleMobileMenu(false);
             $('#mobileMenuOverlay').onclick = () => toggleMobileMenu(false);
@@ -1233,17 +1251,16 @@
             $('#closeChat').onclick = () => hideModal('chatModal');
             window.addEventListener('scroll', () => {
                 $('#mainHeader').classList.toggle('scrolled', window.scrollY > 50);
-                $$('.mobile-nav-link-bottom').forEach(link => {
-                    const section = $(link.hash);
-                    if (section) {
-                        const rect = section.getBoundingClientRect();
-                        link.classList.toggle('active', rect.top <= 150 && rect.bottom >= 150);
-                    }
-                });
             });
             $('#openCalculator').onclick = openCalculator;
             $('#closeCalculator').onclick = () => hideModal('calculatorModal');
             $('#addCalculatedToCart').onclick = addCalculatedToCart;
+            
+            $('#continueToBookingBtn').onclick = () => {
+                hideModal('bookingConfirmModal');
+                setActiveSection('booking');
+            };
+
             document.addEventListener('change', e => {
                 if (e.target.matches('#cartLocation, #calculatorLocation')) {
                     app.location = e.target.value;
@@ -1251,7 +1268,6 @@
                     if ($('#calculatorModal').classList.contains('show')) updateCalculatorTotal();
                 }
             });
-            // Promo Banner Logic
             const promoBanner = $('#promo-banner');
             const closePromoBtn = $('#close-promo-banner');
             if (localStorage.getItem('promoBannerDismissed')) {
@@ -1262,66 +1278,7 @@
                 localStorage.setItem('promoBannerDismissed', 'true');
             };
         }
-        document.addEventListener('DOMContentLoaded', () => {
-            setupEventListeners();
-            initChat();
-            populateLocationSelects();
-            setActiveSection(window.location.hash.substring(1) || 'home');
-            updateCartUI();
-            lucide.createIcons();
-        });
-        // --- GLOBAL FUNCTIONS ---
-        window.addToCart = addToCart;
-        window.removeFromCart = removeFromCart;
-        window.showBlogPost = showBlogPost;
-        window.filterGallery = filterGallery;
-        window.changeCalculatorQuantity = changeCalculatorQuantity;
-        window.submitToJotForm = submitToJotForm;
 
-        function handleAddToCartClick(itemId) {
-            const item = allServices.find(s => s.id === itemId);
-            if (item) {
-                addToCart(item);
-            } else {
-                console.error("handleAddToCartClick: Item not found for ID:", itemId);
-            }
-        }
-        window.handleAddToCartClick = handleAddToCartClick;
-
-        window.changeServiceQuantity = function(serviceId, change) {
-            const qtyElement = document.getElementById(`qty-${serviceId}`);
-            if (qtyElement) {
-                let currentQty = parseInt(qtyElement.value || qtyElement.textContent);
-                const newQty = Math.max(1, currentQty + change);
-                if (qtyElement.tagName === 'INPUT') {
-                    qtyElement.value = newQty;
-                } else {
-                    qtyElement.textContent = newQty;
-                }
-            }
-        };
-        window.addToCartFromServiceCard = function(serviceId) {
-            const service = services.find(s => s.id === serviceId);
-            const quantity = parseInt(document.getElementById(`qty-${serviceId}`).textContent);
-            if (service && quantity > 0) {
-                const item = { ...service, id: `${service.id}_${quantity}h`, name: `${service.name} (${quantity} horas)`, price: service.price * quantity, quantity: 1 };
-                addToCart(item);
-            }
-        };
-        window.addToCartFromWorkshopCard = function(serviceId) {
-            const service = services.find(s => s.id === serviceId);
-            let quantity = parseInt(document.getElementById(`qty-${serviceId}`).value);
-            if (!service) return;
-            if (quantity < 10) {
-                showToast('El taller requiere un mínimo de 10 niños.', 'error');
-                quantity = 10;
-                document.getElementById(`qty-${serviceId}`).value = 10;
-            }
-            const item = { ...service, id: `${service.id}_${quantity}kids`, name: `${service.name} (${quantity} niños)`, price: service.price * quantity, quantity: 1 };
-            addToCart(item);
-        };
-
-        // --- NEW GEMINI FEATURES (REVISED) ---
         function renderIdeaGenerator() {
             $('#mainContent').innerHTML = `
                 <section class="premium-card p-4 sm:p-8 lg:p-12 my-8">
@@ -1345,21 +1302,16 @@
             const theme = $('#idea-theme').value.trim();
             const age = $('#idea-age').value.trim();
             const guests = $('#idea-guests').value.trim();
-
             if (!theme || !age || !guests) {
                 showToast('Por favor, completa todos los campos.', 'error');
                 return;
             }
-
             const button = $('#generate-ideas');
             button.disabled = true;
             button.innerHTML = '<div class="loading-spinner !w-6 !h-6 !border-2 !border-t-white"></div> Generando...';
-            
             const resultsContainer = $('#idea-results');
             resultsContainer.innerHTML = '<div class="flex justify-center items-center p-8"><div class="loading-spinner"></div></div>';
-
             const prompt = `Como un experto en fiestas infantiles en Panamá, crea un plan para una fiesta de "${theme}" para un niño/a de ${age} años con ${guests} invitados. Completa el siguiente JSON.`;
-
             const generationConfig = {
                 responseMimeType: "application/json",
                 responseSchema: {
@@ -1372,71 +1324,30 @@
                     required: ["juegos", "decoracion", "comida"]
                 }
             };
-
             const chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
             const ideas = await callGeminiAPI(chatHistory, generationConfig);
-
             if (ideas && ideas.juegos && !ideas.error) {
                 resultsContainer.innerHTML = `
-                    <h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">Juegos Divertidos</h4>
-                    <ul class="list-disc pl-5 space-y-1 text-gray-700">${ideas.juegos.map(item => `<li>${item}</li>`).join('')}</ul>
-                    <h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">Decoración Mágica</h4>
-                    <ul class="list-disc pl-5 space-y-1 text-gray-700">${ideas.decoracion.map(item => `<li>${item}</li>`).join('')}</ul>
-                    <h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">Comida Temática</h4>
-                    <ul class="list-disc pl-5 space-y-1 text-gray-700">${ideas.comida.map(item => `<li>${item}</li>`).join('')}</ul>`;
+                    <h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">Juegos Divertidos</h4><ul class="list-disc pl-5 space-y-1 text-gray-700">${ideas.juegos.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">Decoración Mágica</h4><ul class="list-disc pl-5 space-y-1 text-gray-700">${ideas.decoracion.map(item => `<li>${item}</li>`).join('')}</ul>
+                    <h4 class="text-xl font-bold text-purple-700 mt-4 mb-2">Comida Temática</h4><ul class="list-disc pl-5 space-y-1 text-gray-700">${ideas.comida.map(item => `<li>${item}</li>`).join('')}</ul>`;
             } else {
                 resultsContainer.innerHTML = `<p class="text-red-600 text-center">${ideas.responseText || 'No se pudieron generar ideas. Intenta de nuevo.'}</p>`;
             }
-            
             button.disabled = false;
             button.innerHTML = '<i data-lucide="wand-2"></i>Generar Ideas Mágicas';
             lucide.createIcons();
         }
-        
-        async function getPackageSuggestion() {
-            const description = $('#party-description').value.trim();
-            if (!description) {
-                showToast('Por favor, describe la fiesta de tus sueños.', 'error');
-                return;
-            }
-            
-            const button = $('#get-package-suggestion');
-            button.disabled = true;
-            button.innerHTML = '<div class="loading-spinner !w-6 !h-6 !border-2 !border-t-white"></div> Analizando...';
 
-            const packageList = allServices.filter(s => s.services).map(p => `- ${p.name} (id: ${p.id})`).join('\n');
-            const prompt = `Como experto en fiestas infantiles en Panamá, analiza la descripción: "${description}". Recomienda el paquete de Diverty Eventos que mejor se adapte de la lista y responde con el ID en formato JSON. Lista de paquetes:\n${packageList}`;
-
-            const generationConfig = {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: "OBJECT",
-                    properties: { "packageId": { "type": "STRING", "description": "El ID del paquete recomendado (ej: 'clown_magic')." } },
-                    required: ["packageId"]
-                }
-            };
-
-            const chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
-            const response = await callGeminiAPI(chatHistory, generationConfig);
-
-            if (response && response.packageId && !response.error) {
-                const suggestedPackage = allServices.find(s => s.id === response.packageId.trim());
-                if (suggestedPackage) {
-                    app.cart = []; // Clear cart before adding suggestion
-                    addToCart(suggestedPackage);
-                    showToast(`¡Te recomendamos el ${suggestedPackage.name}! Lo hemos añadido a tu reserva.`, 'success');
-                    renderBooking(); // Re-render to show the new item in the cart
-                } else {
-                     showToast(`La IA sugirió un paquete inválido (${response.packageId}). ¡Intenta con otra descripción!`, 'error');
-                }
-            } else {
-                showToast(response.responseText || 'No pudimos encontrar un paquete perfecto. ¡Intenta con una descripción diferente!', 'error');
-            }
-
-            button.disabled = false;
-            button.innerHTML = '<i data-lucide="wand-2"></i>Sugerir Paquete Mágico ✨';
-            lucide.createIcons();
-        }
+        // --- INITIALIZE APP ---
+        setupEventListeners();
+        initChat();
+        populateLocationSelects();
+        setActiveSection(window.location.hash.substring(1) || 'home');
+        updateCartUI();
+        lucide.createIcons();
+        hide($('#loading-placeholder'));
+    });
     </script>
 </body>
 </html>
