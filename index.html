@@ -92,13 +92,12 @@
         }
         #mainHeader { 
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            backdrop-filter: blur(20px);
-            background: rgba(255, 255, 255, 0.9);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0); /* Start fully transparent */
+            border-bottom: 1px solid rgba(255, 255, 255, 0);
         }
         #mainHeader.scrolled { 
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(25px);
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent on scroll */
+            backdrop-filter: blur(20px);
             box-shadow: var(--shadow-medium);
             border-bottom: 1px solid rgba(124, 58, 237, 0.1);
         }
@@ -325,6 +324,23 @@
             -ms-overflow-style: none;  /* IE and Edge */
             scrollbar-width: none;  /* Firefox */
         }
+        .pulse-booking {
+            animation: pulse-booking 2s infinite;
+        }
+        @keyframes pulse-booking {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .cart-icon-shake {
+            animation: cart-shake 0.5s;
+        }
+        @keyframes cart-shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
+        }
     </style>
 </head>
 <body class="min-h-screen text-gray-800 flex flex-col">
@@ -357,7 +373,7 @@
                 <a href="#gallery" id="navGallery" class="nav-link text-gray-600"><i data-lucide="image" class="w-4 h-4 mr-2"></i>Galería</a>
                 <a href="#blog" id="navBlog" class="nav-link text-gray-600"><i data-lucide="book-open" class="w-4 h-4 mr-2"></i>Blog</a>
                 <a href="#reviews" id="navReviews" class="nav-link text-gray-600"><i data-lucide="star" class="w-4 h-4 mr-2"></i>Reseñas</a>
-                <a href="#booking" id="navBooking" class="btn-premium btn-primary nav-action"><i data-lucide="calendar-check" class="w-4 h-4"></i>¡Reserva Ahora!</a>
+                <a href="#booking" id="navBooking" class="btn-premium btn-primary nav-action pulse-booking"><i data-lucide="calendar-check" class="w-4 h-4"></i>¡Reserva Ahora!</a>
             </nav>
             <button id="mobileToggle" class="lg:hidden p-3 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors" aria-label="Abrir menú"><i data-lucide="menu" class="h-6 w-6"></i></button>
         </div>
@@ -366,7 +382,7 @@
     <div id="cartSummary" class="hidden sticky top-20 z-30 bg-white bg-opacity-95 backdrop-blur-sm border-b border-purple-200 p-4 shadow-lg">
         <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-4 text-purple-800 font-bold">
-                <div class="flex items-center gap-2"><i data-lucide="shopping-cart" class="w-5 h-5"></i><span>Ítems: <span id="itemCount" class="text-purple-700">0</span></span></div>
+                <div id="cart-icon-container" class="flex items-center gap-2"><i data-lucide="shopping-cart" class="w-5 h-5"></i><span>Ítems: <span id="itemCount" class="text-purple-700">0</span></span></div>
                 <div>Total: <span id="totalPrice" class="text-pink-700">$0.00</span></div>
             </div>
             <div class="flex gap-3">
@@ -414,10 +430,10 @@
         </div>
     </main>
 
-    <footer class="bg-gray-800 text-white">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <p class="font-bold text-lg">Diverty<span class="text-[#14B8A6]">Eventos</span></p>
-            <p class="text-gray-400 mt-2">&copy; 2025. Todos los derechos reservados. Creamos momentos inolvidables.</p>
+    <footer class="bg-gradient-to-tr from-purple-700 to-indigo-800 text-white shadow-inner mt-12">
+        <div class="container mx-auto px-6 py-12 text-center">
+            <p class="font-bold text-2xl mb-2">Diverty<span class="text-teal-300">Eventos</span></p>
+            <p class="text-indigo-200 mt-2">&copy; 2025. Todos los derechos reservados. Creamos momentos inolvidables.</p>
         </div>
     </footer>
     
@@ -671,6 +687,14 @@
             }
             updateCartUI();
             showToast(`${item.name} añadido al carrito`, 'success');
+
+            // Cart icon animation
+            const cartIcon = $('#cart-icon-container');
+            if(cartIcon) {
+                cartIcon.classList.add('cart-icon-shake');
+                setTimeout(() => cartIcon.classList.remove('cart-icon-shake'), 500);
+            }
+
             // GTM Event
             window.dataLayer.push({
                 event: 'add_to_cart',
@@ -788,7 +812,7 @@
         }
 
         async function callGeminiAPI(chatHistory, generationConfig = null) {
-            const apiKey = "AIzaSyAJvpQ69QXin7V1cu5k90lRkymQ6o1lpDE";
+            const apiKey = ""; // API Key will be injected by the environment
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             const payload = { contents: chatHistory };
             if (generationConfig) payload.generationConfig = generationConfig;
@@ -1033,11 +1057,11 @@
             
             let actionButton;
             if (isBlog) {
-                actionButton = `<button data-action="show-blog" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-purple-500 to-indigo-500 mt-auto">Leer Más</button>`;
+                actionButton = `<button data-action="show-blog" data-item-id="${item.id}" class="w-full btn-premium btn-primary mt-auto">Leer Más</button>`;
             } else if (item.isHourly) {
-                actionButton = `<div class="mt-auto"><div class="flex items-center justify-center gap-4 mb-4"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">-</button><span id="qty-${item.id}" class="text-2xl font-bold w-12 text-center">1</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">+</button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400">Añadir</button></div>`;
+                actionButton = `<div class="mt-auto"><div class="flex items-center justify-center gap-4 mb-4"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">-</button><span id="qty-${item.id}" class="text-2xl font-bold w-12 text-center">1</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">+</button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="w-full btn-premium btn-primary">Añadir</button></div>`;
             } else if (item.isPerChild) {
-                actionButton = `<div class="mt-auto"><div class="form-group mb-4"><label for="qty-${item.id}" class="form-label text-center text-sm font-semibold text-gray-600 block mb-2"># de Niños (mín. 10):</label><input type="number" id="qty-${item.id}" class="form-input text-center w-full" value="10" min="10"></div><button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400">Añadir</button></div>`;
+                actionButton = `<div class="mt-auto"><div class="form-group mb-4"><label for="qty-${item.id}" class="form-label text-center text-sm font-semibold text-gray-600 block mb-2"># de Niños (mín. 10):</label><input type="number" id="qty-${item.id}" class="form-input text-center w-full" value="10" min="10"></div><button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="w-full btn-premium btn-primary">Añadir</button></div>`;
             } else if (isCharacterSelector) {
                 const characterCardsHTML = item.characters.map(char => `
                     <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg mb-2">
@@ -1046,27 +1070,27 @@
                             <p class="font-bold text-gray-800">${char.name.replace('Personaje: ', '')}</p>
                             <p class="font-bold text-purple-600">$${char.price.toFixed(2)}</p>
                         </div>
-                        <button data-action="add-to-cart" data-item-id="${char.id}" class="btn-premium btn-secondary !p-0 !w-12 !h-12 !rounded-full"><i data-lucide="plus"></i></button>
+                        <button data-action="add-to-cart" data-item-id="${char.id}" class="btn-premium btn-primary !p-0 !w-12 !h-12 !rounded-full"><i data-lucide="plus"></i></button>
                     </div>
                 `).join('');
-                return `<div class="card-detailed bg-white rounded-3xl shadow-lg flex flex-col h-full overflow-hidden animate-slide-up w-[85vw] sm:w-auto md:w-full flex-shrink-0 snap-center" style="animation-delay: ${index * 100}ms;">
+                return `<div class="card-detailed bg-white rounded-3xl shadow-lg flex flex-col h-full overflow-hidden animate-slide-up w-[80vw] max-w-[340px] sm:w-auto md:w-full flex-shrink-0 snap-center" style="animation-delay: ${index * 100}ms;">
                             <div class="p-6 flex flex-col flex-grow">
-                                <h3 class="text-2xl font-bold mb-2 text-gray-800 font-poppins">${title}</h3>
+                                <h3 class="text-xl font-bold mb-2 text-gray-800 font-poppins">${title}</h3>
                                 <p class="text-gray-600 mb-4 text-sm leading-relaxed">${item.description}</p>
                                 <div class="mt-auto">${characterCardsHTML}</div>
                             </div>
                         </div>`;
             } else {
-                actionButton = `<button data-action="add-to-cart" data-item-id="${item.id}" class="w-full font-bold py-3 px-6 rounded-full text-white transition-transform duration-300 transform hover:scale-105 bg-gradient-to-r from-pink-500 to-orange-400 mt-auto">Añadir al Carrito</button>`;
+                actionButton = `<button data-action="add-to-cart" data-item-id="${item.id}" class="w-full btn-premium btn-primary mt-auto">Añadir al Carrito</button>`;
             }
             const servicesListHTML = isPackage ? `<ul class="space-y-2 text-gray-700 text-sm mb-6 flex-grow">${item.services.map(s => `<li class="flex items-start"><i data-lucide="check" class="w-4 h-4 mr-2 text-green-500 mt-1 flex-shrink-0"></i><span>${s}</span></li>`).join('')}</ul>` : '';
             const blogMetaHTML = isBlog ? `<div class="flex items-center text-xs text-gray-500 mb-3"><i data-lucide="calendar" class="w-4 h-4 mr-2"></i>${item.date}<span class="mx-2">|</span><i data-lucide="user" class="w-4 h-4 mr-2"></i>${item.author}</div>` : '';
-            return `<div class="card-detailed bg-white rounded-3xl shadow-lg flex flex-col h-full overflow-hidden animate-slide-up w-[85vw] sm:w-auto md:w-full flex-shrink-0 snap-center" style="animation-delay: ${index * 100}ms;">${imageHTML}<div class="p-6 flex flex-col flex-grow">${blogMetaHTML}<h3 class="text-2xl font-bold mb-2 text-gray-800 font-poppins">${title}</h3><p class="text-gray-600 mb-4 text-sm leading-relaxed ${!isPackage && !isBlog && !item.isHourly && !item.isPerChild ? 'flex-grow' : ''}">${item.description}</p>${servicesListHTML}${actionButton}</div></div>`;
+            return `<div class="card-detailed bg-white rounded-3xl shadow-lg flex flex-col h-full overflow-hidden animate-slide-up w-[80vw] max-w-[340px] sm:w-auto md:w-full flex-shrink-0 snap-center" style="animation-delay: ${index * 100}ms;">${imageHTML}<div class="p-6 flex flex-col flex-grow">${blogMetaHTML}<h3 class="text-xl font-bold mb-2 text-gray-800 font-poppins">${title}</h3><p class="text-gray-600 mb-4 text-sm leading-relaxed ${!isPackage && !isBlog && !item.isHourly && !item.isPerChild ? 'flex-grow' : ''}">${item.description}</p>${servicesListHTML}${actionButton}</div></div>`;
         }
 
         function renderSection(items, title, icon) {
             const itemsHtml = items.map(createDetailedCardHTML).join('');
-            $('#mainContent').innerHTML = `<section class="my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">${title} en Panamá <i data-lucide="${icon}" class="inline-block text-purple-600"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 gap-4 md:grid md:grid-cols-2 xl:grid-cols-3 hide-scrollbar -mx-4 px-4">${itemsHtml}</div></section>`;
+            $('#mainContent').innerHTML = `<section class="my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">${title} en Panamá <i data-lucide="${icon}" class="inline-block text-purple-600"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 gap-6 md:grid md:grid-cols-2 xl:grid-cols-3 hide-scrollbar -mx-4 px-4">${itemsHtml}</div></section>`;
             lucide.createIcons();
         }
 
@@ -1080,7 +1104,7 @@
             const galleryHtml = gallery.map((item, index) => `<a href="${item.image}" data-lightbox="gallery" data-title="${item.alt}" class="gallery-item animate-slide-up" style="animation-delay: ${index * 50}ms;"><img src="${item.image}" alt="${item.alt}" loading="lazy" width="300" height="300" onerror="this.onerror=null;this.src='https://placehold.co/300x300/cccccc/ffffff?text=Error';"></a>`).join('');
             $('#mainContent').innerHTML = `<section class="my-8 animate-slide-up">
                 <h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Momentos Mágicos en Instagram</h2>
-                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">¡Síguenos en <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="text-pink-500 font-bold hover:underline">@diverty_eventos_pty</a> para ver nuestras últimas fiestas y promociones!</p>
+                <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">¡Síguenos en <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="text-pink-500 font-bold hover:underline" rel="noopener noreferrer">@diverty_eventos_pty</a> para ver nuestras últimas fiestas y promociones!</p>
                 <div class="gallery-grid">${galleryHtml}</div>
                 <div class="text-center mt-12">
                     <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="btn-premium btn-primary" rel="noopener noreferrer"><i data-lucide="instagram"></i>Ver más en Instagram</a>
@@ -1090,9 +1114,64 @@
         }
         
         function renderReviews() {
-            const reviewsHtml = customerReviews.map((review, index) => `<div class="premium-card p-6 animate-slide-up" style="animation-delay: ${index * 100}ms;"><div class="flex items-center mb-4"><img src="${review.avatar}" alt="${review.name}" class="w-12 h-12 rounded-full mr-4" loading="lazy" width="48" height="48"><div><h4 class="font-bold">${review.name}</h4><div class="text-yellow-500 text-lg">${'⭐'.repeat(review.rating)}</div><p class="text-xs text-gray-500">${review.location}</p></div></div><p class="text-gray-700 mb-4 italic">"${review.comment}"</p><div class="text-sm text-gray-500"><p><strong>Servicio:</strong> ${review.service}</p><p><strong>Fecha:</strong> ${review.date}</p></div></div>`).join('');
-            $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">⭐ Reseñas de Familias Panameñas</h2><div class="text-center mb-12"><div class="text-6xl font-bold text-yellow-500 mb-2">4.9</div><div class="text-3xl mb-2">⭐⭐⭐⭐⭐</div><p class="text-gray-600 text-lg">Basado en 127+ reseñas verificadas</p></div><div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">${reviewsHtml}</div><div class="text-center mt-12"><a href="https://www.google.com/search?q=diverty+eventos+panama+reseñas" target="_blank" class="btn-premium btn-tertiary" rel="noopener noreferrer"><i data-lucide="external-link"></i>Ver más reseñas</a></div></section>`;
+            const reviewsHtml = customerReviews.map((review, index) => `<div class="review-slide premium-card p-6 animate-slide-up" style="animation-delay: ${index * 100}ms;"><div class="flex items-center mb-4"><img src="${review.avatar}" alt="${review.name}" class="w-12 h-12 rounded-full mr-4" loading="lazy" width="48" height="48"><div><h4 class="font-bold">${review.name}</h4><div class="text-yellow-500 text-lg">${'⭐'.repeat(review.rating)}</div><p class="text-xs text-gray-500">${review.location}</p></div></div><p class="text-gray-700 mb-4 italic">"${review.comment}"</p><div class="text-sm text-gray-500"><p><strong>Servicio:</strong> ${review.service}</p><p><strong>Fecha:</strong> ${review.date}</p></div></div>`).join('');
+            $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">⭐ Reseñas de Familias Panameñas</h2><div class="text-center mb-12"><div class="text-6xl font-bold text-yellow-500 mb-2">4.9</div><div class="text-3xl mb-2">⭐⭐⭐⭐⭐</div><p class="text-gray-600 text-lg">Basado en 127+ reseñas verificadas</p></div><div class="relative overflow-hidden"><div id="reviews-carousel" class="flex transition-transform duration-500 ease-in-out">${reviewsHtml}</div></div><div id="reviews-dots" class="flex justify-center gap-2 mt-8"></div><div class="text-center mt-12"><a href="https://www.google.com/search?q=diverty+eventos+panama+reseñas" target="_blank" class="btn-premium btn-tertiary" rel="noopener noreferrer"><i data-lucide="external-link"></i>Ver más reseñas</a></div></section>`;
             lucide.createIcons();
+            initReviewsCarousel();
+        }
+
+        function initReviewsCarousel() {
+            const carousel = $('#reviews-carousel');
+            const dotsContainer = $('#reviews-dots');
+            if (!carousel || customerReviews.length === 0) return;
+            
+            const totalSlides = customerReviews.length;
+            let currentIndex = 0;
+            let intervalId;
+
+            // Create dots
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.classList.add('w-3', 'h-3', 'rounded-full', 'bg-gray-300', 'transition-colors');
+                dot.dataset.index = i;
+                dotsContainer.appendChild(dot);
+            }
+            const dots = $$('#reviews-dots button');
+
+            function updateCarousel() {
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+                dots.forEach((dot, index) => {
+                    dot.classList.toggle('bg-purple-600', index === currentIndex);
+                });
+            }
+
+            function showNext() {
+                currentIndex = (currentIndex + 1) % totalSlides;
+                updateCarousel();
+            }
+
+            function startCarousel() {
+                intervalId = setInterval(showNext, 5000);
+            }
+
+            function stopCarousel() {
+                clearInterval(intervalId);
+            }
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', () => {
+                    stopCarousel();
+                    currentIndex = parseInt(dot.dataset.index);
+                    updateCarousel();
+                    startCarousel();
+                });
+            });
+
+            carousel.addEventListener('mouseenter', stopCarousel);
+            carousel.addEventListener('mouseleave', startCarousel);
+
+            updateCarousel();
+            startCarousel();
         }
 
         function saveBookingFormState() {
@@ -1298,7 +1377,21 @@
             $('#chatToggle').onclick = () => showModal('chatModal');
             $('#closeChat').onclick = () => hideModal('chatModal');
             window.addEventListener('scroll', () => {
-                $('#mainHeader').classList.toggle('scrolled', window.scrollY > 50);
+                const header = $('#mainHeader');
+                const scrollPosition = window.scrollY;
+                const heroSection = $('.hero-section');
+                let heroHeight = heroSection ? heroSection.offsetHeight : 300;
+                
+                // Adjust opacity based on scroll position
+                let opacity = Math.min(scrollPosition / (heroHeight * 0.5), 0.9);
+                
+                if (scrollPosition > 50) {
+                    header.classList.add('scrolled');
+                    header.style.background = `rgba(255, 255, 255, ${opacity})`;
+                } else {
+                    header.classList.remove('scrolled');
+                    header.style.background = `rgba(255, 255, 255, 0)`;
+                }
             });
             $('#openCalculator').onclick = openCalculator;
             $('#closeCalculator').onclick = () => hideModal('calculatorModal');
