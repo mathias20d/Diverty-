@@ -24,13 +24,14 @@
     <meta name="theme-color" content="#7922ce">
 
     <!-- Preload critical resources for faster loading -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" as="style">
     <link rel="preload" href="https://divertypanama.netlify.app/android-chrome-512x512.png" as="image">
 
     <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js" defer></script>
     
     <!-- Structured Data (Schema.org) will be added dynamically by app.js -->
     <script type="application/ld+json" id="schema-event-planner"></script>
@@ -39,11 +40,7 @@
 
     <!-- Google Tag Manager -->
     <script>
-        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-        })(window,document,'script','dataLayer','GTM-XXXXXXX'); // Replace GTM-XXXXXXX with your GTM ID
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-XXXXXXX');
     </script>
     <!-- End Google Tag Manager -->
 
@@ -64,19 +61,28 @@
             --shadow-soft: 0 10px 25px rgba(0,0,0,0.1);
             --shadow-medium: 0 15px 35px rgba(0,0,0,0.15);
             --shadow-strong: 0 20px 40px rgba(0,0,0,0.2);
+            --bg-light: #f5f7fa;
         }
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-color: var(--bg-light);
             background-attachment: fixed;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             line-height: 1.7;
+            cursor: none; /* Hide default cursor for magic cursor */
         }
-        h1, h2, h3, h4, .font-poppins { 
+        .btn-premium, a, button {
+            cursor: none; /* Apply magic cursor to interactive elements */
+        }
+        h2, h3, h4, .font-poppins { 
             font-family: 'Poppins', sans-serif;
+        }
+        h1, .font-nunito {
+             font-family: 'Nunito', sans-serif;
+             font-weight: 800;
         }
         @media (max-width: 1024px) {
             body {
@@ -188,7 +194,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: var(--shadow-medium);
-            cursor: pointer;
+            cursor: none;
             transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             position: relative;
             overflow: hidden;
@@ -212,7 +218,7 @@
             padding: 1rem 2rem;
             border-radius: 50px;
             box-shadow: var(--shadow-soft);
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border: none;
             display: inline-flex;
             align-items: center;
@@ -221,11 +227,11 @@
             position: relative;
             overflow: hidden;
             text-decoration: none;
-            cursor: pointer;
+            cursor: none;
             font-size: 1rem;
         }
         .btn-premium:hover {
-            transform: translateY(-4px) scale(1.05);
+            transform: translateY(-4px) scale(1.1); /* Enhanced "bubble" effect */
             box-shadow: var(--shadow-strong);
         }
         .btn-premium:disabled {
@@ -240,29 +246,48 @@
         .btn-success { background: linear-gradient(135deg, #10b981, #059669); color: white; }
         .btn-warning { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
         .hero-section {
-            background: var(--gradient-primary);
             min-height: 70vh;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            border-radius: 32px;
-            margin: 2rem 0;
+            margin: 0;
+            border-radius: 0;
             position: relative;
             overflow: hidden;
             color: white;
+            background: var(--gradient-primary); /* Fallback background */
+        }
+        .hero-section video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 1;
         }
         .hero-content { position: relative; z-index: 2; max-width: 800px; padding: 2rem; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin: 3rem 0; }
         .stat-card { background: white; padding: 2.5rem 1.5rem; border-radius: 20px; text-align: center; box-shadow: var(--shadow-soft); transition: all 0.3s ease; position: relative; overflow: hidden; }
         .stat-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-medium); }
         .stat-number { font-size: 3rem; font-weight: 800; background: var(--gradient-secondary); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
-        .coverage-area { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 4rem 2rem; border-radius: 24px; margin: 3rem 0; text-align: center; position: relative; overflow: hidden; }
+        .coverage-area { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8rem 2rem 4rem 2rem; text-align: center; position: relative; overflow: hidden; }
         .coverage-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 2rem; }
         .coverage-item { background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 16px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.3s ease; }
         .coverage-item:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.15); }
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 2rem 0; }
-        .gallery-item { position: relative; overflow: hidden; border-radius: 20px; cursor: pointer; transition: all 0.4s ease; aspect-ratio: 1; background: #f3f4f6; }
+        .gallery-item { position: relative; overflow: hidden; border-radius: 20px; cursor: none; transition: all 0.4s ease; aspect-ratio: 1; background: #f3f4f6; }
         .gallery-item:hover { transform: scale(1.05); box-shadow: var(--shadow-strong); }
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: all 0.4s ease; }
         .chat-header { background: var(--gradient-primary); color: white; padding: 1rem; position: relative; overflow: hidden; flex-shrink: 0; }
@@ -290,10 +315,15 @@
         }
         .mobile-nav-link-bottom {
             transition: all 0.2s ease-in-out;
+            padding: 0.5rem; /* Increased tap area */
         }
         .mobile-nav-link-bottom.active {
             color: var(--primary-purple);
             transform: translateY(-4px);
+        }
+        .mobile-nav-link-bottom i { /* Bigger icons */
+            width: 1.75rem;
+            height: 1.75rem;
         }
         .card-detailed {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -341,10 +371,119 @@
             30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
             40%, 60% { transform: translate3d(4px, 0, 0); }
         }
+        /* NEW: Confetti Canvas Styles */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Behind everything */
+            pointer-events: none;
+        }
+        /* NEW: Wavy Divider Styles */
+        .wavy-divider {
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            overflow: hidden;
+            line-height: 0;
+        }
+        .wavy-divider.top {
+            top: -1px;
+            bottom: auto;
+            transform: rotate(180deg);
+        }
+        .wavy-divider svg {
+            position: relative;
+            display: block;
+            width: calc(100% + 1.3px);
+            height: 90px;
+        }
+        .wavy-divider .shape-fill {
+            fill: var(--bg-light);
+        }
+        /* NEW: Magic Cursor Styles */
+        #magic-cursor {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+        /* NEW: Review Card Styles */
+        .review-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .review-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-medium);
+        }
+        .review-header {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .review-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin-right: 1rem;
+            border: 2px solid var(--primary-purple);
+        }
+        .review-user {
+            font-weight: 700;
+            color: #1f2937;
+        }
+        .review-location {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        .review-body {
+            padding: 1.5rem;
+            font-style: italic;
+            color: #4b5563;
+            flex-grow: 1;
+        }
+        .review-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .review-rating {
+            display: flex;
+            color: #f59e0b;
+        }
+        .verified-badge {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #059669;
+            background-color: #d1fae5;
+            padding: 0.25rem 0.75rem;
+            border-radius: 50px;
+            display: inline-flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body class="min-h-screen text-gray-800 flex flex-col">
-
+    
+    <!-- NEW: Confetti Canvas -->
+    <canvas id="confetti-canvas"></canvas>
+    <!-- NEW: Magic Cursor Canvas -->
+    <canvas id="magic-cursor"></canvas>
+    
     <!-- 
     ================================================================
     |                        BODY (HTML)                           |
@@ -361,7 +500,7 @@
         <div class="container mx-auto flex justify-between items-center">
             <a href="#home" class="flex items-center logo-container nav-action" aria-label="Página de inicio de Diverty Eventos">
                 <img src="https://divertypanama.netlify.app/android-chrome-512x512.png" alt="Diverty Eventos - Fiestas Infantiles Panamá" class="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 mr-3 rounded-full object-cover border-3 border-pink-400 shadow-lg float-animation" loading="lazy" width="96" height="96" onerror="this.onerror=null;this.src='https://placehold.co/96x96/7c3aed/ffffff?text=Diverty';">
-                <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-purple-900">Diverty Eventos</div>
+                <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-purple-900 font-nunito">Diverty Eventos</div>
             </a>
             <nav class="hidden lg:flex items-center space-x-2">
                 <a href="#home" id="navHome" class="nav-link text-gray-600"><i data-lucide="home" class="w-4 h-4 mr-2"></i>Inicio</a>
@@ -397,7 +536,7 @@
         <div class="mobile-menu-header">
             <div class="flex justify-between items-center relative z-10">
                 <div>
-                    <h2 class="text-2xl font-bold">Diverty Eventos</h2>
+                    <h2 class="text-2xl font-bold font-nunito">Diverty Eventos</h2>
                     <p class="text-sm opacity-90">Fiestas Infantiles en Panamá</p>
                 </div>
                 <button id="closeMobile" class="p-2 text-white hover:text-gray-200 transition-colors" aria-label="Cerrar menú"><i data-lucide="x" class="h-6 w-6"></i></button>
@@ -421,41 +560,42 @@
         </div>
     </nav>
 
-    <main id="mainContent" class="container mx-auto p-4 flex-grow">
-        <div id="loading-placeholder" class="flex items-center justify-center h-full pt-20">
-             <div class="text-center">
-                <div class="loading-spinner"></div>
-                <p class="mt-6 text-purple-700 font-semibold text-lg">Cargando la Magia...</p>
-            </div>
-        </div>
+    <main id="mainContent" class="flex-grow pb-24">
+        <!-- Home section is now pre-rendered for faster loading -->
     </main>
 
-    <footer class="bg-gradient-to-tr from-purple-700 to-indigo-800 text-white shadow-inner mt-12">
+    <footer class="bg-gradient-to-tr from-purple-700 to-indigo-800 text-white shadow-inner relative pt-20">
+        <!-- NEW: Wavy divider for footer top -->
+        <div class="wavy-divider top">
+            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill" style="fill: #667eea;"></path>
+            </svg>
+        </div>
         <div class="container mx-auto px-6 py-12 text-center">
-            <p class="font-bold text-2xl mb-2">Diverty<span class="text-teal-300">Eventos</span></p>
+            <p class="font-bold text-2xl mb-2 font-nunito">Diverty<span class="text-teal-300">Eventos</span></p>
             <p class="text-indigo-200 mt-2">&copy; 2025. Todos los derechos reservados. Creamos momentos inolvidables.</p>
         </div>
     </footer>
     
     <nav id="mobile-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg flex justify-around items-center h-16 z-40">
         <a href="#home" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
-            <i data-lucide="home" class="w-6 h-6"></i>
+            <i data-lucide="home" class="w-7 h-7"></i>
             <span class="text-xs font-medium">Inicio</span>
         </a>
         <a href="#services" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
-            <i data-lucide="sparkles" class="w-6 h-6"></i>
+            <i data-lucide="sparkles" class="w-7 h-7"></i>
             <span class="text-xs font-medium">Servicios</span>
         </a>
         <a href="#booking" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action bg-purple-600 text-white rounded-full w-16 h-16 -mt-8 shadow-lg">
-            <i data-lucide="calendar-check" class="w-7 h-7"></i>
+            <i data-lucide="calendar-check" class="w-8 h-8"></i>
             <span class="text-xs font-medium">Reservar</span>
         </a>
         <a href="#gallery" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
-            <i data-lucide="image" class="w-6 h-6"></i>
+            <i data-lucide="image" class="w-7 h-7"></i>
             <span class="text-xs font-medium">Galería</span>
         </a>
         <a href="#ideas" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
-            <i data-lucide="lightbulb" class="w-6 h-6"></i>
+            <i data-lucide="lightbulb" class="w-7 h-7"></i>
             <span class="text-xs font-medium">Ideas</span>
         </a>
     </nav>
@@ -508,7 +648,7 @@
             </div>
             <div class="chat-input">
                 <div class="flex gap-2 mb-2"><input type="text" id="chatInput" placeholder="Escribe tu pregunta..." class="flex-1 p-3 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"><button id="sendChat" class="btn-premium btn-secondary !p-3 !w-12 !h-12"><i data-lucide="send" class="w-5 h-5"></i></button></div>
-                <div class="flex flex-wrap justify-center gap-2">
+                <div id="quick-replies" class="flex flex-wrap justify-center gap-2">
                     <button class="quick-question bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs hover:bg-purple-200 transition-colors" data-question="¿Qué paquetes de payasos tienen?">🤡 Payasos</button>
                     <button class="quick-question bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs hover:bg-purple-200 transition-colors" data-question="¿Cuánto cuesta el show de burbujas?">💧 Burbujas</button>
                     <button class="quick-question bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-xs hover:bg-purple-200 transition-colors" data-question="¿A qué zonas llegan?">📍 Zonas</button>
@@ -646,7 +786,7 @@
             const isAugust = currentDate.getMonth() === 7;
             if (isAugust) {
                 return packages.map(pkg => {
-                    if (packageIds.includes(pkg.id)) {
+                    if (packageIds.length === 0 || packageIds.includes(pkg.id)) {
                         return { ...pkg, originalPrice: pkg.price, price: parseFloat((pkg.price * (1 - discountRate)).toFixed(2)), discountApplied: true, discountMessage: `¡${Math.round(discountRate * 100)}% OFF!` };
                     }
                     return pkg;
@@ -655,7 +795,7 @@
             return packages;
         };
 
-        const bubblePackagesWithDiscount = applyPromotions(bubblePackages, 0.10);
+        const bubblePackagesWithDiscount = applyPromotions(bubblePackages, 0.10, []);
         const clownPackagesWithDiscount = applyPromotions(clownPackages, 0.10, ['clown_diverty']);
         const allServices = [...services, ...animatorPackages, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount];
         
@@ -665,8 +805,6 @@
 
         const $ = (selector) => document.querySelector(selector);
         const $$ = (selector) => document.querySelectorAll(selector);
-        const show = (el) => el && el.classList.remove('hidden');
-        const hide = (el) => el && el.classList.add('hidden');
         
         function showToast(message, type = 'info') {
             const toast = $('#toast');
@@ -678,7 +816,21 @@
         const showModal = (modalId) => $(`#${modalId}`).classList.add('show');
         const hideModal = (modalId) => $(`#${modalId}`).classList.remove('show');
 
+        const popSound = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, envelope: { attack: 0.001, decay: 0.3, sustain: 0.01, release: 0.2, }, }).toDestination();
+        let isSoundPlaying = false;
+
+        function playPopSound() {
+            if (isSoundPlaying) return;
+            if (Tone.context.state !== 'running') {
+                Tone.start();
+            }
+            popSound.triggerAttackRelease("C2", "8n", Tone.now());
+            isSoundPlaying = true;
+            setTimeout(() => { isSoundPlaying = false; }, 100);
+        }
+
         function addToCart(item, quantity = 1) {
+            playPopSound();
             const existing = app.cart.find(i => i.id === item.id);
             if (existing) {
                 existing.quantity += quantity;
@@ -687,29 +839,16 @@
             }
             updateCartUI();
             showToast(`${item.name} añadido al carrito`, 'success');
-
-            // Cart icon animation
             const cartIcon = $('#cart-icon-container');
             if(cartIcon) {
                 cartIcon.classList.add('cart-icon-shake');
                 setTimeout(() => cartIcon.classList.remove('cart-icon-shake'), 500);
             }
-
-            // GTM Event
-            window.dataLayer.push({
-                event: 'add_to_cart',
-                ecommerce: {
-                    items: [{
-                        item_id: item.id,
-                        item_name: item.name,
-                        price: item.price,
-                        quantity: quantity
-                    }]
-                }
-            });
+            window.dataLayer.push({ event: 'add_to_cart', ecommerce: { items: [{ item_id: item.id, item_name: item.name, price: item.price, quantity: quantity }] } });
         }
 
         function removeFromCart(itemId) {
+            playPopSound();
             app.cart = app.cart.filter(i => i.id !== itemId);
             updateCartUI();
             showToast('Producto eliminado', 'info');
@@ -728,7 +867,7 @@
             
             $('#itemCount').textContent = count;
             $('#totalPrice').textContent = `$${total.toFixed(2)}`;
-            count > 0 ? show($('#cartSummary')) : hide($('#cartSummary'));
+            count > 0 ? $('#cartSummary').classList.remove('hidden') : $('#cartSummary').classList.add('hidden');
 
             const cartItemsContainer = $('#cartItems');
             if (cartItemsContainer) {
@@ -812,7 +951,7 @@
         }
 
         async function callGeminiAPI(chatHistory, generationConfig = null) {
-            const apiKey = ""; // API Key will be injected by the environment
+            const apiKey = "";
             const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
             const payload = { contents: chatHistory };
             if (generationConfig) payload.generationConfig = generationConfig;
@@ -941,8 +1080,11 @@
             }
 
             const mainContent = $('#mainContent');
-            mainContent.innerHTML = `<div id="loading-placeholder" class="flex items-center justify-center h-full pt-20"><div class="text-center"><div class="loading-spinner"></div><p class="mt-6 text-purple-700 font-semibold text-lg">Cargando...</p></div></div>`;
             
+            if (sectionId !== 'home') {
+                mainContent.innerHTML = `<div id="loading-placeholder" class="flex items-center justify-center h-full pt-20"><div class="text-center"><div class="loading-spinner"></div><p class="mt-6 text-purple-700 font-semibold text-lg">Cargando...</p></div></div>`;
+            }
+
             setTimeout(() => {
                 app.activeSection = sectionId;
                 $$('.nav-link, .mobile-nav-link, .mobile-nav-link-bottom').forEach(link => link.classList.remove('active'));
@@ -950,17 +1092,16 @@
                 navMap[sectionId]?.forEach(selector => $(selector)?.classList.add('active'));
                 $$(`.mobile-nav-link-bottom[href="#${sectionId}"]`).forEach(link => link.classList.add('active'));
                 const sections = { home: renderHome, services: renderServices, ideas: renderIdeaGenerator, animators: renderAnimators, clowns: renderClowns, bubbles: renderBubbles, gallery: renderGallery, blog: renderBlog, reviews: renderReviews, booking: renderBooking };
-                if (sections[sectionId]) {
+                
+                if (sectionId !== 'home' && sections[sectionId]) {
                     sections[sectionId]();
-                } else {
-                    renderHome();
+                } else if (sectionId === 'home') {
+                     if(!$('#hero-section-identifier')) renderHome();
                 }
+
                 toggleMobileMenu(false);
-                window.scrollTo(0, 0);
-                if (typeof gtag === 'function') {
-                    gtag('config', 'G-SBYYJTHTEF', { page_title: sectionId, page_path: `#${sectionId}` });
-                }
-            }, 250);
+                if(sectionId === 'home') window.scrollTo(0, 0);
+            }, 50);
         }
 
         function renderHome() {
@@ -976,62 +1117,83 @@
             }
 
             $('#mainContent').innerHTML = `
-                <section class="hero-section animate-slide-up">
-                    <div class="hero-content">
-                        <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mb-6">🎉 ¡Las Mejores Fiestas Infantiles en Panamá! 🎈</h1>
-                        <p class="text-lg sm:text-xl lg:text-2xl mb-10 opacity-90">Especialistas en animación, shows de burbujas y entretenimiento infantil en Panamá Centro, Panamá Este, Arraiján, La Chorrera, Ancón, Pacora y Panamá Norte. ¡Más de 500 fiestas realizadas!</p>
-                        <div class="grid grid-cols-2 sm:flex sm:flex-row justify-center gap-4">
-                            <a href="#services" class="btn-premium btn-primary nav-action text-sm sm:text-base"><i data-lucide="sparkles"></i>Servicios</a>
-                            <a href="#animators" class="btn-premium btn-tertiary nav-action text-sm sm:text-base"><i data-lucide="user-check"></i>Animadores</a>
-                            <a href="#clowns" class="btn-premium btn-warning nav-action text-sm sm:text-base"><i data-lucide="smile"></i>Payasos</a>
-                            <a href="#bubbles" class="btn-premium btn-secondary nav-action text-sm sm:text-base"><i data-lucide="wind"></i>Burbujas</a>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="my-12 animate-slide-up">
-                    <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
-                        <div class="relative">
-                            <img src="${featuredPackage.image}" alt="${featuredPackage.name}" class="w-full h-64 object-cover" loading="lazy">
-                            ${featuredPackage.discountApplied ? `<div class="absolute top-4 right-4 bg-pink-500 text-white text-sm font-bold px-4 py-1.5 rounded-full shadow-lg animate-pulse">${featuredPackage.discountMessage}</div>` : ''}
-                            <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl text-center shadow-md">
-                                ${priceHTML}
+                <div id="hero-section-identifier">
+                    <section class="hero-section animate-slide-up">
+                        <div class="hero-overlay"></div>
+                        <video autoplay loop muted playsinline>
+                            <!-- Video path updated to Cloudinary URL -->
+                            <source src="https://res.cloudinary.com/dv40hkeyz/video/upload/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <div class="hero-content">
+                            <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mb-6 font-nunito">🎉 ¡Las Mejores Fiestas Infantiles en Panamá! 🎈</h1>
+                            <p class="text-lg sm:text-xl lg:text-2xl mb-10 opacity-90">Especialistas en animación, shows de burbujas y entretenimiento infantil en Panamá Centro, Panamá Este, Arraiján, La Chorrera, Ancón, Pacora y Panamá Norte. ¡Más de 500 fiestas realizadas!</p>
+                            <div class="grid grid-cols-2 sm:flex sm:flex-row justify-center gap-4">
+                                <a href="#services" class="btn-premium btn-primary nav-action text-base py-3 px-6"><i data-lucide="sparkles"></i>Servicios</a>
+                                <a href="#animators" class="btn-premium btn-tertiary nav-action text-base py-3 px-6"><i data-lucide="user-check"></i>Animadores</a>
+                                <a href="#clowns" class="btn-premium btn-warning nav-action text-base py-3 px-6"><i data-lucide="smile"></i>Payasos</a>
+                                <a href="#bubbles" class="btn-premium btn-secondary nav-action text-base py-3 px-6"><i data-lucide="wind"></i>Burbujas</a>
                             </div>
                         </div>
-                        <div class="p-6">
-                            <h2 class="text-sm font-bold uppercase text-purple-500 tracking-widest mb-2">Paquete Destacado del Mes</h2>
-                            <h3 class="text-2xl font-extrabold text-gray-800 mb-3 font-poppins">${featuredPackage.name}</h3>
-                            <p class="text-gray-600 mb-4 text-sm">${featuredPackage.description}</p>
-                            <ul class="space-y-2 text-gray-700 text-sm mb-6">
-                                ${featuredPackage.services.map(s => `<li class="flex items-center"><i data-lucide="check" class="w-5 h-5 mr-3 text-green-500 flex-shrink-0"></i><span>${s}</span></li>`).join('')}
-                            </ul>
-                            <button data-action="add-to-cart" data-item-id="${featuredPackage.id}" class="w-full btn-premium btn-primary py-4 text-lg"><i data-lucide="shopping-cart"></i>¡Lo Quiero!</button>
+                        <!-- NEW: Wavy divider for hero bottom -->
+                        <div class="wavy-divider">
+                            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+                            </svg>
                         </div>
-                    </div>
-                </section>
+                    </section>
 
-                <div class="stats-grid">
-                    <div class="stat-card animate-slide-up"><div class="stat-number">500+</div><div class="text-gray-600 font-semibold">Fiestas en Panamá</div><div class="text-xs text-green-600 mt-2">✅ Todas las zonas</div></div>
-                    <div class="stat-card animate-slide-up"><div class="stat-number">4.9⭐</div><div class="text-gray-600 font-semibold">Calificación</div><div class="text-xs text-blue-600 mt-2">📈 127+ reseñas</div></div>
-                    <div class="stat-card animate-slide-up"><div class="stat-number">6</div><div class="text-gray-600 font-semibold">Zonas de Panamá</div><div class="text-xs text-purple-600 mt-2">🚗 Centro, Este, Oeste, Norte, Ancón</div></div>
-                    <div class="stat-card animate-slide-up"><div class="stat-number">24/7</div><div class="text-gray-600 font-semibold">Atención</div><div class="text-xs text-orange-600 mt-2">📱 WhatsApp +507 6667-7965</div></div>
-                </div>
-                
-                <section class="coverage-area animate-slide-up">
-                    <div class="relative z-10">
-                        <h2 class="text-3xl lg:text-4xl font-bold mb-4">🗺️ Zonas que Cubrimos en Panamá</h2>
-                        <p class="text-lg mb-6 opacity-90">Llevamos la diversión a toda el área metropolitana de Panamá</p>
-                        <div class="coverage-grid">
-                            <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Panamá Centro</h3><p class="text-sm opacity-90">Transporte GRATIS</p><p class="text-xs mt-1">Juan Díaz, San Miguelito, El Cangrejo, San Francisco</p></div>
-                            <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Arraiján</h3><p class="text-sm opacity-90">Transporte +$15</p><p class="text-xs mt-1">Arraiján Centro</p></div>
-                            <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 La Chorrera</h3><p class="text-sm opacity-90">Transporte +$15</p><p class="text-xs mt-1">La Chorrera Centro</p></div>
-                            <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Panamá Norte</h3><p class="text-sm opacity-90">Transporte +$10</p><p class="text-xs mt-1">La Cabima, Villa Grecia</p></div>
-                            <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Panamá Este</h3><p class="text-sm opacity-90">Transporte +$10</p><p class="text-xs mt-1">Pacora, 24 de Diciembre</p></div>
-                            <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Ancón</h3><p class="text-sm opacity-90">Transporte +$10</p><p class="text-xs mt-1">Albrook, Clayton</p></div>
+                    <div class="container mx-auto px-4">
+                        <section class="my-12 animate-slide-up">
+                            <div class="bg-white rounded-3xl shadow-lg overflow-hidden">
+                                <div class="relative">
+                                    <img src="${featuredPackage.image}" alt="${featuredPackage.name}" class="w-full h-64 object-cover" loading="lazy">
+                                    ${featuredPackage.discountApplied ? `<div class="absolute top-4 right-4 bg-pink-500 text-white text-sm font-bold px-4 py-1.5 rounded-full shadow-lg animate-pulse">${featuredPackage.discountMessage}</div>` : ''}
+                                    <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-xl text-center shadow-md">
+                                        ${priceHTML}
+                                    </div>
+                                </div>
+                                <div class="p-6">
+                                    <h2 class="text-sm font-bold uppercase text-purple-500 tracking-widest mb-2">Paquete Destacado del Mes</h2>
+                                    <h3 class="text-2xl font-extrabold text-gray-800 mb-3 font-poppins">${featuredPackage.name}</h3>
+                                    <p class="text-gray-600 mb-4 text-sm">${featuredPackage.description}</p>
+                                    <ul class="space-y-2 text-gray-700 text-sm mb-6">
+                                        ${featuredPackage.services.map(s => `<li class="flex items-center"><i data-lucide="check" class="w-5 h-5 mr-3 text-green-500 flex-shrink-0"></i><span>${s}</span></li>`).join('')}
+                                    </ul>
+                                    <button data-action="add-to-cart" data-item-id="${featuredPackage.id}" class="w-full btn-premium btn-primary py-4 text-lg"><i data-lucide="shopping-cart"></i>¡Lo Quiero!</button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <div class="stats-grid">
+                            <div class="stat-card animate-slide-up"><div class="stat-number">500+</div><div class="text-gray-600 font-semibold">Fiestas en Panamá</div><div class="text-xs text-green-600 mt-2">✅ Todas las zonas</div></div>
+                            <div class="stat-card animate-slide-up"><div class="stat-number">4.9⭐</div><div class="text-gray-600 font-semibold">Calificación</div><div class="text-xs text-blue-600 mt-2">📈 127+ reseñas</div></div>
+                            <div class="stat-card animate-slide-up"><div class="stat-number">6</div><div class="text-gray-600 font-semibold">Zonas de Panamá</div><div class="text-xs text-purple-600 mt-2">🚗 Centro, Este, Oeste, Norte, Ancón</div></div>
+                            <div class="stat-card animate-slide-up"><div class="stat-number">24/7</div><div class="text-gray-600 font-semibold">Atención</div><div class="text-xs text-orange-600 mt-2">📱 WhatsApp +507 6667-7965</div></div>
                         </div>
-                        <div class="text-center mt-8"><a href="https://wa.me/50766677965?text=Hola! Quiero consultar sobre servicios de fiestas infantiles en Panamá" class="btn-premium bg-white text-purple-600" target="_blank" rel="noopener noreferrer"><i data-lucide="phone"></i>Consulta tu Zona en WhatsApp</a></div>
                     </div>
-                </section>`;
+                    
+                    <section class="coverage-area animate-slide-up">
+                         <div class="wavy-divider top">
+                            <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+                                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+                            </svg>
+                        </div>
+                        <div class="relative z-10 container mx-auto px-4">
+                            <h2 class="text-3xl lg:text-4xl font-bold mb-4 font-nunito">🗺️ Zonas que Cubrimos en Panamá</h2>
+                            <p class="text-lg mb-6 opacity-90">Llevamos la diversión a toda el área metropolitana de Panamá</p>
+                            <div class="coverage-grid">
+                                <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Panamá Centro</h3><p class="text-sm opacity-90">Transporte GRATIS</p><p class="text-xs mt-1">Juan Díaz, San Miguelito, El Cangrejo, San Francisco</p></div>
+                                <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Arraiján</h3><p class="text-sm opacity-90">Transporte +$15</p><p class="text-xs mt-1">Arraiján Centro</p></div>
+                                <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 La Chorrera</h3><p class="text-sm opacity-90">Transporte +$15</p><p class="text-xs mt-1">La Chorrera Centro</p></div>
+                                <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Panamá Norte</h3><p class="text-sm opacity-90">Transporte +$10</p><p class="text-xs mt-1">La Cabima, Villa Grecia</p></div>
+                                <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Panamá Este</h3><p class="text-sm opacity-90">Transporte +$10</p><p class="text-xs mt-1">Pacora, 24 de Diciembre</p></div>
+                                <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Ancón</h3><p class="text-sm opacity-90">Transporte +$10</p><p class="text-xs mt-1">Albrook, Clayton</p></div>
+                            </div>
+                            <div class="text-center mt-8"><a href="https://wa.me/50766677965?text=Hola! Quiero consultar sobre servicios de fiestas infantiles en Panamá" class="btn-premium bg-white text-purple-600" target="_blank" rel="noopener noreferrer"><i data-lucide="phone"></i>Consulta tu Zona en WhatsApp</a></div>
+                        </div>
+                    </section>
+                </div>`;
             lucide.createIcons();
         }
 
@@ -1090,7 +1252,7 @@
 
         function renderSection(items, title, icon) {
             const itemsHtml = items.map(createDetailedCardHTML).join('');
-            $('#mainContent').innerHTML = `<section class="my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">${title} en Panamá <i data-lucide="${icon}" class="inline-block text-purple-600"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 gap-6 md:grid md:grid-cols-2 xl:grid-cols-3 hide-scrollbar -mx-4 px-4">${itemsHtml}</div></section>`;
+            $('#mainContent').innerHTML = `<div class="container mx-auto px-4"><section class="my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-nunito">${title} en Panamá <i data-lucide="${icon}" class="inline-block text-purple-600"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 gap-6 md:grid md:grid-cols-2 xl:grid-cols-3 hide-scrollbar -mx-4 px-4">${itemsHtml}</div></section></div>`;
             lucide.createIcons();
         }
 
@@ -1102,22 +1264,40 @@
 
         function renderGallery() {
             const galleryHtml = gallery.map((item, index) => `<a href="${item.image}" data-lightbox="gallery" data-title="${item.alt}" class="gallery-item animate-slide-up" style="animation-delay: ${index * 50}ms;"><img src="${item.image}" alt="${item.alt}" loading="lazy" width="300" height="300" onerror="this.onerror=null;this.src='https://placehold.co/300x300/cccccc/ffffff?text=Error';"></a>`).join('');
-            $('#mainContent').innerHTML = `<section class="my-8 animate-slide-up">
+            $('#mainContent').innerHTML = `<div class="container mx-auto px-4"><section class="my-8 animate-slide-up">
                 <h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Momentos Mágicos en Instagram</h2>
                 <p class="text-center text-gray-600 max-w-2xl mx-auto mb-8">¡Síguenos en <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="text-pink-500 font-bold hover:underline" rel="noopener noreferrer">@diverty_eventos_pty</a> para ver nuestras últimas fiestas y promociones!</p>
                 <div class="gallery-grid">${galleryHtml}</div>
                 <div class="text-center mt-12">
                     <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="btn-premium btn-primary" rel="noopener noreferrer"><i data-lucide="instagram"></i>Ver más en Instagram</a>
                 </div>
-            </section>`;
+            </section></div>`;
             lucide.createIcons();
         }
         
         function renderReviews() {
-            const reviewsHtml = customerReviews.map((review, index) => `<div class="review-slide premium-card p-6 animate-slide-up" style="animation-delay: ${index * 100}ms;"><div class="flex items-center mb-4"><img src="${review.avatar}" alt="${review.name}" class="w-12 h-12 rounded-full mr-4" loading="lazy" width="48" height="48"><div><h4 class="font-bold">${review.name}</h4><div class="text-yellow-500 text-lg">${'⭐'.repeat(review.rating)}</div><p class="text-xs text-gray-500">${review.location}</p></div></div><p class="text-gray-700 mb-4 italic">"${review.comment}"</p><div class="text-sm text-gray-500"><p><strong>Servicio:</strong> ${review.service}</p><p><strong>Fecha:</strong> ${review.date}</p></div></div>`).join('');
-            $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">⭐ Reseñas de Familias Panameñas</h2><div class="text-center mb-12"><div class="text-6xl font-bold text-yellow-500 mb-2">4.9</div><div class="text-3xl mb-2">⭐⭐⭐⭐⭐</div><p class="text-gray-600 text-lg">Basado en 127+ reseñas verificadas</p></div><div class="relative overflow-hidden"><div id="reviews-carousel" class="flex transition-transform duration-500 ease-in-out">${reviewsHtml}</div></div><div id="reviews-dots" class="flex justify-center gap-2 mt-8"></div><div class="text-center mt-12"><a href="https://www.google.com/search?q=diverty+eventos+panama+reseñas" target="_blank" class="btn-premium btn-tertiary" rel="noopener noreferrer"><i data-lucide="external-link"></i>Ver más reseñas</a></div></section>`;
+            const reviewsHtml = customerReviews.map((review, index) => `
+                <div class="review-card animate-slide-up" style="animation-delay: ${index * 100}ms;">
+                    <div class="review-header">
+                        <img src="${review.avatar}" alt="${review.name}" class="review-avatar" loading="lazy" width="48" height="48">
+                        <div>
+                            <div class="review-user">${review.name}</div>
+                            <div class="review-location">${review.location}</div>
+                        </div>
+                    </div>
+                    <div class="review-body">
+                        <p>"${review.comment}"</p>
+                    </div>
+                    <div class="review-footer">
+                        <div class="review-rating">${'⭐'.repeat(review.rating)}</div>
+                        <div class="verified-badge">
+                            <i data-lucide="check-circle" class="w-4 h-4 mr-1"></i>
+                            Cliente Verificado
+                        </div>
+                    </div>
+                </div>`).join('');
+            $('#mainContent').innerHTML = `<div class="container mx-auto px-4"><section class="my-8"><h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent font-nunito">⭐ Lo que dicen nuestros clientes</h2><div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">${reviewsHtml}</div><div class="text-center mt-12"><a href="https://www.google.com/search?q=diverty+eventos+panama+reseñas" target="_blank" class="btn-premium btn-tertiary" rel="noopener noreferrer"><i data-lucide="external-link"></i>Ver más reseñas</a></div></section></div>`;
             lucide.createIcons();
-            initReviewsCarousel();
         }
 
         function initReviewsCarousel() {
@@ -1219,7 +1399,7 @@
                 : app.cart.map(item => `<div class="flex justify-between bg-gradient-to-r from-purple-50 to-pink-50 p-4 rounded-xl shadow-sm mb-3"><span class="font-semibold">${item.name} (x${item.quantity})</span><span class="font-bold text-pink-600">$${(item.price * item.quantity).toFixed(2)}</span></div>`).join('');
             const locationOptionsHtml = locations.map(opt => `<option value="${opt.value}" ${app.location === opt.value ? 'selected' : ''}>${opt.label}</option>`).join('');
             
-            $('#mainContent').innerHTML = `<section class="premium-card p-4 sm:p-8 lg:p-12 my-8">
+            $('#mainContent').innerHTML = `<div class="container mx-auto px-4"><section class="premium-card p-4 sm:p-8 lg:p-12 my-8">
                 <h2 class="text-3xl lg:text-5xl font-bold text-center mb-12 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Reserva tu Fiesta en Panamá <i data-lucide="calendar-check" class="inline-block text-purple-600"></i></h2>
                 <div class="bg-gradient-to-br from-pink-50 to-purple-50 p-6 sm:p-8 rounded-3xl mb-8 border-2 border-pink-200">
                     <h3 class="text-2xl font-bold text-pink-700 mb-6">Tu Selección:</h3>
@@ -1241,7 +1421,7 @@
                     <div class="form-group"><label class="form-label">Comentarios</label><textarea name="comments" class="form-input" rows="4" placeholder="¿Alguna petición especial o detalle importante?"></textarea></div>
                     <button type="submit" class="w-full btn-premium btn-primary py-4 text-xl"><i data-lucide="sparkles"></i>Enviar Reserva</button>
                 </form>` : ''}
-            </section>`;
+            </section></div>`;
             if (app.cart.length > 0) {
                 $('#bookingForm').onsubmit = handleBookingSubmit;
                 $('select[name="location"]').onchange = (e) => { app.location = e.target.value; renderBooking(); };
@@ -1253,6 +1433,7 @@
         function handleBookingSubmit(e) {
             e.preventDefault();
             if (app.cart.length === 0) { showToast('Selecciona al menos un servicio', 'error'); return; }
+            triggerBookingConfetti(); // NEW: Trigger confetti on booking
             const formData = new FormData(e.target);
             submitToJotForm(formData, app.cart);
             showModal('infoModal');
@@ -1301,7 +1482,8 @@
         function handleGlobalClick(e) {
             const target = e.target.closest('[data-action]');
             if (!target) return;
-
+            
+            playPopSound(); // Play sound on any action click
             const { action, itemId, change, category } = target.dataset;
 
             switch (action) {
@@ -1421,20 +1603,26 @@
         }
 
         function renderIdeaGenerator() {
-            $('#mainContent').innerHTML = `
-                <section class="premium-card p-4 sm:p-8 lg:p-12 my-8">
-                    <h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">✨ Generador de Ideas para Fiestas con IA</h2>
-                    <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">¿Sin inspiración? Describe tu fiesta ideal y deja que nuestra IA cree un plan mágico para ti. ¡Es rápido, fácil y divertido!</p>
-                    <div class="max-w-3xl mx-auto">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                            <div><label class="form-label">Temática (ej. Superhéroes)</label><input id="idea-theme" type="text" class="form-input" placeholder="Princesas, Dinosaurios..."></div>
-                            <div><label class="form-label">Edad del niño/a</label><input id="idea-age" type="number" class="form-input" placeholder="5"></div>
-                            <div><label class="form-label"># de Invitados</label><input id="idea-guests" type="number" class="form-input" placeholder="15"></div>
-                        </div>
-                        <button id="generate-ideas" class="w-full btn-premium btn-primary py-4 text-xl"><i data-lucide="wand-2"></i>Generar Ideas Mágicas</button>
-                        <div id="idea-results" class="mt-8 p-6 bg-white/50 rounded-2xl shadow-inner min-h-[200px]"></div>
+            $('#mainContent').innerHTML = `<div class="container mx-auto px-4"><section class="premium-card p-4 sm:p-8 lg:p-12 my-8">
+                <h2 class="text-3xl lg:text-5xl font-bold text-center mb-8 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">✨ Generador de Ideas para Fiestas con IA</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">¿Sin inspiración? Describe tu fiesta ideal y deja que nuestra IA cree un plan mágico para ti. ¡Es rápido, fácil y divertido!</p>
+                
+                <!-- Test Mode Disclaimer -->
+                <div class="text-center bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg mb-8" role="alert">
+                    <p class="font-bold">Modo de Prueba</p>
+                    <p>Esta función de IA es para fines de demostración. Los resultados son generados automáticamente.</p>
+                </div>
+
+                <div class="max-w-3xl mx-auto">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div><label class="form-label">Temática (ej. Superhéroes)</label><input id="idea-theme" type="text" class="form-input" placeholder="Princesas, Dinosaurios..."></div>
+                        <div><label class="form-label">Edad del niño/a</label><input id="idea-age" type="number" class="form-input" placeholder="5"></div>
+                        <div><label class="form-label"># de Invitados</label><input id="idea-guests" type="number" class="form-input" placeholder="15"></div>
                     </div>
-                </section>`;
+                    <button id="generate-ideas" class="w-full btn-premium btn-primary py-4 text-xl"><i data-lucide="wand-2"></i>Generar Ideas Mágicas</button>
+                    <div id="idea-results" class="mt-8 p-6 bg-white/50 rounded-2xl shadow-inner min-h-[200px]"></div>
+                </div>
+            </section></div>`;
             $('#generate-ideas').onclick = generatePartyIdeas;
             lucide.createIcons();
         }
@@ -1529,16 +1717,149 @@
             }));
             $('#schema-products').textContent = JSON.stringify(productSchema);
         }
+        
+        // --- NEW: Confetti Animation on Booking ---
+        function triggerBookingConfetti() {
+            const canvas = $('#confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const colors = ["#7c3aed", "#db2777", "#3b82f6", "#f97316", "#10b981"];
+            const particleCount = 200;
+            const duration = 3000; // 3 seconds
+
+            class ConfettiParticle {
+                constructor() {
+                    this.x = canvas.width / 2;
+                    this.y = canvas.height / 2;
+                    this.size = Math.random() * 6 + 4;
+                    this.speed = Math.random() * 8 + 5;
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.vx = Math.cos(this.angle) * this.speed;
+                    this.vy = Math.sin(this.angle) * this.speed;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                    this.spin = Math.random() * Math.PI * 2;
+                    this.spinSpeed = Math.random() * 0.1 - 0.05;
+                    this.life = 0;
+                    this.maxLife = 100; // Frames
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.1; // Gravity
+                    this.vx *= 0.99; // Air resistance
+                    this.spin += this.spinSpeed;
+                    this.life++;
+                }
+                draw() {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    ctx.rotate(this.spin);
+                    ctx.fillStyle = this.color;
+                    ctx.globalAlpha = 1 - (this.life / this.maxLife);
+                    ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size * 2);
+                    ctx.restore();
+                }
+            }
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new ConfettiParticle());
+            }
+
+            let startTime = Date.now();
+            function animate() {
+                if (Date.now() - startTime > duration) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    return;
+                }
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((p, index) => {
+                    p.update();
+                    p.draw();
+                    if (p.life >= p.maxLife) {
+                        particles.splice(index, 1);
+                    }
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        // --- NEW: Magic Cursor ---
+        function initMagicCursor() {
+            const canvas = document.getElementById('magic-cursor');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            const colors = ["#7c3aed", "#db2777", "#3b82f6", "#f97316", "#10b981"];
+            let mouse = { x: -100, y: -100 };
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            class Particle {
+                constructor(x, y) {
+                    this.x = x;
+                    this.y = y;
+                    this.size = Math.random() * 4 + 1;
+                    this.life = 0;
+                    this.maxLife = Math.random() * 40 + 30;
+                    this.vx = Math.random() * 2 - 1;
+                    this.vy = Math.random() * 2 - 1;
+                    this.color = colors[Math.floor(Math.random() * colors.length)];
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.life++;
+                }
+                draw() {
+                    ctx.globalAlpha = 1 - (this.life / this.maxLife);
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((p, index) => {
+                    p.update();
+                    p.draw();
+                    if (p.life >= p.maxLife) {
+                        particles.splice(index, 1);
+                    }
+                });
+                requestAnimationFrame(animate);
+            }
+
+            window.addEventListener('mousemove', (e) => {
+                mouse.x = e.clientX;
+                mouse.y = e.clientY;
+                for (let i = 0; i < 2; i++) {
+                    particles.push(new Particle(mouse.x, mouse.y));
+                }
+            });
+            
+            window.addEventListener('resize', resizeCanvas);
+            
+            resizeCanvas();
+            animate();
+        }
+
 
         // --- INITIALIZE APP ---
         setupEventListeners();
         initChat();
         populateLocationSelects();
         initializeSchemas();
+        // Render home content statically on first load
+        renderHome(); 
         setActiveSection(window.location.hash.substring(1) || 'home');
         updateCartUI();
+        initMagicCursor(); // Start the magic cursor
         lucide.createIcons();
-        hide($('#loading-placeholder'));
     });
     </script>
 </body>
