@@ -8,7 +8,7 @@
     <meta name="description" content="Organizamos las mejores fiestas infantiles y eventos navideños en Panamá Centro, Panamá Este, Arraiján, La Chorrera, Ancón, Pacora y Panamá Norte. Expertos en animación, pintacaritas y visitas de Santa.">
     
     <!-- SEO, PWA, and other meta tags -->
-    <meta name="keywords" content="fiestas infantiles panama, fiestas navideñas panama, santa claus panama, animacion infantil panama centro, payasos panama, shows burbujas panama, pintacaritas arraijan, globoflexia la chorrera, eventos infantiles pacora, animadores panama norte, cumpleanos panama, entretenimiento infantil panama, decoraciones fiestas panama, personajes tematicos panama, magos panama, recreacion infantil panama, fiestas infantiles ancon, fiestas infantiles panama este">
+    <meta name="keywords" content="fiestas infantiles panama, fiestas navideñas panama, santa claus panama, animacion infantil panama centro, payasos panama, animadores panama, shows burbujas panama, pintacaritas arraijan, globoflexia la chorrera, eventos infantiles pacora, animadores panama norte, cumpleanos panama, entretenimiento infantil panama, decoraciones fiestas panama, personajes tematicos panama, magos panama, recreacion infantil panama, fiestas infantiles ancon, fiestas infantiles panama este">
     <meta name="geo.region" content="PA">
     <meta name="geo.placename" content="Panama City">
     <meta name="geo.position" content="8.9824;-79.5199">
@@ -217,8 +217,8 @@
 
     <!-- Banner promocional Navideño -->
     <div id="promo-banner" class="bg-gradient-to-r from-red-600 to-green-600 text-white p-3 text-center font-bold text-sm sm:text-base relative flex items-center justify-center">
-        <!-- **** CONTENIDO DEL BANNER ACTUALIZADO **** -->
-        <span id="promo-text">¡Reserva tu Visita de Santa antes del 1 de Diciembre y obtén 10% OFF! 🎅</span>
+        <!-- **** CONTENIDO DEL BANNER ACTUALIZADO (CAMBIO 4) **** -->
+        <span id="promo-text">¡Reserva tu Visita de Santa <strong class="font-extrabold underline">antes del 1 de Diciembre</strong> y obtén 10% OFF! 🎅</span>
         <button id="close-promo-banner" class="absolute right-2 sm:right-4 p-2 rounded-full bg-black/20 hover:bg-black/40 transition-colors" aria-label="Cerrar promoción">
             <i data-lucide="x" class="w-5 h-5"></i>
         </button>
@@ -234,10 +234,14 @@
             <!-- Iconos de navegación navideños -->
             <nav class="hidden lg:flex items-center space-x-2">
                 <a href="#home" id="navHome" class="nav-link text-gray-600"><i data-lucide="home" class="w-4 h-4 mr-2"></i>Inicio</a>
-                <!-- **** NUEVO ENLACE A SANTA **** -->
-                <a href="#santa" id="navSanta" class="nav-link text-gray-600"><i data-lucide="santa" class="w-4 h-4 mr-2"></i>🎅 Santa</a>
+                <!-- **** NUEVO ENLACE A SANTA (CAMBIO 1) **** -->
+                <a href="#santa" id="navSanta" class="nav-link text-gray-600"><i data-lucide="bell" class="w-4 h-4 mr-2"></i>🎅 Santa</a>
                 <a href="#services" id="navServices" class="nav-link text-gray-600"><i data-lucide="gift" class="w-4 h-4 mr-2"></i>Servicios</a>
-                <a href="#clowns" id="navClowns" class="nav-link text-gray-600"><i data-lucide="sleigh" class="w-4 h-4 mr-2"></i>Payasos</a>
+                <!-- INICIO: CAMBIOS DE MENÚ -->
+                <a href="#clowns" id="navClowns" class="nav-link text-gray-600"><i data-lucide="smile" class="w-4 h-4 mr-2"></i>Payasos</a>
+                <!-- **** CAMBIO DE ICONO: mic -> megaphone **** -->
+                <a href="#animators" id="navAnimators" class="nav-link text-gray-600"><i data-lucide="megaphone" class="w-4 h-4 mr-2"></i>Animadores</a>
+                <!-- FIN: CAMBIOS DE MENÚ -->
                 <a href="#bubbles" id="navBubbles" class="nav-link text-gray-600"><i data-lucide="snowflake" class="w-4 h-4 mr-2"></i>Burbujas</a>
                 <a href="#gallery" id="navGallery" class="nav-link text-gray-600"><i data-lucide="image" class="w-4 h-4 mr-2"></i>Galería</a>
                 <a href="#blog" id="navBlog" class="nav-link text-gray-600"><i data-lucide="book-open" class="w-4 h-4 mr-2"></i>Blog</a>
@@ -278,10 +282,14 @@
             <!-- Iconos de menú móvil navideños -->
             <div class="space-y-1">
                 <a href="#home" id="mobileHome" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="home" class="w-5 h-5"></i>Inicio</a>
-                <!-- **** NUEVO ENLACE A SANTA **** -->
-                <a href="#santa" id="mobileSanta" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="santa" class="w-5 h-5"></i>🎅 Visita de Santa</a>
+                <!-- **** NUEVO ENLACE A SANTA (CAMBIO 1) **** -->
+                <a href="#santa" id="mobileSanta" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="bell" class="w-5 h-5"></i>🎅 Visita de Santa</a>
                 <a href="#services" id="mobileServices" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="gift" class="w-5 h-5"></i>Servicios</a>
-                <a href="#clowns" id="mobileClowns" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="sleigh" class="w-5 h-5"></i>Payasos</a>
+                <!-- INICIO: CAMBIOS DE MENÚ MÓVIL -->
+                <a href="#clowns" id="mobileClowns" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="smile" class="w-5 h-5"></i>Payasos</a>
+                <!-- **** CAMBIO DE ICONO: mic -> megaphone **** -->
+                <a href="#animators" id="mobileAnimators" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="megaphone" class="w-5 h-5"></i>Animadores</a>
+                <!-- FIN: CAMBIOS DE MENÚ MÓVIL -->
                 <a href="#bubbles" id="mobileBubbles" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="snowflake" class="w-5 h-5"></i>Burbujas</a>
                 <a href="#gallery" id="mobileGallery" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="image" class="w-5 h-5"></i>Galería</a>
                 <a href="#blog" id="mobileBlog" class="mobile-nav-link text-gray-700 w-full text-left nav-action"><i data-lucide="book-open" class="w-5 h-5"></i>Blog</a>
@@ -313,27 +321,29 @@
     
     <!-- Nav móvil inferior con colores navideños -->
     <nav id="mobile-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg flex justify-around items-center h-16 z-40">
+        <!-- INICIO: CAMBIOS DE MENÚ INFERIOR -->
         <a href="#home" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
             <i data-lucide="home" class="w-7 h-7"></i>
             <span class="text-xs font-medium">Inicio</span>
         </a>
-        <a href="#services" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
-            <i data-lucide="gift" class="w-7 h-7"></i> <!-- Icono de regalo -->
-            <span class="text-xs font-medium">Servicios</span>
+        <a href="#clowns" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
+            <i data-lucide="smile" class="w-7 h-7"></i>
+            <span class="text-xs font-medium">Payasos</span>
         </a>
         <a href="#booking" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action bg-red-600 text-white rounded-full w-16 h-16 -mt-8 shadow-lg"> <!-- Botón rojo -->
             <i data-lucide="calendar-check" class="w-8 h-8"></i>
             <span class="text-xs font-medium">Reservar</span>
         </a>
-        <a href="#gallery" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
-            <i data-lucide="image" class="w-7 h-7"></i>
-            <span class="text-xs font-medium">Galería</span>
+        <!-- **** CAMBIO DE ICONO: mic -> megaphone **** -->
+        <a href="#animators" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
+            <i data-lucide="megaphone" class="w-7 h-7"></i>
+            <span class="text-xs font-medium">Animador</span>
         </a>
-        <!-- **** ENLACE DE "IDEAS" CAMBIADO POR "SANTA" **** -->
         <a href="#santa" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-gray-600 nav-action">
-            <i data-lucide="santa" class="w-7 h-7"></i>
+            <i data-lucide="bell" class="w-7 h-7"></i>
             <span class="text-xs font-medium">Santa</span>
         </a>
+        <!-- FIN: CAMBIOS DE MENÚ INFERIOR -->
     </nav>
 
     <!-- Botones flotantes (Chat rojo) -->
@@ -426,13 +436,16 @@
             </div>
             <div class="chat-input">
                 <div class="flex gap-2 mb-2"><input type="text" id="chatInput" placeholder="Escribe tu pregunta..." class="flex-1 p-3 border border-gray-300 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500"><button id="sendChat" class="btn-premium btn-secondary !p-3 !w-12 !h-12"><i data-lucide="send" class="w-5 h-5"></i></button></div>
+                <!-- INICIO: CAMBIOS QUICK REPLIES -->
                 <div id="quick-replies" class="flex flex-wrap justify-center gap-2">
-                    <!-- **** NUEVO QUICK REPLY PARA SANTA **** -->
                     <button class="quick-question bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs hover:bg-red-200 transition-colors" data-question="¿Qué paquetes de Santa Claus tienen?">🎅 Santa</button>
                     <button class="quick-question bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs hover:bg-red-200 transition-colors" data-question="¿Qué paquetes de payasos tienen?">🤡 Payasos</button>
+                    <!-- **** CAMBIO DE EMOJI: 🎤 -> 📣 **** -->
+                    <button class="quick-question bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs hover:bg-red-200 transition-colors" data-question="¿Qué paquetes de animadores tienen?">📣 Animadores</button>
                     <button class="quick-question bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs hover:bg-red-200 transition-colors" data-question="¿Cuánto cuesta el show de burbujas?">💧 Burbujas</button>
                     <button class="quick-question bg-red-100 text-red-800 px-3 py-1 rounded-full text-xs hover:bg-red-200 transition-colors" data-question="¿A qué zonas llegan?">📍 Zonas</button>
                 </div>
+                <!-- FIN: CAMBIOS QUICK REPLIES -->
             </div>
         </div>
     </div>
@@ -478,7 +491,8 @@
         
         // --- INICIO CAMBIOS MENÚ DESPLEGABLE (Iconos) ---
         const locations = [
-            { value: 'panama-centro', label: '📍 Panamá Centro (Gratis)', cost: 0 },
+            // MODIFICADO: Costo de Panamá Centro
+            { value: 'panama-centro', label: '📍 Panamá Centro (+$5)', cost: 5 },
             { value: 'arraijan', label: '📍 Arraiján (+$15)', cost: 15 },
             { value: 'la-chorrera', label: '📍 La Chorrera (+$15)', cost: 15 },
             { value: 'panama-norte', label: '📍 Panamá Norte (+$10)', cost: 10 },
@@ -524,16 +538,17 @@
         ];
 
         const clownPackages = [
-            { id: 'clown_circus', name: 'Paquete Circo', price: 85, services: ['Payaso profesional', 'Integración de niños y adultos', 'Juegos y concursos', 'Figuras básicas con globos', 'Canto de cumpleaños', 'Romper la piñata'], description: '1.5h de risas garantizadas en Panamá con nuestro Payaso Risitas, lleno de juegos y humor profesional.', image: 'https://i.ibb.co/XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg' },
-            { id: 'clown_recreative', name: 'Plan Recreativo (Payaso)', price: 110, services: ['1 Payasito profesional', '1 Pintacaritas (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata', 'Canto de cumpleaños'], description: '2h de aventura con payaso en Panamá: pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/ZRBN0mb5/2913b329-e65a-4574-846d-03d72a8ed6e1-20250808-145823-0000.jpg' },
-            { id: 'clown_magic', name: 'Plan Magic (Payaso)', price: 135, services: ['1 Payaso profesional', 'Animación, juegos y concursos (1.5 horas)', '1 Pintacaritas (1 hora)', 'Show de magia cómica', 'Asistencia para la piñata', 'Canto de cumpleaños'], description: '2.5h premium con payaso en Panamá: juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', image: 'https://i.ibb.co/Gvwbr34b/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg' },
-            { id: 'clown_diverty', name: 'Plan Diverty (Payaso)', price: 200, services: ['1 Payaso profesional', 'Juegos y concursos', '1 Pintacaritas', 'Globoflexia', 'Show de Burbujas Gigantes', 'Asistencia en la piñata', 'Canto de cumpleaños'], description: '3h de diversión completa en Panamá: Payaso, juegos, pintacaritas, globoflexia, show de burbujas, y asistencia piñata. ¡La magia garantizada!', image: 'https://i.ibb.co/JXbv2Hy/1000099577-6bef3c87bff7ee22e2b0606e02467bf8-Editado-20250808-150335-0000.jpg' }
+            { id: 'clown_circus', name: 'Paquete Circo', price: 85, services: ['1 Payaso profesional', 'Integración de niños y adultos', 'Juegos y concursos', 'Figuras básicas con globos', 'Canto de cumpleaños', 'Romper la piñata', 'Bocina con música infantil y micrófono'], description: '1.5h de risas garantizadas en Panamá con nuestro Payaso Risitas, lleno de juegos y humor profesional.', image: 'https://i.ibb.co/XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg' },
+            // MODIFICADO: Descripción de pintacaritas
+            { id: 'clown_recreative', name: 'Plan Recreativo (Payaso)', price: 110, services: ['1 Payasito profesional', '1 Pintacaritas profesional (1 hora, incluye mobiliario, maleta de maquillaje y silla)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata', 'Canto de cumpleaños', 'Bocina con música infantil y micrófono'], description: '2h de aventura con payaso en Panamá: pintacaritas, animación, juegos, globos, piñata. ¡Inolvidable!', image: 'https://i.ibb.co/ZRBN0mb5/2913b329-e65a-4574-846d-03d72a8ed6e1-20250808-145823-0000.jpg' },
+            { id: 'clown_magic', name: 'Plan Magic (Payaso)', price: 135, services: ['1 Payaso profesional', 'Animación, juegos y concursos (1.5 horas)', '1 Pintacaritas (1 hora)', 'Show de magia cómica', 'Asistencia para la piñata', 'Canto de cumpleaños', 'Bocina con música infantil y micrófono'], description: '2.5h premium con payaso en Panamá: juegos, pintacaritas, magia cómica, asistencia de piñata. ¡Tu fiesta perfecta!', image: 'https://i.ibb.co/Gvwbr34b/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg' },
+            { id: 'clown_diverty', name: 'Plan Diverty (Payaso)', price: 200, services: ['1 Payaso profesional', 'Juegos y concursos', '1 Pintacaritas', 'Globoflexia', 'Show de Burbujas Gigantes', 'Asistencia en la piñata', 'Canto de cumpleaños', 'Bocina con música infantil y micrófono'], description: '3h de diversión completa en Panamá: Payaso, juegos, pintacaritas, globoflexia, show de burbujas, y asistencia piñata. ¡La magia garantizada!', image: 'https://i.ibb.co/JXbv2Hy/1000099577-6bef3c87bff7ee22e2b0606e02467bf8-Editado-20250808-150335-0000.jpg' }
         ];
 
         const bubblePackages = [
-            { id: 'bubble_party', name: 'Paquete Fiesta Burbuja Completa', price: 190, services: ['Animación infantil', 'Juegos y concursos', 'Payasito o Animador', 'Show de Burbujas Gigantes', 'Romper la piñata'], description: '2 horas de diversión completa en Panamá con animación, juegos, payasito, show de burbujas gigantes y piñata.', image: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg' },
-            { id: 'bubble_premium', name: 'Show de Burbujas Premium', price: 150, services: ['Burbujas gigantes', 'Humo', 'Burbujas LED', 'Interacción con el público', 'Fotos dentro de la burbuja', 'Trucos con burbujas', 'Burbujas de espuma'], description: '1 hora de show profesional en Panamá con burbujas gigantes, humo, LED, interacción, fotos, trucos y espuma.', image: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg' },
-            { id: 'bubble_corporate', name: 'Show Corporativo/Especial', price: 220, services: ['Show personalizado para centros comerciales, colegios o eventos grandes', 'Luces especiales'], description: '1 hora de show personalizable en Panamá para eventos corporativos, centros comerciales o colegios, con luces especiales.', image: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg' }
+            { id: 'bubble_party', name: 'Paquete Fiesta Burbuja Completa', price: 190, services: ['Animación infantil', 'Juegos y concursos', 'Payasito o Animador', 'Show de Burbujas Gigantes', 'Romper la piñata', 'Bocina con música infantil y micrófono'], description: '2 horas de diversión completa en Panamá con animación, juegos, payasito, show de burbujas gigantes y piñata.', image: 'https://i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg' },
+            { id: 'bubble_premium', name: 'Show de Burbujas Premium', price: 150, services: ['Burbujas gigantes', 'Humo', 'Burbujas LED', 'Interacción con el público', 'Fotos dentro de la burbuja', 'Trucos con burbujas', 'Burbujas de espuma', 'Bocina con música infantil y micrófono'], description: '1 hora de show profesional en Panamá con burbujas gigantes, humo, LED, interacción, fotos, trucos y espuma.', image: 'https://i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg' },
+            { id: 'bubble_corporate', name: 'Show Corporativo/Especial', price: 220, services: ['Show personalizado para centros comerciales, colegios o eventos grandes', 'Luces especiales', 'Bocina con música infantil y micrófono'], description: '1 hora de show personalizable en Panamá para eventos corporativos, centros comerciales o colegios, con luces especiales.', image: 'https://i.ibb.co/qLdys8KJ/IMG-20250711-195845.jpg' }
         ];
 
         // ================================================================
@@ -552,7 +567,8 @@
                 id: 'santa_pintacaritas', // El ID sigue siendo el mismo para la lógica
                 name: 'Paquete de Navidad', // Nombre actualizado
                 price: 135, // Precio actualizado
-                services: ['Visita de Santa Claus (1 Hora)', 'Entrega de regalos', 'Animación infantil', 'Juegos y Concursos', 'Figuras con globos', 'Bocina con música'], // Servicios actualizados
+                // MODIFICADO: "Bocina con música"
+                services: ['Visita de Santa Claus (1 Hora)', 'Entrega de regalos', 'Animación infantil', 'Juegos y Concursos', 'Figuras con globos', 'Bocina con música infantil y micrófono'], // Servicios actualizados
                 description: 'Una hora de pura diversión navideña. Santa Claus llega con animación, juegos, globoflexia y música para entregar regalos y celebrar.', // Descripción actualizada
                 image: 'https://i.ibb.co/xKpznmQS/IMG-20251023-213325.jpg' // <-- IMAGEN ACTUALIZADA
             },
@@ -560,7 +576,8 @@
                 id: 'santa_completo', 
                 name: 'Paquete Navidad Completa', 
                 price: 160, // Precio actualizado
-                services: ['Visita de Santa Claus (1 Hora)', 'Entrega de regalos', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Pintacaritas navideñas', 'Bocina con música', 'Duración total: 2.5 horas'], // Servicios actualizados
+                // MODIFICADO: "Bocina con música"
+                services: ['Visita de Santa Claus (1 Hora)', 'Entrega de regalos', 'Animación infantil', 'Juegos y concursos', 'Figuras con globos', 'Pintacaritas navideñas', 'Bocina con música infantil y micrófono', 'Duración total: 2.5 horas'], // Servicios actualizados
                 description: 'La experiencia navideña total. 2.5 horas con Santa, animación, pintacaritas, globoflexia, juegos y música. ¡Inolvidable!', // Descripción actualizada
                 image: 'https://i.ibb.co/FLV4rHv7/IMG-20251023-202921.jpg' // Imagen actualizada
             },
@@ -569,7 +586,8 @@
                 id: 'santa_colegios',
                 name: 'Visita de Santa a Colegios',
                 price: 65,
-                services: ['Visita de Santa (1 Hora)', 'Entrada sorpresa', 'Entrega de regalos', 'Canto de villancicos', 'Bocina con música', 'Máximo 25 niños', 'Ayudante de santa (costo adicional)'],
+                // MODIFICADO: "Bocina con música"
+                services: ['Visita de Santa (1 Hora)', 'Entrada sorpresa', 'Entrega de regalos', 'Canto de villancicos', 'Bocina con música infantil y micrófono', 'Máximo 25 niños', 'Ayudante de santa (costo adicional)'],
                 description: 'Una visita especial de Santa para colegios y guarderías. 1 hora de magia, cantos y entrega de regalos para grupos de hasta 25 niños.',
                 image: 'https://i.ibb.co/zVcqcLyM/IMG-20251023-213357.jpg' // <-- IMAGEN ACTUALIZADA
             }
@@ -577,6 +595,30 @@
         // ================================================================
         // |           FIN DE CAMBIOS EN PAQUETES DE SANTA                |
         // ================================================================
+
+        // ================================================================
+        // |              PAQUETES DE ANIMADORES (NUEVO)                  |
+        // ================================================================
+        const animatorPackages = [
+            { 
+                id: 'animator_basic', 
+                name: 'Plan Básico Animador', 
+                // MODIFICADO: Precio y servicios
+                price: 75, 
+                services: ['1 Animador/a profesional', 'Integración de niños y adultos', 'Juegos y concursos', 'Figuras básicas con globos', 'Canto de cumpleaños', 'Romper la piñata', 'Bocina con música infantil y micrófono'], 
+                description: '1.5h de pura diversión en Panamá con nuestro Animador/a, lleno de juegos y dinamismo. (1 sola persona)', 
+                image: 'https://i.ibb.co/V0Wz84GB/IMG-20251115-WA0048.jpg' // <-- IMAGEN ACTUALIZADA POR EL USUARIO
+            },
+            { 
+                id: 'animator_plus', 
+                name: 'Plan Animador Plus (con Pintacaritas)', // MODIFICADO: Nombre
+                // MODIFICADO: Precio y servicios
+                price: 85, 
+                services: ['1 Animador/a profesional', '1 Pintacaritas (1 hora)', 'Animación infantil (1 hora)', 'Juegos y concursos', 'Figuras con globos', 'Romper la piñata', 'Canto de cumpleaños', 'Bocina con música infantil y micrófono'], 
+                description: '2h de fiesta total: Animador/a, pintacaritas, juegos, globos, piñata. ¡Súper completo! (1 sola persona)', 
+                image: 'https://i.ibb.co/7JKcd3XK/IMG-20251115-WA0034.jpg' // <-- IMAGEN ACTUALIZADA POR EL USUARIO
+            }
+        ];
 
         const gallery = [
             // **** AÑADIDA IMAGEN DE SANTA A LA GALERÍA ****
@@ -620,11 +662,16 @@
             return packages.map(pkg => {
                 if (packageIds.length === 0 || packageIds.includes(pkg.id)) {
                     const originalPrice = pkg.originalPrice || pkg.price; // Conservar precio original si ya tiene uno
-                    return { ...pkg, originalPrice: originalPrice, price: parseFloat((originalPrice * (1 - discountRate)).toFixed(2)), discountApplied: true, discountMessage: `¡${Math.round(discountRate * 100)}% OFF!` };
+                    // SI EL PAQUETE ESTÁ EN LA LISTA DE IDS, APLICA EL DESCUENTO
+                    if (packageIds.includes(pkg.id)) {
+                        return { ...pkg, originalPrice: originalPrice, price: parseFloat((originalPrice * (1 - discountRate)).toFixed(2)), discountApplied: true, discountMessage: `¡${Math.round(discountRate * 100)}% OFF!` };
+                    }
+                    // SI LA LISTA DE IDS ESTÁ VACÍA (packageIds.length === 0), NO APLICA NINGÚN DESCUENTO
+                    // Y DEVUELVE EL PAQUETE A SU PRECIO ORIGINAL
                 }
-                // Devolver el paquete sin cambios si no está en la lista de IDs
-                // y asegurarse de que no tenga un descuento aplicado si no debería
-                return { ...pkg, originalPrice: pkg.price, discountApplied: false, discountMessage: undefined };
+                // Devuelve el paquete sin cambios si no está en la lista de IDs
+                // o si la lista está vacía
+                return { ...pkg, originalPrice: pkg.price, price: pkg.price, discountApplied: false, discountMessage: undefined };
             });
         };
         
@@ -654,14 +701,42 @@
         // **** FIN LÓGICA DE DESCUENTO ****
 
 
-        const bubblePackagesWithDiscount = applyPromotions(bubblePackages, 0.10, []);
-        const clownPackagesWithDiscount = applyPromotions(clownPackages, 0.10, ['clown_diverty']);
+        // **** (CAMBIO 2) ****
+        const bubblePackagesWithDiscount = bubblePackages; // Promoción eliminada según solicitud
         
-        // **** AÑADIR SANTA A LOS SERVICIOS GLOBALES ****
-        const allServices = [...services, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount, ...santaPackagesWithDiscount];
+        // ================================================================
+        // |        INICIO DE MODIFICACIÓN: PROMOCIÓN DE PAYASOS           |
+        // ================================================================
+        // MODIFICADO: Promoción de payasos eliminada. 
+        // El array vacío [] asegura que 'applyPromotions' no aplique descuentos a ningún paquete.
+        const clownPackagesWithDiscount = applyPromotions(clownPackages, 0.10, []);
+        // ================================================================
+        // |         FIN DE MODIFICACIÓN: PROMOCIÓN DE PAYASOS             |
+        // ================================================================
+        
+        // INICIO: NUEVA LÓGICA DE PAQUETES
+        const animatorPackagesWithDiscount = animatorPackages; // Sin descuento por ahora
+        
+        // **** AÑADIR SANTA Y ANIMADORES A LOS SERVICIOS GLOBALES ****
+        const allServices = [...services, ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount, ...santaPackagesWithDiscount, ...animatorPackagesWithDiscount];
+        // FIN: NUEVA LÓGICA DE PAQUETES
         
         const characterItems = services.find(s => s.type === 'character-group')?.characters || [];
-        const allPurchasableItems = [...services.filter(s => s.type !== 'character-group'), ...clownPackages, ...bubblePackages, ...santaPackages, ...characterItems];
+        
+        // ================================================================
+        // |                     INICIO DE LA CORRECCIÓN                  |
+        // ================================================================
+        // Se asegura que la lista de items "comprables" (allPurchasableItems)
+        // contenga las versiones con descuento (ej. santaPackagesWithDiscount)
+        // en lugar de las versiones originales (ej. santaPackages).
+        
+        // INICIO: NUEVA LÓGICA DE PAQUETES
+        const allPurchasableItems = [...services.filter(s => s.type !== 'character-group'), ...clownPackagesWithDiscount, ...bubblePackagesWithDiscount, ...santaPackagesWithDiscount, ...animatorPackagesWithDiscount, ...characterItems];
+        // FIN: NUEVA LÓGICA DE PAQUETES
+        
+        // ================================================================
+        // |                      FIN DE LA CORRECCIÓN                    |
+        // ================================================================
 
 
         const $ = (selector) => document.querySelector(selector);
@@ -959,34 +1034,40 @@
                 app.activeSection = sectionId;
                 $$('.nav-link, .mobile-nav-link, .mobile-nav-link-bottom').forEach(link => link.classList.remove('active'));
                 
+                // INICIO: CAMBIO NAVMAP
                 // **** MAPA DE NAVEGACIÓN ACTUALIZADO ****
                 const navMap = { 
                     home: ['#navHome', '#mobileHome'], 
-                    santa: ['#navSanta', '#mobileSanta'], // <-- NUEVO
+                    santa: ['#navSanta', '#mobileSanta'], 
                     services: ['#navServices', '#mobileServices'], 
                     clowns: ['#navClowns', '#mobileClowns'], 
+                    animators: ['#navAnimators', '#mobileAnimators'], // <-- NUEVO
                     bubbles: ['#navBubbles', '#mobileBubbles'], 
                     gallery: ['#navGallery', '#mobileGallery'], 
                     blog: ['#navBlog', '#mobileBlog'], 
                     reviews: ['#navReviews', '#mobileReviews'], 
                     booking: ['#navBooking', '#mobileBooking'] 
                 };
+                // FIN: CAMBIO NAVMAP
                 navMap[sectionId]?.forEach(selector => $(selector)?.classList.add('active'));
                 $$(`.mobile-nav-link-bottom[href="#${sectionId}"]`).forEach(link => link.classList.add('active'));
                 
+                // INICIO: CAMBIO SECTIONS MAP
                 // **** SECCIONES DE RENDERIZADO ACTUALIZADAS ****
                 const sections = { 
                     home: renderHome, 
-                    santa: renderSanta, // <-- NUEVO
+                    santa: renderSanta, 
                     services: renderServices, 
                     ideas: renderIdeaGenerator, // 'ideas' ya no está en el nav principal, pero se mantiene la lógica
                     clowns: renderClowns, 
+                    animators: renderAnimators, // <-- NUEVO
                     bubbles: renderBubbles, 
                     gallery: renderGallery, 
                     blog: renderBlog, 
                     reviews: renderReviews, 
                     booking: renderBooking 
                 };
+                // FIN: CAMBIO SECTIONS MAP
                 
                 if (sectionId !== 'home' && sections[sectionId]) {
                     sections[sectionId]();
@@ -1025,10 +1106,11 @@
                         <div class="hero-content">
                             <h1 class="text-3xl sm:text-4xl lg:text-6xl font-bold mb-6 font-nunito">🎅 ¡La Magia de Santa en Panamá! 🎄</h1>
                             <p class="text-lg sm:text-xl lg:text-2xl mb-10 opacity-90">Llevamos la ilusión de la Navidad a tu hogar o evento en Panamá Centro, Este, Arraiján, La Chorrera, Ancón, Pacora y Panamá Norte.</p>
-                            <!-- **** BOTONES DE INICIO ORGANIZADOS **** -->
-                            <div class="flex flex-col sm:flex-row justify-center gap-4 sm:gap-6">
-                                <a href="#santa" class="btn-premium btn-primary nav-action text-base py-3 px-6"><i data-lucide="santa"></i>Ver Paquetes de Santa</a>
-                                <a href="#clowns" class="btn-premium btn-warning nav-action text-base py-3 px-6"><i data-lucide="sleigh"></i>Payasos</a>
+                            <!-- **** BOTONES DE INICIO ORGANIZADOS (4 BOTONES) **** -->
+                            <div class="grid grid-cols-2 sm:flex sm:flex-row justify-center gap-4 sm:gap-6">
+                                <a href="#santa" class="btn-premium btn-primary nav-action text-base py-3 px-6"><i data-lucide="bell"></i>Santa</a>
+                                <a href="#clowns" class="btn-premium btn-warning nav-action text-base py-3 px-6"><i data-lucide="smile"></i>Payasos</a>
+                                <a href="#animators" class="btn-premium btn-tertiary nav-action text-base py-3 px-6"><i data-lucide="megaphone"></i>Animadores</a>
                                 <a href="#bubbles" class="btn-premium btn-secondary nav-action text-base py-3 px-6"><i data-lucide="snowflake"></i>Burbujas</a>
                             </div>
                         </div>
@@ -1081,7 +1163,8 @@
                             <h2 class="text-3xl lg:text-4xl font-bold mb-4 font-nunito">🗺️ Zonas que Cubrimos en Panamá</h2>
                             <p class="text-lg mb-6 opacity-90">Llevamos la diversión a toda el área metropolitana de Panamá</p>
                             <div class="coverage-grid">
-                                <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Panamá Centro</h3><p class="text-sm opacity-90">Transporte GRATIS</p><p class="text-xs mt-1">Juan Díaz, San Miguelito, El Cangrejo, San Francisco</p></div>
+                                <!-- MODIFICADO: Costo de Panamá Centro -->
+                                <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Panamá Centro</h3><p class="text-sm opacity-90">Transporte +$5</p><p class="text-xs mt-1">Juan Díaz, San Miguelito, El Cangrejo, San Francisco</p></div>
                                 <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Arraiján</h3><p class="text-sm opacity-90">Transporte +$15</p><p class="text-xs mt-1">Arraiján Centro</p></div>
                                 <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 La Chorrera</h3><p class="text-sm opacity-90">Transporte +$15</p><p class="text-xs mt-1">La Chorrera Centro</p></div>
                                 <div class="coverage-item"><h3 class="font-bold text-lg mb-2">📍 Panamá Norte</h3><p class="text-sm opacity-90">Transporte +$10</p><p class="text-xs mt-1">La Cabima, Villa Grecia</p></div>
@@ -1161,13 +1244,18 @@
             lucide.createIcons();
         }
 
+        // INICIO: CAMBIO FUNCIONES RENDER
         // Iconos navideños para las funciones de renderizado
         const renderServices = () => renderSection(services, 'Nuestros Servicios', 'gift');
-        const renderClowns = () => renderSection(clownPackagesWithDiscount, 'Paquetes de Payasos', 'sleigh');
+        const renderClowns = () => renderSection(clownPackagesWithDiscount, 'Paquetes de Payasos', 'smile'); // Icono actualizado
         const renderBubbles = () => renderSection(bubblePackagesWithDiscount, 'Paquetes de Burbujas', 'snowflake');
         const renderBlog = () => renderSection(blogPosts, 'Blog de Fiestas Infantiles', 'book-open');
         // **** NUEVA FUNCIÓN DE RENDERIZADO PARA SANTA ****
-        const renderSanta = () => renderSection(santaPackagesWithDiscount, 'Paquetes de Santa Claus', 'santa');
+        const renderSanta = () => renderSection(santaPackagesWithDiscount, 'Paquetes de Santa Claus', 'bell'); // Icono actualizado
+        // **** NUEVA FUNCIÓN DE RENDERIZADO PARA ANIMADORES ****
+        // **** CAMBIO DE ICONO: mic -> megaphone ****
+        const renderAnimators = () => renderSection(animatorPackagesWithDiscount, 'Paquetes de Animadores', 'megaphone');
+        // FIN: CAMBIO FUNCIONES RENDER
 
 
         function renderGallery() {
@@ -1304,8 +1392,8 @@
             const finalTotal = subtotal + transportCost;
             const cartSummary = app.cart.length === 0 ? 
                 `<div class="text-center py-6"><div class="text-6xl mb-6">🛒</div><h3 class="text-2xl font-bold">Tu carrito está vacío</h3><p class="mb-8 text-gray-600">Añade uno de nuestros paquetes más populares para empezar:</p><div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#santa" class="btn-premium btn-primary nav-action"><i data-lucide="santa"></i>Paquetes de Santa</a>
-                <a href="#clowns" class="btn-premium btn-warning nav-action"><i data-lucide="sleigh"></i>Paquetes de Payasos</a>
+                <a href="#santa" class="btn-premium btn-primary nav-action"><i data-lucide="bell"></i>Paquetes de Santa</a>
+                <a href="#clowns" class="btn-premium btn-warning nav-action"><i data-lucide="smile"></i>Paquetes de Payasos</a>
                 <a href="#bubbles" class="btn-premium btn-secondary nav-action"><i data-lucide="snowflake"></i>Shows de Burbujas</a>
                 </div></div>` 
                 : app.cart.map(item => `<div class="flex justify-between bg-gradient-to-r from-red-50 to-green-50 p-4 rounded-xl shadow-sm mb-3"><span class="font-semibold">${item.name} (x${item.quantity})</span><span class="font-bold text-green-600">$${(item.price * item.quantity).toFixed(2)}</span></div>`).join('');
@@ -1767,13 +1855,13 @@
             animate();
         }
 
-        // --- NUEVO: Efecto de Nieve ---
+        // --- NUEVO: Efecto de Nieve (CAMBIO 3) ---
         function initSnowfall() {
             const canvas = $('#snowfall-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             let flakes = [];
-            const flakeCount = 150; // Cantidad de copos
+            const flakeCount = 75; // Cantidad de copos (reducida)
 
             function resizeCanvasSnow() {
                 canvas.width = window.innerWidth;
@@ -1786,8 +1874,8 @@
                 constructor() {
                     this.x = Math.random() * canvas.width;
                     this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 3 + 1; // Tamaño del copo
-                    this.speed = Math.random() * 1 + 0.5; // Velocidad de caída
+                    this.size = Math.random() * 2 + 1; // Tamaño del copo (reducido)
+                    this.speed = Math.random() * 0.5 + 0.3; // Velocidad de caída (reducida)
                     this.vx = Math.random() * 1 - 0.5; // Movimiento lateral
                 }
                 update() {
