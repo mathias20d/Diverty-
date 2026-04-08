@@ -114,7 +114,6 @@
         .floating-btn{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-medium);cursor:none;transition:all .3s cubic-bezier(.25,.46,.45,.94);position:relative;overflow:hidden}
         .floating-btn:hover{transform:scale(1.1);box-shadow:var(--shadow-strong)}
         .whatsapp-btn{background:linear-gradient(45deg,#25d366,#128c7e);animation:pulse-whatsapp 2.5s infinite cubic-bezier(.66,0,0,1)}
-        .chat-btn{background:var(--gradient-secondary)}
         @keyframes pulse-whatsapp{0%{box-shadow:0 0 0 0 rgba(37,211,102,.4)}70%{box-shadow:0 0 0 15px rgba(37,211,102,0)}100%{box-shadow:0 0 0 0 rgba(37,211,102,0)}}
         .btn-premium{font-weight:700;padding:1rem 2rem;border-radius:50px;box-shadow:var(--shadow-soft);transition:all .3s ease;border:none;display:inline-flex;align-items:center;justify-content:center;gap:.75rem;position:relative;overflow:hidden;text-decoration:none;cursor:none;font-size:1rem; letter-spacing: 0.3px;}
         .btn-premium:hover{transform:translateY(-3px);box-shadow:var(--shadow-medium); filter: brightness(1.05);}
@@ -140,9 +139,6 @@
         .gallery-item{position:relative;overflow:hidden;border-radius:20px;cursor:none;transition:all .4s ease;aspect-ratio:1;background:#f3f4f6; box-shadow: var(--shadow-soft);}
         .gallery-item:hover{transform:scale(1.03);box-shadow:var(--shadow-strong);}
         .gallery-item img{width:100%;height:100%;object-fit:cover;transition:all .4s ease}
-        .chat-header{background:var(--gradient-secondary);color:#fff;padding:1rem;position:relative;overflow:hidden;flex-shrink:0}
-        .chat-messages{flex-grow:1;padding:1rem;overflow-y:auto}
-        .chat-input{padding:1rem;border-top:1px solid #e5e7eb;background:#f9fafb;flex-shrink:0}
         #chatModal .modal-content{height:80vh;max-height:700px;width:100%;max-width:500px;display:flex;flex-direction:column}
         .modal-backdrop{position:fixed;inset:0;background:rgba(15, 23, 42,.6);backdrop-filter:blur(5px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;visibility:hidden;transition:all .3s ease}
         .modal-backdrop.show{opacity:1;visibility:visible}
@@ -150,9 +146,7 @@
         .modal-backdrop.show .modal-content{transform:scale(1)}
         .form-input{width:100%;padding:1rem 1.25rem;border:1px solid #cbd5e1;border-radius:12px;font-size:1rem;transition:all .3s ease;background:#fff; color:#334155;}
         .form-input:focus{outline:none;border-color:var(--primary-purple);box-shadow:0 0 0 4px rgba(124, 58, 237, 0.1)}
-        select.form-input { 
-            text-align: left; 
-        }
+        select.form-input { text-align: left; }
         .animate-slide-up{animation:slideUpFadeIn .8s ease-out forwards;opacity:0}
         @keyframes slideUpFadeIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
         .float-animation{animation:float 4s ease-in-out infinite}
@@ -203,7 +197,7 @@
 
     <!-- Banner promocional -->
     <div id="promo-banner" class="bg-gradient-to-r from-purple-700 via-pink-600 to-yellow-600 text-white p-3 font-semibold text-sm sm:text-base relative flex flex-wrap items-center justify-center border-b border-white/20 gap-3 shadow-md">
-        <span id="promo-text" class="text-center tracking-wide">✨ ¡FIESTA TOTAL! 10% OFF en Plan Magic</span>
+        <span id="promo-text" class="text-center tracking-wide">✨ ¡FIESTA TOTAL! 10% OFF en Plan Magic - Válido hasta el 30 de abril</span>
         <div id="countdown-timer" class="bg-black/20 px-3 py-1.5 rounded-lg font-mono text-xs sm:text-sm font-bold flex items-center border border-white/10">
              <i data-lucide="clock" class="w-4 h-4 mr-1 animate-pulse"></i> Calculando...
         </div>
@@ -282,21 +276,30 @@
         <!-- Home section is pre-rendered -->
     </main>
 
-    <!-- Footer Profesional -->
-    <footer class="bg-slate-900 text-slate-300 relative pt-20 pb-8 border-t border-slate-800">
+    <!-- Footer Profesional y Mágico -->
+    <footer class="bg-gradient-to-r from-cyan-600 via-purple-600 to-pink-600 text-white relative pt-24 pb-10 border-t border-slate-200 overflow-hidden">
         <div class="wavy-divider top">
             <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path>
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill" style="fill: var(--bg-light);"></path>
             </svg>
         </div>
-        <div class="container mx-auto px-6 text-center">
-            <p class="font-extrabold text-2xl mb-4 font-nunito tracking-wide text-white">Diverty<span class="text-yellow-500">Eventos</span></p>
-            <div class="flex justify-center gap-4 mb-6">
-                 <a href="#" class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 hover:text-white transition-all border border-slate-700"><i data-lucide="instagram" class="w-4 h-4"></i></a>
-                 <a href="#" class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 hover:text-white transition-all border border-slate-700"><i data-lucide="facebook" class="w-4 h-4"></i></a>
-                 <a href="#" class="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-slate-700 hover:text-white transition-all border border-slate-700"><i data-lucide="mail" class="w-4 h-4"></i></a>
+        <div class="container mx-auto px-6 text-center relative z-10">
+            <p class="font-extrabold text-4xl mb-6 font-nunito tracking-wide text-white drop-shadow-md">Diverty<span class="text-yellow-300">Eventos</span></p>
+            
+            <!-- Contacto & RRSS -->
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 mb-8 text-sm sm:text-base font-semibold">
+                <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-5 py-2.5 rounded-full transition-all backdrop-blur-sm border border-white/20 hover:scale-105 shadow-sm">
+                    <i data-lucide="instagram" class="w-5 h-5 text-pink-300"></i> @diverty_eventos_pty
+                </a>
+                <a href="mailto:corporativo@divertyeventos.online" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-5 py-2.5 rounded-full transition-all backdrop-blur-sm border border-white/20 hover:scale-105 shadow-sm">
+                    <i data-lucide="mail" class="w-5 h-5 text-cyan-300"></i> corporativo@divertyeventos.online
+                </a>
+                <a href="https://wa.me/50766677965" target="_blank" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-5 py-2.5 rounded-full transition-all backdrop-blur-sm border border-white/20 hover:scale-105 shadow-sm">
+                    <i data-lucide="phone" class="w-5 h-5 text-green-300"></i> +507 6667-7965
+                </a>
             </div>
-            <p class="text-sm font-medium text-slate-500">&copy; 2026 Diverty Eventos. Todos los derechos reservados. ¡Un verano a todo color!</p>
+            
+            <p class="text-sm font-medium text-white/90 drop-shadow-sm mt-10 border-t border-white/20 pt-6 max-w-2xl mx-auto">&copy; 2026 Diverty Eventos. Todos los derechos reservados. ¡Haciendo de tu evento un recuerdo mágico!</p>
         </div>
     </footer>
     
@@ -319,9 +322,8 @@
         </a>
     </nav>
 
-    <!-- Botones flotantes -->
+    <!-- Botones flotantes (Se eliminó el chat) -->
     <div class="floating-buttons">
-        <button id="chatToggle" class="floating-btn chat-btn" aria-label="Abrir chat de ayuda"><i data-lucide="message-circle" class="text-white w-6 h-6"></i></button>
         <a href="https://wa.me/50766677965?text=¡Hola! Quiero saber más sobre el Plan Magic con conejo real 🐇." class="floating-btn whatsapp-btn" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp"><i data-lucide="phone" class="text-white w-7 h-7"></i></a>
     </div>
     
@@ -393,40 +395,6 @@
             <div class="flex gap-3">
                 <button id="closeCalculator" class="btn-premium bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200 flex-1" aria-label="Cerrar calculadora">Cerrar</button>
                 <button id="addCalculatedToCart" class="btn-premium btn-primary flex-1 text-white shadow-md"><i data-lucide="check"></i>Aceptar Presupuesto</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Chat -->
-    <div id="chatModal" class="modal-backdrop">
-        <div class="modal-content overflow-hidden">
-            <div class="chat-header bg-gradient-to-r from-purple-700 to-indigo-700 p-4">
-                <div class="flex justify-between items-center relative z-10">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm"><i data-lucide="bot" class="w-5 h-5 text-white"></i></div>
-                        <div>
-                            <h3 class="font-bold text-base text-white">Asesor Diverty</h3>
-                            <p class="text-[10px] text-purple-100 font-medium uppercase tracking-wider">En línea</p>
-                        </div>
-                    </div>
-                    <button id="closeChat" class="text-white/80 hover:text-white p-1 transition-colors" aria-label="Cerrar chat"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-            </div>
-            <div class="chat-messages bg-slate-50" id="chatMessages">
-                <div class="mb-4 p-3.5 bg-white border border-slate-100 shadow-sm rounded-2xl rounded-tl-none mr-8"> 
-                    <div class="flex items-center gap-2 mb-1"><span class="text-[11px] font-bold text-purple-600 uppercase tracking-wide">Asesor Diverty</span></div>
-                    <p class="text-sm text-slate-600">¡Hola! 👋 Estoy aquí para ayudarte a organizar la mejor fiesta. ¿Tienes alguna duda sobre nuestros paquetes?</p>
-                </div>
-            </div>
-            <div class="chat-input bg-white p-4">
-                <div class="flex gap-2 mb-3">
-                    <input type="text" id="chatInput" placeholder="Escribe tu consulta..." class="flex-1 p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-purple-500 transition-colors">
-                    <button id="sendChat" class="btn-premium btn-primary !p-2.5 !rounded-xl shadow-sm"><i data-lucide="send" class="w-4 h-4"></i></button>
-                </div>
-                <div id="quick-replies" class="flex flex-wrap gap-2">
-                    <button class="quick-question bg-slate-100 text-slate-600 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-200 transition-colors" data-question="¿Qué incluye el Plan Magic?">📦 Plan Magic</button>
-                    <button class="quick-question bg-slate-100 text-slate-600 border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-slate-200 transition-colors" data-question="¿Cuánto cuesta el show de burbujas?">💧 Burbujas</button>
-                </div>
             </div>
         </div>
     </div>
@@ -566,8 +534,7 @@
         const app = { 
             activeSection: 'home', 
             cart: [], 
-            location: 'panama-centro', 
-            chatOpen: false
+            location: 'panama-centro'
         };
         let bookingFormState = {};
 
@@ -745,102 +712,6 @@
             }
         }
 
-        function executeBotAction(action) {
-            if (!action || !action.type) return;
-            switch (action.type) {
-                case 'addToCart':
-                    const itemToAdd = allServices.find(s => s.id === action.itemId);
-                    if (itemToAdd) {
-                        const quantity = action.quantity || 1;
-                        if (itemToAdd.isHourly) {
-                            const hourlyItem = { ...itemToAdd, id: `${itemToAdd.id}_${quantity}h`, name: `${itemToAdd.name} (${quantity} horas)`, price: itemToAdd.price * quantity, quantity: 1 };
-                            addToCart(hourlyItem);
-                        } else if (itemToAdd.isPerChild) {
-                            const minQty = itemToAdd.minChildren || 10;
-                            if (quantity < minQty) { showToast(`El taller requiere un mínimo de ${minQty} niños.`, 'error'); return; }
-                            const workshopItem = { ...itemToAdd, id: `${itemToAdd.id}_${quantity}kids`, name: `${itemToAdd.name} (${quantity} niños)`, price: itemToAdd.price * quantity, quantity: 1 };
-                            addToCart(workshopItem);
-                        } else {
-                            addToCart(itemToAdd, quantity);
-                        }
-                        showModal('cartModal');
-                    }
-                    break;
-                case 'navigateTo':
-                    setActiveSection(action.sectionId);
-                    break;
-            }
-        }
-
-        function initChat() {
-            const chatInput = $('#chatInput');
-            const sendBtn = $('#sendChat');
-            const messagesContainer = $('#chatMessages');
-            let chatHistory = [];
-            function addMessage(text, role) {
-                const messageDiv = document.createElement('div');
-                const isUser = role === 'user';
-                messageDiv.className = isUser ? 'mb-4 p-3.5 rounded-2xl bg-slate-800 text-white ml-8 shadow-sm' : 'mb-4 p-3.5 rounded-2xl bg-white text-slate-700 mr-8 shadow-sm border border-slate-100';
-                const header = isUser ? `<div class="flex items-center gap-2 mb-1 justify-end"><span class="text-[11px] font-bold text-white/80 uppercase">Tú</span></div>` : `<div class="flex items-center gap-2 mb-1"><span class="text-[11px] font-bold text-purple-600 uppercase">Asesor Diverty</span></div>`;
-                messageDiv.innerHTML = `${header}<p class="text-sm">${text}</p>`;
-                messagesContainer.appendChild(messageDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                lucide.createIcons();
-            }
-            async function sendMessage() {
-                const messageText = chatInput.value.trim();
-                if (!messageText) return;
-                addMessage(messageText, 'user');
-                if (chatHistory.length === 0) {
-                    const systemPrompt = `Eres el Asesor Virtual de "Diverty Eventos", empresa de fiestas infantiles en Panamá. Conoces los servicios: ${JSON.stringify(allServices)}. Conoces las ubicaciones: ${JSON.stringify(locations)}. Sé profesional pero amigable, usa emojis discretamente y responde en formato JSON.`;
-                    chatHistory.push({ role: 'user', parts: [{ text: systemPrompt }] });
-                    chatHistory.push({ role: 'model', parts: [{ text: "¡Entendido! Estoy listo para ayudar en formato JSON de forma profesional." }] });
-                }
-                chatHistory.push({ role: 'user', parts: [{ text: messageText }] });
-                chatInput.value = '';
-                const loadingMsg = document.createElement('div');
-                loadingMsg.id = 'loading-message';
-                loadingMsg.className = 'mb-4 p-3.5 rounded-2xl bg-white text-slate-700 mr-8 shadow-sm border border-slate-100';
-                loadingMsg.innerHTML = `<div class="flex items-center gap-2 mb-1"><span class="text-[11px] font-bold text-purple-600 uppercase">Asesor Diverty</span></div><div class="flex items-center gap-1.5 mt-2"><div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"></div><div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div><div class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div></div>`;
-                messagesContainer.appendChild(loadingMsg);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                lucide.createIcons();
-                const chatbotGenerationConfig = {
-                    responseMimeType: "application/json",
-                    responseSchema: {
-                        type: "OBJECT",
-                        properties: {
-                            "responseText": { "type": "STRING", "description": "Tu respuesta corta y profesional." },
-                            "action": {
-                                "type": "OBJECT", "description": "La acción a ejecutar.",
-                                "properties": {
-                                    "type": { "type": "STRING", "enum": ["addToCart", "navigateTo"] },
-                                    "itemId": { "type": "STRING" },
-                                    "quantity": { "type": "NUMBER" },
-                                    "sectionId": { "type": "STRING" }
-                                }
-                            }
-                        }
-                    }
-                };
-                const response = await callGeminiAPI(chatHistory, chatbotGenerationConfig);
-                loadingMsg.remove();
-                if (response && response.responseText && !response.error) {
-                    addMessage(response.responseText, 'model');
-                    chatHistory.push({ role: 'model', parts: [{ text: JSON.stringify(response) }] });
-                    if (response.action) executeBotAction(response.action);
-                } else {
-                    addMessage(response.responseText || "Lo siento, tuve un error de conexión temporal. Intenta de nuevo.", 'model');
-                }
-                if (chatHistory.length > 8) chatHistory = chatHistory.slice(-8);
-            }
-            sendBtn.onclick = sendMessage;
-            chatInput.onkeypress = (e) => { if (e.key === 'Enter') sendMessage(); };
-            $$('.quick-question').forEach(btn => {
-                btn.onclick = () => { chatInput.value = btn.dataset.question; sendMessage(); };
-            });
-        }
-
         function setActiveSection(sectionId) {
             if (!sectionId) sectionId = 'home';
 
@@ -925,10 +796,11 @@
                         <div class="hero-content">
                             <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 font-nunito leading-tight drop-shadow-md">Celebra a lo Grande ✨</h1>
                             <p class="text-lg sm:text-xl mb-10 opacity-95 font-medium drop-shadow-sm font-poppins">Eventos profesionales, animación infantil y shows espectaculares en todo Panamá.</p>
-                            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                                <a href="#clowns" class="btn-premium btn-primary nav-action text-base py-3 px-8 shadow-md"><i data-lucide="smile"></i>Planes Fiestas</a>
-                                <!-- ACTUALIZADO EL BOTÓN DE BURBUJAS PARA QUE SE VEA MUCHO MEJOR -->
-                                <a href="#bubbles" class="btn-premium btn-secondary nav-action text-base py-3 px-8 shadow-lg"><i data-lucide="droplet"></i>Shows Burbujas</a>
+                            
+                            <div class="flex flex-row flex-wrap justify-center gap-3 sm:gap-4 mt-8">
+                                <a href="#clowns" class="btn-premium btn-primary nav-action text-sm sm:text-base py-3 px-6 shadow-md"><i data-lucide="smile"></i>Planes</a>
+                                <a href="#bubbles" class="btn-premium btn-secondary nav-action text-sm sm:text-base py-3 px-6 shadow-lg"><i data-lucide="droplet"></i>Burbujas</a>
+                                <a href="#services" class="btn-premium btn-success nav-action text-sm sm:text-base py-3 px-6 shadow-lg"><i data-lucide="gift"></i>Servicios</a>
                             </div>
                         </div>
                         <div class="wavy-divider">
@@ -1251,7 +1123,6 @@
                 if (response.ok) {
                     triggerBookingConfetti();
                     showModal('infoModal');
-                    // NUEVO MENSAJE DE ÉXITO PROFESIONAL Y CÁLIDO
                     $('#modalMessage').textContent = '¡Gracias por elegir Diverty Eventos! Hemos recibido su solicitud de reserva. Nuestro equipo de coordinación revisará los detalles y se contactará a la brevedad vía WhatsApp o correo electrónico para confirmar la fecha. ¡Estamos listos para la diversión!';
                     app.cart = [];
                     bookingFormState = {};
@@ -1362,12 +1233,19 @@
         }
 
         function initCountdown() {
-            const now = new Date();
-            const countDownDate = new Date(now.getTime() + (3 * 24 * 60 * 60 * 1000)).getTime();
+            // Target date: April 30, 2026
+            const countDownDate = new Date("April 30, 2026 23:59:59").getTime();
 
             const timerInterval = setInterval(function() {
                 const now = new Date().getTime();
                 const distance = countDownDate - now;
+
+                if (distance < 0) {
+                    clearInterval(timerInterval);
+                    const timerElement = document.getElementById("countdown-timer");
+                    if(timerElement) timerElement.innerHTML = "¡Promoción Finalizada!";
+                    return;
+                }
 
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
                 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -1382,11 +1260,6 @@
 
                 if (timerElement) {
                     timerElement.innerHTML = `<i data-lucide="clock" class="w-3.5 h-3.5 mr-1.5 opacity-80"></i> ${days}d ${fH}h ${fM}m ${fS}s`;
-                }
-
-                if (distance < 0) {
-                    clearInterval(timerInterval);
-                    if(timerElement) timerElement.innerHTML = "¡Última oportunidad!";
                 }
             }, 1000);
         }
@@ -1409,8 +1282,6 @@
             $('#closeModal').onclick = () => hideModal('infoModal');
             $('#viewCart').onclick = () => showModal('cartModal');
             $('#closeCart').onclick = () => hideModal('cartModal');
-            $('#chatToggle').onclick = () => showModal('chatModal');
-            $('#closeChat').onclick = () => hideModal('chatModal');
             window.addEventListener('scroll', () => {
                 const header = $('#mainHeader');
                 const scrollPosition = window.scrollY;
@@ -1672,7 +1543,6 @@
             window.addEventListener('mousemove', (e) => {
                 mouse.x = e.clientX;
                 mouse.y = e.clientY;
-                // Reducida la cantidad de partículas para un efecto más sutil
                 particles.push(new Particle(mouse.x, mouse.y));
             });
             
@@ -1682,7 +1552,6 @@
         }
 
         setupEventListeners();
-        initChat();
         populateLocationSelects();
         initializeSchemas();
         renderHome(); 
@@ -1695,6 +1564,3 @@
     </script>
 </body>
 </html>
-
-
-```
