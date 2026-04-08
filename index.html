@@ -188,6 +188,11 @@
         .review-footer{padding:1rem 1.5rem;border-top:1px solid #f8fafc;display:flex;justify-content:space-between;align-items:center}
         .review-rating{display:flex;color:var(--primary-yellow)} 
         .verified-badge{font-size:.75rem;font-weight:600;color:#059669;background-color:#d1fae5;padding:.25rem .75rem;border-radius:50px;display:inline-flex;align-items:center}
+        
+        /* Wizard Styles */
+        .wizard-content { display: none; animation: slideUpFadeIn 0.4s ease-out; }
+        .wizard-content.active { display: block; }
+        .wizard-step { transition: all 0.3s ease; }
     </style>
 </head>
 <body class="min-h-screen text-slate-800 flex flex-col">
@@ -425,28 +430,6 @@
         <div class="text-center"><div class="loading-spinner"></div><p class="mt-4 text-slate-700 font-bold text-sm tracking-wide">Procesando...</p></div>
     </div>
 
-    <!-- Formulario Oculto Netlify -->
-    <div hidden>
-        <form name="reservaFiesta" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-            <input type="hidden" name="form-name" value="reservaFiesta" />
-            <input name="bot-field" />
-            <input type="text" name="name" />
-            <input type="email" name="email" />
-            <input type="tel" name="phone" />
-            <input type="date" name="date" />
-            <input type="time" name="time" />
-            <input type="number" name="guests" />
-            <input type="text" name="eventType" />
-            <input type="text" name="location" />
-            <textarea name="address"></textarea>
-            <textarea name="comments"></textarea>
-            <textarea name="serviciosSeleccionados"></textarea>
-            <input type="text" name="subtotalReserva" />
-            <input type="text" name="costoTransporte" />
-            <input type="text" name="totalFinal" />
-        </form>
-    </div>
-
     <!-- =========== SCRIPTS =========== -->
     <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -534,7 +517,8 @@
         const app = { 
             activeSection: 'home', 
             cart: [], 
-            location: 'panama-centro'
+            location: 'panama-centro',
+            wizardStep: 1 // Track wizard step globally
         };
         let bookingFormState = {};
 
@@ -1019,6 +1003,7 @@
                 bookingFormState = Object.fromEntries(formData.entries());
             }
         }
+        
         function restoreBookingFormState() {
             const form = $('#bookingForm');
             if (form && Object.keys(bookingFormState).length > 0) {
@@ -1033,12 +1018,14 @@
             const subtotal = app.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
             const transportCost = calculateTransportCost(app.location);
             const finalTotal = subtotal + transportCost;
+            
             const cartSummary = app.cart.length === 0 ? 
                 `<div class="text-center py-10"><div class="w-16 h-16 mx-auto bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center mb-4 text-slate-400"><i data-lucide="shopping-cart" class="w-8 h-8"></i></div><h3 class="text-xl font-bold text-slate-700 mb-2">Carrito Vacío</h3><p class="mb-6 text-slate-500 font-medium text-sm">¡Vamos a llenarlo de diversión!</p><div class="flex flex-col sm:flex-row justify-center gap-3">
                 <a href="#clowns" class="btn-premium btn-tertiary nav-action text-sm"><i data-lucide="smile" class="w-4 h-4"></i>Ver Planes</a>
                 <a href="#services" class="btn-premium bg-slate-100 border border-slate-200 text-slate-600 nav-action text-sm"><i data-lucide="gift" class="w-4 h-4"></i>Otros Servicios</a>
                 </div></div>` 
                 : app.cart.map(item => `<div class="flex justify-between bg-white p-3.5 rounded-xl shadow-sm mb-2.5 border border-slate-100"><span class="font-semibold text-slate-700 text-sm">${item.name} (x${item.quantity})</span><span class="font-extrabold text-purple-700 text-sm">$${(item.price * item.quantity).toFixed(2)}</span></div>`).join('');
+            
             const locationOptionsHtml = locations.map(opt => `<option value="${opt.value}" ${app.location === opt.value ? 'selected' : ''}>${opt.label}</option>`).join('');
             
             $('#mainContent').innerHTML = `<div class="container mx-auto px-4 max-w-5xl"><section class="my-10">
@@ -1055,34 +1042,169 @@
                     
                     <div class="lg:col-span-7 order-1 lg:order-2">
                         ${app.cart.length > 0 ? `<form id="bookingForm" name="reservaFiesta" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200">
-                            <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Detalles del Evento</h3>
+                            
+                            <!-- Wizard Progress Bar -->
+                            <div class="flex items-center justify-between mb-8 relative">
+                                <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 z-0 rounded-full"></div>
+                                <div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-purple-500 z-0 transition-all duration-300 rounded-full" style="width: 0%;"></div>
+
+                                <div class="wizard-step flex flex-col items-center relative z-10" data-step="1">
+                                    <div class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold border-4 border-white shadow-sm wizard-icon transition-colors"><i data-lucide="user" class="w-5 h-5"></i></div>
+                                    <span class="text-xs font-bold text-purple-700 mt-2 wizard-text transition-colors">Contacto</span>
+                                </div>
+                                <div class="wizard-step flex flex-col items-center relative z-10 opacity-50" data-step="2">
+                                    <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold border-4 border-white shadow-sm wizard-icon transition-colors"><i data-lucide="calendar" class="w-5 h-5"></i></div>
+                                    <span class="text-xs font-bold text-slate-500 mt-2 wizard-text transition-colors">Evento</span>
+                                </div>
+                                <div class="wizard-step flex flex-col items-center relative z-10 opacity-50" data-step="3">
+                                    <div class="w-10 h-10 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center font-bold border-4 border-white shadow-sm wizard-icon transition-colors"><i data-lucide="map-pin" class="w-5 h-5"></i></div>
+                                    <span class="text-xs font-bold text-slate-500 mt-2 wizard-text transition-colors">Lugar</span>
+                                </div>
+                            </div>
+
                             <div class="space-y-5">
                                 <input type="hidden" name="form-name" value="reservaFiesta" />
                                 <p class="hidden"><label>No llenar esto: <input name="bot-field" /></label></p>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Nombre *</label><input type="text" name="name" required class="form-input"></div>
-                                    <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Email *</label><input type="email" name="email" required class="form-input"></div>
-                                    <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Teléfono *</label><input type="tel" name="phone" required class="form-input"></div>
-                                    <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Niños Estimados</label><input type="number" name="guests" class="form-input" min="1" placeholder="Ej: 25"></div>
-                                    <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Fecha *</label><input type="date" name="date" required class="form-input" min="${new Date().toISOString().split('T')[0]}"></div>
-                                    <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Hora *</label><input type="time" name="time" required class="form-input"></div>
+                                
+                                <!-- WIZARD STEP 1: Contacto -->
+                                <div class="wizard-content active" id="step-1">
+                                    <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Tus Datos</h3>
+                                    <div class="space-y-5">
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Nombre *</label><input type="text" name="name" required class="form-input" placeholder="Tu nombre completo"></div>
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Email *</label><input type="email" name="email" required class="form-input" placeholder="correo@ejemplo.com"></div>
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Teléfono *</label><input type="tel" name="phone" required class="form-input" placeholder="+507 6000-0000"></div>
+                                    </div>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="form-input"><option value="">Seleccione...</option><option value="cumpleanos">🎉 Cumpleaños</option><option value="bautizo">🕊️ Bautizo</option><option value="comunion">✝️ Comunión</option><option value="navidad">🎅 Navideña</option><option value="evento_escolar">🎒 Escolar</option><option value="otro">⭐ Otro</option></select></div>
-                                    <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Ubicación *</label><select name="location" required class="form-input">${locationOptionsHtml}</select></div>
+
+                                <!-- WIZARD STEP 2: Evento -->
+                                <div class="wizard-content" id="step-2">
+                                    <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Detalles de la Fiesta</h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="form-input"><option value="">Seleccione...</option><option value="cumpleanos">🎉 Cumpleaños</option><option value="bautizo">🕊️ Bautizo</option><option value="comunion">✝️ Comunión</option><option value="navidad">🎅 Navideña</option><option value="evento_escolar">🎒 Escolar</option><option value="otro">⭐ Otro</option></select></div>
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Niños Estimados</label><input type="number" name="guests" class="form-input" min="1" placeholder="Ej: 25"></div>
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Fecha *</label><input type="date" name="date" required class="form-input" min="${new Date().toISOString().split('T')[0]}"></div>
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Hora *</label><input type="time" name="time" required class="form-input"></div>
+                                    </div>
                                 </div>
-                                <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Dirección Completa *</label><textarea name="address" required class="form-input" rows="2"></textarea></div>
-                                <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Comentarios Especiales</label><textarea name="comments" class="form-input" rows="2" placeholder="Información adicional útil..."></textarea></div>
-                                <button type="submit" class="w-full btn-premium btn-primary py-3.5 text-base mt-4"><i data-lucide="check-circle" class="w-5 h-5"></i>Confirmar Reserva</button>
+
+                                <!-- WIZARD STEP 3: Ubicación -->
+                                <div class="wizard-content" id="step-3">
+                                    <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">¿Dónde Celebramos?</h3>
+                                    <div class="space-y-5">
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Ubicación (Zona) *</label><select name="location" required class="form-input">${locationOptionsHtml}</select></div>
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Dirección Completa *</label><textarea name="address" required class="form-input" rows="2" placeholder="Barriada, calle, número de casa/apto..."></textarea></div>
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Comentarios Especiales</label><textarea name="comments" class="form-input" rows="2" placeholder="Información adicional útil..."></textarea></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Botones de Navegación del Wizard -->
+                                <div class="flex justify-between pt-6 mt-6 border-t border-slate-100">
+                                    <button type="button" id="btn-prev" class="btn-premium bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 shadow-sm hidden"><i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i>Atrás</button>
+                                    
+                                    <button type="button" id="btn-next" class="btn-premium btn-secondary ml-auto shadow-md">Siguiente<i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i></button>
+                                    
+                                    <button type="submit" id="btn-submit" class="btn-premium btn-primary hidden ml-auto shadow-md"><i data-lucide="check-circle" class="w-5 h-5 mr-1"></i>Confirmar Reserva</button>
+                                </div>
                             </div>
                         </form>` : '<div class="h-full flex items-center justify-center bg-slate-50 rounded-3xl border border-slate-200 border-dashed p-8 text-center text-slate-400">Seleccione paquetes o servicios para habilitar el formulario de reserva.</div>'}
                     </div>
                 </div>
             </section></div>`;
+
             if (app.cart.length > 0) {
                 $('#bookingForm').onsubmit = handleBookingSubmit;
-                $('select[name="location"]').onchange = (e) => { app.location = e.target.value; renderBooking(); };
+                $('select[name="location"]').onchange = (e) => { 
+                    app.location = e.target.value; 
+                    renderBooking(); 
+                };
                 restoreBookingFormState();
+
+                // === LÓGICA DEL FORMULARIO WIZARD ===
+                let currentStep = app.wizardStep; // Restaurar el paso actual si recargó
+                const totalSteps = 3;
+
+                const updateWizardUI = () => {
+                    app.wizardStep = currentStep; // Guardar estado
+                    
+                    // Mostrar/Ocultar contenido
+                    $$('.wizard-content').forEach((el, idx) => {
+                        el.classList.toggle('active', idx + 1 === currentStep);
+                    });
+
+                    // Actualizar barra de progreso
+                    const progressPct = ((currentStep - 1) / (totalSteps - 1)) * 100;
+                    $('#wizard-progress-bar').style.width = `${progressPct}%`;
+
+                    // Actualizar íconos y textos
+                    $$('.wizard-step').forEach((el, idx) => {
+                        const stepNum = idx + 1;
+                        const iconDiv = el.querySelector('.wizard-icon');
+                        const textSpan = el.querySelector('.wizard-text');
+
+                        if (stepNum <= currentStep) {
+                            el.classList.remove('opacity-50');
+                            iconDiv.classList.add('bg-purple-600', 'text-white');
+                            iconDiv.classList.remove('bg-slate-200', 'text-slate-500');
+                            textSpan.classList.add('text-purple-700');
+                            textSpan.classList.remove('text-slate-500');
+                        } else {
+                            el.classList.add('opacity-50');
+                            iconDiv.classList.remove('bg-purple-600', 'text-white');
+                            iconDiv.classList.add('bg-slate-200', 'text-slate-500');
+                            textSpan.classList.remove('text-purple-700');
+                            textSpan.classList.add('text-slate-500');
+                        }
+                    });
+
+                    // Mostrar/Ocultar botones
+                    if(currentStep === 1) {
+                        $('#btn-prev').classList.add('hidden');
+                    } else {
+                        $('#btn-prev').classList.remove('hidden');
+                    }
+
+                    if (currentStep === totalSteps) {
+                        $('#btn-next').classList.add('hidden');
+                        $('#btn-submit').classList.remove('hidden');
+                    } else {
+                        $('#btn-next').classList.remove('hidden');
+                        $('#btn-submit').classList.add('hidden');
+                    }
+                };
+
+                // Inicializar UI al renderizar
+                updateWizardUI();
+
+                // Botón Siguiente
+                $('#btn-next').onclick = () => {
+                    const currentContent = $(`#step-${currentStep}`);
+                    const inputs = currentContent.querySelectorAll('input[required], select[required], textarea[required]');
+                    let isValid = true;
+                    
+                    // Disparar la validación nativa de HTML5
+                    for(let input of inputs) {
+                        if (!input.checkValidity()) {
+                            input.reportValidity();
+                            isValid = false;
+                            break; 
+                        }
+                    }
+
+                    if (isValid) {
+                        currentStep++;
+                        saveBookingFormState(); // Guardar lo tipeado hasta ahora
+                        updateWizardUI();
+                    }
+                };
+
+                // Botón Anterior
+                $('#btn-prev').onclick = () => {
+                    if (currentStep > 1) {
+                        currentStep--;
+                        saveBookingFormState();
+                        updateWizardUI();
+                    }
+                };
             }
             lucide.createIcons();
         }
@@ -1126,6 +1248,7 @@
                     $('#modalMessage').textContent = '¡Gracias por elegir Diverty Eventos! Hemos recibido su solicitud de reserva. Nuestro equipo de coordinación revisará los detalles y se contactará a la brevedad vía WhatsApp o correo electrónico para confirmar la fecha. ¡Estamos listos para la diversión!';
                     app.cart = [];
                     bookingFormState = {};
+                    app.wizardStep = 1; // Reiniciar wizard
                     updateCartUI();
                     renderBooking();
                 } else {
