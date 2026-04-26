@@ -199,6 +199,8 @@
                 <a href="#blog" id="navBlog" class="nav-link"><i data-lucide="book-open" class="w-4 h-4 mr-2 text-blue-500"></i>Blog</a>
                 <a href="#reviews" id="navReviews" class="nav-link"><i data-lucide="star" class="w-4 h-4 mr-2 text-yellow-500"></i>Reseñas</a>
                 <a href="#booking" id="navBooking" class="btn-premium btn-tertiary nav-action pulse-booking text-white shadow-md ml-2"><i data-lucide="calendar-check" class="w-4 h-4"></i>Reservar</a>
+                <!-- NUEVO BOTÓN: PORTAL CLIENTE -->
+                <a href="#portal" id="navPortal" class="nav-link ml-2"><i data-lucide="search" class="w-4 h-4 mr-2 text-indigo-500"></i>Mi Reserva</a>
             </nav>
             <button id="mobileToggle" class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Abrir menú"><i data-lucide="menu" class="h-7 w-7"></i></button>
         </div>
@@ -231,6 +233,8 @@
         <div class="flex-1 p-5 bg-white">
             <div class="space-y-1">
                 <a href="#home" id="mobileHome" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="sun" class="w-5 h-5 text-yellow-500"></i>Inicio</a>
+                <!-- NUEVO BOTÓN MOBILE: PORTAL CLIENTE -->
+                <a href="#portal" id="mobilePortal" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="search" class="w-5 h-5 text-indigo-500"></i>Mi Reserva</a>
                 <a href="#services" id="mobileServices" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="gift" class="w-5 h-5 text-pink-500"></i>Servicios</a>
                 <a href="#clowns" id="mobileClowns" class="mobile-nav-link text-purple-700 font-bold w-full text-left nav-action bg-purple-50 border border-purple-100"><i data-lucide="smile" class="w-5 h-5 text-purple-600"></i>Planes de Fiestas</a>
                 <a href="#bubbles" id="mobileBubbles" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="droplet" class="w-5 h-5 text-cyan-500"></i>Burbujas</a>
@@ -286,9 +290,10 @@
         <a href="#booking" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-slate-600 nav-action bg-gradient-to-tr from-purple-600 to-pink-600 text-white rounded-full w-12 h-12 -mt-6 shadow-md border-4 border-white transform hover:scale-105 transition-transform"> 
             <i data-lucide="calendar-check" class="w-5 h-5"></i>
         </a>
-        <a href="#services" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-slate-500 nav-action">
-            <i data-lucide="grid" class="w-5 h-5"></i>
-            <span class="text-[10px] font-semibold mt-1">Menú</span>
+        <!-- NUEVO BOTÓN MOBILE INFERIOR: PORTAL CLIENTE -->
+        <a href="#portal" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-slate-500 nav-action">
+            <i data-lucide="search" class="w-5 h-5"></i>
+            <span class="text-[10px] font-semibold mt-1">Mi Reserva</span>
         </a>
     </nav>
 
@@ -401,6 +406,8 @@
         appId: "1:491130670516:web:8c80abd09ccc92c194f6e1"
     };
     const CRM_APP_ID = "diverty-oficial";
+    
+    const EMPRESA = { nombreTitular: "AILEN DENNISKA CAMARENA MENDOZA", ruc: "Panamá RUC DV 79 8 957349", banco: "Banco General", tipoCuenta: "Cuenta de ahorros", numeroCuenta: "0472960083979", telefono: "6667-7965", email: "corporativo@divertyeventos.online", web: "Divertyeventos.online" };
 
     let db, auth;
     let bookedEvents = []; 
@@ -501,11 +508,9 @@
                 if (app.activeSection === 'services') renderServices();
             }
 
-            // 🚀 CORRECCIÓN: Filtramos las reservas eliminadas (deletedLocally)
             const eventsSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos'));
             bookedEvents = eventsSnap.docs.map(d => d.data()).filter(ev => {
                 const est = (ev.estado || '').toLowerCase();
-                // Ignorar si está borrada, cancelada, rechazada o es cotización
                 return ev.deletedLocally !== true && !est.includes('cancelado') && !est.includes('rechazada') && !est.includes('cot');
             });
 
@@ -518,7 +523,6 @@
 
     initFirebaseAndData();
 
-    // 🚀 CALENDARIO VISUAL CORREGIDO (MÁS LIMPIO, TIPO APP) 🚀
     function renderCalendar() {
         const grid = $('#availability-calendar-grid');
         if(!grid) return;
@@ -551,7 +555,6 @@
             let statusClass = '';
             let statusLabel = '';
 
-            // DISEÑO LIMPIO CON PUNTOS DE COLOR (Igual al CRM)
             if (currentDate < today) {
                 statusClass = 'text-slate-400 opacity-40 cursor-not-allowed';
             } else if (eventsThisDay >= 3) {
@@ -716,6 +719,7 @@
         calculatorItems = [];
     }
 
+    // 🚀 LÓGICA DE NAVEGACIÓN Y PORTAL DEL CLIENTE 🚀
     function setActiveSection(sectionId) {
         if (!sectionId) sectionId = 'home';
 
@@ -740,15 +744,16 @@
                 services: ['#navServices', '#mobileServices'], clowns: ['#navClowns', '#mobileClowns'], 
                 bubbles: ['#navBubbles', '#mobileBubbles'], gallery: ['#navGallery', '#mobileGallery'], 
                 blog: ['#navBlog', '#mobileBlog'], reviews: ['#navReviews', '#mobileReviews'], 
-                booking: ['#navBooking', '#mobileBooking'] 
+                booking: ['#navBooking', '#mobileBooking'],
+                portal: ['#navPortal', '#mobilePortal']
             };
             navMap[sectionId]?.forEach(selector => $(selector)?.classList.add('active'));
-            $$(`.mobile-nav-link-bottom[href="#${sectionId}"]`).forEach(link => link.classList.add('active'));
             
             const sections = { 
                 home: renderHome, santa: renderSanta, services: renderServices, 
                 clowns: renderClowns, bubbles: renderBubbles, gallery: renderGallery, 
-                blog: renderBlog, reviews: renderReviews, booking: renderBooking 
+                blog: renderBlog, reviews: renderReviews, booking: renderBooking,
+                portal: renderPortal
             };
             
             if (sectionId !== 'home' && sections[sectionId]) sections[sectionId]();
@@ -758,6 +763,271 @@
             if(sectionId === 'home') window.scrollTo(0, 0);
         }, 50);
     }
+
+    // 🚀 PORTAL DEL CLIENTE: RENDERIZADO Y BÚSQUEDA 🚀
+    function renderPortal() {
+        $('#mainContent').innerHTML = `
+            <div class="container mx-auto px-4 max-w-3xl"><section class="my-12 animate-slide-up">
+                <div class="text-center mb-10">
+                    <div class="w-20 h-20 bg-indigo-50 text-indigo-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-indigo-100">
+                        <i data-lucide="search" class="w-10 h-10"></i>
+                    </div>
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-slate-800 font-nunito tracking-tight">Portal del Cliente</h2>
+                    <p class="text-slate-500 mt-3 font-medium text-lg">Consulta el estado de tu evento y descarga tus recibos.</p>
+                </div>
+
+                <div class="bg-white p-6 sm:p-10 rounded-[2rem] shadow-lg border border-slate-100">
+                    <form id="portalSearchForm" class="flex flex-col sm:flex-row gap-4 mb-8">
+                        <div class="relative flex-1">
+                            <i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i>
+                            <input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-lg font-bold text-slate-700 outline-none focus:border-indigo-500 focus:bg-white transition-colors shadow-inner" required>
+                        </div>
+                        <button type="submit" class="btn-premium bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md sm:w-auto w-full py-4 px-8 text-lg"><i data-lucide="search"></i> Buscar</button>
+                    </form>
+                    
+                    <div id="portalResults" class="space-y-5">
+                        <div class="text-center p-8 border-2 border-dashed border-slate-200 rounded-2xl">
+                            <p class="text-slate-400 font-semibold">Ingresa tu número para ver tus reservas activas.</p>
+                        </div>
+                    </div>
+                </div>
+            </section></div>
+        `;
+        lucide.createIcons();
+
+        $('#portalSearchForm').onsubmit = (e) => {
+            e.preventDefault();
+            const phoneInput = $('#searchPhone').value.replace(/\D/g, ''); // Limpiar a solo números
+            
+            // Buscar en las reservas cargadas (bookedEvents) que coincidan con el teléfono
+            const results = bookedEvents.filter(ev => {
+                const evPhone = String(ev.telefono || '').replace(/\D/g, '');
+                return evPhone.includes(phoneInput) || phoneInput.includes(evPhone);
+            });
+
+            const resultsContainer = $('#portalResults');
+            
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="text-center p-8 bg-rose-50 rounded-2xl border border-rose-100 animate-fadeIn">
+                        <i data-lucide="file-question" class="w-12 h-12 mx-auto text-rose-400 mb-3"></i>
+                        <p class="text-rose-700 font-bold text-lg">No encontramos reservas con ese número.</p>
+                        <p class="text-rose-500 text-sm mt-1">Verifica que lo hayas escrito igual que cuando reservaste.</p>
+                    </div>`;
+            } else {
+                resultsContainer.innerHTML = results.map((ev, index) => {
+                    const tot = parseFloat(ev.total || 0);
+                    const abo = parseFloat(ev.abono || 0);
+                    const saldo = Math.max(0, tot - abo);
+                    
+                    let statusColor = 'bg-amber-100 text-amber-700 border-amber-200';
+                    if (ev.estado.toLowerCase() === 'confirmado') statusColor = 'bg-blue-100 text-blue-700 border-blue-200';
+                    if (ev.estado.toLowerCase() === 'completado') statusColor = 'bg-emerald-100 text-emerald-700 border-emerald-200';
+
+                    const fFecha = ev.fecha ? String(ev.fecha).split('-').reverse().join('/') : 'Por definir';
+
+                    return `
+                    <div class="border border-slate-200 rounded-2xl p-6 bg-white shadow-sm hover:shadow-md transition-shadow animate-slide-up" style="animation-delay: ${index * 100}ms">
+                        <div class="flex flex-col sm:flex-row justify-between items-start gap-4 mb-5 border-b border-slate-100 pb-5">
+                            <div>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusColor} mb-3 shadow-sm">
+                                    <div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-50"></div> ${ev.estado}
+                                </span>
+                                <h4 class="text-xl font-black text-slate-800 mb-1 capitalize">${ev.cliente}</h4>
+                                <p class="text-sm text-slate-500 flex items-center gap-1.5 font-semibold"><i data-lucide="calendar-days" class="w-4 h-4 text-purple-500"></i> ${fFecha} a las ${ev.hora}</p>
+                            </div>
+                            <div class="text-left sm:text-right bg-slate-50 p-4 rounded-xl border border-slate-100 w-full sm:w-auto">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Costo Total</p>
+                                <p class="text-2xl font-black text-slate-800 leading-none">$${tot.toFixed(2)}</p>
+                                ${saldo > 0 ? `<p class="text-sm font-bold text-rose-500 mt-2 bg-rose-50 px-2 py-1 rounded inline-block border border-rose-100">Deuda: $${saldo.toFixed(2)}</p>` : `<p class="text-sm font-bold text-emerald-500 mt-2 bg-emerald-50 px-2 py-1 rounded inline-block border border-emerald-100"><i data-lucide="check" class="w-3 h-3 inline"></i> Pagado</p>`}
+                            </div>
+                        </div>
+                        <button onclick="downloadClientPDF('${ev.id}')" class="w-full btn-premium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shadow-sm py-3.5 text-sm flex justify-center items-center gap-2 transition-all active:scale-[0.98]">
+                            <i data-lucide="download" class="w-5 h-5 text-indigo-600"></i> Descargar Recibo / Contrato
+                        </button>
+                    </div>
+                    `;
+                }).join('');
+            }
+            lucide.createIcons();
+        }
+    }
+
+    // 🚀 PORTAL DEL CLIENTE: GENERADOR DE PDF 🚀
+    window.downloadClientPDF = async (eventId) => {
+        const ev = bookedEvents.find(e => e.id === eventId);
+        if (!ev) return;
+
+        showToast("Preparando documento...", "info");
+
+        if (!window.html2pdf) {
+            await new Promise((resolve) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                script.onload = resolve;
+                document.head.appendChild(script);
+            });
+        }
+
+        const tot = parseFloat(ev.total || 0);
+        const trn = parseFloat(ev.transporte || 0);
+        const abo = parseFloat(ev.abono || 0);
+        const sub = tot - trn;
+        const fechaDoc = ev.fecha ? String(ev.fecha).split('-').reverse().join('/') : '';
+        const horaStr = ev.hora || '';
+        
+        let sA = ev.serviciosSeleccionados;
+        if (!sA || sA.length === 0) {
+            sA = [{ nombre: String(ev.servicio||'Servicio'), precio: sub, cantidad: 1, descripcion: String(ev.comentarios||'') }];
+        }
+
+        const pdfContainer = document.createElement('div');
+        pdfContainer.innerHTML = `
+            <div class="bg-[#F9FAFB] w-[794px] min-h-[1123px] h-auto relative overflow-hidden font-sans text-[#111827] p-12 flex flex-col">
+                 <div class="absolute top-[-150px] left-[-100px] w-[400px] h-[400px] rounded-full bg-[#6366F1] opacity-10 z-0"></div>
+                 <div class="absolute top-[-100px] left-[-50px] w-[300px] h-[300px] rounded-full bg-[#4F46E5] opacity-80 z-0"></div>
+                 <div class="absolute bottom-[-150px] right-[-100px] w-[400px] h-[400px] rounded-full bg-[#A855F7] opacity-10 z-0"></div>
+                 <div class="absolute bottom-[-100px] right-[-50px] w-[300px] h-[300px] rounded-full bg-[#9333EA] opacity-80 z-0"></div>
+                 
+                 <div class="flex flex-col mb-10 relative z-10">
+                     <div class="flex justify-between items-start w-full">
+                         <div><img src="${LOGO_URL}" alt="Diverty Eventos" class="h-16 object-contain drop-shadow-md" crossorigin="anonymous" /></div>
+                         <div class="text-right"><p class="text-sm text-[#6B7280] mt-1 font-medium tracking-wide">Fecha: ${fechaDoc}</p></div>
+                     </div>
+                     <h1 class="text-[28px] font-black text-[#4F46E5] tracking-widest uppercase text-center mt-6">RECIBO DE RESERVA</h1>
+                     <div class="w-full h-[1px] bg-[#4F46E5]/20 mt-6"></div>
+                 </div>
+                 
+                 <div class="flex justify-between gap-8 mb-12 relative z-10">
+                    <div class="w-1/2 bg-white p-6 rounded-xl border border-[#4F46E5]/10 shadow-sm">
+                        <h3 class="text-[11px] font-bold text-[#4F46E5] uppercase tracking-widest mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">Datos del Cliente</h3>
+                        <div class="space-y-3 text-[13px] font-medium text-[#6B7280]">
+                            <div class="flex justify-between"><span>Nombre:</span> <span class="text-[#111827] font-bold capitalize text-right">${ev.cliente}</span></div>
+                            <div class="flex justify-between"><span>Teléfono:</span> <span class="text-[#111827] text-right">${ev.telefono}</span></div>
+                            ${ev.email ? `<div class="flex justify-between"><span>Email:</span> <span class="text-[#111827] text-right">${ev.email}</span></div>` : ''}
+                        </div>
+                    </div>
+                    <div class="w-1/2 bg-white p-6 rounded-xl border border-[#4F46E5]/10 shadow-sm">
+                        <h3 class="text-[11px] font-bold text-[#4F46E5] uppercase tracking-widest mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">Detalles del Evento</h3>
+                        <div class="space-y-3 text-[13px] font-medium text-[#6B7280]">
+                            <div class="flex justify-between"><span>Fecha:</span> <span class="text-[#111827] font-bold text-right">${fechaDoc}</span></div>
+                            <div class="flex justify-between"><span>Horario:</span> <span class="text-[#111827] text-right">${horaStr}</span></div>
+                            <div class="flex justify-between"><span>Lugar:</span> <span class="text-[#111827] capitalize text-right">${ev.ubicacion}</span></div>
+                        </div>
+                    </div>
+                 </div>
+                 
+                 <div class="mb-6 flex-1 relative z-10">
+                    <div class="border border-[#4F46E5]/20 rounded-xl overflow-hidden shadow-sm bg-white">
+                         <table class="w-full text-left text-[13px]">
+                             <thead class="bg-[#F9FAFB] border-b border-[#4F46E5]/10 text-[#4F46E5]">
+                                 <tr>
+                                     <th class="py-4 px-6 font-bold uppercase text-center tracking-widest w-1/3 text-[11px]">Artículo</th>
+                                     <th class="py-4 px-6 font-bold uppercase tracking-widest text-center border-l border-gray-100 w-1/2 text-[11px]">Descripción</th>
+                                     <th class="py-4 px-6 font-bold uppercase text-center tracking-widest border-l border-gray-100 w-1/6 text-[11px]">Total</th>
+                                 </tr>
+                             </thead>
+                             <tbody class="divide-y divide-gray-100">
+                                 ${sA.map((s) => {
+                                     const cant = Number(s.cantidad) || 1;
+                                     const precioUnitario = parseFloat(s.precio) / cant;
+                                     return `
+                                     <tr class="break-inside-avoid">
+                                         <td class="py-6 px-6 text-center border-r border-gray-100 align-top">
+                                             <p class="font-bold text-[#111827] text-[14px] leading-tight">${s.nombre}</p>
+                                             ${cant > 1 ? `<p class="font-semibold text-[#7C3AED] text-[12px] mt-1.5 bg-[#7C3AED]/10 py-1 rounded-md inline-block px-3">- ${cant} Horas -</p>` : ''}
+                                         </td>
+                                         <td class="py-6 px-8 border-r border-gray-100 align-top">
+                                             <div class="text-[#6B7280] text-[12px] leading-relaxed space-y-2">${s.descripcion || 'Servicio de evento'}</div>
+                                         </td>
+                                         <td class="py-6 px-6 text-center align-middle">
+                                             <p class="font-black text-[#111827] text-[18px]">B/. ${parseFloat(s.precio).toFixed(2)}</p>
+                                         </td>
+                                     </tr>
+                                 `}).join('')}
+                                 ${trn > 0 ? `
+                                     <tr class="break-inside-avoid">
+                                         <td class="py-6 px-6 text-center border-r border-gray-100 align-middle">
+                                             <p class="font-bold text-[#111827] text-[14px]">Transporte</p>
+                                         </td>
+                                         <td class="py-6 px-8 border-r border-gray-100 align-middle text-[12px] text-[#374151] leading-relaxed font-medium">
+                                             Cargo por viáticos a zona: ${ev.ubicacion}
+                                         </td>
+                                         <td class="py-6 px-6 text-center align-middle">
+                                             <p class="font-black text-[#111827] text-[18px]">B/. ${trn.toFixed(2)}</p>
+                                         </td>
+                                     </tr>
+                                 ` : ''}
+                             </tbody>
+                         </table>
+                    </div>
+                 </div>
+
+                 <div class="px-0 mt-4 flex justify-between gap-8 break-inside-avoid relative z-10">
+                     <div class="w-1/2">
+                         <div class="bg-white p-5 rounded-xl border border-[#4F46E5]/10 shadow-sm h-full">
+                             <div class="flex items-center gap-2 mb-3 text-[#4F46E5] border-b border-gray-100 pb-3">
+                                 <h3 class="font-bold uppercase tracking-widest text-[11px]">Notas Importantes</h3>
+                             </div>
+                             <div class="text-[11px] font-medium text-[#6B7280] leading-relaxed space-y-2">
+                                 <p>Gracias por confiar en Diverty Eventos Panamá.</p>
+                                 <p>El saldo pendiente debe ser cancelado antes o al finalizar el evento.</p>
+                                 <p>Para pagos aceptamos: Yappy, Transferencia Bancaria o Efectivo.</p>
+                             </div>
+                         </div>
+                     </div>
+                     <div class="w-[45%] flex flex-col items-end">
+                         <div class="w-full border border-[#4F46E5]/10 rounded-xl overflow-hidden bg-white shadow-sm flex flex-col">
+                             <div class="flex justify-between items-center py-3.5 px-6 border-b border-gray-100 text-[13px]">
+                                 <span class="font-semibold text-[#6B7280]">Subtotal:</span>
+                                 <span class="font-bold text-[#111827]">B/. ${tot.toFixed(2)}</span>
+                             </div>
+                             ${abo > 0 ? `
+                             <div class="flex justify-between items-center py-3.5 px-6 border-b border-gray-100 text-[13px] bg-emerald-50/50">
+                                 <span class="font-semibold text-[#6B7280]">Abono:</span>
+                                 <span class="font-bold text-emerald-600">- B/. ${abo.toFixed(2)}</span>
+                             </div>
+                             ` : ''}
+                             <div class="bg-[#4F46E5] text-white py-6 px-6 text-center">
+                                 <span class="block text-[11px] uppercase tracking-widest font-semibold mb-1 opacity-90">Total Pendiente:</span>
+                                 <span class="block text-[36px] font-black leading-none pb-1">B/. ${(tot - abo).toFixed(2)}</span>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="mt-8 pb-4 break-inside-avoid relative z-10">
+                     <div class="bg-white rounded-xl border border-[#4F46E5]/10 p-6 flex justify-between items-stretch text-[11px] shadow-sm">
+                         <div class="flex gap-4 w-[35%] border-r border-gray-100 pr-4">
+                             <div class="leading-snug space-y-1.5">
+                                 <h4 class="font-bold text-[#111827] uppercase tracking-widest mb-2 text-[10px]">Métodos de Pago</h4>
+                                 <p class="font-semibold text-[#111827]">Yappy: <span class="font-medium text-[#6B7280]">${EMPRESA.telefono}</span></p>
+                                 <p class="font-medium text-[#6B7280]">${EMPRESA.banco} - ${EMPRESA.tipoCuenta}</p>
+                                 <p class="font-semibold text-[#111827]">Nº: <span class="font-medium text-[#6B7280]">${EMPRESA.numeroCuenta}</span></p>
+                                 <p class="font-semibold text-[#111827]">Titular: <span class="font-medium text-[#6B7280] uppercase">${EMPRESA.nombreTitular}</span></p>
+                             </div>
+                         </div>
+                         <div class="flex flex-col items-center justify-center w-[65%] pl-6">
+                             <h3 class="text-2xl text-[#111827]" style="font-family: 'Brush Script MT', 'Dancing Script', cursive, serif; font-style: italic;">Diverty Eventos</h3>
+                             <p class="text-[#6B7280] font-medium text-[10px] mt-1.5 text-center tracking-wide uppercase">Diversión que crea recuerdos</p>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+        `;
+
+        const opt = { 
+            margin: 0, 
+            filename: `Recibo_Diverty_${ev.cliente.replace(/[^a-z0-9]/gi, '_')}.pdf`, 
+            image: { type: 'jpeg', quality: 1.0 }, 
+            html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" }, 
+            jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
+        };
+
+        await window.html2pdf().set(opt).from(pdfContainer.firstElementChild).save();
+        showToast("¡PDF descargado con éxito!", "success");
+    }
+
 
     function renderHome() {
         const featuredPackage = clownPackages.find(p => p.id === 'clown_magic');
@@ -817,7 +1087,6 @@
                         </div>
                     </section>
 
-                    <!-- 🚀 SECCIÓN NUEVA: CALENDARIO DE DISPONIBILIDAD 🚀 -->
                     <section id="calendar-section" class="my-20 relative animate-slide-up border-y border-slate-100 py-10 bg-slate-50/50">
                         <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-4 text-slate-800 font-nunito">
                             Disponibilidad en Vivo
@@ -906,7 +1175,7 @@
                 </section>
             </div>`;
         lucide.createIcons();
-        renderCalendar(); // Renderizar calendario al cargar Home
+        renderCalendar(); 
     }
 
     function createDetailedCardHTML(item, index) {
@@ -1361,14 +1630,6 @@
             };
 
             const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
-            const { signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
-
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                await signInWithCustomToken(auth, __initial_auth_token);
-            } else {
-                await signInAnonymously(auth);
-            }
-            
             const docRef = doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos', eventId);
             
             await setDoc(docRef, dataToSave);
