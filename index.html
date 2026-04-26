@@ -199,7 +199,6 @@
                 <a href="#blog" id="navBlog" class="nav-link"><i data-lucide="book-open" class="w-4 h-4 mr-2 text-blue-500"></i>Blog</a>
                 <a href="#reviews" id="navReviews" class="nav-link"><i data-lucide="star" class="w-4 h-4 mr-2 text-yellow-500"></i>Reseñas</a>
                 <a href="#booking" id="navBooking" class="btn-premium btn-tertiary nav-action pulse-booking text-white shadow-md ml-2"><i data-lucide="calendar-check" class="w-4 h-4"></i>Reservar</a>
-                <!-- NUEVO BOTÓN: PORTAL CLIENTE -->
                 <a href="#portal" id="navPortal" class="nav-link ml-2"><i data-lucide="search" class="w-4 h-4 mr-2 text-indigo-500"></i>Mi Reserva</a>
             </nav>
             <button id="mobileToggle" class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Abrir menú"><i data-lucide="menu" class="h-7 w-7"></i></button>
@@ -233,7 +232,6 @@
         <div class="flex-1 p-5 bg-white">
             <div class="space-y-1">
                 <a href="#home" id="mobileHome" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="sun" class="w-5 h-5 text-yellow-500"></i>Inicio</a>
-                <!-- NUEVO BOTÓN MOBILE: PORTAL CLIENTE -->
                 <a href="#portal" id="mobilePortal" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="search" class="w-5 h-5 text-indigo-500"></i>Mi Reserva</a>
                 <a href="#services" id="mobileServices" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="gift" class="w-5 h-5 text-pink-500"></i>Servicios</a>
                 <a href="#clowns" id="mobileClowns" class="mobile-nav-link text-purple-700 font-bold w-full text-left nav-action bg-purple-50 border border-purple-100"><i data-lucide="smile" class="w-5 h-5 text-purple-600"></i>Planes de Fiestas</a>
@@ -290,7 +288,6 @@
         <a href="#booking" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-slate-600 nav-action bg-gradient-to-tr from-purple-600 to-pink-600 text-white rounded-full w-12 h-12 -mt-6 shadow-md border-4 border-white transform hover:scale-105 transition-transform"> 
             <i data-lucide="calendar-check" class="w-5 h-5"></i>
         </a>
-        <!-- NUEVO BOTÓN MOBILE INFERIOR: PORTAL CLIENTE -->
         <a href="#portal" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-slate-500 nav-action">
             <i data-lucide="search" class="w-5 h-5"></i>
             <span class="text-[10px] font-semibold mt-1">Mi Reserva</span>
@@ -719,7 +716,6 @@
         calculatorItems = [];
     }
 
-    // 🚀 LÓGICA DE NAVEGACIÓN Y PORTAL DEL CLIENTE 🚀
     function setActiveSection(sectionId) {
         if (!sectionId) sectionId = 'home';
 
@@ -764,7 +760,6 @@
         }, 50);
     }
 
-    // 🚀 PORTAL DEL CLIENTE: RENDERIZADO Y BÚSQUEDA 🚀
     function renderPortal() {
         $('#mainContent').innerHTML = `
             <div class="container mx-auto px-4 max-w-3xl"><section class="my-12 animate-slide-up">
@@ -797,11 +792,14 @@
 
         $('#portalSearchForm').onsubmit = (e) => {
             e.preventDefault();
-            const phoneInput = $('#searchPhone').value.replace(/\D/g, ''); // Limpiar a solo números
+            const phoneInput = $('#searchPhone').value.replace(/\D/g, ''); 
             
-            // Buscar en las reservas cargadas (bookedEvents) que coincidan con el teléfono
             const results = bookedEvents.filter(ev => {
                 const evPhone = String(ev.telefono || '').replace(/\D/g, '');
+                
+                // 🚀 CORRECCIÓN AQUÍ: Si el evento no tiene teléfono registrado, se ignora.
+                if (!evPhone || evPhone === '') return false; 
+                
                 return evPhone.includes(phoneInput) || phoneInput.includes(evPhone);
             });
 
@@ -853,7 +851,6 @@
         }
     }
 
-    // 🚀 PORTAL DEL CLIENTE: GENERADOR DE PDF 🚀
     window.downloadClientPDF = async (eventId) => {
         const ev = bookedEvents.find(e => e.id === eventId);
         if (!ev) return;
@@ -1630,6 +1627,14 @@
             };
 
             const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+            const { signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
+
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+            
             const docRef = doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos', eventId);
             
             await setDoc(docRef, dataToSave);
