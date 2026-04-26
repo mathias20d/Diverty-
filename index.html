@@ -170,6 +170,7 @@
     <canvas id="confetti-canvas"></canvas>
     <canvas id="magic-cursor"></canvas>
 
+    <!-- Banner promocional -->
     <div id="promo-banner" class="bg-gradient-to-r from-purple-700 via-pink-600 to-yellow-600 text-white p-3 font-semibold text-sm sm:text-base relative flex flex-wrap items-center justify-center border-b border-white/20 gap-3 shadow-md">
         <span id="promo-text" class="text-center tracking-wide">✨ ¡FIESTA TOTAL! 10% OFF en Plan Magic - Válido hasta el 30 de abril</span>
         <div id="countdown-timer" class="bg-black/20 px-3 py-1.5 rounded-lg font-mono text-xs sm:text-sm font-bold flex items-center border border-white/10">
@@ -199,12 +200,14 @@
                 <a href="#blog" id="navBlog" class="nav-link"><i data-lucide="book-open" class="w-4 h-4 mr-2 text-blue-500"></i>Blog</a>
                 <a href="#reviews" id="navReviews" class="nav-link"><i data-lucide="star" class="w-4 h-4 mr-2 text-yellow-500"></i>Reseñas</a>
                 <a href="#booking" id="navBooking" class="btn-premium btn-tertiary nav-action pulse-booking text-white shadow-md ml-2"><i data-lucide="calendar-check" class="w-4 h-4"></i>Reservar</a>
+                <!-- NUEVO BOTÓN: PORTAL CLIENTE -->
                 <a href="#portal" id="navPortal" class="nav-link ml-2"><i data-lucide="search" class="w-4 h-4 mr-2 text-indigo-500"></i>Mi Reserva</a>
             </nav>
             <button id="mobileToggle" class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors" aria-label="Abrir menú"><i data-lucide="menu" class="h-7 w-7"></i></button>
         </div>
     </header>
     
+    <!-- Barra de carrito -->
     <div id="cartSummary" class="hidden sticky top-20 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 p-3 shadow-md">
         <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-4 text-slate-800 font-semibold">
@@ -232,6 +235,7 @@
         <div class="flex-1 p-5 bg-white">
             <div class="space-y-1">
                 <a href="#home" id="mobileHome" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="sun" class="w-5 h-5 text-yellow-500"></i>Inicio</a>
+                <!-- NUEVO BOTÓN MOBILE: PORTAL CLIENTE -->
                 <a href="#portal" id="mobilePortal" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="search" class="w-5 h-5 text-indigo-500"></i>Mi Reserva</a>
                 <a href="#services" id="mobileServices" class="mobile-nav-link text-slate-700 w-full text-left nav-action"><i data-lucide="gift" class="w-5 h-5 text-pink-500"></i>Servicios</a>
                 <a href="#clowns" id="mobileClowns" class="mobile-nav-link text-purple-700 font-bold w-full text-left nav-action bg-purple-50 border border-purple-100"><i data-lucide="smile" class="w-5 h-5 text-purple-600"></i>Planes de Fiestas</a>
@@ -276,6 +280,7 @@
         </div>
     </footer>
     
+    <!-- Nav móvil inferior -->
     <nav id="mobile-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] flex justify-around items-center h-16 z-40">
         <a href="#home" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-slate-500 nav-action">
             <i data-lucide="sun" class="w-5 h-5"></i>
@@ -288,6 +293,7 @@
         <a href="#booking" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-slate-600 nav-action bg-gradient-to-tr from-purple-600 to-pink-600 text-white rounded-full w-12 h-12 -mt-6 shadow-md border-4 border-white transform hover:scale-105 transition-transform"> 
             <i data-lucide="calendar-check" class="w-5 h-5"></i>
         </a>
+        <!-- NUEVO BOTÓN MOBILE INFERIOR: PORTAL CLIENTE -->
         <a href="#portal" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-slate-500 nav-action">
             <i data-lucide="search" class="w-5 h-5"></i>
             <span class="text-[10px] font-semibold mt-1">Mi Reserva</span>
@@ -298,6 +304,7 @@
         <a href="https://wa.me/50766677965?text=¡Hola! Quiero saber más sobre el Plan Magic con conejo real 🐇." class="floating-btn whatsapp-btn" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp"><i data-lucide="phone" class="text-white w-7 h-7"></i></a>
     </div>
     
+    <!-- Modal de Éxito Profesional -->
     <div id="infoModal" class="modal-backdrop">
         <div class="modal-content bg-white text-slate-800 rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-t-8 border-emerald-500">
             <div class="mb-6">
@@ -311,6 +318,7 @@
         </div>
     </div>
 
+    <!-- Modal de Carrito -->
     <div id="cartModal" class="modal-backdrop">
         <div class="modal-content bg-white text-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 max-w-lg w-full border border-slate-100">
             <h2 class="text-2xl font-extrabold mb-6 flex items-center justify-center gap-2 text-center text-slate-800">
@@ -338,6 +346,7 @@
         </div>
     </div>
     
+    <!-- Modal Calculadora -->
     <div id="calculatorModal" class="modal-backdrop">
         <div class="modal-content bg-white text-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 max-w-2xl w-full border-t-8 border-cyan-500">
             <h2 class="text-2xl font-extrabold mb-6 flex items-center justify-center gap-2 text-slate-800"><i data-lucide="calculator" class="text-cyan-600"></i>Calculadora Rápida</h2>
@@ -367,6 +376,7 @@
         </div>
     </div>
 
+    <!-- Modal Pre-Reserva -->
     <div id="bookingConfirmModal" class="modal-backdrop">
         <div class="modal-content text-center p-8 max-w-md w-full bg-white rounded-3xl shadow-2xl border-t-8 border-yellow-400">
             <div class="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -389,7 +399,9 @@
         <div class="text-center"><div class="loading-spinner"></div><p class="mt-4 text-slate-700 font-bold text-sm tracking-wide">Procesando...</p></div>
     </div>
 
+    <!-- =========== SCRIPTS =========== -->
     <script type="module">
+    // 🚀 LÓGICA CONSOLIDADA DE FIREBASE 🚀
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, doc, getDoc, collection, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -496,7 +508,7 @@
                     name: c.nombre,
                     price: c.precio,
                     description: c.descripcion || 'Servicio especial personalizado (Añadido desde el CRM).',
-                    image: 'https://i.postimg.cc/GhFd4tcm/1000047880.png', 
+                    image: LOGO_URL, 
                     isCustom: true
                 }));
                 services = [...services, ...formattedCustom];
@@ -505,9 +517,11 @@
                 if (app.activeSection === 'services') renderServices();
             }
 
+            // 🚀 CORRECCIÓN: Filtramos las reservas eliminadas (deletedLocally)
             const eventsSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos'));
             bookedEvents = eventsSnap.docs.map(d => d.data()).filter(ev => {
                 const est = (ev.estado || '').toLowerCase();
+                // Ignorar si está borrada, cancelada, rechazada o es cotización
                 return ev.deletedLocally !== true && !est.includes('cancelado') && !est.includes('rechazada') && !est.includes('cot');
             });
 
@@ -520,6 +534,7 @@
 
     initFirebaseAndData();
 
+    // 🚀 CALENDARIO VISUAL CORREGIDO (MÁS LIMPIO, TIPO APP) 🚀
     function renderCalendar() {
         const grid = $('#availability-calendar-grid');
         if(!grid) return;
@@ -552,6 +567,7 @@
             let statusClass = '';
             let statusLabel = '';
 
+            // DISEÑO LIMPIO CON PUNTOS DE COLOR (Igual al CRM)
             if (currentDate < today) {
                 statusClass = 'text-slate-400 opacity-40 cursor-not-allowed';
             } else if (eventsThisDay >= 3) {
@@ -760,6 +776,7 @@
         }, 50);
     }
 
+    // 🚀 PORTAL DEL CLIENTE 🚀
     function renderPortal() {
         $('#mainContent').innerHTML = `
             <div class="container mx-auto px-4 max-w-3xl"><section class="my-12 animate-slide-up">
@@ -796,10 +813,7 @@
             
             const results = bookedEvents.filter(ev => {
                 const evPhone = String(ev.telefono || '').replace(/\D/g, '');
-                
-                // 🚀 CORRECCIÓN AQUÍ: Si el evento no tiene teléfono registrado, se ignora.
                 if (!evPhone || evPhone === '') return false; 
-                
                 return evPhone.includes(phoneInput) || phoneInput.includes(evPhone);
             });
 
@@ -840,8 +854,8 @@
                                 ${saldo > 0 ? `<p class="text-sm font-bold text-rose-500 mt-2 bg-rose-50 px-2 py-1 rounded inline-block border border-rose-100">Deuda: $${saldo.toFixed(2)}</p>` : `<p class="text-sm font-bold text-emerald-500 mt-2 bg-emerald-50 px-2 py-1 rounded inline-block border border-emerald-100"><i data-lucide="check" class="w-3 h-3 inline"></i> Pagado</p>`}
                             </div>
                         </div>
-                        <button onclick="downloadClientPDF('${ev.id}')" class="w-full btn-premium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shadow-sm py-3.5 text-sm flex justify-center items-center gap-2 transition-all active:scale-[0.98]">
-                            <i data-lucide="download" class="w-5 h-5 text-indigo-600"></i> Descargar Recibo / Contrato
+                        <button type="button" data-action="download-pdf" data-item-id="${ev.id}" class="w-full btn-premium bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 shadow-sm py-3.5 text-sm flex justify-center items-center gap-2 transition-all active:scale-[0.98]">
+                            <i data-lucide="download" class="w-5 h-5 text-indigo-600"></i> <span>Descargar Recibo / Contrato</span>
                         </button>
                     </div>
                     `;
@@ -851,179 +865,191 @@
         }
     }
 
-    window.downloadClientPDF = async (eventId) => {
-        const ev = bookedEvents.find(e => e.id === eventId);
-        if (!ev) return;
+    // 🚀 GENERADOR DE PDF CORREGIDO PARA MÓVILES 🚀
+    window.downloadClientPDF = async (eventId, btnElement) => {
+        try {
+            const ev = bookedEvents.find(e => e.id === eventId);
+            if (!ev) return;
 
-        showToast("Preparando documento...", "info");
+            // 1. Efecto visual de carga
+            const originalBtnText = btnElement.innerHTML;
+            btnElement.disabled = true;
+            btnElement.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 text-indigo-600 animate-spin"></i> <span>Generando...</span>';
+            lucide.createIcons();
+            
+            showToast("Preparando documento...", "info");
 
-        if (!window.html2pdf) {
-            await new Promise((resolve) => {
-                const script = document.createElement('script');
-                script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-                script.onload = resolve;
-                document.head.appendChild(script);
-            });
-        }
+            // 2. Cargar html2pdf si no existe
+            if (!window.html2pdf) {
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error("No se pudo cargar generador PDF"));
+                    document.head.appendChild(script);
+                });
+            }
 
-        const tot = parseFloat(ev.total || 0);
-        const trn = parseFloat(ev.transporte || 0);
-        const abo = parseFloat(ev.abono || 0);
-        const sub = tot - trn;
-        const fechaDoc = ev.fecha ? String(ev.fecha).split('-').reverse().join('/') : '';
-        const horaStr = ev.hora || '';
-        
-        let sA = ev.serviciosSeleccionados;
-        if (!sA || sA.length === 0) {
-            sA = [{ nombre: String(ev.servicio||'Servicio'), precio: sub, cantidad: 1, descripcion: String(ev.comentarios||'') }];
-        }
+            const tot = parseFloat(ev.total || 0);
+            const trn = parseFloat(ev.transporte || 0);
+            const abo = parseFloat(ev.abono || 0);
+            const sub = tot - trn;
+            const fechaDoc = ev.fecha ? String(ev.fecha).split('-').reverse().join('/') : '';
+            const horaStr = ev.hora || '';
+            
+            let sA = ev.serviciosSeleccionados;
+            if (!sA || sA.length === 0) {
+                sA = [{ nombre: String(ev.servicio||'Servicio'), precio: sub, cantidad: 1, descripcion: String(ev.comentarios||'') }];
+            }
 
-        const pdfContainer = document.createElement('div');
-        pdfContainer.innerHTML = `
-            <div class="bg-[#F9FAFB] w-[794px] min-h-[1123px] h-auto relative overflow-hidden font-sans text-[#111827] p-12 flex flex-col">
-                 <div class="absolute top-[-150px] left-[-100px] w-[400px] h-[400px] rounded-full bg-[#6366F1] opacity-10 z-0"></div>
-                 <div class="absolute top-[-100px] left-[-50px] w-[300px] h-[300px] rounded-full bg-[#4F46E5] opacity-80 z-0"></div>
-                 <div class="absolute bottom-[-150px] right-[-100px] w-[400px] h-[400px] rounded-full bg-[#A855F7] opacity-10 z-0"></div>
-                 <div class="absolute bottom-[-100px] right-[-50px] w-[300px] h-[300px] rounded-full bg-[#9333EA] opacity-80 z-0"></div>
-                 
-                 <div class="flex flex-col mb-10 relative z-10">
-                     <div class="flex justify-between items-start w-full">
-                         <div><img src="${LOGO_URL}" alt="Diverty Eventos" class="h-16 object-contain drop-shadow-md" crossorigin="anonymous" /></div>
-                         <div class="text-right"><p class="text-sm text-[#6B7280] mt-1 font-medium tracking-wide">Fecha: ${fechaDoc}</p></div>
+            // 3. Crear el contenedor y AGREGARLO al DOM (Esencial para móviles)
+            const pdfContainer = document.createElement('div');
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.left = '-9999px';
+            pdfContainer.style.top = '0';
+            
+            pdfContainer.innerHTML = `
+                <div class="bg-[#F9FAFB] w-[794px] min-h-[1123px] h-auto relative overflow-hidden font-sans text-[#111827] p-12 flex flex-col">
+                     <div class="absolute top-[-150px] left-[-100px] w-[400px] h-[400px] rounded-full bg-[#6366F1] opacity-10 z-0"></div>
+                     <div class="absolute top-[-100px] left-[-50px] w-[300px] h-[300px] rounded-full bg-[#4F46E5] opacity-80 z-0"></div>
+                     <div class="absolute bottom-[-150px] right-[-100px] w-[400px] h-[400px] rounded-full bg-[#A855F7] opacity-10 z-0"></div>
+                     <div class="absolute bottom-[-100px] right-[-50px] w-[300px] h-[300px] rounded-full bg-[#9333EA] opacity-80 z-0"></div>
+                     
+                     <div class="flex flex-col mb-10 relative z-10">
+                         <div class="flex justify-between items-start w-full">
+                             <div><img src="${LOGO_URL}" alt="Diverty Eventos" class="h-16 object-contain drop-shadow-md" crossorigin="anonymous" /></div>
+                             <div class="text-right"><p class="text-sm text-[#6B7280] mt-1 font-medium tracking-wide">Fecha: ${fechaDoc}</p></div>
+                         </div>
+                         <h1 class="text-[28px] font-black text-[#4F46E5] tracking-widest uppercase text-center mt-6">RECIBO DE RESERVA</h1>
+                         <div class="w-full h-[1px] bg-[#4F46E5]/20 mt-6"></div>
                      </div>
-                     <h1 class="text-[28px] font-black text-[#4F46E5] tracking-widest uppercase text-center mt-6">RECIBO DE RESERVA</h1>
-                     <div class="w-full h-[1px] bg-[#4F46E5]/20 mt-6"></div>
-                 </div>
-                 
-                 <div class="flex justify-between gap-8 mb-12 relative z-10">
-                    <div class="w-1/2 bg-white p-6 rounded-xl border border-[#4F46E5]/10 shadow-sm">
-                        <h3 class="text-[11px] font-bold text-[#4F46E5] uppercase tracking-widest mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">Datos del Cliente</h3>
-                        <div class="space-y-3 text-[13px] font-medium text-[#6B7280]">
-                            <div class="flex justify-between"><span>Nombre:</span> <span class="text-[#111827] font-bold capitalize text-right">${ev.cliente}</span></div>
-                            <div class="flex justify-between"><span>Teléfono:</span> <span class="text-[#111827] text-right">${ev.telefono}</span></div>
-                            ${ev.email ? `<div class="flex justify-between"><span>Email:</span> <span class="text-[#111827] text-right">${ev.email}</span></div>` : ''}
+                     
+                     <div class="flex justify-between gap-8 mb-12 relative z-10">
+                        <div class="w-1/2 bg-white p-6 rounded-xl border border-[#4F46E5]/10 shadow-sm">
+                            <h3 class="text-[11px] font-bold text-[#4F46E5] uppercase tracking-widest mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">Datos del Cliente</h3>
+                            <div class="space-y-3 text-[13px] font-medium text-[#6B7280]">
+                                <div class="flex justify-between"><span>Nombre:</span> <span class="text-[#111827] font-bold capitalize text-right">${ev.cliente}</span></div>
+                                <div class="flex justify-between"><span>Teléfono:</span> <span class="text-[#111827] text-right">${ev.telefono}</span></div>
+                                ${ev.email ? `<div class="flex justify-between"><span>Email:</span> <span class="text-[#111827] text-right">${ev.email}</span></div>` : ''}
+                            </div>
                         </div>
-                    </div>
-                    <div class="w-1/2 bg-white p-6 rounded-xl border border-[#4F46E5]/10 shadow-sm">
-                        <h3 class="text-[11px] font-bold text-[#4F46E5] uppercase tracking-widest mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">Detalles del Evento</h3>
-                        <div class="space-y-3 text-[13px] font-medium text-[#6B7280]">
-                            <div class="flex justify-between"><span>Fecha:</span> <span class="text-[#111827] font-bold text-right">${fechaDoc}</span></div>
-                            <div class="flex justify-between"><span>Horario:</span> <span class="text-[#111827] text-right">${horaStr}</span></div>
-                            <div class="flex justify-between"><span>Lugar:</span> <span class="text-[#111827] capitalize text-right">${ev.ubicacion}</span></div>
+                        <div class="w-1/2 bg-white p-6 rounded-xl border border-[#4F46E5]/10 shadow-sm">
+                            <h3 class="text-[11px] font-bold text-[#4F46E5] uppercase tracking-widest mb-4 border-b border-gray-100 pb-3 flex items-center gap-2">Detalles del Evento</h3>
+                            <div class="space-y-3 text-[13px] font-medium text-[#6B7280]">
+                                <div class="flex justify-between"><span>Fecha:</span> <span class="text-[#111827] font-bold text-right">${fechaDoc}</span></div>
+                                <div class="flex justify-between"><span>Horario:</span> <span class="text-[#111827] text-right">${horaStr}</span></div>
+                                <div class="flex justify-between"><span>Lugar:</span> <span class="text-[#111827] capitalize text-right">${ev.ubicacion}</span></div>
+                            </div>
                         </div>
-                    </div>
-                 </div>
-                 
-                 <div class="mb-6 flex-1 relative z-10">
-                    <div class="border border-[#4F46E5]/20 rounded-xl overflow-hidden shadow-sm bg-white">
-                         <table class="w-full text-left text-[13px]">
-                             <thead class="bg-[#F9FAFB] border-b border-[#4F46E5]/10 text-[#4F46E5]">
-                                 <tr>
-                                     <th class="py-4 px-6 font-bold uppercase text-center tracking-widest w-1/3 text-[11px]">Artículo</th>
-                                     <th class="py-4 px-6 font-bold uppercase tracking-widest text-center border-l border-gray-100 w-1/2 text-[11px]">Descripción</th>
-                                     <th class="py-4 px-6 font-bold uppercase text-center tracking-widest border-l border-gray-100 w-1/6 text-[11px]">Total</th>
-                                 </tr>
-                             </thead>
-                             <tbody class="divide-y divide-gray-100">
-                                 ${sA.map((s) => {
-                                     const cant = Number(s.cantidad) || 1;
-                                     const precioUnitario = parseFloat(s.precio) / cant;
-                                     return `
-                                     <tr class="break-inside-avoid">
-                                         <td class="py-6 px-6 text-center border-r border-gray-100 align-top">
-                                             <p class="font-bold text-[#111827] text-[14px] leading-tight">${s.nombre}</p>
-                                             ${cant > 1 ? `<p class="font-semibold text-[#7C3AED] text-[12px] mt-1.5 bg-[#7C3AED]/10 py-1 rounded-md inline-block px-3">- ${cant} Horas -</p>` : ''}
-                                         </td>
-                                         <td class="py-6 px-8 border-r border-gray-100 align-top">
-                                             <div class="text-[#6B7280] text-[12px] leading-relaxed space-y-2">${s.descripcion || 'Servicio de evento'}</div>
-                                         </td>
-                                         <td class="py-6 px-6 text-center align-middle">
-                                             <p class="font-black text-[#111827] text-[18px]">B/. ${parseFloat(s.precio).toFixed(2)}</p>
-                                         </td>
+                     </div>
+                     
+                     <div class="mb-6 flex-1 relative z-10">
+                        <div class="border border-[#4F46E5]/20 rounded-xl overflow-hidden shadow-sm bg-white">
+                             <table class="w-full text-left text-[13px]">
+                                 <thead class="bg-[#F9FAFB] border-b border-[#4F46E5]/10 text-[#4F46E5]">
+                                     <tr>
+                                         <th class="py-4 px-6 font-bold uppercase text-center tracking-widest w-1/3 text-[11px]">Artículo</th>
+                                         <th class="py-4 px-6 font-bold uppercase tracking-widest text-center border-l border-gray-100 w-1/2 text-[11px]">Descripción</th>
+                                         <th class="py-4 px-6 font-bold uppercase text-center tracking-widest border-l border-gray-100 w-1/6 text-[11px]">Total</th>
                                      </tr>
-                                 `}).join('')}
-                                 ${trn > 0 ? `
-                                     <tr class="break-inside-avoid">
-                                         <td class="py-6 px-6 text-center border-r border-gray-100 align-middle">
-                                             <p class="font-bold text-[#111827] text-[14px]">Transporte</p>
-                                         </td>
-                                         <td class="py-6 px-8 border-r border-gray-100 align-middle text-[12px] text-[#374151] leading-relaxed font-medium">
-                                             Cargo por viáticos a zona: ${ev.ubicacion}
-                                         </td>
-                                         <td class="py-6 px-6 text-center align-middle">
-                                             <p class="font-black text-[#111827] text-[18px]">B/. ${trn.toFixed(2)}</p>
-                                         </td>
-                                     </tr>
+                                 </thead>
+                                 <tbody class="divide-y divide-gray-100">
+                                     ${sA.map((s) => {
+                                         const cant = Number(s.cantidad) || 1;
+                                         return `
+                                         <tr class="break-inside-avoid">
+                                             <td class="py-6 px-6 text-center border-r border-gray-100 align-top">
+                                                 <p class="font-bold text-[#111827] text-[14px] leading-tight">${s.nombre}</p>
+                                                 ${cant > 1 ? `<p class="font-semibold text-[#7C3AED] text-[12px] mt-1.5 bg-[#7C3AED]/10 py-1 rounded-md inline-block px-3">- ${cant} Horas -</p>` : ''}
+                                             </td>
+                                             <td class="py-6 px-8 border-r border-gray-100 align-top">
+                                                 <div class="text-[#6B7280] text-[12px] leading-relaxed space-y-2">${s.descripcion || 'Servicio de evento'}</div>
+                                             </td>
+                                             <td class="py-6 px-6 text-center align-middle">
+                                                 <p class="font-black text-[#111827] text-[18px]">B/. ${parseFloat(s.precio).toFixed(2)}</p>
+                                             </td>
+                                         </tr>
+                                     `}).join('')}
+                                     ${trn > 0 ? `
+                                         <tr class="break-inside-avoid">
+                                             <td class="py-6 px-6 text-center border-r border-gray-100 align-middle">
+                                                 <p class="font-bold text-[#111827] text-[14px]">Transporte</p>
+                                             </td>
+                                             <td class="py-6 px-8 border-r border-gray-100 align-middle text-[12px] text-[#374151] leading-relaxed font-medium">
+                                                 Cargo por viáticos a zona: ${ev.ubicacion}
+                                             </td>
+                                             <td class="py-6 px-6 text-center align-middle">
+                                                 <p class="font-black text-[#111827] text-[18px]">B/. ${trn.toFixed(2)}</p>
+                                             </td>
+                                         </tr>
+                                     ` : ''}
+                                 </tbody>
+                             </table>
+                        </div>
+                     </div>
+
+                     <div class="px-0 mt-4 flex justify-between gap-8 break-inside-avoid relative z-10">
+                         <div class="w-1/2">
+                             <div class="bg-white p-5 rounded-xl border border-[#4F46E5]/10 shadow-sm h-full">
+                                 <div class="flex items-center gap-2 mb-3 text-[#4F46E5] border-b border-gray-100 pb-3">
+                                     <h3 class="font-bold uppercase tracking-widest text-[11px]">Notas Importantes</h3>
+                                 </div>
+                                 <div class="text-[11px] font-medium text-[#6B7280] leading-relaxed space-y-2">
+                                     <p>Gracias por confiar en Diverty Eventos Panamá.</p>
+                                     <p>El saldo pendiente debe ser cancelado antes o al finalizar el evento.</p>
+                                 </div>
+                             </div>
+                         </div>
+                         <div class="w-[45%] flex flex-col items-end">
+                             <div class="w-full border border-[#4F46E5]/10 rounded-xl overflow-hidden bg-white shadow-sm flex flex-col">
+                                 <div class="flex justify-between items-center py-3.5 px-6 border-b border-gray-100 text-[13px]">
+                                     <span class="font-semibold text-[#6B7280]">Subtotal:</span>
+                                     <span class="font-bold text-[#111827]">B/. ${tot.toFixed(2)}</span>
+                                 </div>
+                                 ${abo > 0 ? `
+                                 <div class="flex justify-between items-center py-3.5 px-6 border-b border-gray-100 text-[13px] bg-emerald-50/50">
+                                     <span class="font-semibold text-[#6B7280]">Abono:</span>
+                                     <span class="font-bold text-emerald-600">- B/. ${abo.toFixed(2)}</span>
+                                 </div>
                                  ` : ''}
-                             </tbody>
-                         </table>
-                    </div>
-                 </div>
-
-                 <div class="px-0 mt-4 flex justify-between gap-8 break-inside-avoid relative z-10">
-                     <div class="w-1/2">
-                         <div class="bg-white p-5 rounded-xl border border-[#4F46E5]/10 shadow-sm h-full">
-                             <div class="flex items-center gap-2 mb-3 text-[#4F46E5] border-b border-gray-100 pb-3">
-                                 <h3 class="font-bold uppercase tracking-widest text-[11px]">Notas Importantes</h3>
-                             </div>
-                             <div class="text-[11px] font-medium text-[#6B7280] leading-relaxed space-y-2">
-                                 <p>Gracias por confiar en Diverty Eventos Panamá.</p>
-                                 <p>El saldo pendiente debe ser cancelado antes o al finalizar el evento.</p>
-                                 <p>Para pagos aceptamos: Yappy, Transferencia Bancaria o Efectivo.</p>
+                                 <div class="bg-[#4F46E5] text-white py-6 px-6 text-center">
+                                     <span class="block text-[11px] uppercase tracking-widest font-semibold mb-1 opacity-90">Total Pendiente:</span>
+                                     <span class="block text-[36px] font-black leading-none pb-1">B/. ${(tot - abo).toFixed(2)}</span>
+                                 </div>
                              </div>
                          </div>
                      </div>
-                     <div class="w-[45%] flex flex-col items-end">
-                         <div class="w-full border border-[#4F46E5]/10 rounded-xl overflow-hidden bg-white shadow-sm flex flex-col">
-                             <div class="flex justify-between items-center py-3.5 px-6 border-b border-gray-100 text-[13px]">
-                                 <span class="font-semibold text-[#6B7280]">Subtotal:</span>
-                                 <span class="font-bold text-[#111827]">B/. ${tot.toFixed(2)}</span>
-                             </div>
-                             ${abo > 0 ? `
-                             <div class="flex justify-between items-center py-3.5 px-6 border-b border-gray-100 text-[13px] bg-emerald-50/50">
-                                 <span class="font-semibold text-[#6B7280]">Abono:</span>
-                                 <span class="font-bold text-emerald-600">- B/. ${abo.toFixed(2)}</span>
-                             </div>
-                             ` : ''}
-                             <div class="bg-[#4F46E5] text-white py-6 px-6 text-center">
-                                 <span class="block text-[11px] uppercase tracking-widest font-semibold mb-1 opacity-90">Total Pendiente:</span>
-                                 <span class="block text-[36px] font-black leading-none pb-1">B/. ${(tot - abo).toFixed(2)}</span>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
+                </div>
+            `;
 
-                 <div class="mt-8 pb-4 break-inside-avoid relative z-10">
-                     <div class="bg-white rounded-xl border border-[#4F46E5]/10 p-6 flex justify-between items-stretch text-[11px] shadow-sm">
-                         <div class="flex gap-4 w-[35%] border-r border-gray-100 pr-4">
-                             <div class="leading-snug space-y-1.5">
-                                 <h4 class="font-bold text-[#111827] uppercase tracking-widest mb-2 text-[10px]">Métodos de Pago</h4>
-                                 <p class="font-semibold text-[#111827]">Yappy: <span class="font-medium text-[#6B7280]">${EMPRESA.telefono}</span></p>
-                                 <p class="font-medium text-[#6B7280]">${EMPRESA.banco} - ${EMPRESA.tipoCuenta}</p>
-                                 <p class="font-semibold text-[#111827]">Nº: <span class="font-medium text-[#6B7280]">${EMPRESA.numeroCuenta}</span></p>
-                                 <p class="font-semibold text-[#111827]">Titular: <span class="font-medium text-[#6B7280] uppercase">${EMPRESA.nombreTitular}</span></p>
-                             </div>
-                         </div>
-                         <div class="flex flex-col items-center justify-center w-[65%] pl-6">
-                             <h3 class="text-2xl text-[#111827]" style="font-family: 'Brush Script MT', 'Dancing Script', cursive, serif; font-style: italic;">Diverty Eventos</h3>
-                             <p class="text-[#6B7280] font-medium text-[10px] mt-1.5 text-center tracking-wide uppercase">Diversión que crea recuerdos</p>
-                         </div>
-                     </div>
-                 </div>
-            </div>
-        `;
+            document.body.appendChild(pdfContainer);
 
-        const opt = { 
-            margin: 0, 
-            filename: `Recibo_Diverty_${ev.cliente.replace(/[^a-z0-9]/gi, '_')}.pdf`, 
-            image: { type: 'jpeg', quality: 1.0 }, 
-            html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" }, 
-            jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
-        };
+            // 4. Generar PDF
+            const opt = { 
+                margin: 0, 
+                filename: `Recibo_Diverty_${ev.cliente.replace(/[^a-z0-9]/gi, '_')}.pdf`, 
+                image: { type: 'jpeg', quality: 1.0 }, 
+                html2canvas: { scale: 2, useCORS: true, backgroundColor: "#ffffff" }, 
+                jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
+            };
 
-        await window.html2pdf().set(opt).from(pdfContainer.firstElementChild).save();
-        showToast("¡PDF descargado con éxito!", "success");
-    }
+            await window.html2pdf().set(opt).from(pdfContainer.firstElementChild).save();
+            
+            // 5. Limpieza
+            document.body.removeChild(pdfContainer);
+            showToast("¡PDF descargado con éxito!", "success");
+
+        } catch (err) {
+            console.error(err);
+            showToast("Error al generar el documento. Intenta desde una computadora.", "error");
+        } finally {
+            // Restaurar botón
+            if (btnElement) {
+                btnElement.disabled = false;
+                btnElement.innerHTML = originalBtnText;
+            }
+        }
+    };
 
 
     function renderHome() {
@@ -1084,6 +1110,7 @@
                         </div>
                     </section>
 
+                    <!-- CALENDARIO DE DISPONIBILIDAD -->
                     <section id="calendar-section" class="my-20 relative animate-slide-up border-y border-slate-100 py-10 bg-slate-50/50">
                         <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-4 text-slate-800 font-nunito">
                             Disponibilidad en Vivo
@@ -1092,9 +1119,9 @@
                         <div class="max-w-3xl mx-auto px-2 sm:px-4">
                             <div class="bg-white p-4 sm:p-8 rounded-3xl shadow-sm border border-slate-200">
                                 <div class="flex justify-between items-center mb-6">
-                                    <button id="prevMonth" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                    <button data-action="prevMonth" id="prevMonth" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
                                     <h3 id="cal-month-year" class="text-lg sm:text-xl font-bold text-purple-700 capitalize">Cargando...</h3>
-                                    <button id="nextMonth" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                                    <button data-action="nextMonth" id="nextMonth" class="p-2 bg-slate-100 hover:bg-slate-200 rounded-xl text-slate-600 transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
                                 </div>
                                 <div id="availability-calendar-grid" class="grid grid-cols-7 gap-1 sm:gap-2 text-center">
                                     <!-- Aquí se renderiza el calendario por JS -->
@@ -1702,6 +1729,12 @@
         const { action, itemId, change, date } = target.dataset;
 
         switch (action) {
+            // 🚀 INTERACCIÓN DEL BOTÓN DESCARGAR PDF 🚀
+            case 'download-pdf':
+                if (window.downloadClientPDF) {
+                    window.downloadClientPDF(itemId, target);
+                }
+                break;
             case 'select-date':
                 setActiveSection('booking');
                 setTimeout(() => {
