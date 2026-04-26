@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <!-- Título Actualizado -->
     <title>Diverty Eventos | Planes de Fiestas en Panamá</title>
     <meta name="description" content="¡Celebra con Diverty Eventos! Fiestas infantiles en Panamá. Payasitos, animadores, pintacaritas y shows de burbujas.">
     
-    <!-- SEO, PWA, and other meta tags -->
     <meta name="keywords" content="fiestas infantiles panama, payasos panama, animadores panama, pintacaritas panama, shows burbujas, fiestas cumpleaños panama">
     <meta name="geo.region" content="PA">
     <meta name="geo.placename" content="Panama City">
@@ -23,35 +21,28 @@
     <meta name="twitter:card" content="summary_large_image">
     
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRGl2ZXJ0eSBFdmVudG9zIiwic2hvcnRfbmFtZSI6IkRpdmVydHkiLCJzdGFydF91cmwiOiIvIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzBkOTQ4OCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2RpdmVydHlldmVudG9zLm9ubGluZS9hbmRyb2lkLWNocm9tZS01MTJ4NTEyLnBuZyIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmcifV19">
-    <!-- Theme color actualizado -->
     <meta name="theme-color" content="#00C2CB">
 
-    <!-- Preload critical resources for faster loading -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" as="style">
     <link rel="preload" href="https://divertyeventos.online/android-chrome-512x512.png" as="image">
 
-    <!-- External Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&family=Poppins:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.7.77/Tone.js" defer></script>
     
-    <!-- Structured Data -->
     <script type="application/ld+json" id="schema-event-planner"></script>
     <script type="application/ld+json" id="schema-faq"></script>
     <script type="application/ld+json" id="schema-products"></script>
 
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBYYJTHTEF"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-SBYYJTHTEF');
     </script>
     
-    <!-- Google Tag Manager -->
     <script>
         (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -59,40 +50,26 @@
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GT-NCTBXSPZ');
     </script>
-    <!-- End Google Tag Manager -->
 
-    <!-- 
-    ================================================================
-    |                        STYLES (CSS)                          |
-    ================================================================
-    -->
     <style>
-        /* ================== ESTILOS BRILLANTES Y PROFESIONALES ================== */
         :root {
-            /* Paleta Brillante pero Profesional */
-            --primary-purple: #7C3AED; /* Violeta elegante */
-            --primary-teal: #0891b2;   /* Cyan profundo */
-            --primary-pink: #E11D48;   /* Fucsia sofisticado */
-            --primary-yellow: #F59E0B; /* Amarillo dorado */
-            --primary-orange: #EA580C; /* Naranja cálido */
-            
-            /* Gradientes */
+            --primary-purple: #7C3AED;
+            --primary-teal: #0891b2;
+            --primary-pink: #E11D48;
+            --primary-yellow: #F59E0B;
+            --primary-orange: #EA580C;
             --gradient-primary: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); 
             --gradient-secondary: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); 
             --gradient-tertiary: linear-gradient(135deg, #f59e0b 0%, #ea580c 100%); 
             --gradient-rainbow: linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4, #f59e0b);
-            
-            /* Sombras refinadas */
             --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
             --shadow-medium: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
             --shadow-strong: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             --bg-light: #F8FAFC; 
         }
-        /* ================== FIN ESTILOS ================== */
 
         *{box-sizing:border-box}
         html{scroll-behavior:smooth}
-        /* Fondo con puntos suavizados para mayor elegancia */
         body{font-family:'Quicksand',sans-serif;background-color:var(--bg-light);background-image: radial-gradient(rgba(245, 158, 11, 0.15) 1.5px, transparent 1.5px), radial-gradient(rgba(6, 182, 212, 0.15) 1.5px, transparent 1.5px); background-size: 50px 50px; background-position: 0 0, 25px 25px; background-attachment:fixed;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;line-height:1.7;cursor:none}
         .btn-premium,a,button{cursor:none}
         h2,h3,h4,.font-poppins{font-family:'Poppins',sans-serif}
@@ -189,7 +166,6 @@
         .review-rating{display:flex;color:var(--primary-yellow)} 
         .verified-badge{font-size:.75rem;font-weight:600;color:#059669;background-color:#d1fae5;padding:.25rem .75rem;border-radius:50px;display:inline-flex;align-items:center}
         
-        /* Wizard Styles */
         .wizard-content { display: none; animation: slideUpFadeIn 0.4s ease-out; }
         .wizard-content.active { display: block; }
         .wizard-step { transition: all 0.3s ease; }
@@ -200,7 +176,6 @@
     <canvas id="confetti-canvas"></canvas>
     <canvas id="magic-cursor"></canvas>
 
-    <!-- Banner promocional -->
     <div id="promo-banner" class="bg-gradient-to-r from-purple-700 via-pink-600 to-yellow-600 text-white p-3 font-semibold text-sm sm:text-base relative flex flex-wrap items-center justify-center border-b border-white/20 gap-3 shadow-md">
         <span id="promo-text" class="text-center tracking-wide">✨ ¡FIESTA TOTAL! 10% OFF en Plan Magic - Válido hasta el 30 de abril</span>
         <div id="countdown-timer" class="bg-black/20 px-3 py-1.5 rounded-lg font-mono text-xs sm:text-sm font-bold flex items-center border border-white/10">
@@ -235,7 +210,6 @@
         </div>
     </header>
     
-    <!-- Barra de carrito -->
     <div id="cartSummary" class="hidden sticky top-20 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 p-3 shadow-md">
         <div class="container mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-4 text-slate-800 font-semibold">
@@ -281,7 +255,6 @@
         <!-- Home section is pre-rendered -->
     </main>
 
-    <!-- Footer Profesional y Mágico -->
     <footer class="bg-gradient-to-r from-cyan-600 via-purple-600 to-pink-600 text-white relative pt-24 pb-10 border-t border-slate-200 overflow-hidden">
         <div class="wavy-divider top">
             <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
@@ -291,7 +264,6 @@
         <div class="container mx-auto px-6 text-center relative z-10">
             <p class="font-extrabold text-4xl mb-6 font-nunito tracking-wide text-white drop-shadow-md">Diverty<span class="text-yellow-300">Eventos</span></p>
             
-            <!-- Contacto & RRSS -->
             <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 mb-8 text-sm sm:text-base font-semibold">
                 <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-5 py-2.5 rounded-full transition-all backdrop-blur-sm border border-white/20 hover:scale-105 shadow-sm">
                     <i data-lucide="instagram" class="w-5 h-5 text-pink-300"></i> @diverty_eventos_pty
@@ -308,7 +280,6 @@
         </div>
     </footer>
     
-    <!-- Nav móvil inferior -->
     <nav id="mobile-nav" class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] flex justify-around items-center h-16 z-40">
         <a href="#home" class="mobile-nav-link-bottom flex flex-col items-center justify-center text-slate-500 nav-action">
             <i data-lucide="sun" class="w-5 h-5"></i>
@@ -327,12 +298,10 @@
         </a>
     </nav>
 
-    <!-- Botones flotantes (Se eliminó el chat) -->
     <div class="floating-buttons">
         <a href="https://wa.me/50766677965?text=¡Hola! Quiero saber más sobre el Plan Magic con conejo real 🐇." class="floating-btn whatsapp-btn" target="_blank" rel="noopener noreferrer" aria-label="Contactar por WhatsApp"><i data-lucide="phone" class="text-white w-7 h-7"></i></a>
     </div>
     
-    <!-- Modal de Éxito Profesional -->
     <div id="infoModal" class="modal-backdrop">
         <div class="modal-content bg-white text-slate-800 rounded-3xl shadow-2xl p-8 max-w-md w-full text-center border-t-8 border-emerald-500">
             <div class="mb-6">
@@ -346,7 +315,6 @@
         </div>
     </div>
 
-    <!-- Modal de Carrito -->
     <div id="cartModal" class="modal-backdrop">
         <div class="modal-content bg-white text-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 max-w-lg w-full border border-slate-100">
             <h2 class="text-2xl font-extrabold mb-6 flex items-center justify-center gap-2 text-center text-slate-800">
@@ -374,7 +342,6 @@
         </div>
     </div>
     
-    <!-- Modal Calculadora -->
     <div id="calculatorModal" class="modal-backdrop">
         <div class="modal-content bg-white text-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 max-w-2xl w-full border-t-8 border-cyan-500">
             <h2 class="text-2xl font-extrabold mb-6 flex items-center justify-center gap-2 text-slate-800"><i data-lucide="calculator" class="text-cyan-600"></i>Calculadora Rápida</h2>
@@ -404,7 +371,6 @@
         </div>
     </div>
 
-    <!-- Modal Pre-Reserva -->
     <div id="bookingConfirmModal" class="modal-backdrop">
         <div class="modal-content text-center p-8 max-w-md w-full bg-white rounded-3xl shadow-2xl border-t-8 border-yellow-400">
             <div class="w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -434,10 +400,6 @@
     <script>
     document.addEventListener('DOMContentLoaded', () => {
 
-        // ================================================================
-        // |               DATOS DE LA APLICACIÓN (data.js)               |
-        // ================================================================
-        
         const locations = [
             { value: 'panama-centro', label: '📍 Panamá Centro (+$5)', cost: 5 },
             { value: 'arraijan', label: '📍 Arraiján (+$15)', cost: 15 },
@@ -511,14 +473,11 @@
             { id: 3, name: "Ana R.", rating: 5, comment: "La pintacaritas es una artista, diseños hermosos.", date: "2025-11-10", service: "Pintacaritas", avatar: "https://i.pravatar.cc/48?img=9", location: "La Chorrera" }
         ];
 
-        // ================================================================
-        // |               LÓGICA DE LA APLICACIÓN (app.js)               |
-        // ================================================================
         const app = { 
             activeSection: 'home', 
             cart: [], 
             location: 'panama-centro',
-            wizardStep: 1 // Track wizard step globally
+            wizardStep: 1
         };
         let bookingFormState = {};
 
@@ -566,7 +525,6 @@
                 cartIcon.classList.add('cart-icon-shake');
                 setTimeout(() => cartIcon.classList.remove('cart-icon-shake'), 500);
             }
-            window.dataLayer.push({ event: 'add_to_cart', ecommerce: { items: [{ item_id: item.id, item_name: item.name, price: item.price, quantity: quantity }] } });
         }
 
         function removeFromCart(itemId) {
@@ -672,30 +630,6 @@
             calculatorItems = [];
         }
 
-        async function callGeminiAPI(chatHistory, generationConfig = null) {
-            const apiKey = "";
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-            const payload = { contents: chatHistory };
-            if (generationConfig) payload.generationConfig = generationConfig;
-            try {
-                const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                const result = await response.json();
-                if (!response.ok) throw new Error(result?.error?.message || `Error de API: ${response.status}`);
-                const textResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
-                if (textResponse) {
-                    if (generationConfig?.responseMimeType === "application/json") {
-                        try { return JSON.parse(textResponse); }
-                        catch (e) { throw new Error("La IA devolvió una respuesta en un formato inesperado."); }
-                    }
-                    return textResponse;
-                }
-                throw new Error("No se recibió una respuesta de texto de la IA.");
-            } catch (error) {
-                console.error("Error al llamar a la API de Gemini:", error);
-                return { error: true, responseText: "¡Ups! 🌴 Parece que tenemos un problema de conexión. Por favor, intenta de nuevo." };
-            }
-        }
-
         function setActiveSection(sectionId) {
             if (!sectionId) sectionId = 'home';
 
@@ -734,7 +668,6 @@
                     home: renderHome, 
                     santa: renderSanta, 
                     services: renderServices, 
-                    ideas: renderIdeaGenerator,
                     clowns: renderClowns, 
                     bubbles: renderBubbles, 
                     gallery: renderGallery, 
@@ -1041,9 +974,8 @@
                     </div>
                     
                     <div class="lg:col-span-7 order-1 lg:order-2">
-                        ${app.cart.length > 0 ? `<form id="bookingForm" name="reservaFiesta" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200">
+                        ${app.cart.length > 0 ? `<form id="bookingForm" class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200">
                             
-                            <!-- Wizard Progress Bar -->
                             <div class="flex items-center justify-between mb-8 relative">
                                 <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-200 z-0 rounded-full"></div>
                                 <div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-purple-500 z-0 transition-all duration-300 rounded-full" style="width: 0%;"></div>
@@ -1063,10 +995,6 @@
                             </div>
 
                             <div class="space-y-5">
-                                <input type="hidden" name="form-name" value="reservaFiesta" />
-                                <p class="hidden"><label>No llenar esto: <input name="bot-field" /></label></p>
-                                
-                                <!-- WIZARD STEP 1: Contacto -->
                                 <div class="wizard-content active" id="step-1">
                                     <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Tus Datos</h3>
                                     <div class="space-y-5">
@@ -1076,28 +1004,25 @@
                                     </div>
                                 </div>
 
-                                <!-- WIZARD STEP 2: Evento -->
                                 <div class="wizard-content" id="step-2">
                                     <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">Detalles de la Fiesta</h3>
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="form-input"><option value="">Seleccione...</option><option value="cumpleanos">🎉 Cumpleaños</option><option value="bautizo">🕊️ Bautizo</option><option value="comunion">✝️ Comunión</option><option value="navidad">🎅 Navideña</option><option value="evento_escolar">🎒 Escolar</option><option value="otro">⭐ Otro</option></select></div>
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="form-input"><option value="">Seleccione...</option><option value="Cumpleaños">🎉 Cumpleaños</option><option value="Bautizo">🕊️ Bautizo</option><option value="Comunión">✝️ Comunión</option><option value="Navidad">🎅 Navideña</option><option value="Escolar">🎒 Escolar</option><option value="Otro">⭐ Otro</option></select></div>
                                         <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Niños Estimados</label><input type="number" name="guests" class="form-input" min="1" placeholder="Ej: 25"></div>
                                         <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Fecha *</label><input type="date" name="date" required class="form-input" min="${new Date().toISOString().split('T')[0]}"></div>
                                         <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Hora *</label><input type="time" name="time" required class="form-input"></div>
                                     </div>
                                 </div>
 
-                                <!-- WIZARD STEP 3: Ubicación -->
                                 <div class="wizard-content" id="step-3">
                                     <h3 class="text-xl font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4">¿Dónde Celebramos?</h3>
                                     <div class="space-y-5">
                                         <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Ubicación (Zona) *</label><select name="location" required class="form-input">${locationOptionsHtml}</select></div>
                                         <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Dirección Completa *</label><textarea name="address" required class="form-input" rows="2" placeholder="Barriada, calle, número de casa/apto..."></textarea></div>
-                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Comentarios Especiales</label><textarea name="comments" class="form-input" rows="2" placeholder="Información adicional útil..."></textarea></div>
+                                        <div class="form-group"><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider mb-1.5 block">Comentarios Especiales</label><textarea name="comments" class="form-input" rows="2" placeholder="Temática, indicaciones de llegada..."></textarea></div>
                                     </div>
                                 </div>
                                 
-                                <!-- Botones de Navegación del Wizard -->
                                 <div class="flex justify-between pt-6 mt-6 border-t border-slate-100">
                                     <button type="button" id="btn-prev" class="btn-premium bg-slate-100 text-slate-600 hover:bg-slate-200 border border-slate-200 shadow-sm hidden"><i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i>Atrás</button>
                                     
@@ -1119,23 +1044,19 @@
                 };
                 restoreBookingFormState();
 
-                // === LÓGICA DEL FORMULARIO WIZARD ===
-                let currentStep = app.wizardStep; // Restaurar el paso actual si recargó
+                let currentStep = app.wizardStep;
                 const totalSteps = 3;
 
                 const updateWizardUI = () => {
-                    app.wizardStep = currentStep; // Guardar estado
+                    app.wizardStep = currentStep;
                     
-                    // Mostrar/Ocultar contenido
                     $$('.wizard-content').forEach((el, idx) => {
                         el.classList.toggle('active', idx + 1 === currentStep);
                     });
 
-                    // Actualizar barra de progreso
                     const progressPct = ((currentStep - 1) / (totalSteps - 1)) * 100;
                     $('#wizard-progress-bar').style.width = `${progressPct}%`;
 
-                    // Actualizar íconos y textos
                     $$('.wizard-step').forEach((el, idx) => {
                         const stepNum = idx + 1;
                         const iconDiv = el.querySelector('.wizard-icon');
@@ -1156,7 +1077,6 @@
                         }
                     });
 
-                    // Mostrar/Ocultar botones
                     if(currentStep === 1) {
                         $('#btn-prev').classList.add('hidden');
                     } else {
@@ -1172,16 +1092,13 @@
                     }
                 };
 
-                // Inicializar UI al renderizar
                 updateWizardUI();
 
-                // Botón Siguiente
                 $('#btn-next').onclick = () => {
                     const currentContent = $(`#step-${currentStep}`);
                     const inputs = currentContent.querySelectorAll('input[required], select[required], textarea[required]');
                     let isValid = true;
                     
-                    // Disparar la validación nativa de HTML5
                     for(let input of inputs) {
                         if (!input.checkValidity()) {
                             input.reportValidity();
@@ -1192,12 +1109,11 @@
 
                     if (isValid) {
                         currentStep++;
-                        saveBookingFormState(); // Guardar lo tipeado hasta ahora
+                        saveBookingFormState(); 
                         updateWizardUI();
                     }
                 };
 
-                // Botón Anterior
                 $('#btn-prev').onclick = () => {
                     if (currentStep > 1) {
                         currentStep--;
@@ -1209,6 +1125,9 @@
             lucide.createIcons();
         }
 
+        // ========================================================
+        // 🚀 NUEVA LÓGICA DE ENVÍO DIRECTO A FIREBASE (CRM) 🚀
+        // ========================================================
         async function handleBookingSubmit(e) {
             e.preventDefault();
             if (app.cart.length === 0) { showToast('Selecciona al menos un servicio', 'error'); return; }
@@ -1218,60 +1137,105 @@
             const originalBtnHTML = submitBtn.innerHTML;
             
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-white inline-block align-middle mr-2"></div> Enviando...';
-
-            const formData = new FormData(form);
-            
-            const cartData = app.cart;
-            const servicesText = cartData.map(item => `${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}`).join('\n');
-            const subtotal = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const transportCost = calculateTransportCost(app.location);
-            const finalTotal = subtotal + transportCost;
-
-            formData.append('serviciosSeleccionados', servicesText);
-            formData.append('subtotalReserva', `$${subtotal.toFixed(2)}`);
-            formData.append('costoTransporte', `$${transportCost.toFixed(2)}`);
-            formData.append('totalFinal', `$${finalTotal.toFixed(2)}`);
-
-            const urlEncodedData = new URLSearchParams(formData).toString();
+            submitBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-white inline-block align-middle mr-2"></div> Conectando...';
 
             try {
-                const response = await fetch('/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: urlEncodedData
-                });
+                // 1. Importar Firebase dinámicamente
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js");
+                const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js");
+                const { getAuth, signInAnonymously } = await import("https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js");
 
-                if (response.ok) {
-                    triggerBookingConfetti();
-                    showModal('infoModal');
-                    $('#modalMessage').textContent = '¡Gracias por elegir Diverty Eventos! Hemos recibido su solicitud de reserva. Nuestro equipo de coordinación revisará los detalles y se contactará a la brevedad vía WhatsApp o correo electrónico para confirmar la fecha. ¡Estamos listos para la diversión!';
-                    app.cart = [];
-                    bookingFormState = {};
-                    app.wizardStep = 1; // Reiniciar wizard
-                    updateCartUI();
-                    renderBooking();
-                } else {
-                    throw new Error('Network response was not ok');
-                }
+                // 2. Conectar a la base de datos de tu CRM
+                const firebaseConfig = {
+                    apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0",
+                    authDomain: "diverty-eventos.firebaseapp.com",
+                    projectId: "diverty-eventos",
+                    storageBucket: "diverty-eventos.firebasestorage.app",
+                    messagingSenderId: "491130670516",
+                    appId: "1:491130670516:web:8c80abd09ccc92c194f6e1"
+                };
+
+                const fbApp = initializeApp(firebaseConfig, "DivertyLandingPage");
+                const db = getFirestore(fbApp);
+                const auth = getAuth(fbApp);
+
+                // 3. Inicio de sesión anónimo silencioso
+                await signInAnonymously(auth);
+
+                // 4. Preparar datos exactamente como los lee el CRM
+                const formData = new FormData(form);
+                const cartData = app.cart;
+                const transportCost = calculateTransportCost(app.location);
+                const subtotal = cartData.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const finalTotal = subtotal + transportCost;
+                
+                const serviciosFormateados = cartData.map(item => ({
+                    id: item.id,
+                    nombre: item.name,
+                    precioOriginal: item.price,
+                    precio: item.price * item.quantity,
+                    cantidad: item.quantity,
+                    descripcion: item.description || ''
+                }));
+                
+                const resumenServicios = cartData.map(item => item.quantity > 1 ? `${item.name} (x${item.quantity})` : item.name).join(' + ');
+
+                // Limpiar texto de ubicación para el CRM (Ej: "Panamá Centro")
+                const locObj = locations.find(l => l.value === app.location);
+                const ubicacionLimpia = locObj ? locObj.label.replace(/📍 |\(\+\$\d+\)/g, '').trim() : 'Panamá Centro';
+                
+                const eventId = `web-${Date.now()}`;
+
+                const dataToSave = {
+                    id: eventId,
+                    cliente: formData.get('name') || '',
+                    email: formData.get('email') || '',
+                    telefono: formData.get('phone') || '',
+                    tipoEvento: formData.get('eventType') || 'Cumpleaños',
+                    ninos: formData.get('guests') || '',
+                    fecha: formData.get('date') || '',
+                    hora: formData.get('time') || '',
+                    ubicacion: ubicacionLimpia,
+                    direccion: formData.get('address') || '',
+                    comentarios: formData.get('comments') || '',
+                    servicio: resumenServicios,
+                    serviciosSeleccionados: serviciosFormateados,
+                    transporte: transportCost.toString(),
+                    gastos: '0',
+                    detalleGastos: '',
+                    total: finalTotal.toString(),
+                    abono: '0',
+                    estado: 'Pendiente', // El CRM lo mostrará en naranja listo para cobrar
+                    createdAt: new Date().toISOString(),
+                    deletedLocally: false,
+                    colisionAprobada: false,
+                    origen: 'Web Directa' 
+                };
+
+                // 5. Guardar en la base de datos (En milisegundos se refleja en tu App)
+                const docRef = doc(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'eventos', eventId);
+                await setDoc(docRef, dataToSave);
+
+                // 6. Éxito
+                triggerBookingConfetti();
+                showModal('infoModal');
+                $('#modalMessage').textContent = '¡Gracias por elegir Diverty Eventos! Hemos recibido tu solicitud de reserva en nuestro sistema. Nuestro equipo la verificará y te contactará por WhatsApp en breve para confirmarla. ¡Estamos listos para la diversión!';
+                
+                app.cart = [];
+                bookingFormState = {};
+                app.wizardStep = 1;
+                updateCartUI();
+                renderBooking();
+
             } catch (error) {
-                console.error('Error enviando formulario a Netlify:', error);
-                showToast('Se produjo un error al procesar su solicitud. Por favor, intente nuevamente o contáctenos vía WhatsApp.', 'error');
+                console.error('Error conectando a Firebase:', error);
+                showToast('Hubo un problema enviando tu reserva. Por favor, contáctanos por WhatsApp.', 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalBtnHTML;
             }
         }
-
-        function showBlogPost(postId) {
-            const post = blogPosts.find(p => p.id === postId);
-            if (!post) return;
-            const modal = document.createElement('div');
-            modal.className = 'modal-backdrop show';
-            modal.innerHTML = `<div class="modal-content bg-white rounded-3xl p-6 sm:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-slate-100"><button data-action="close-modal" class="absolute top-4 right-4 p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button><h2 class="text-2xl sm:text-3xl font-extrabold mb-4 text-slate-800 pr-8">${post.title}</h2><div class="flex items-center text-xs text-slate-400 mb-6 font-bold uppercase tracking-wider"><i data-lucide="calendar" class="w-3.5 h-3.5 mr-1"></i>${post.date}<span class="mx-3 text-slate-200">|</span><i data-lucide="user" class="w-3.5 h-3.5 mr-1"></i>${post.author}</div><img src="${post.image}" alt="${post.title}" class="w-full h-48 sm:h-64 object-cover rounded-2xl mb-8 border border-slate-100 shadow-sm" loading="lazy" width="800" height="256" onerror="this.onerror=null;this.src='https://placehold.co/800x256/e2e8f0/ffffff?text=Error';"></img><div class="prose max-w-none mb-8 text-slate-600 leading-relaxed font-medium">${post.content}</div></div>`;
-            document.body.appendChild(modal);
-            lucide.createIcons();
-        }
+        // ========================================================
 
         function toggleMobileMenu(show) {
             const menu = $('#mobileMenu');
@@ -1303,7 +1267,7 @@
             if (!target) return;
             
             playPopSound(); 
-            const { action, itemId, change, category } = target.dataset;
+            const { action, itemId, change } = target.dataset;
 
             switch (action) {
                 case 'add-to-cart':
@@ -1356,9 +1320,7 @@
         }
 
         function initCountdown() {
-            // Target date: April 30, 2026
             const countDownDate = new Date("April 30, 2026 23:59:59").getTime();
-
             const timerInterval = setInterval(function() {
                 const now = new Date().getTime();
                 const distance = countDownDate - now;
@@ -1376,7 +1338,6 @@
                 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
                 const timerElement = document.getElementById("countdown-timer");
-                
                 const fH = hours < 10 ? "0" + hours : hours;
                 const fM = minutes < 10 ? "0" + minutes : minutes;
                 const fS = seconds < 10 ? "0" + seconds : seconds;
@@ -1408,12 +1369,7 @@
             window.addEventListener('scroll', () => {
                 const header = $('#mainHeader');
                 const scrollPosition = window.scrollY;
-                
-                if (scrollPosition > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
+                if (scrollPosition > 50) { header.classList.add('scrolled'); } else { header.classList.remove('scrolled'); }
             });
             $('#openCalculator').onclick = openCalculator;
             $('#closeCalculator').onclick = () => hideModal('calculatorModal');
@@ -1433,73 +1389,11 @@
             });
             const promoBanner = $('#promo-banner');
             const closePromoBtn = $('#close-promo-banner');
-            if (localStorage.getItem('promoBannerDismissed2026')) {
-                promoBanner.classList.add('hide');
-            }
+            if (localStorage.getItem('promoBannerDismissed2026')) { promoBanner.classList.add('hide'); }
             closePromoBtn.onclick = () => {
                 promoBanner.classList.add('hide');
                 localStorage.setItem('promoBannerDismissed2026', 'true');
             };
-        }
-
-        function renderIdeaGenerator() {
-            $('#mainContent').innerHTML = `<div class="container mx-auto px-4"><section class="my-10">
-                <h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-slate-800 font-nunito flex justify-center items-center gap-3">Generador de Ideas <i data-lucide="sparkles" class="w-8 h-8 text-purple-500"></i></h2>
-                <p class="text-center text-slate-500 mb-8 max-w-2xl mx-auto font-medium">¿Sin inspiración? Describe tu fiesta ideal y nuestra IA creará un plan mágico.</p>
-                <div class="max-w-3xl mx-auto bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-                        <div><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider block mb-1.5">Temática</label><input id="idea-theme" type="text" class="form-input focus:ring-2 focus:ring-purple-500" placeholder="Circo, Hawaiana..."></div>
-                        <div><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider block mb-1.5">Edad</label><input id="idea-age" type="number" class="form-input focus:ring-2 focus:ring-purple-500" placeholder="5"></div>
-                        <div><label class="form-label font-bold text-slate-600 text-xs uppercase tracking-wider block mb-1.5">Invitados</label><input id="idea-guests" type="number" class="form-input focus:ring-2 focus:ring-purple-500" placeholder="15"></div>
-                    </div>
-                    <button id="generate-ideas" class="w-full btn-premium btn-primary py-3.5 text-base shadow-md hover:scale-105"><i data-lucide="wand-2"></i>Generar Ideas Mágicas</button>
-                    <div id="idea-results" class="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-100 min-h-[100px] hidden"></div>
-                </div>
-            </section></div>`;
-            $('#generate-ideas').onclick = generatePartyIdeas;
-            lucide.createIcons();
-        }
-
-        async function generatePartyIdeas() {
-            const theme = $('#idea-theme').value.trim();
-            const age = $('#idea-age').value.trim();
-            const guests = $('#idea-guests').value.trim();
-            if (!theme || !age || !guests) {
-                showToast('Por favor, completa todos los campos.', 'error');
-                return;
-            }
-            const button = $('#generate-ideas');
-            button.disabled = true;
-            button.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-white inline-block align-middle mr-2"></div> Generando...';
-            const resultsContainer = $('#idea-results');
-            resultsContainer.classList.remove('hidden');
-            resultsContainer.innerHTML = '<div class="flex justify-center items-center py-6"><div class="loading-spinner"></div></div>';
-            const prompt = `Como un planificador profesional de eventos infantiles, crea un plan para una fiesta de temática "${theme}" para un niño/a de ${age} años con ${guests} invitados. Completa el JSON.`;
-            const generationConfig = {
-                responseMimeType: "application/json",
-                responseSchema: {
-                    type: "OBJECT",
-                    properties: {
-                        "juegos": { "type": "ARRAY", "description": "Lista de 3 juegos temáticos.", "items": { "type": "STRING" } },
-                        "decoracion": { "type": "ARRAY", "description": "Lista de 3 ideas de decoración.", "items": { "type": "STRING" } },
-                        "comida": { "type": "ARRAY", "description": "Lista de 3 ideas de comida/snacks.", "items": { "type": "STRING" } }
-                    },
-                    required: ["juegos", "decoracion", "comida"]
-                }
-            };
-            const chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
-            const ideas = await callGeminiAPI(chatHistory, generationConfig);
-            if (ideas && ideas.juegos && !ideas.error) {
-                resultsContainer.innerHTML = `
-                    <h4 class="text-lg font-bold text-slate-800 mt-2 mb-3 flex items-center gap-2"><i data-lucide="gamepad-2" class="w-4 h-4 text-purple-500"></i> Juegos Divertidos</h4><ul class="list-disc pl-5 space-y-1 text-slate-600 mb-5 text-sm">${ideas.juegos.map(item => `<li>${item}</li>`).join('')}</ul>
-                    <h4 class="text-lg font-bold text-slate-800 mt-2 mb-3 flex items-center gap-2"><i data-lucide="party-popper" class="w-4 h-4 text-pink-500"></i> Decoración</h4><ul class="list-disc pl-5 space-y-1 text-slate-600 mb-5 text-sm">${ideas.decoracion.map(item => `<li>${item}</li>`).join('')}</ul>
-                    <h4 class="text-lg font-bold text-slate-800 mt-2 mb-3 flex items-center gap-2"><i data-lucide="utensils" class="w-4 h-4 text-yellow-500"></i> Menú Temático</h4><ul class="list-disc pl-5 space-y-1 text-slate-600 text-sm">${ideas.comida.map(item => `<li>${item}</li>`).join('')}</ul>`;
-            } else {
-                resultsContainer.innerHTML = `<p class="text-red-500 text-center font-bold text-sm">${ideas.responseText || 'No se pudieron generar ideas. Intenta de nuevo.'}</p>`;
-            }
-            button.disabled = false;
-            button.innerHTML = '<i data-lucide="wand-2"></i>Generar Ideas Mágicas';
-            lucide.createIcons();
         }
 
         function initializeSchemas() {
@@ -1534,17 +1428,8 @@
                 "name": service.name,
                 "image": service.image,
                 "description": service.description,
-                "brand": {
-                    "@type": "Brand",
-                    "name": "Diverty Eventos"
-                },
-                "offers": {
-                    "@type": "Offer",
-                    "url": `https://divertyeventos.online/#services`,
-                    "priceCurrency": "USD",
-                    "price": service.price,
-                    "availability": "https://schema.org/InStock"
-                }
+                "brand": { "@type": "Brand", "name": "Diverty Eventos" },
+                "offers": { "@type": "Offer", "url": `https://divertyeventos.online/#services`, "priceCurrency": "USD", "price": service.price, "availability": "https://schema.org/InStock" }
             }));
             $('#schema-products').textContent = JSON.stringify(productSchema);
         }
@@ -1591,23 +1476,15 @@
                 }
             }
             
-            for (let i = 0; i < particleCount; i++) {
-                particles.push(new ConfettiParticle());
-            }
+            for (let i = 0; i < particleCount; i++) { particles.push(new ConfettiParticle()); }
 
             let startTime = Date.now();
             function animate() {
-                if (Date.now() - startTime > duration) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    return;
-                }
+                if (Date.now() - startTime > duration) { ctx.clearRect(0, 0, canvas.width, canvas.height); return; }
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 particles.forEach((p, index) => {
-                    p.update();
-                    p.draw();
-                    if (p.life >= p.maxLife) {
-                        particles.splice(index, 1);
-                    }
+                    p.update(); p.draw();
+                    if (p.life >= p.maxLife) { particles.splice(index, 1); }
                 });
                 requestAnimationFrame(animate);
             }
@@ -1621,51 +1498,35 @@
             const colors = ["#7C3AED", "#E11D48", "#0891b2"];
             let mouse = { x: -100, y: -100 };
 
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
+            function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 
             class Particle {
                 constructor(x, y) {
-                    this.x = x;
-                    this.y = y;
+                    this.x = x; this.y = y;
                     this.size = Math.random() * 3 + 1;
-                    this.life = 0;
-                    this.maxLife = Math.random() * 30 + 20;
-                    this.vx = Math.random() * 1.5 - 0.75;
-                    this.vy = Math.random() * 1.5 - 0.75;
+                    this.life = 0; this.maxLife = Math.random() * 30 + 20;
+                    this.vx = Math.random() * 1.5 - 0.75; this.vy = Math.random() * 1.5 - 0.75;
                     this.color = colors[Math.floor(Math.random() * colors.length)];
                 }
-                update() {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    this.life++;
-                }
+                update() { this.x += this.vx; this.y += this.vy; this.life++; }
                 draw() {
                     ctx.globalAlpha = 1 - (this.life / this.maxLife);
                     ctx.fillStyle = this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
                 }
             }
 
             function animate() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 particles.forEach((p, index) => {
-                    p.update();
-                    p.draw();
-                    if (p.life >= p.maxLife) {
-                        particles.splice(index, 1);
-                    }
+                    p.update(); p.draw();
+                    if (p.life >= p.maxLife) { particles.splice(index, 1); }
                 });
                 requestAnimationFrame(animate);
             }
 
             window.addEventListener('mousemove', (e) => {
-                mouse.x = e.clientX;
-                mouse.y = e.clientY;
+                mouse.x = e.clientX; mouse.y = e.clientY;
                 particles.push(new Particle(mouse.x, mouse.y));
             });
             
