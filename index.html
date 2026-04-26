@@ -501,13 +501,14 @@
                 if (app.activeSection === 'services') renderServices();
             }
 
+            // 🚀 CORRECCIÓN: Filtramos las reservas eliminadas (deletedLocally)
             const eventsSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos'));
             bookedEvents = eventsSnap.docs.map(d => d.data()).filter(ev => {
                 const est = (ev.estado || '').toLowerCase();
-                return !est.includes('cancelado') && !est.includes('rechazada') && !est.includes('cot');
+                // Ignorar si está borrada, cancelada, rechazada o es cotización
+                return ev.deletedLocally !== true && !est.includes('cancelado') && !est.includes('rechazada') && !est.includes('cot');
             });
 
-            // Re-renderizar el calendario si estamos en home
             if (app.activeSection === 'home') renderCalendar();
 
         } catch(e) {
@@ -517,7 +518,7 @@
 
     initFirebaseAndData();
 
-    // 🚀 LÓGICA DEL CALENDARIO VISUAL 🚀
+    // 🚀 CALENDARIO VISUAL CORREGIDO (MÁS LIMPIO, TIPO APP) 🚀
     function renderCalendar() {
         const grid = $('#availability-calendar-grid');
         if(!grid) return;
@@ -547,29 +548,27 @@
 
             let eventsThisDay = bookedEvents.filter(ev => ev.fecha === dateStr).length;
 
-            let statusClass = 'bg-white text-slate-700 hover:border-purple-300 cursor-pointer border border-slate-200 shadow-sm';
+            let statusClass = '';
             let statusLabel = '';
 
+            // DISEÑO LIMPIO CON PUNTOS DE COLOR (Igual al CRM)
             if (currentDate < today) {
-                statusClass = 'bg-slate-50 text-slate-400 opacity-40 cursor-not-allowed border border-transparent';
+                statusClass = 'text-slate-400 opacity-40 cursor-not-allowed';
             } else if (eventsThisDay >= 3) {
-                // AGOTADO (3 o más eventos en el día)
-                statusClass = 'bg-red-50 border-red-200 text-red-600 cursor-not-allowed';
-                statusLabel = '<span class="block text-[9px] font-bold uppercase tracking-wider mt-1 text-red-500 truncate">Agotado</span>';
+                statusClass = 'bg-red-50 text-red-400 cursor-not-allowed';
+                statusLabel = '<div class="w-1.5 h-1.5 rounded-full bg-red-400 mt-1"></div>';
             } else if (eventsThisDay >= 1) {
-                // ÚLTIMOS CUPOS (1 o 2 eventos)
-                statusClass = 'bg-yellow-50 border-yellow-300 text-yellow-700 cursor-pointer shadow-sm hover:scale-105';
-                statusLabel = '<span class="block text-[9px] font-bold uppercase tracking-wider mt-1 text-yellow-600 truncate">Último Cupo</span>';
+                statusClass = 'bg-yellow-50 text-yellow-700 cursor-pointer shadow-sm hover:scale-105 border border-yellow-100';
+                statusLabel = '<div class="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-1"></div>';
             } else {
-                // LIBRE
-                statusClass = 'bg-white border-emerald-200 text-slate-700 cursor-pointer shadow-sm hover:scale-105 hover:border-emerald-400';
-                statusLabel = '<span class="block text-[9px] font-bold uppercase tracking-wider mt-1 text-emerald-500 truncate">Libre</span>';
+                statusClass = 'bg-white text-slate-700 cursor-pointer shadow-sm hover:scale-105 border border-slate-100 hover:border-emerald-200';
+                statusLabel = '<div class="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1"></div>';
             }
 
             const canSelect = currentDate >= today && eventsThisDay < 3;
 
             html += `
-                <div class="py-2 px-1 sm:p-3 rounded-xl flex flex-col items-center justify-center transition-all ${statusClass}"
+                <div class="py-2 sm:py-3 rounded-xl flex flex-col items-center justify-center transition-all ${statusClass}"
                      ${canSelect ? `data-action="select-date" data-date="${dateStr}"` : ''}>
                     <span class="text-sm sm:text-base font-extrabold">${d}</span>
                     ${statusLabel}
@@ -1421,7 +1420,6 @@
     function handleGlobalClick(e) {
         const target = e.target.closest('[data-action]');
         
-        // Controladores del calendario visual
         if (e.target.closest('#prevMonth')) {
             currentCalDate.setMonth(currentCalDate.getMonth() - 1);
             renderCalendar();
