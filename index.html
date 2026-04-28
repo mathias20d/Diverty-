@@ -46,6 +46,23 @@
         @media (max-width: 1024px) { body { padding-bottom: 120px; } } 
         @media (max-width: 768px) { body { font-size: 16px; } h2 { font-size: 1.75rem!important; } h3 { font-size: 1.25rem!important; } }
         
+        /* === PREVENIR SALTO DE PIE DE PÁGINA EN LA CARGA INICIAL (FOUC FIX) === */
+        body:not(.js-loaded) footer,
+        body:not(.js-loaded) #mobile-nav,
+        body:not(.js-loaded) .whatsapp-container {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        body.js-loaded footer,
+        body.js-loaded #mobile-nav,
+        body.js-loaded .whatsapp-container {
+            transition: opacity 0.5s ease-in;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
         /* === 2. HEADER Y COMPORTAMIENTO DE SCROLL === */
         #mainHeader { 
             transition: background-color 0.2s ease, box-shadow 0.2s ease; 
@@ -117,7 +134,7 @@
 
         /* === 7. DISEÑO ULTRA PRO CARD OPTIMIZADO === */
         .ultra-card { border: 1px solid rgba(255,255,255,0.05); transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .snap-container { padding-bottom: 2rem !important; padding-top: 1rem !important; }
+        .snap-container { padding-bottom: 2rem !important; padding-top: 0.5rem !important; }
 
         /* === 8. ESTILOS CALENDARIO NUEVOS === */
         .cal-day-cell { border-radius: 9999px; transition: all 0.2s ease; cursor: pointer; }
@@ -167,9 +184,8 @@
             perspective: 1000;
         }
 
-        /* OPTIMIZACIONES EXTREMAS PARA MÓVIL (Paso 1) */
+        /* OPTIMIZACIONES EXTREMAS PARA MÓVIL */
         @media (max-width: 768px) {
-            /* 1. Apagar el efecto cristal */
             .backdrop-blur-md, 
             .backdrop-blur-sm,
             #mainHeader.scrolled,
@@ -177,27 +193,21 @@
             .nav-pill-float {
                 backdrop-filter: none !important;
                 -webkit-backdrop-filter: none !important;
-                background-color: rgba(15, 23, 42, 0.98) !important; /* Fondo sólido oscuro en lugar de blur */
+                background-color: rgba(15, 23, 42, 0.98) !important;
             }
-
-            /* 2. Apagar animaciones pesadas de CPU */
             .btn-animated-gradient {
                 animation: none !important;
                 background-size: 100% 100% !important;
             }
             .whatsapp-btn {
-                animation: none !important; /* Apaga el latido del WhatsApp */
+                animation: none !important;
                 box-shadow: 0 4px 10px rgba(37,211,102,0.4) !important;
             }
-            
-            /* 3. Ocultar el canvas de confeti en móvil para liberar memoria */
-            #confetti-canvas {
-                display: none !important;
-            }
+            #confetti-canvas { display: none !important; }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col relative">
+<body class="flex flex-col relative">
     
     <canvas id="confetti-canvas"></canvas>
 
@@ -270,10 +280,10 @@
         </div>
     </nav>
 
-    <!-- Contenedor Principal -->
-    <main id="mainContent" class="flex-grow flex flex-col"></main>
+    <!-- Contenedor Principal. AÑADIDO: min-h-screen y w-full para obligarlo a ocupar toda la pantalla y empujar el footer hacia abajo SIEMPRE -->
+    <main id="mainContent" class="flex-grow flex flex-col min-h-screen w-full"></main>
 
-    <!-- FOOTER ULTRA PRO (Restaurado con su diseño elegante original) -->
+    <!-- FOOTER ULTRA PRO -->
     <footer class="bg-[#0B1121] text-white relative pt-16 pb-36 lg:pb-16 border-t border-slate-800 mt-auto overflow-hidden">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50"></div>
         <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -432,6 +442,11 @@
     <div id="toast"></div>
 
     <script type="module">
+    // IMPORTANTE: Prevenir que el navegador recuerde la posición y salte hacia abajo
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
     // ==========================================
     // 1. CONFIGURACIÓN Y FIREBASE
     // ==========================================
@@ -816,7 +831,7 @@
     }
 
     // ==========================================
-    // 7. GENERADORES DE HTML Y RENDERIZADO UI (EFECTOS DE TEXTO PREMIUM)
+    // 7. GENERADORES DE HTML Y RENDERIZADO UI
     // ==========================================
     function createInput(label, name, type, extra='') {
         return `
@@ -882,22 +897,21 @@
         const isFeatured = item.isRecommended || item.discountApplied; 
         
         let badgeHTML = '';
-        let cardClasses = 'bg-slate-900 border border-slate-800 rounded-[2rem] p-6 flex flex-col relative transition-all duration-300 h-full group group-hover-playful overflow-hidden';
+        let cardClasses = 'bg-slate-900 border border-slate-800 rounded-[2rem] p-5 flex flex-col relative transition-all duration-300 h-full group group-hover-playful overflow-hidden';
         let btnColor = 'bg-slate-800 border border-[#334155] text-slate-200 shadow-md hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 hover:text-white hover:border-transparent hover:scale-[1.02] transition-all group-hover:shadow-[0_8px_20px_rgba(139,92,246,0.3)]';
         let iconColor = 'text-purple-400 group-hover:text-white transition-colors';
         
-        /* EFECTO 1: Clases mágicas para los títulos */
         let titleClasses = 'text-xl sm:text-2xl font-extrabold leading-tight font-poppins drop-shadow-sm transition-all duration-300 ';
 
         if (item.id === 'clown_magic') {
             badgeHTML = `<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_4px_10px_rgba(219,39,119,0.5)] z-20 flex items-center gap-1.5 badge-float"><i data-lucide="star" class="w-3 h-3 fill-white"></i> Más Popular</div>`;
-            cardClasses = 'bg-slate-900 border border-purple-500/50 rounded-[2rem] p-6 flex flex-col relative transition-all duration-300 shadow-[0_0_25px_rgba(168,85,247,0.15)] h-full group group-hover-playful hover:shadow-[0_0_40px_rgba(168,85,247,0.3)] hover:-translate-y-2';
+            cardClasses = 'bg-slate-900 border border-purple-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-300 shadow-[0_0_25px_rgba(168,85,247,0.15)] h-full group group-hover-playful hover:shadow-[0_0_40px_rgba(168,85,247,0.3)] hover:-translate-y-2';
             btnColor = 'bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white shadow-[0_8px_20px_rgba(219,39,119,0.4)] border-none hover:scale-[1.02]';
             iconColor = 'text-white';
             titleClasses += 'text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 drop-shadow-[0_2px_10px_rgba(219,39,119,0.2)]';
         } else if (item.id === 'clown_diverty') {
             badgeHTML = `<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_4px_10px_rgba(16,185,129,0.5)] z-20 flex items-center gap-1.5 badge-float"><i data-lucide="thumbs-up" class="w-3 h-3 fill-white"></i> Recomendado</div>`;
-            cardClasses = 'bg-slate-900 border border-emerald-500/50 rounded-[2rem] p-6 flex flex-col relative transition-all duration-300 shadow-[0_0_25px_rgba(16,185,129,0.15)] h-full group group-hover-playful hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:-translate-y-2';
+            cardClasses = 'bg-slate-900 border border-emerald-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-300 shadow-[0_0_25px_rgba(16,185,129,0.15)] h-full group group-hover-playful hover:shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:-translate-y-2';
             btnColor = 'bg-gradient-to-r from-emerald-500 to-teal-500 btn-animated-gradient text-white shadow-[0_8px_20px_rgba(16,185,129,0.4)] border-none hover:scale-[1.02]';
             iconColor = 'text-white';
             titleClasses += 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 drop-shadow-[0_2px_10px_rgba(16,185,129,0.2)]';
@@ -906,13 +920,12 @@
             titleClasses += 'text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-purple-300 group-hover:to-pink-300';
         }
 
-        /* EFECTO 2: Precios más atrevidos con gradientes y tracking */
         let priceDisplayHTML = '';
         let priceText = item.price || (item.type === 'character-group' && item.characters && item.characters[0].price);
         if (priceText) {
             if (item.discountApplied) {
                 priceDisplayHTML = `
-                <div class="flex items-end justify-between mt-auto mb-5 w-full relative z-10">
+                <div class="flex items-end justify-between mt-auto mb-3 w-full relative z-10">
                     <div class="flex items-end gap-2.5">
                         <span class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 leading-none tracking-tight">$${item.price.toFixed(2)}</span>
                         <span class="text-slate-500 line-through text-sm font-bold leading-none mb-1.5">$${item.originalPrice.toFixed(2)}</span>
@@ -921,7 +934,7 @@
                 </div>`;
             } else {
                 priceDisplayHTML = `
-                <div class="flex items-end justify-end mt-auto mb-5 w-full relative z-10">
+                <div class="flex items-end justify-end mt-auto mb-3 w-full relative z-10">
                     <span class="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-100 to-slate-300 group-hover:from-purple-400 group-hover:to-pink-400 transition-all duration-300 leading-none tracking-tight">$${priceText.toFixed(2)}</span>
                     ${item.isHourly ? '<span class="text-slate-500 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/hr</span>' : ''}
                     ${item.isPerChild ? '<span class="text-slate-500 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/niño</span>' : ''}
@@ -929,40 +942,38 @@
             }
         }
 
-        /* EFECTO 3: Listas hermosas con checks circulares interactivos */
         let servicesListHTML = '';
         if (item.services) {
-            servicesListHTML = `<ul class="space-y-3 mt-6 mb-6 relative z-20 w-full flex-grow">` + 
+            servicesListHTML = `<ul class="space-y-2 mt-4 mb-4 relative z-20 w-full flex-grow">` + 
                 item.services.map(s => `<li class="flex items-start text-[13px] text-slate-300 font-medium leading-snug group/item transition-colors hover:text-white"><div class="mt-0.5 mr-3 bg-purple-500/10 p-1 rounded-full group-hover/item:bg-pink-500/20 transition-colors border border-purple-500/20"><i data-lucide="check" class="w-3 h-3 text-purple-400 group-hover/item:text-pink-400 transition-colors"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('') + 
                 `</ul>`;
         }
 
-        /* EFECTO 4: Botones con tipografía en mayúsculas premium */
         let actionButtonHTML = '';
         if (item.author) {
-             actionButtonHTML = `<button data-action="show-blog" data-item-id="${item.id}" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-2xl transition-colors mt-auto shadow-md tracking-wide uppercase text-[11px] sm:text-xs">Leer Más</button>`;
+             actionButtonHTML = `<button data-action="show-blog" data-item-id="${item.id}" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-2xl transition-colors mt-auto shadow-md tracking-wide uppercase text-[11px] sm:text-xs">Leer Más</button>`;
         } else if (item.isHourly) {
             actionButtonHTML = `
-            <div class="mt-auto w-full pt-4 relative z-10">
+            <div class="mt-auto w-full pt-3 relative z-10">
                 <div class="flex items-center justify-between mb-3 bg-[#1E293B] border border-[#334155] p-1.5 rounded-[20px]">
                     <button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button>
                     <span id="qty-${item.id}" class="text-base font-bold text-white w-10 text-center">1</span>
                     <button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button>
                 </div>
-                <button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="w-full bg-slate-800 border border-[#334155] hover:bg-gradient-to-r hover:from-emerald-400 hover:to-teal-500 hover:border-transparent text-white font-extrabold py-4 rounded-2xl shadow-md transition-all flex justify-center items-center gap-2 group/addbtn tracking-wide uppercase text-[11px] sm:text-xs"><i data-lucide="shopping-cart" class="w-4 h-4 text-emerald-400 group-hover/addbtn:text-white"></i> Añadir al Carrito</button>
+                <button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="w-full bg-slate-800 border border-[#334155] hover:bg-gradient-to-r hover:from-emerald-400 hover:to-teal-500 hover:border-transparent text-white font-extrabold py-3.5 rounded-2xl shadow-md transition-all flex justify-center items-center gap-2 group/addbtn tracking-wide uppercase text-[11px] sm:text-xs"><i data-lucide="shopping-cart" class="w-4 h-4 text-emerald-400 group-hover/addbtn:text-white"></i> Añadir al Carrito</button>
             </div>`;
         } else if (item.isPerChild) {
             const minQty = item.id === 'service_photos' ? 1 : (item.minChildren || 10);
             actionButtonHTML = `
-            <div class="mt-auto w-full pt-4 relative z-10">
+            <div class="mt-auto w-full pt-3 relative z-10">
                 <div class="mb-3">
                     <label for="qty-${item.id}" class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Cantidad (mín. ${minQty}):</label>
                     <input type="number" id="qty-${item.id}" class="w-full bg-[#1E293B] border border-[#334155] text-center font-bold text-white p-2.5 rounded-xl outline-none focus:border-purple-400 shadow-inner" value="${minQty}" min="${minQty}">
                 </div>
-                <button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="w-full bg-slate-800 border border-[#334155] hover:bg-gradient-to-r hover:from-emerald-400 hover:to-teal-500 hover:border-transparent text-white font-extrabold py-4 rounded-2xl shadow-md transition-all flex justify-center items-center gap-2 group/addbtn tracking-wide uppercase text-[11px] sm:text-xs"><i data-lucide="shopping-cart" class="w-4 h-4 text-emerald-400 group-hover/addbtn:text-white"></i> Añadir al Carrito</button>
+                <button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="w-full bg-slate-800 border border-[#334155] hover:bg-gradient-to-r hover:from-emerald-400 hover:to-teal-500 hover:border-transparent text-white font-extrabold py-3.5 rounded-2xl shadow-md transition-all flex justify-center items-center gap-2 group/addbtn tracking-wide uppercase text-[11px] sm:text-xs"><i data-lucide="shopping-cart" class="w-4 h-4 text-emerald-400 group-hover/addbtn:text-white"></i> Añadir al Carrito</button>
             </div>`;
         } else if (item.type === 'character-group') {
-            actionButtonHTML = `<div class="max-h-40 overflow-y-auto pr-1 space-y-2 custom-scrollbar mt-auto w-full pt-4 relative z-10">` + item.characters.map(char => `
+            actionButtonHTML = `<div class="max-h-40 overflow-y-auto pr-1 space-y-2 custom-scrollbar mt-auto w-full pt-3 relative z-10">` + item.characters.map(char => `
                 <div class="flex items-center justify-between p-2 bg-[#1E293B] rounded-xl border border-[#334155] hover:border-purple-500/50 transition-colors group/btn">
                     <div class="w-10 h-10 rounded-full overflow-hidden mr-3 border border-slate-600"><img src="${char.image}" alt="${char.name}" class="w-full h-full object-cover group-hover/btn:scale-110 transition-transform" loading="lazy"></div>
                     <div class="flex-1"><p class="font-extrabold text-white text-xs tracking-tight">${char.name.replace('Personaje: ', '')}</p><p class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 text-[11px]">$${char.price.toFixed(0)}</p></div>
@@ -973,11 +984,11 @@
             const btnIcon = isPackage ? 'calendar-plus' : 'shopping-cart';
             const btnText = isPackage ? 'Reservar este plan' : 'Añadir al carrito';
             
-            actionButtonHTML = `<button data-action="add-to-cart" data-item-id="${item.id}" class="w-full ${btnColor} font-extrabold py-4 px-6 rounded-2xl transition-transform flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10"><i data-lucide="${btnIcon}" class="w-5 h-5 ${iconColor} group-hover:animate-pulse"></i> ${btnText}</button>`;
+            actionButtonHTML = `<button data-action="add-to-cart" data-item-id="${item.id}" class="w-full ${btnColor} font-extrabold py-3.5 px-6 rounded-2xl transition-transform flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10"><i data-lucide="${btnIcon}" class="w-5 h-5 ${iconColor} group-hover:animate-pulse"></i> ${btnText}</button>`;
         }
         
         let topSection = `
-            <div class="flex items-center gap-4 mb-3 relative z-10">
+            <div class="flex items-center gap-4 mb-1 relative z-10">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-slate-700/50 bg-slate-800 relative group-hover:border-purple-500/50 transition-colors">
                     <img src="${item.image}" alt="${item.name || item.title}" class="w-full h-full object-cover" loading="lazy">
                     <div class="absolute inset-0 bg-gradient-to-tr from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -991,12 +1002,12 @@
 
         if (item.author) {
             topSection = `
-            <div class="w-full h-40 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-slate-700/50 bg-slate-800 mb-4 relative group-hover:border-purple-500/50 transition-colors">
+            <div class="w-full h-36 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-slate-700/50 bg-slate-800 mb-3 relative group-hover:border-purple-500/50 transition-colors">
                 <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60"></div>
             </div>
             <div class="flex items-center text-[10px] text-slate-400 mb-2 font-bold uppercase tracking-wider relative z-10"><i data-lucide="calendar" class="w-3 h-3 mr-1 text-purple-400"></i>${item.date}<span class="mx-2 text-slate-600">|</span><i data-lucide="user" class="w-3 h-3 mr-1 text-pink-400"></i>${item.author}</div>
-            <h3 class="${titleClasses} mb-2 relative z-10">${item.title}</h3>
+            <h3 class="${titleClasses} mb-1 relative z-10">${item.title}</h3>
             <p class="text-slate-400 text-xs font-medium line-clamp-2 leading-tight mb-2 relative z-10">${item.description}</p>
             `;
             servicesListHTML = '';
@@ -1020,20 +1031,19 @@
         setContent(`
             <div class="container mx-auto px-4 pt-28">
                 <section class="mb-10">
-                    <h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito flex justify-center items-center gap-3">
+                    <h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 text-white font-nunito flex justify-center items-center gap-3">
                         ${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400 animate-bounce" style="animation-duration: 2s;"></i>
                     </h2>
                     
-                    <!-- Grid de Tarjetas -->
-                    <div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-5 hide-scrollbar -mx-4 px-4 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch">
-                        ${items.map(createDetailedCardHTML).join('')}
+                    <div class="flex md:hidden items-center justify-center mb-5 opacity-80 animate-slide-up w-full">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span>
+                        <div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700">
+                            <div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div>
+                        </div>
                     </div>
                     
-                    <!-- SWIPE INDICATOR SUTIL UNIVERSAL -->
-                    <div class="flex md:hidden items-center justify-center mt-2 mb-6 opacity-80 animate-slide-up">
-                        <div class="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700">
-                            <div class="w-6 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div>
-                        </div>
+                    <div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-5 hide-scrollbar -mx-4 px-4 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch">
+                        ${items.map(createDetailedCardHTML).join('')}
                     </div>
                 </section>
             </div>
@@ -1194,7 +1204,7 @@
         setContent(`
             <div id="hero-section-identifier">
                 <div class="bg-[#0F172A]">
-                    <!-- SECCIÓN PRINCIPAL RESTAURADA: El video ahora se mueve fluidamente en todos los dispositivos -->
+                    <!-- SECCIÓN PRINCIPAL RESTAURADA -->
                     <section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden">
                         
                         <video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized">
@@ -1253,18 +1263,22 @@
                         </div>
                     </section>
                     
-                    <!-- Planes Destacados con nueva tipografía mágica -->
-                    <div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-6">
-                        <div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-4 w-full hide-scrollbar pt-4 items-stretch px-2">
+                    <!-- Planes Destacados -->
+                    <div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4">
+                        
+                        <!-- EL INDICADOR DE SWIPE AHORA ESTÁ ARRIBA ANTES DE LAS TARJETAS -->
+                        <div class="flex md:hidden items-center justify-center mb-3 opacity-80 animate-slide-up w-full">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span>
+                            <div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700">
+                                <div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-4 w-full hide-scrollbar pt-2 items-stretch px-2">
                             ${createDetailedCardHTML(featuredMagic)}
                             ${createDetailedCardHTML(featuredDiverty)}
                         </div>
                         
-                        <div class="flex items-center justify-center mt-2 mb-6 opacity-80 animate-slide-up">
-                            <div class="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700">
-                                <div class="w-6 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 
@@ -1803,6 +1817,9 @@
     setActiveSection(window.location.hash.substring(1) || 'home'); 
     updateCartUI();
     lucide.createIcons();
+    
+    // === REVELAR EL CONTENIDO SUAVEMENTE CUANDO TODO ESTÉ LISTO (FOUC FIX) ===
+    document.body.classList.add('js-loaded');
     </script>
 </body>
 </html>
