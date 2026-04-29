@@ -13,13 +13,9 @@
         .glass-panel { background: #1E293B; border: 1px solid #334155; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         input[type="text"], input[type="number"], input[type="url"], select, textarea { width: 100%; background: #0B1121; border: 1px solid #334155; color: white; border-radius: 12px; padding: 12px; margin-top: 8px; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: #8b5cf6; box-shadow: 0 0 10px rgba(139,92,246,0.3); }
-        .btn-pro { background: linear-gradient(90deg, #7C3AED, #E11D48); color: white; font-weight: bold; padding: 12px 24px; border-radius: 12px; cursor: pointer; transition: transform 0.2s; }
+        .btn-pro { background: linear-gradient(90deg, #7C3AED, #E11D48); color: white; font-weight: bold; padding: 12px 24px; border-radius: 12px; cursor: pointer; transition: transform 0.2s; border: none;}
         .btn-pro:hover { transform: scale(1.02); }
         .btn-pro:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
-        .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; }
-        .btn-upload { background: #334155; color: white; padding: 12px; border-radius: 12px; border: 1px dashed #64748b; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
-        .file-upload-wrapper:hover .btn-upload { background: #475569; border-color: #a855f7; }
     </style>
 </head>
 <body class="p-4 sm:p-6">
@@ -30,7 +26,7 @@
                 <i data-lucide="settings" class="w-8 h-8 text-purple-400 mr-2"></i>Diverty Admin
             </h1>
             <span class="bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-full text-sm font-bold border border-emerald-500/30 flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div> Conectado
+                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div> Conectado a Web
             </span>
         </header>
 
@@ -83,32 +79,14 @@
                         <input type="text" id="descripcion" placeholder="Ej: Duración: 2 Horas y Media" required>
                     </div>
                     
-                    <!-- NUEVA ZONA DE IMAGEN -->
-                    <div class="mb-5 bg-slate-800/50 p-3 rounded-xl border border-slate-700">
-                        <label class="text-xs text-slate-400 uppercase font-bold block mb-2">Imagen del Paquete</label>
-                        
-                        <div class="file-upload-wrapper mb-2">
-                            <div class="btn-upload" id="uploadBtnUI">
-                                <i data-lucide="image-plus" class="w-5 h-5"></i> Subir foto desde el celular
-                            </div>
-                            <input type="file" id="imageFile" accept="image/*">
-                        </div>
-                        
-                        <div class="flex items-center gap-2 text-xs text-slate-500 mb-2 justify-center">
-                            <span>O pega un link directamente:</span>
-                        </div>
-                        
-                        <input type="url" id="imagen" placeholder="https://..." class="!mt-0 text-sm" required>
-                        
-                        <div id="imagePreview" class="hidden mt-3 w-full h-32 rounded-lg border border-slate-600 overflow-hidden relative bg-slate-900">
+                    <div class="mb-5 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                        <label class="text-xs text-slate-400 uppercase font-bold flex items-center gap-1"><i data-lucide="image" class="w-4 h-4"></i> Link de la Imagen</label>
+                        <p class="text-[10px] text-slate-400 mt-1 mb-2 leading-tight">Truco: Sube tu foto gratis a <a href="https://imgbb.com" target="_blank" class="text-purple-400 font-bold underline">imgbb.com</a> y pega aquí el "Enlace Directo".</p>
+                        <input type="url" id="imagen" placeholder="https://i.ibb.co/..." required>
+                        <div id="imagePreviewBox" class="hidden mt-3 w-full h-32 rounded-lg border border-slate-600 overflow-hidden bg-slate-900">
                             <img id="previewImg" src="" class="w-full h-full object-cover">
-                            <div id="uploadProgress" class="absolute inset-0 bg-slate-900/80 flex items-center justify-center flex-col hidden">
-                                <i data-lucide="loader-2" class="w-8 h-8 text-purple-500 animate-spin mb-2"></i>
-                                <span class="text-xs font-bold text-purple-300">Subiendo...</span>
-                            </div>
                         </div>
                     </div>
-                    <!-- FIN ZONA DE IMAGEN -->
 
                     <div class="mb-6">
                         <label class="text-xs text-slate-400 uppercase font-bold">¿Qué incluye? (Una cosa por línea)</label>
@@ -138,67 +116,26 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
         
         const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
-        const storage = getStorage(app); // INICIALIZAMOS STORAGE PARA LAS FOTOS
 
         const form = document.getElementById('adminForm');
         const ofertaCheck = document.getElementById('oferta');
         const precioOriginalContainer = document.getElementById('precioOriginalContainer');
         const precioOriginalInput = document.getElementById('precioOriginal');
-        
-        const imageFileInput = document.getElementById('imageFile');
         const imageUrlInput = document.getElementById('imagen');
-        const imagePreviewBox = document.getElementById('imagePreview');
+        const imagePreviewBox = document.getElementById('imagePreviewBox');
         const previewImg = document.getElementById('previewImg');
-        const uploadProgress = document.getElementById('uploadProgress');
         const submitBtn = document.getElementById('submitBtn');
 
-        // Mostrar campo de precio viejo si es oferta
         ofertaCheck.addEventListener('change', (e) => {
             precioOriginalContainer.classList.toggle('hidden', !e.target.checked);
         });
 
-        // ==========================================
-        // MAGIA PARA SUBIR FOTOS DESDE EL CELULAR
-        // ==========================================
-        imageFileInput.addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            // Mostrar preview local rápido
-            imagePreviewBox.classList.remove('hidden');
-            previewImg.src = URL.createObjectURL(file);
-            uploadProgress.classList.remove('hidden');
-            submitBtn.disabled = true;
-
-            try {
-                // Crear una referencia en Firebase Storage (Carpeta: catalogo_images)
-                const storageRef = ref(storage, `catalogo_images/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`);
-                
-                // Subir el archivo
-                await uploadBytes(storageRef, file);
-                
-                // Obtener el link público
-                const downloadURL = await getDownloadURL(storageRef);
-                
-                // Poner el link en el input de texto automáticamente
-                imageUrlInput.value = downloadURL;
-                
-            } catch (error) {
-                console.error("Error subiendo imagen:", error);
-                alert("Hubo un error subiendo la imagen. Intenta pegar el link directamente.");
-            } finally {
-                uploadProgress.classList.add('hidden');
-                submitBtn.disabled = false;
-            }
-        });
-
-        // Mostrar preview si pegan un link manual
+        // Previsualizar la imagen cuando se pega el link
         imageUrlInput.addEventListener('input', () => {
             if(imageUrlInput.value) {
                 imagePreviewBox.classList.remove('hidden');
@@ -207,7 +144,6 @@
                 imagePreviewBox.classList.add('hidden');
             }
         });
-
 
         async function init() {
             await signInAnonymously(auth);
@@ -275,7 +211,6 @@
                 
                 alert('¡Paquete publicado en tu web!');
                 
-                // Limpiar formulario visualmente
                 form.reset();
                 precioOriginalContainer.classList.add('hidden');
                 imagePreviewBox.classList.add('hidden');
