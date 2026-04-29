@@ -56,11 +56,7 @@
         .mobile-nav-link { padding: 1rem 1.25rem; margin: 0.25rem 1rem; border-radius: 16px; transition: all .2s ease; display: flex; align-items: center; font-weight: 600; gap: 1rem; color: #cbd5e1; text-decoration: none; }
         .mobile-nav-link:hover, .mobile-nav-link.active { color: #fff; background: rgba(255,255,255,0.1); transform: translateX(5px); }
         
-        .btn-premium { font-weight: 700; border-radius: 9999px; transition: transform .2s ease, filter .2s ease; border: none; display: inline-flex; align-items: center; justify-content: center; gap: .75rem; position: relative; overflow: hidden; text-decoration: none; font-size: 1rem; }
-        .btn-premium:hover { transform: translateY(-2px); filter: brightness(1.05); } 
-        .btn-premium:active { transform: translateY(0); } 
-        
-        /* === MODALES BLINDADOS === */
+        /* === MODALES === */
         .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42,.85); z-index: 1050; display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; visibility: hidden; transition: opacity .3s ease; backdrop-filter: blur(8px); }
         @media (max-width: 640px) { .modal-backdrop { padding: 1rem; } }
         .modal-backdrop.show { opacity: 1; visibility: visible; }
@@ -81,7 +77,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; } 
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
         
-        /* === NOTIFICACIONES ULTRA PRO === */
+        /* === NOTIFICACIONES === */
         #toast { 
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px); 
             z-index: 11000; padding: 0.5rem 1.25rem 0.5rem 0.5rem; border-radius: 9999px; 
@@ -101,8 +97,6 @@
         #toast.info .toast-icon-bg { background: rgba(139,92,246,0.2); color: #c084fc; box-shadow: 0 0 15px rgba(139,92,246,0.5); }
         .toast-icon-bg { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
         
-        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
-
         /* === ANIMACIONES === */
         .animate-slide-up { animation: slideUpFadeIn .4s ease-out forwards; } 
         @keyframes slideUpFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } 
@@ -113,7 +107,7 @@
         .group-hover-playful:hover img { transform: scale(1.05) rotate(2deg); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); } 
         .group-hover-playful img { transition: transform 0.4s ease; }
 
-        /* === NAVEGACIÓN INFERIOR Y WHATSAPP === */
+        /* === NAVEGACIÓN INFERIOR === */
         .nav-pill-float { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.8); }
         .animate-swipe { animation: swipe 2s ease-in-out infinite; } 
         @keyframes swipe { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(40px); } }
@@ -138,19 +132,22 @@
 
     <header id="mainHeader" class="fixed top-0 left-0 w-full z-40 px-4 transition-all duration-200 pointer-events-none">
         <div class="container mx-auto flex justify-between items-center pointer-events-auto">
-            <a href="#home" class="flex items-center logo-container nav-action" aria-label="Inicio">
+            <button data-action="close-modal" data-target-section="home" class="flex items-center logo-container nav-action" aria-label="Inicio">
                 <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 p-[2px] mr-3 shadow-sm">
                     <img src="https://images.weserv.nl/?url=divertyeventos.online/android-chrome-512x512.png&w=100&output=webp" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border border-[#0F172A]" loading="eager">
                 </div>
-                <div class="flex flex-col drop-shadow-md"><span class="text-2xl sm:text-3xl font-extrabold text-white font-nunito leading-none">Diverty</span><span class="text-[10px] sm:text-xs font-bold text-purple-300 uppercase tracking-widest mt-0.5">Eventos</span></div>
-            </a>
+                <div class="flex flex-col drop-shadow-md">
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white font-nunito leading-none">Diverty</span>
+                    <span class="text-[10px] sm:text-xs font-bold text-purple-300 uppercase tracking-widest mt-0.5">Eventos</span>
+                </div>
+            </button>
             <nav class="hidden lg:flex items-center space-x-1 bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 shadow-sm text-white">
-                <a href="#home" class="nav-link !text-white hover:!text-purple-300 nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 text-yellow-400"></i>Inicio</a>
-                <a href="#services" class="nav-link !text-white hover:!text-purple-300 nav-action"><i data-lucide="gift" class="w-4 h-4 mr-2 text-pink-400"></i>Servicios</a>
-                <a href="#clowns" class="nav-link font-bold !text-white hover:!text-purple-300 nav-action"><i data-lucide="smile" class="w-4 h-4 mr-2 text-purple-400"></i>Planes</a>
-                <a href="#bubbles" class="nav-link !text-white hover:!text-purple-300 nav-action"><i data-lucide="droplet" class="w-4 h-4 mr-2 text-cyan-400"></i>Burbujas</a>
-                <a href="#gallery" class="nav-link !text-white hover:!text-purple-300 nav-action"><i data-lucide="image" class="w-4 h-4 mr-2 text-emerald-400"></i>Galería</a>
-                <a href="#booking" class="bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient nav-action text-white shadow-md ml-2 py-2 px-4 rounded-full flex items-center font-bold text-sm"><i data-lucide="calendar-check" class="w-4 h-4 mr-1.5"></i>Reservar</a>
+                <button data-action="close-modal" data-target-section="home" class="nav-link !text-white hover:!text-purple-300 nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 text-yellow-400"></i>Inicio</button>
+                <button data-action="close-modal" data-target-section="services" class="nav-link !text-white hover:!text-purple-300 nav-action"><i data-lucide="gift" class="w-4 h-4 mr-2 text-pink-400"></i>Servicios</button>
+                <button data-action="close-modal" data-target-section="clowns" class="nav-link font-bold !text-white hover:!text-purple-300 nav-action"><i data-lucide="smile" class="w-4 h-4 mr-2 text-purple-400"></i>Planes</button>
+                <button data-action="close-modal" data-target-section="bubbles" class="nav-link !text-white hover:!text-purple-300 nav-action"><i data-lucide="droplet" class="w-4 h-4 mr-2 text-cyan-400"></i>Burbujas</button>
+                <button data-action="close-modal" data-target-section="gallery" class="nav-link !text-white hover:!text-purple-300 nav-action"><i data-lucide="image" class="w-4 h-4 mr-2 text-emerald-400"></i>Galería</button>
+                <button data-action="close-modal" data-target-section="booking" class="bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient nav-action text-white shadow-md ml-2 py-2 px-4 rounded-full flex items-center font-bold text-sm"><i data-lucide="calendar-check" class="w-4 h-4 mr-1.5"></i>Reservar</button>
             </nav>
             <button id="mobileToggle" class="lg:hidden px-4 py-2 rounded-full text-white bg-gradient-to-r from-purple-600 to-indigo-600 shadow-[0_0_15px_rgba(139,92,246,0.4)] border border-purple-400/30 transition-transform hover:scale-105 flex items-center gap-2">
                 <span class="text-[11px] font-extrabold uppercase tracking-widest">Menú</span><i data-lucide="menu" class="w-4 h-4"></i>
@@ -161,7 +158,7 @@
     <div id="cartSummary" class="hidden fixed bottom-28 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-40 bg-[#1E293B]/95 backdrop-blur-sm border border-slate-700 p-3 shadow-2xl rounded-2xl">
         <div class="flex justify-between items-center gap-3">
             <div class="flex items-center gap-2 text-white font-semibold">
-                <div id="cart-icon-container" class="bg-purple-600/20 p-2 rounded-full text-purple-400"><i data-lucide="shopping-cart" class="w-5 h-5"></i></div>
+                <div class="bg-purple-600/20 p-2 rounded-full text-purple-400"><i data-lucide="shopping-cart" class="w-5 h-5"></i></div>
                 <div class="flex flex-col leading-tight"><span class="text-[10px] text-slate-400 uppercase">Total (<span id="itemCount" class="text-pink-400 font-bold">0</span>)</span><span id="totalPrice" class="text-emerald-400 font-extrabold text-base">$0.00</span></div>
             </div>
             <button id="viewCart" class="bg-white text-slate-900 font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-transform hover:scale-105">Ver Carrito</button>
@@ -173,15 +170,15 @@
         <div class="mobile-menu-header"><div class="flex justify-between items-center relative z-10"><h2 class="text-2xl font-extrabold font-nunito text-white">Menú Diverty</h2><button id="closeMobile" class="p-2 text-slate-400 hover:text-white rounded-full bg-white/5 transition-colors border border-white/10"><i data-lucide="x" class="h-5 w-5"></i></button></div></div>
         <div class="flex-1 p-2 py-4">
             <div class="space-y-1">
-                <a href="#home" class="mobile-nav-link nav-action"><i data-lucide="sun" class="w-5 h-5 text-yellow-400"></i>Inicio</a>
-                <a href="#portal" class="mobile-nav-link nav-action"><i data-lucide="search" class="w-5 h-5 text-indigo-400"></i>Mi Reserva</a>
-                <a href="#services" class="mobile-nav-link nav-action"><i data-lucide="gift" class="w-5 h-5 text-pink-400"></i>Servicios</a>
-                <a href="#clowns" class="mobile-nav-link text-white font-bold nav-action bg-white/10 border border-white/5"><i data-lucide="smile" class="w-5 h-5 text-purple-400"></i>Planes</a>
-                <a href="#bubbles" class="mobile-nav-link nav-action"><i data-lucide="droplet" class="w-5 h-5 text-cyan-400"></i>Burbujas</a>
-                <a href="#santa" class="mobile-nav-link nav-action"><i data-lucide="bell" class="w-5 h-5 text-red-400"></i>Santa Navideño</a>
-                <a href="#gallery" class="mobile-nav-link nav-action"><i data-lucide="image" class="w-5 h-5 text-emerald-400"></i>Galería</a>
+                <button data-action="close-modal" data-target-section="home" class="w-full mobile-nav-link nav-action"><i data-lucide="sun" class="w-5 h-5 text-yellow-400"></i>Inicio</button>
+                <button data-action="close-modal" data-target-section="portal" class="w-full mobile-nav-link nav-action"><i data-lucide="search" class="w-5 h-5 text-indigo-400"></i>Mi Reserva</button>
+                <button data-action="close-modal" data-target-section="services" class="w-full mobile-nav-link nav-action"><i data-lucide="gift" class="w-5 h-5 text-pink-400"></i>Servicios</button>
+                <button data-action="close-modal" data-target-section="clowns" class="w-full mobile-nav-link text-white font-bold nav-action bg-white/10 border border-white/5"><i data-lucide="smile" class="w-5 h-5 text-purple-400"></i>Planes</button>
+                <button data-action="close-modal" data-target-section="bubbles" class="w-full mobile-nav-link nav-action"><i data-lucide="droplet" class="w-5 h-5 text-cyan-400"></i>Burbujas</button>
+                <button data-action="close-modal" data-target-section="santa" class="w-full mobile-nav-link nav-action"><i data-lucide="bell" class="w-5 h-5 text-red-400"></i>Santa Navideño</button>
+                <button data-action="close-modal" data-target-section="gallery" class="w-full mobile-nav-link nav-action"><i data-lucide="image" class="w-5 h-5 text-emerald-400"></i>Galería</button>
             </div>
-            <div class="mt-8 mx-4"><a href="#booking" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-md nav-action flex justify-center items-center gap-2"><i data-lucide="calendar-check" class="w-5 h-5"></i> ¡Reserva Ahora!</a></div>
+            <div class="mt-8 mx-4"><button data-action="close-modal" data-target-section="booking" class="w-full bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-md nav-action flex justify-center items-center gap-2"><i data-lucide="calendar-check" class="w-5 h-5"></i> ¡Reserva Ahora!</button></div>
         </div>
     </nav>
 
@@ -217,11 +214,11 @@
     </footer>
     
     <nav id="mobile-nav" class="lg:hidden fixed bottom-6 left-4 right-4 nav-pill-float rounded-[2rem] flex justify-around items-center h-[72px] z-40 px-2 transition-transform duration-300">
-        <a href="#home" class="flex flex-col items-center justify-center text-slate-400 w-14 nav-action transition-colors hover:text-white hover:scale-105"><i data-lucide="sun" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold tracking-wider">Inicio</span></a>
-        <a href="#clowns" class="flex flex-col items-center justify-center text-slate-400 w-14 nav-action transition-colors hover:text-white hover:scale-105"><i data-lucide="smile" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold tracking-wider">Planes</span></a>
-        <a href="#booking" class="relative -top-5 bg-gradient-to-tr from-purple-500 to-pink-500 text-white rounded-full w-[64px] h-[64px] flex items-center justify-center border-[4px] border-[#0F172A] shadow-[0_0_20px_rgba(168,85,247,0.5)] transform hover:scale-105 transition-all nav-action"><i data-lucide="calendar-check" class="w-7 h-7"></i></a>
-        <a href="#gallery" class="flex flex-col items-center justify-center text-slate-400 w-14 nav-action transition-colors hover:text-white hover:scale-105"><i data-lucide="image" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold tracking-wider">Galería</span></a>
-        <a href="#portal" class="flex flex-col items-center justify-center text-slate-400 w-14 nav-action transition-colors hover:text-white hover:scale-105"><i data-lucide="search" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold tracking-wider">Portal</span></a>
+        <button data-action="close-modal" data-target-section="home" class="flex flex-col items-center justify-center text-slate-400 w-14 nav-action transition-colors hover:text-white hover:scale-105"><i data-lucide="sun" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold tracking-wider">Inicio</span></button>
+        <button data-action="close-modal" data-target-section="clowns" class="flex flex-col items-center justify-center text-slate-400 w-14 nav-action transition-colors hover:text-white hover:scale-105"><i data-lucide="smile" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold tracking-wider">Planes</span></button>
+        <button data-action="close-modal" data-target-section="booking" class="relative -top-5 bg-gradient-to-tr from-purple-500 to-pink-500 text-white rounded-full w-[64px] h-[64px] flex items-center justify-center border-[4px] border-[#0F172A] shadow-[0_0_20px_rgba(168,85,247,0.5)] transform hover:scale-105 transition-all nav-action"><i data-lucide="calendar-check" class="w-7 h-7"></i></button>
+        <button data-action="close-modal" data-target-section="gallery" class="flex flex-col items-center justify-center text-slate-400 w-14 nav-action transition-colors hover:text-white hover:scale-105"><i data-lucide="image" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold tracking-wider">Galería</span></button>
+        <button data-action="close-modal" data-target-section="portal" class="flex flex-col items-center justify-center text-slate-400 w-14 nav-action transition-colors hover:text-white hover:scale-105"><i data-lucide="search" class="w-5 h-5 mb-1"></i><span class="text-[9px] font-bold tracking-wider">Portal</span></button>
     </nav>
 
     <div class="whatsapp-container">
@@ -269,7 +266,7 @@
                 </div>
                 <div class="flex gap-3">
                     <button data-action="close-modal" class="bg-[#1E293B] border border-slate-700 text-slate-300 flex-1 hover:bg-[#2A364A] hover:text-white font-extrabold rounded-[18px] transition-all duration-300 text-[15px] shadow-sm flex items-center justify-center gap-2 h-[54px]">Cerrar</button>
-                    <button data-action="close-modal" data-target-section="booking" class="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white flex-1 font-extrabold rounded-[18px] text-center transition-all duration-300 text-[15px] flex justify-center items-center shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] h-[54px] gap-2">Reservar <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
+                    <button data-action="navigate-from-modal" data-target-section="booking" class="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white flex-1 font-extrabold rounded-[18px] text-center transition-all duration-300 text-[15px] flex justify-center items-center shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] h-[54px] gap-2">Reservar <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
                 </div>
             </div>
         </div>
@@ -288,7 +285,7 @@
                     <div class="flex justify-between items-center mb-3"><span class="text-sm font-medium text-slate-400">Transporte:</span><span id="calcTransport" class="text-lg font-bold text-white">$0.00</span></div>
                     <div class="border-t border-slate-800 pt-3"><div class="flex justify-between items-baseline"><span class="text-sm font-bold text-slate-400 uppercase">TOTAL ESTIMADO:</span><span id="calcTotal" class="text-3xl font-extrabold text-emerald-400 drop-shadow-md">$0.00</span></div></div>
                 </div>
-                <div class="flex gap-3"><button id="closeCalculator" class="bg-[#1E293B] border border-slate-700 text-slate-300 flex-1 hover:bg-[#2A364A] hover:text-white font-extrabold rounded-[18px] transition-all duration-300 text-[15px] shadow-sm h-[54px]">Cerrar</button><button id="addCalculatedToCart" class="bg-emerald-500 hover:bg-emerald-400 flex-1 text-white font-bold rounded-[18px] flex justify-center items-center gap-2 transition-colors h-[54px] shadow-md"><i data-lucide="check" class="w-5 h-5"></i> Aceptar</button></div>
+                <div class="flex gap-3"><button data-action="close-modal" class="bg-[#1E293B] border border-slate-700 text-slate-300 flex-1 hover:bg-[#2A364A] hover:text-white font-extrabold rounded-[18px] transition-all duration-300 text-[15px] shadow-sm h-[54px]">Cerrar</button><button data-action="add-calculated-to-cart" class="bg-emerald-500 hover:bg-emerald-400 flex-1 text-white font-bold rounded-[18px] flex justify-center items-center gap-2 transition-colors h-[54px] shadow-md"><i data-lucide="check" class="w-5 h-5"></i> Aceptar</button></div>
             </div>
         </div>
     </div>
@@ -300,8 +297,8 @@
             <div class="relative z-10">
                 <div class="w-20 h-20 bg-[#162032] border border-slate-700 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner badge-float relative group"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-3xl"></div><i data-lucide="calendar" class="w-10 h-10 text-purple-400 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]"></i></div>
                 <h2 class="text-3xl font-black mb-3 text-white font-nunito tracking-tight leading-tight">Verificar<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Disponibilidad</span></h2>
-                <p class="text-slate-400 mb-8 text-sm font-medium leading-relaxed px-2">Nuestra agenda se llena rápidamente. El sistema validará su fecha de forma automática en el siguiente paso.</p>
-                <button data-action="close-modal" data-target-section="booking" class="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white font-extrabold py-4 rounded-[20px] transition-all duration-300 text-[15px] flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] hover:-translate-y-1">Continuar a Reserva <i data-lucide="arrow-right" class="w-5 h-5"></i></button>
+                <p class="text-slate-400 mb-8 text-sm font-medium leading-relaxed px-2">Nuestra agenda se llena rápidamente. El sistema validará tu fecha de forma automática en el siguiente paso.</p>
+                <button data-action="navigate-from-modal" data-target-section="booking" class="w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white font-extrabold py-4 rounded-[20px] transition-all duration-300 text-[15px] flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] hover:-translate-y-1">Continuar a Reserva <i data-lucide="arrow-right" class="w-5 h-5"></i></button>
             </div>
         </div>
     </div>
@@ -309,19 +306,17 @@
     <div id="toast"></div>
 
     <script type="module">
+    // 1. Importaciones
     if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-
     import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getFirestore, doc, collection, getDocs, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
     import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
+    // 2. Configuración y Datos
     const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
     const CRM_APP_ID = "diverty-oficial"; 
     const bImg = 'https://images.weserv.nl/?url=i.ibb.co/', opt600 = '&w=600&output=webp', opt150 = '&w=150&output=webp';
     
-    let db, auth; let bookedEvents = []; let currentCalDate = new Date(); let bookingFormState = {}; let calculatorItems = []; let selectedCalendarDate = null; 
-    const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1 };
-
     const locations = [
         { value: 'panama-centro', label: 'Panamá Centro (+$5)', cost: 5 }, { value: 'arraijan', label: 'Arraiján (+$15)', cost: 15 }, 
         { value: 'la-chorrera', label: 'La Chorrera (+$20)', cost: 20 }, { value: 'panama-norte', label: 'Panamá Norte (+$10)', cost: 10 }, 
@@ -334,26 +329,26 @@
         { id: 'service_balloons', name: 'Globoflexia', price: 40, description: 'Payasito, figuras básicas (perros, espadas, flores). 1 hr.', image: bImg+'3nNBDNh/1000156690-f40525f3ffe7fcc4f65d41f55096c0bc-Editado-20250808-161453-0000.jpg'+opt600, isHourly: true },
         { id: 'service_snacks', name: 'Máquinas Snack', price: 120, description: 'Algodón y palomitas. 3 hr.', image: bImg+'ycF665wh/1000166060-468200627b3f51bc4bbb7d47cc634544-Editado-20250812-132914-0000.jpg'+opt600 },
         { id: 'service_inflatable', name: 'Inflables', price: 90, description: 'Modelos disponibles. 4 hr.', image: bImg+'zWqyrbKP/1000171895-1915883b5932d9d77d10e75b74d8102b-Editado-20250812-133521-0000.jpg'+opt600 },
-        { id: 'service_characters', name: 'Personajes', type: 'character-group', description: '¡Tus favoritos para fotos!', characters: [ { id: 'char_mickey', name: 'Mickey Mouse', price: 75, image: bImg+'qMzjGmVP/1000115409-2be9f20a9f4b71257a0ef39431ce5e81-Editado-20250812-145651-0000.jpg'+opt150 }, { id: 'char_minnie', name: 'Minnie Mouse', price: 75, image: bImg+'7J86Pshb/1000173618-c8140aed0fade6ffd165667c35177481-Editado-20250812-152335-0000.jpg'+opt150 }, { id: 'char_mario', name: 'Mario Bros', price: 75, image: bImg+'V0L3smxc/9bc62c03-03f6-4693-be31-1ee6fc9cabaf-20250812-145204-0000.jpg'+opt150 }, { id: 'char_stitch', name: 'Stitch', price: 75, image: bImg+'39pNmTvD/1000173616-67a0a0a93ba9656714e1d4090d078cf7-Editado-20250812-145043-0000.jpg'+opt150 } ] },
+        { id: 'service_characters', name: 'Personajes', type: 'character-group', description: 'Favoritos para fotos!', characters: [ { id: 'char_mickey', name: 'Mickey Mouse', price: 75, image: bImg+'qMzjGmVP/1000115409-2be9f20a9f4b71257a0ef39431ce5e81-Editado-20250812-145651-0000.jpg'+opt150 }, { id: 'char_minnie', name: 'Minnie Mouse', price: 75, image: bImg+'7J86Pshb/1000173618-c8140aed0fade6ffd165667c35177481-Editado-20250812-152335-0000.jpg'+opt150 }, { id: 'char_mario', name: 'Mario Bros', price: 75, image: bImg+'V0L3smxc/9bc62c03-03f6-4693-be31-1ee6fc9cabaf-20250812-145204-0000.jpg'+opt150 }, { id: 'char_stitch', name: 'Stitch', price: 75, image: bImg+'39pNmTvD/1000173616-67a0a0a93ba9656714e1d4090d078cf7-Editado-20250812-145043-0000.jpg'+opt150 } ] },
         { id: 'service_workshop', name: 'Taller de Arte', price: 12.00, description: 'Mín. 10 niños.', image: bImg+'ynXVt81f/IMG-20250709-164447.jpg'+opt600, isPerChild: true, minChildren: 10 },
         { id: 'service_photos', name: 'Foto Impresa', price: 2.00, description: 'Recuerdo al instante.', image: bImg+'zvx6hbd/IMG-20251023-WA0020.jpg'+opt600, isPerChild: true, minChildren: 1 },
         { id: 'service_decor', name: 'Decoración', price: 100, description: 'Transformamos tu espacio.', image: bImg+'p61CY7CW/IMG-20250624-WA0000.jpg'+opt600 }
     ];
 
-    const clownPackages = [
+    let clownPackages = [
         { id: 'clown_circus', name: 'Plan Circo', originalPrice: 85, price: 85.00, discountApplied: false, services: ['Payaso (a)', 'Juegos, Dinámicas & concursos', 'Integración de Niños y Adultos', 'Música Infantil', 'Bocina y Micrófono', 'Globoflexia Básicas', 'Asistencia para la piñata', 'Canto de Cumpleaños'], description: 'Duración: 1 Hora y Media', image: bImg+'XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg'+opt600 },
         { id: 'clown_recreative', name: 'Plan Recreativo Plus', originalPrice: 110, price: 110.00, discountApplied: false, services: ['Payaso (a)', 'Juegos, Dinámicas & concursos', 'Integración de Niños y Adultos', 'Música Infantil', 'Pintacaritas (mesa de maquillaje)', 'Globoflexia', 'Asistencia para la piñata', 'Canto de Cumpleaños'], description: 'Duración: 2 Horas', image: bImg+'ZRBN0mb5/2913b329-e65a-4574-846d-03d72a8ed6e1-20250808-145823-0000.jpg'+opt600 },
         { id: 'clown_magic', name: 'Plan Magic', originalPrice: 135, price: 135.00, discountApplied: false, services: ['Payaso (a)', 'Juegos, Dinámicas & concursos', 'Integración de Niños y Adultos', 'Música Infantil', 'Show de Magia', 'Pintacaritas', 'Globoflexia', 'Asistencia para la piñata', 'Canto de Cumpleaños'], description: 'Duración: 2 Horas y Media', image: bImg+'Gvwbr34b/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg'+opt600 },
         { id: 'clown_diverty', name: 'Plan Diverty', originalPrice: 200, price: 200.00, discountApplied: false, services: ['Payaso Profesional', 'Juegos, Dinámicas & concursos', 'Integración de Niños y Adultos', 'Música Infantil', 'Bocina y Micrófono', 'Show de Burbujas', 'Pintacaritas', 'Globoflexia', 'Asistencia para la piñata', 'Canto de Cumpleaños'], description: 'Duración: 3 Horas', image: bImg+'JXbv2Hy/1000099577-6bef3c87bff7ee22e2b0606e02467bf8-Editado-20250808-150335-0000.jpg'+opt600 }
     ];
 
-    const bubblePackages = [
+    let bubblePackages = [
         { id: 'bubble_party', name: 'Fiesta Burbuja', price: 190, services: ['Animación', 'Juegos', '1 Animador@', 'Show Burbujas'], description: '2 horas mágicas con burbujas.', image: bImg+'p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg'+opt600 },
         { id: 'bubble_premium', name: 'Burbujas Premium', price: 150, services: ['Burbujas gigantes', 'Efecto Humo', 'Burbujas LED', 'Fotos en burbuja'], description: '1 hora de espectáculo visual.', image: bImg+'MJQgpHx/IMG-20250706-172005.jpg'+opt600 },
         { id: 'bubble_corporate', name: 'Show Corporativo', price: 220, services: ['Show personalizado', 'Malls o escuelas', 'Luces y sonido'], description: 'Impacto garantizado.', image: bImg+'qLdys8KJ/IMG-20250711-195845.jpg'+opt600 }
     ];
 
-    const santaPackages = [
+    let santaPackages = [
         { id: 'santa_express', name: 'Visita Express', price: 50, services: ['Visita Santa (30 min)', 'Entrega regalos', 'Fotos'], description: 'Magia de la Navidad.', image: bImg+'FkcPQZdW/IMG-20251023-213119.jpg'+opt600 },
         { id: 'santa_pintacaritas', name: 'Paquete Navideño', price: 135, services: ['Visita Santa (1 Hr)', 'Regalos', 'Animación', 'Globos'], description: 'Una hora de alegría.', image: bImg+'xKpznmQS/IMG-20251023-213325.jpg'+opt600 }
     ];
@@ -380,12 +375,30 @@
     let allPurchasableItems = [...services.filter(s => s.type !== 'character-group'), ...clownPackages, ...bubblePackages, ...santaPackages, ...(services.find(s => s.type === 'character-group')?.characters || [])];
     let allServices = [...services, ...clownPackages, ...bubblePackages, ...santaPackages];
 
+    // 3. Estado
+    let db, auth; 
+    let bookedEvents = []; 
+    let currentCalDate = new Date(); 
+    let bookingFormState = {}; 
+    let calculatorItems = []; 
+    let selectedCalendarDate = null; 
+    let isSoundPlaying = false;
+    const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [] };
+
+    // 4. Selectores
     const $ = (selector) => document.querySelector(selector);
     const $$ = (selector) => document.querySelectorAll(selector);
 
-    function setContent(html) { const mainContent = $('#mainContent'); if (mainContent) { mainContent.innerHTML = html; lucide.createIcons({ root: mainContent }); } }
-    function showModal(modalId) { const modal = $(`#${modalId}`); if (modal) modal.classList.add('show'); }
-    function hideModal(modalId) { const modal = $(`#${modalId}`); if (modal) modal.classList.remove('show'); }
+    // 5. Utilidades e Axudas
+    function setContent(html) { 
+        const mainContent = $('#mainContent'); 
+        if (mainContent) { mainContent.innerHTML = html; lucide.createIcons({ root: mainContent }); } 
+    }
+    
+    function showModal(modalId) { 
+        const modal = $(`#${modalId}`); 
+        if (modal) modal.classList.add('show'); 
+    }
     
     function showToast(message, type = 'info') { 
         const toast = $('#toast'); if(!toast) return; 
@@ -399,19 +412,76 @@
         toast.timeoutId = setTimeout(() => toast.classList.remove('show'), 3000); 
     }
 
-    const popSound = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, envelope: { attack: 0.001, decay: 0.3, sustain: 0.01, release: 0.2 } }).toDestination();
-    let isSoundPlaying = false;
-    function playPopSound() { if (isSoundPlaying) return; if (Tone.context.state !== 'running') Tone.start(); popSound.triggerAttackRelease("C2", "8n", Tone.now()); isSoundPlaying = true; setTimeout(() => { isSoundPlaying = false; }, 100); }
-    function calculateTransportCost(locationValue) { const location = locations.find(l => l.value === locationValue); return location ? location.cost : 0; }
-    function populateLocationSelects() { const optionsHtml = locations.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join(''); $$('#cartLocation, #calculatorLocation, select[name="location"]').forEach(select => { if (select) { const cv = select.value; select.innerHTML = optionsHtml; if (cv) select.value = cv; } }); }
-    function toggleMobileMenu(show) { const menu = $('#mobileMenu'), overlay = $('#mobileMenuOverlay'); if(!menu || !overlay) return; if (show) { overlay.style.opacity = '1'; overlay.style.visibility = 'visible'; menu.classList.add('open'); } else { overlay.style.opacity = '0'; overlay.style.visibility = 'hidden'; menu.classList.remove('open'); } }
+    function playPopSound() { 
+        if (isSoundPlaying) return; 
+        if (Tone.context.state !== 'running') Tone.start(); 
+        const popSound = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, envelope: { attack: 0.001, decay: 0.3, sustain: 0.01, release: 0.2 } }).toDestination();
+        popSound.triggerAttackRelease("C2", "8n", Tone.now()); 
+        isSoundPlaying = true; 
+        setTimeout(() => { isSoundPlaying = false; }, 100); 
+    }
+    
+    function calculateTransportCost(locationValue) { 
+        const location = locations.find(l => l.value === locationValue); 
+        return location ? location.cost : 0; 
+    }
+    
+    function populateLocationSelects() { 
+        const optionsHtml = locations.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join(''); 
+        $$('#cartLocation, #calculatorLocation, select[name="location"]').forEach(select => { 
+            if (select) { const cv = select.value; select.innerHTML = optionsHtml; if (cv) select.value = cv; } 
+        }); 
+    }
+    
+    function toggleMobileMenu(show) { 
+        const menu = $('#mobileMenu'), overlay = $('#mobileMenuOverlay'); 
+        if(!menu || !overlay) return; 
+        if (show) { overlay.style.opacity = '1'; overlay.style.visibility = 'visible'; menu.classList.add('open'); } 
+        else { overlay.style.opacity = '0'; overlay.style.visibility = 'hidden'; menu.classList.remove('open'); } 
+    }
+
+    // 6. Validación
+    function validateAvailability() {
+        const dInput = document.querySelector('input[name="date"]');
+        const tInput = document.querySelector('input[name="time"]');
+        const warning = document.getElementById('availability-warning');
+        const warningText = document.getElementById('availability-text');
+        
+        if (!dInput || !warning) return true;
+        
+        const dateVal = dInput.value;
+        const timeVal = tInput ? tInput.value : '';
+        
+        if (!dateVal) return false;
+        
+        const eventsOnDate = bookedEvents.filter(ev => ev.fecha === dateVal);
+        if (eventsOnDate.length >= 3) {
+            warningText.textContent = 'Este día ya está lleno. Elige otra fecha.';
+            warning.classList.remove('hidden');
+            return false;
+        }
+        
+        if (timeVal) {
+            const conflict = eventsOnDate.some(ev => ev.hora === timeVal);
+            if (conflict) {
+                warningText.textContent = 'Ya hay un evento a esa hora. Elige otra.';
+                warning.classList.remove('hidden');
+                return false;
+            }
+        }
+        
+        warning.classList.add('hidden');
+        return true;
+    }
 
     function setActiveSection(sectionId) {
         if (!sectionId) sectionId = 'home';
         $$('.modal-backdrop').forEach(m => m.classList.remove('show'));
-        if (sectionId === 'booking' && !sessionStorage.getItem('bookingNoticeShown')) { sessionStorage.setItem('bookingNoticeShown', 'true'); showModal('bookingConfirmModal'); return; }
+        if (sectionId === 'booking' && !sessionStorage.getItem('bookingNoticeShown')) { sessionStorage.setItem('bookingNoticeShown', 'true'); const m = $('#bookingConfirmModal'); if(m) m.classList.add('show'); return; }
+        
         app.activeSection = sectionId;
         $$('.nav-link, .mobile-nav-link').forEach(link => link.classList.remove('active'));
+        
         const navMap = { home: ['#navHome', '#mobileHome'], santa: ['#navSanta', '#mobileSanta'], services: ['#navServices', '#mobileServices'], clowns: ['#navClowns', '#mobileClowns'], bubbles: ['#navBubbles', '#mobileBubbles'], gallery: ['#navGallery', '#mobileGallery'], blog: ['#navBlog', '#mobileBlog'], reviews: ['#navReviews', '#mobileReviews'], booking: ['#navBooking', '#mobileBooking'], portal: ['#navPortal', '#mobilePortal'] };
         if (navMap[sectionId]) navMap[sectionId].forEach(selector => { const el = $(selector); if(el) el.classList.add('active'); });
         
@@ -448,8 +518,11 @@
             case 'add-to-cart': {
                 const item = allPurchasableItems.find(s => s.id === itemId);
                 if (item) {
-                    const isPackage = itemId.includes('clown_') || itemId.includes('bubble_') || itemId.includes('santa_');
-                    if (isPackage) { if (!app.cart.find(i => i.id === itemId)) addToCart(item); showModal('cartModal'); } else addToCart(item);
+                    const isPackage = itemId.includes('clown_') || itemId.includes('bubble_') || itemId.includes('santa_') || item.categoria === 'payasos' || item.categoria === 'burbujas' || item.categoria === 'santa';
+                    if (isPackage) { 
+                        if (!app.cart.find(i => i.id === itemId)) addToCart(item); 
+                        const m = $('#cartModal'); if(m) m.classList.add('show');
+                    } else addToCart(item);
                 } break;
             }
             case 'remove-from-cart': removeFromCart(itemId); break;
@@ -474,22 +547,34 @@
             }
             case 'change-service-qty': { const qtyElement = document.querySelector(`#qty-${itemId}`); if (qtyElement) { let currentQty = parseInt(qtyElement.textContent); qtyElement.textContent = Math.max(1, currentQty + parseInt(change)); } break; }
             case 'change-calc-qty': changeCalculatorQuantity(itemId, parseInt(change)); break;
+            case 'add-calculated-to-cart': addCalculatedToCart(); break;
             case 'close-modal': { 
                 const modal = target.closest('.modal-backdrop'); 
                 if(modal) modal.classList.remove('show'); 
                 if(targetSection) setTimeout(() => setActiveSection(targetSection), 300);
                 break; 
             }
+            case 'navigate-from-modal': {
+                const modal = target.closest('.modal-backdrop'); 
+                if(modal) modal.classList.remove('show');
+                if(targetSection) setTimeout(() => setActiveSection(targetSection), 300);
+                break;
+            }
         }
     }
 
+    // 7. Funcións do Carro e Calculadora
     function addToCart(item, quantity = 1) {
         const existing = app.cart.find(i => i.id === item.id);
         if (existing) existing.quantity += quantity; else app.cart.push({ ...item, quantity });
         updateCartUI(); showToast(`${item.name} añadido al carrito`, 'success');
     }
 
-    function removeFromCart(itemId) { app.cart = app.cart.filter(i => i.id !== itemId); updateCartUI(); showToast('Plan eliminado', 'info'); }
+    function removeFromCart(itemId) { 
+        app.cart = app.cart.filter(i => i.id !== itemId); 
+        updateCartUI(); 
+        showToast('Plan eliminado', 'info'); 
+    }
 
     function updateCartUI() {
         const count = app.cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -508,7 +593,7 @@
         const cartItemsEl = $('#cartItems');
         if (cartItemsEl) {
             if (app.cart.length === 0) {
-                cartItemsEl.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-8 px-2 text-center animate-slide-up mt-4"><div class="w-20 h-20 bg-[#162032] border border-purple-500/40 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(168,85,247,0.25)] relative badge-float"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/30 to-pink-500/10 rounded-[1.5rem]"></div><i data-lucide="shopping-cart" class="w-10 h-10 text-purple-400 drop-shadow-[0_0_15px_rgba(192,132,252,0.6)] relative z-10"></i></div><h3 class="text-3xl font-black text-white mb-2 font-nunito tracking-tight">Carrito Vacío</h3><p class="mb-8 text-slate-400 font-medium text-sm">¡Vamos a llenarlo de diversión!</p><div class="flex flex-col w-full gap-3 mt-auto"><button data-action="close-modal" data-target-section="clowns" class="nav-action w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white font-extrabold py-4 rounded-[20px] transition-all duration-300 text-[15px] flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] hover:-translate-y-1"><i data-lucide="smile" class="w-5 h-5"></i> Ver Planes</button><button data-action="close-modal" data-target-section="services" class="nav-action w-full bg-[#162032] border border-slate-700 hover:border-pink-500/50 text-slate-300 hover:text-white font-extrabold py-4 rounded-[20px] transition-all duration-300 text-[15px] flex justify-center items-center gap-2 shadow-inner hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] hover:-translate-y-1"><i data-lucide="gift" class="w-4 h-4 text-pink-400"></i> Otros Servicios</button></div></div>`;
+                cartItemsEl.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-8 px-2 text-center animate-slide-up mt-4"><div class="w-20 h-20 bg-[#162032] border border-purple-500/40 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(168,85,247,0.25)] relative badge-float"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/30 to-pink-500/10 rounded-[1.5rem]"></div><i data-lucide="shopping-cart" class="w-10 h-10 text-purple-400 drop-shadow-[0_0_15px_rgba(192,132,252,0.6)] relative z-10"></i></div><h3 class="text-3xl font-black text-white mb-2 font-nunito tracking-tight">Carrito Vacío</h3><p class="mb-8 text-slate-400 font-medium text-sm">¡Vamos a llenarlo de diversión!</p><div class="flex flex-col w-full gap-3 mt-auto"><button data-action="navigate-from-modal" data-target-section="clowns" class="nav-action w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white font-extrabold py-4 rounded-[20px] transition-all duration-300 text-[15px] flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] hover:-translate-y-1"><i data-lucide="smile" class="w-5 h-5"></i> Ver Planes</button><button data-action="navigate-from-modal" data-target-section="services" class="nav-action w-full bg-[#162032] border border-slate-700 hover:border-pink-500/50 text-slate-300 hover:text-white font-extrabold py-4 rounded-[20px] transition-all duration-300 text-[15px] flex justify-center items-center gap-2 shadow-inner hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] hover:-translate-y-1"><i data-lucide="gift" class="w-4 h-4 text-pink-400"></i> Otros Servicios</button></div></div>`;
             } else {
                 cartItemsEl.innerHTML = '<div class="bg-[#162032]/80 backdrop-blur-sm border border-slate-700/50 rounded-[20px] p-2 space-y-2 shadow-inner">' + app.cart.map(item => `
                     <div class="flex flex-col bg-slate-800 p-3 rounded-[16px] transition-colors border border-slate-700/30 group">
@@ -593,7 +678,8 @@
     function addCalculatedToCart() {
         if (calculatorItems.length === 0) { showToast('Selecciona al menos un servicio', 'error'); return; }
         calculatorItems.forEach(item => { if(item.quantity > 0) addToCart(item, item.quantity); });
-        hideModal('calculatorModal'); showToast('Servicios agregados al carrito', 'success'); calculatorItems = [];
+        const m = $('#calculatorModal'); if(m) m.classList.remove('show'); 
+        showToast('Servicios agregados al carrito', 'success'); calculatorItems = [];
     }
 
     function openCalculator() {
@@ -601,9 +687,12 @@
         if(container) {
             container.innerHTML = allPurchasableItems.map(item => `<div class="flex justify-between items-center bg-slate-800 p-3 rounded-xl border border-slate-700 shadow-sm mb-2"><div class="flex flex-col"><span class="text-sm font-bold text-white">${item.name}</span><span class="text-xs text-purple-400 font-bold">$${item.price.toFixed(2)}</span></div><div class="flex items-center gap-3 bg-slate-900 p-1 rounded-lg border border-slate-700"><button data-action="change-calc-qty" data-item-id="${item.id}" data-change="-1" class="w-7 h-7 bg-slate-800 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"><i data-lucide="minus" class="w-3 h-3"></i></button><span id="calc-qty-${item.id}" class="text-sm font-bold w-6 text-center text-white">${calculatorItems.find(i => i.id === item.id)?.quantity || 0}</span><button data-action="change-calc-qty" data-item-id="${item.id}" data-change="1" class="w-7 h-7 bg-slate-800 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"><i data-lucide="plus" class="w-3 h-3"></i></button></div></div>`).join('');
         }
-        updateCalculatorTotal(); showModal('calculatorModal'); lucide.createIcons({root: container});
+        updateCalculatorTotal(); 
+        const m = $('#calculatorModal'); if(m) m.classList.add('show'); 
+        lucide.createIcons({root: container});
     }
 
+    // 8. Constructores e Compoñentes UI
     function createInput(label, name, type, extra='') {
         return `<div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">${label} *</label><input type="${type}" name="${name}" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" ${extra}></div>`;
     }
@@ -612,7 +701,7 @@
         return `<div class="wizard-step flex flex-col items-center relative z-10 ${opacity}"><div class="w-10 h-10 rounded-full ${opacity ? 'bg-slate-800 text-slate-500 border border-slate-700' : 'bg-purple-600 text-white border-2 border-purple-400'} flex items-center justify-center font-bold shadow-sm"><i data-lucide="${icon}" class="w-5 h-5"></i></div><span class="text-xs font-bold ${opacity ? 'text-slate-500' : 'text-purple-400'} mt-2">${text}</span></div>`;
     }
 
-    function getPortalResultCard(ev, index) {
+    function getPortalResultCard(ev) {
         const tot = parseFloat(ev.total || 0), abo = parseFloat(ev.abono || 0), saldo = Math.max(0, tot - abo);
         let statusColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
         if (ev.estado.toLowerCase() === 'confirmado') statusColor = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
@@ -622,7 +711,7 @@
     }
 
     function createDetailedCardHTML(item) {
-        const isPackage = item.id && (item.id.includes('clown') || item.id.includes('bubble') || item.id.includes('santa'));
+        const isPackage = item.id && (item.id.includes('clown') || item.id.includes('bubble') || item.id.includes('santa') || item.categoria === 'payasos' || item.categoria === 'burbujas' || item.categoria === 'santa');
         let badgeHTML = '', cardWrapperClasses = 'bg-[#0B1121] border border-purple-500/30 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(139,92,246,0.15)] hover:shadow-[0_0_45px_rgba(139,92,246,0.5)] hover:border-purple-400 hover:-translate-y-2';
         let btnClasses = 'w-full bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-purple-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(139,92,246,0.7)]';
         let iconColor = 'text-white', titleClasses = 'text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300 drop-shadow-[0_2px_10px_rgba(139,92,246,0.3)]';
@@ -639,29 +728,30 @@
             btnClasses = 'w-full bg-gradient-to-r from-emerald-500 to-teal-500 btn-animated-gradient text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(16,185,129,0.8)]';
             titleClasses = 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 drop-shadow-[0_2px_10px_rgba(16,185,129,0.2)] text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300';
             priceColor = 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.6)]';
+        } else if (item.discountApplied) {
+            badgeHTML = `<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(244,63,94,0.8)] z-30 flex items-center gap-1.5 badge-float border border-pink-400/50"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> Oferta</div>`;
+            cardWrapperClasses = 'bg-[#0B1121] border border-pink-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(244,63,94,0.25)] hover:shadow-[0_0_45px_rgba(244,63,94,0.5)] hover:border-pink-400 hover:-translate-y-2';
         }
 
         let priceDisplayHTML = '', priceText = item.price || (item.type === 'character-group' && item.characters && item.characters[0].price);
         if (priceText) {
             if (item.discountApplied) {
-                priceDisplayHTML = `<div class="flex items-end justify-between mt-auto mb-4 w-full relative z-10"><div class="flex items-end gap-2.5"><span class="text-4xl font-black ${priceColor} leading-none tracking-tight">$${item.price.toFixed(2)}</span><span class="text-slate-500 line-through text-sm font-bold leading-none mb-1.5">$${item.originalPrice.toFixed(2)}</span></div><span class="bg-pink-500/20 text-pink-400 text-[10px] font-black px-2.5 py-1 rounded-lg border border-pink-500/30 badge-float shadow-[0_0_10px_rgba(236,72,153,0.3)]">10% OFF</span></div>`;
+                priceDisplayHTML = `<div class="flex items-end justify-between mt-auto mb-4 w-full relative z-10"><div class="flex items-end gap-2.5"><span class="text-4xl font-black ${priceColor} leading-none tracking-tight">$${item.price.toFixed(2)}</span><span class="text-slate-500 line-through text-sm font-bold leading-none mb-1.5">$${item.originalPrice.toFixed(2)}</span></div><span class="bg-pink-500/20 text-pink-400 text-[10px] font-black px-2.5 py-1 rounded-lg border border-pink-500/30 badge-float shadow-[0_0_10px_rgba(236,72,153,0.3)]">OFERTA</span></div>`;
             } else {
                 priceDisplayHTML = `<div class="flex items-end justify-end mt-auto mb-4 w-full relative z-10"><span class="text-3xl font-black ${priceColor} transition-all duration-300 leading-none tracking-tight">$${priceText.toFixed(2)}</span>${item.isHourly ? '<span class="text-slate-500 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/hr</span>' : ''}${item.isPerChild ? '<span class="text-slate-500 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/niño</span>' : ''}</div>`;
             }
         }
 
         let servicesListHTML = '';
-        if (item.services) servicesListHTML = `<ul class="space-y-2 mt-4 mb-4 relative z-20 w-full flex-grow">` + item.services.map(s => `<li class="flex items-start text-[13px] text-slate-300 font-medium leading-snug group/item transition-colors hover:text-white"><div class="mt-0.5 mr-3 bg-purple-500/10 p-1 rounded-full group-hover/item:bg-pink-500/20 transition-colors border border-purple-500/20"><i data-lucide="check" class="w-3 h-3 text-purple-400 group-hover/item:text-pink-400 transition-colors"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('') + `</ul>`;
+        if (item.services && item.services.length > 0) servicesListHTML = `<ul class="space-y-2 mt-4 mb-4 relative z-20 w-full flex-grow">` + item.services.map(s => `<li class="flex items-start text-[13px] text-slate-300 font-medium leading-snug group/item transition-colors hover:text-white"><div class="mt-0.5 mr-3 bg-purple-500/10 p-1 rounded-full group-hover/item:bg-pink-500/20 transition-colors border border-purple-500/20"><i data-lucide="check" class="w-3 h-3 text-purple-400 group-hover/item:text-pink-400 transition-colors"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('') + `</ul>`;
 
         let actionButtonHTML = '';
-        if (item.author) {
-             actionButtonHTML = `<button data-action="show-blog" data-item-id="${item.id}" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-2xl transition-colors mt-auto shadow-md tracking-wide uppercase text-[11px] sm:text-xs">Leer Más</button>`;
-        } else if (item.isHourly) {
+        if (item.isHourly) {
             actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="flex items-center justify-between mb-3 bg-[#1E293B] border border-[#334155] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span id="qty-${item.id}" class="text-base font-bold text-white w-10 text-center">1</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="${btnClasses}"><i data-lucide="shopping-cart" class="w-4 h-4 ${iconColor} group-hover:animate-pulse"></i> Añadir al Carrito</button></div>`;
         } else if (item.isPerChild) {
             const minQty = item.id === 'service_photos' ? 1 : (item.minChildren || 10);
             actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="mb-3"><label for="qty-${item.id}" class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Cantidad (mín. ${minQty}):</label><input type="number" id="qty-${item.id}" class="w-full bg-[#1E293B] border border-[#334155] text-center font-bold text-white p-2.5 rounded-xl outline-none focus:border-purple-400 shadow-inner" value="${minQty}" min="${minQty}"></div><button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="${btnClasses}"><i data-lucide="shopping-cart" class="w-4 h-4 ${iconColor} group-hover:animate-pulse"></i> Añadir al Carrito</button></div>`;
-        } else if (item.type === 'character-group') {
+        } else if (item.type === 'character-group' && item.characters) {
             actionButtonHTML = `<div class="max-h-40 overflow-y-auto pr-1 space-y-2 custom-scrollbar mt-auto w-full pt-3 relative z-10">` + item.characters.map(char => `<div class="flex items-center justify-between p-2 bg-[#1E293B] rounded-xl border border-[#334155] hover:border-purple-500/50 transition-colors group/btn"><div class="w-10 h-10 rounded-full overflow-hidden mr-3 border border-slate-600"><img src="${char.image}" alt="${char.name}" class="w-full h-full object-cover group-hover/btn:scale-110 transition-transform" loading="lazy"></div><div class="flex-1"><p class="font-extrabold text-white text-xs tracking-tight">${char.name.replace('Personaje: ', '')}</p><p class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 text-[11px]">$${char.price.toFixed(0)}</p></div><button data-action="add-to-cart" data-item-id="${char.id}" class="w-8 h-8 rounded-lg bg-slate-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-white flex items-center justify-center transition-colors shadow-sm"><i data-lucide="plus" class="w-4 h-4"></i></button></div>`).join('') + `</div>`;
         } else {
             const btnIcon = isPackage ? 'calendar-plus' : 'shopping-cart';
@@ -672,11 +762,7 @@
         }
         
         let topSection = `<div class="flex items-center gap-4 mb-1 relative z-10"><div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-slate-700/50 bg-[#162032] relative group-hover:border-purple-500/50 transition-colors"><img src="${item.image}" alt="${item.name || item.title}" class="w-full h-full object-cover relative z-10" loading="lazy"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20"></div></div><div class="flex flex-col justify-center flex-1"><h3 class="${titleClasses}">${item.name || item.title}</h3><p class="text-pink-400 text-[11px] sm:text-xs font-bold mt-1.5 leading-snug drop-shadow-sm opacity-90 group-hover:opacity-100 transition-opacity">${item.description}</p></div></div>`;
-        if (item.author) {
-            topSection = `<div class="w-full h-36 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-slate-700/50 bg-[#162032] mb-3 relative group-hover:border-purple-500/50 transition-colors"><img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 relative z-10" loading="lazy"><div class="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent opacity-60 z-20"></div></div><div class="flex items-center text-[10px] text-slate-400 mb-2 font-bold uppercase tracking-wider relative z-10"><i data-lucide="calendar" class="w-3 h-3 mr-1 text-purple-400"></i>${item.date}<span class="mx-2 text-slate-600">|</span><i data-lucide="user" class="w-3 h-3 mr-1 text-pink-400"></i>${item.author}</div><h3 class="${titleClasses} mb-1 relative z-10">${item.title}</h3><p class="text-slate-400 text-xs font-medium line-clamp-2 leading-tight mb-2 relative z-10">${item.description}</p>`;
-            servicesListHTML = '';
-        }
-
+        
         return `<div class="w-[85vw] max-w-[360px] md:w-full snap-center flex-shrink-0 h-full snap-container animate-slide-up"><div class="${cardWrapperClasses}"><div class="absolute inset-0 overflow-hidden rounded-[2rem] z-0 pointer-events-none"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl transition-colors duration-500 group-hover:bg-purple-500/30"></div></div>${badgeHTML}${topSection}${servicesListHTML}${priceDisplayHTML}${actionButtonHTML}</div></div>`;
     }
 
@@ -684,12 +770,144 @@
         setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 text-white font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex md:hidden items-center justify-center mb-5 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span><div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700"><div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div></div></div><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-5 hide-scrollbar -mx-4 px-4 pt-6 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
     }
 
+    // 9. Renders Principales
+    function renderCalendar() {
+        const grid = $('#availability-calendar-grid'); if(!grid) return;
+        const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth();
+        const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        let html = '';
+        ['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'].forEach(d => { html += `<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">${d}</div>`; });
+        let adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
+        for(let i=0; i<adjustedFirstDay; i++) html += `<div></div>`;
+
+        const today = new Date(); today.setHours(0,0,0,0);
+
+        for(let d=1; d<=daysInMonth; d++) {
+            const currentDate = new Date(year, month, d);
+            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+            let eventsThisDay = bookedEvents.filter(ev => ev.fecha === dateStr).length;
+            const isSelected = selectedCalendarDate === dateStr;
+            let dayClasses = "w-9 h-9 sm:w-10 sm:h-10 mx-auto rounded-full flex items-center justify-center font-bold text-[15px] transition-all duration-200 cursor-pointer ";
+            
+            if (currentDate < today) { html += `<div class="flex items-center justify-center"><div class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-600 font-medium">${d}</div></div>`; } 
+            else if (eventsThisDay >= 3) { dayClasses += "bg-rose-600 text-white cursor-not-allowed"; html += `<div class="flex items-center justify-center relative pointer-events-none"><div class="${dayClasses}">${d}</div></div>`; } 
+            else if (eventsThisDay >= 1) { dayClasses += isSelected ? "bg-amber-500 text-white ring-2 ring-amber-400 ring-offset-2 ring-offset-[#0F172A] scale-110" : "bg-amber-500 text-white hover:scale-110"; html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${dayClasses}">${d}</div></div>`; } 
+            else { dayClasses += isSelected ? "bg-emerald-600 text-white ring-2 ring-emerald-400 ring-offset-2 ring-offset-[#0F172A] scale-110" : "bg-emerald-600 text-white hover:scale-110"; html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${dayClasses}">${d}</div></div>`; }
+        }
+        grid.innerHTML = html;
+        const monthName = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentCalDate);
+        const calMonthYear = $('#cal-month-year'); if(calMonthYear) calMonthYear.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+        const calendarSection = $('#calendar-section'); let bottomBox = $('#calendar-bottom-box');
+        if (!bottomBox) { bottomBox = document.createElement('div'); bottomBox.id = 'calendar-bottom-box'; $('#calendar-card-inner').appendChild(bottomBox); }
+
+        if (selectedCalendarDate) {
+            const dateObj = new Date(selectedCalendarDate + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            bottomBox.innerHTML = `<div class="mt-6 border border-emerald-500/30 bg-emerald-500/10 rounded-2xl p-4 text-left animate-slide-up shadow-lg"><div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-full border-2 border-emerald-500 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="check" class="w-5 h-5"></i></div><div><p class="text-white font-bold text-base">Fecha seleccionada</p><p class="text-slate-300 text-sm capitalize">${formattedDate}</p><p class="text-emerald-400 text-sm font-bold mt-0.5">Asegura tu cupo ahora 🎉</p></div></div><button data-action="confirm-date" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition-transform hover:scale-[1.02] flex justify-center items-center gap-2 shadow-[0_4px_15px_rgba(5,150,105,0.4)]"><i data-lucide="calendar-plus" class="w-5 h-5"></i> Reservar este día</button></div>`;
+        } else {
+            bottomBox.innerHTML = `<div class="flex justify-center gap-4 mt-6 pt-5 border-t border-slate-700/50 flex-wrap"><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-emerald-600"></div> Disponible</div><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div> Pocos cupos</div><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-rose-600"></div> Lleno</div></div>`;
+        }
+        lucide.createIcons({root: calendarSection});
+    }
+
     function renderHome() {
         const featuredMagic = clownPackages.find(p => p.id === 'clown_magic');
         const featuredDiverty = clownPackages.find(p => p.id === 'clown_diverty');
         if(featuredDiverty) featuredDiverty.isRecommended = true;
         
-        setContent(`<div id="hero-section-identifier"><div class="bg-[#0F172A]"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-gradient-to-b from-[#0F172A]/60 via-[#0F172A]/80 to-[#0F172A] z-10 pointer-events-none"></div><div class="hero-content z-20 relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg badge-float"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-extrabold mb-4 font-poppins leading-[1.1] text-white drop-shadow-2xl">Fiestas infantiles inolvidables en <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 btn-animated-gradient">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-300 font-medium drop-shadow-md font-quicksand leading-relaxed">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/10 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/10 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-400 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/10 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-400 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-400 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="close-modal" data-target-section="booking" class="nav-action w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] shadow-[0_8px_20px_rgba(219,39,119,0.4)] font-bold text-base"><i data-lucide="calendar-check" class="w-5 h-5 group-hover:animate-pulse"></i> Reservar ahora</button><button data-action="close-modal" data-target-section="clowns" class="nav-action w-full bg-[#162032] border border-slate-600 hover:border-purple-500/50 hover:bg-[#1E293B] text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-md"><i data-lucide="eye" class="w-5 h-5"></i> Ver planes</button></div><div class="flex items-center justify-start gap-3 w-full pl-2 mb-4"><div class="flex -space-x-2"><div class="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-gradient-to-tr from-yellow-400 to-orange-500 flex items-center justify-center shadow-sm"><i data-lucide="star" class="w-4 h-4 text-white fill-white"></i></div><div class="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-gradient-to-tr from-pink-500 to-rose-500 flex items-center justify-center shadow-sm"><i data-lucide="heart" class="w-4 h-4 text-white fill-white"></i></div><div class="w-8 h-8 rounded-full border-2 border-[#0F172A] bg-gradient-to-tr from-purple-500 to-indigo-500 flex items-center justify-center shadow-sm"><i data-lucide="smile" class="w-4 h-4 text-white"></i></div></div><span class="text-[11px] text-slate-300 font-medium leading-tight">Más de 500 familias<br>confían en nosotros</span></div></div></section><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4"><div class="flex md:hidden items-center justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span><div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700"><div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div></div></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 items-stretch px-2">${createDetailedCardHTML(featuredMagic)}${createDetailedCardHTML(featuredDiverty)}</div></div></div>`);
+        let extrasHTML = '';
+        if (app.catalog && app.catalog.length > 0) {
+            const ofertas = app.catalog.filter(i => i.discountApplied);
+            if (ofertas.length > 0) {
+                extrasHTML += ofertas.map(createDetailedCardHTML).join('');
+            }
+        }
+
+        setContent(`
+            <div id="hero-section-identifier">
+                <div class="bg-[#0F172A]">
+                    <section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden">
+                        <video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized">
+                            <source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4">
+                        </video>
+                        <div class="absolute inset-0 bg-gradient-to-b from-[#0F172A]/60 via-[#0F172A]/80 to-[#0F172A] z-10 pointer-events-none"></div>
+                        <div class="hero-content z-20 relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up">
+                            <div class="inline-flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg badge-float">
+                                <span>✨</span> Diversión garantizada
+                            </div>
+                            <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 font-poppins leading-[1.1] text-white drop-shadow-2xl">Fiestas infantiles inolvidables en <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 btn-animated-gradient">Panamá</span></h1>
+                            <p class="text-base sm:text-lg mb-6 text-slate-300 font-medium drop-shadow-md font-quicksand leading-relaxed">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p>
+                            <div class="flex justify-between items-center w-full mb-6 border-y border-white/10 py-4 gap-2">
+                                <div class="flex flex-col items-start flex-1 border-r border-white/10 pr-2">
+                                    <div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div>
+                                    <span class="text-[9px] text-slate-400 leading-tight">eventos<br>realizados</span>
+                                </div>
+                                <div class="flex flex-col items-center flex-1 border-r border-white/10 px-2 text-center">
+                                    <div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div>
+                                    <span class="text-[9px] text-slate-400 leading-tight">en Google</span>
+                                </div>
+                                <div class="flex flex-col items-end flex-1 pl-2 text-right">
+                                    <div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div>
+                                    <span class="text-[9px] text-slate-400 leading-tight">diversión<br>asegurada</span>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3 w-full mb-6">
+                                <button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] shadow-[0_8px_20px_rgba(219,39,119,0.4)] font-bold text-base">
+                                    <i data-lucide="calendar-check" class="w-5 h-5 group-hover:animate-pulse"></i> Reservar ahora
+                                </button>
+                                <button data-action="navigate-from-modal" data-target-section="clowns" class="nav-action w-full bg-[#162032] border border-slate-600 hover:border-purple-500/50 hover:bg-[#1E293B] text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-md">
+                                    <i data-lucide="eye" class="w-5 h-5"></i> Ver planes
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4">
+                        <div class="flex md:hidden items-center justify-center mb-3 opacity-80 animate-slide-up w-full">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span>
+                            <div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700">
+                                <div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div>
+                            </div>
+                        </div>
+                        <div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 items-stretch px-2">
+                            ${extrasHTML}
+                            ${featuredMagic ? createDetailedCardHTML(featuredMagic) : ''}
+                            ${featuredDiverty ? createDetailedCardHTML(featuredDiverty) : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="container mx-auto px-4 relative z-10 pb-12">
+                    <section id="calendar-section" class="mt-4 py-4 animate-slide-up">
+                        <div class="max-w-3xl mx-auto px-2 sm:px-4">
+                            <div class="bg-[#0B1121] p-6 sm:p-8 rounded-[32px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] border border-slate-800 relative overflow-hidden" id="calendar-card-inner">
+                                <div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div class="w-10 h-10 rounded-xl border border-purple-500/30 bg-purple-500/10 flex items-center justify-center text-purple-400">
+                                        <i data-lucide="calendar" class="w-5 h-5"></i>
+                                    </div>
+                                    <div class="text-left">
+                                        <h2 class="text-2xl font-extrabold text-white font-poppins leading-none">Selecciona tu fecha</h2>
+                                        <p class="text-slate-400 text-sm mt-1">Elige un día disponible para tu fiesta</p>
+                                    </div>
+                                </div>
+                                <div class="bg-indigo-900/20 border border-indigo-500/20 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4">
+                                    <i data-lucide="clock" class="w-5 h-5 text-indigo-400 mt-0.5 shrink-0"></i>
+                                    <p class="text-indigo-200 text-sm font-medium leading-tight">Selecciona una fecha disponible para reservar en segundos</p>
+                                </div>
+                                <div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-slate-900/50 py-2 rounded-xl border border-slate-800">
+                                    <button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                                    <h3 id="cal-month-year" class="text-lg font-bold text-white capitalize leading-none font-poppins">Cargando...</h3>
+                                    <button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                                </div>
+                                <div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        `);
+        renderCalendar(); 
     }
 
     function renderServices() { renderSection(services, 'Nuestros Servicios', 'gift'); }
@@ -732,54 +950,13 @@
         setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito flex justify-center items-center gap-3">Reseñas de Clientes</h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80 w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span><div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700"><div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div></div></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto">${customerReviews.map((review, index) => `<div class="review-card min-w-[85vw] md:min-w-0 snap-center animate-slide-up flex-shrink-0 bg-[#0B1121] border border-slate-700/50 flex flex-col h-full hover:-translate-y-2 transition-transform shadow-[0_0_15px_rgba(139,92,246,0.05)] hover:shadow-[0_0_35px_rgba(139,92,246,0.2)] hover:border-purple-500/30"><div class="review-header flex items-center gap-3 mb-4"><div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${review.color} flex items-center justify-center text-white font-black text-xl shadow-sm shrink-0 badge-float" style="animation-delay: ${index * 100}ms;">${review.initial}</div><div><div class="text-white font-bold">${review.name}</div><div class="text-xs text-slate-400">${review.location}</div></div></div><div class="review-body text-slate-300 mb-4 flex-grow"><p class="font-medium">"${review.comment}"</p></div><div class="review-footer border-t border-slate-800/50 pt-3 flex justify-between items-center"><div class="text-sm">${'⭐'.repeat(review.rating)}</div><div class="text-xs flex items-center"><i data-lucide="check-circle" class="w-3 h-3 mr-1 text-emerald-500"></i>Verificado</div></div></div>`).join('')}</div></section></div>`);
     }
 
-    function renderCalendar() {
-        const grid = $('#availability-calendar-grid'); if(!grid) return;
-        const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth();
-        const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        let html = '';
-        ['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'].forEach(d => { html += `<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">${d}</div>`; });
-        let adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
-        for(let i=0; i<adjustedFirstDay; i++) html += `<div></div>`;
-
-        const today = new Date(); today.setHours(0,0,0,0);
-
-        for(let d=1; d<=daysInMonth; d++) {
-            const currentDate = new Date(year, month, d);
-            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            let eventsThisDay = bookedEvents.filter(ev => ev.fecha === dateStr).length;
-            const isSelected = selectedCalendarDate === dateStr;
-            let dayClasses = "w-9 h-9 sm:w-10 sm:h-10 mx-auto rounded-full flex items-center justify-center font-bold text-[15px] transition-all duration-200 cursor-pointer ";
-            
-            if (currentDate < today) { html += `<div class="flex items-center justify-center"><div class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-600 font-medium">${d}</div></div>`; } 
-            else if (eventsThisDay >= 3) { dayClasses += "bg-rose-600 text-white cursor-not-allowed"; html += `<div class="flex items-center justify-center relative pointer-events-none"><div class="${dayClasses}">${d}</div></div>`; } 
-            else if (eventsThisDay >= 1) { dayClasses += isSelected ? "bg-amber-500 text-white ring-2 ring-amber-400 ring-offset-2 ring-offset-[#0F172A] scale-110" : "bg-amber-500 text-white hover:scale-110"; html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${dayClasses}">${d}</div></div>`; } 
-            else { dayClasses += isSelected ? "bg-emerald-600 text-white ring-2 ring-emerald-400 ring-offset-2 ring-offset-[#0F172A] scale-110" : "bg-emerald-600 text-white hover:scale-110"; html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${dayClasses}">${d}</div></div>`; }
-        }
-        grid.innerHTML = html;
-        const monthName = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentCalDate);
-        const calMonthYear = $('#cal-month-year'); if(calMonthYear) calMonthYear.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-
-        const calendarSection = $('#calendar-section'); let bottomBox = $('#calendar-bottom-box');
-        if (!bottomBox) { bottomBox = document.createElement('div'); bottomBox.id = 'calendar-bottom-box'; $('#calendar-card-inner').appendChild(bottomBox); }
-
-        if (selectedCalendarDate) {
-            const dateObj = new Date(selectedCalendarDate + 'T00:00:00');
-            const formattedDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            bottomBox.innerHTML = `<div class="mt-6 border border-emerald-500/30 bg-emerald-500/10 rounded-2xl p-4 text-left animate-slide-up shadow-lg"><div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-full border-2 border-emerald-500 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="check" class="w-5 h-5"></i></div><div><p class="text-white font-bold text-base">Fecha seleccionada</p><p class="text-slate-300 text-sm capitalize">${formattedDate}</p><p class="text-emerald-400 text-sm font-bold mt-0.5">Asegura tu cupo ahora 🎉</p></div></div><button data-action="confirm-date" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition-transform hover:scale-[1.02] flex justify-center items-center gap-2 shadow-[0_4px_15px_rgba(5,150,105,0.4)]"><i data-lucide="calendar-plus" class="w-5 h-5"></i> Reservar este día</button></div>`;
-        } else {
-            bottomBox.innerHTML = `<div class="flex justify-center gap-4 mt-6 pt-5 border-t border-slate-700/50 flex-wrap"><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-emerald-600"></div> Disponible</div><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div> Pocos cupos</div><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-rose-600"></div> Lleno</div></div>`;
-        }
-        lucide.createIcons({root: calendarSection});
-    }
-
     function renderBooking() {
         const subtotal = app.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const transportCost = calculateTransportCost(app.location);
         const finalTotal = subtotal + transportCost;
         
         const cartSummary = app.cart.length === 0 
-            ? `<div class="text-center py-10 animate-slide-up"><div class="w-20 h-20 bg-[#162032] border border-purple-500/40 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(168,85,247,0.25)] relative badge-float"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/30 to-pink-500/10 rounded-[1.5rem]"></div><i data-lucide="shopping-cart" class="w-10 h-10 text-purple-400 drop-shadow-[0_0_15px_rgba(192,132,252,0.6)] relative z-10"></i></div><h3 class="text-2xl font-black text-white mb-2 font-nunito">Carrito Vacío</h3><p class="mb-8 text-slate-400 font-medium text-sm">¡Vamos a llenarlo de diversión!</p><div class="flex flex-col sm:flex-row justify-center gap-4 px-2"><button class="nav-action flex-1 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white font-extrabold py-3.5 rounded-[18px] transition-all duration-300 text-sm flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] hover:-translate-y-1" data-action="close-modal" data-target-section="clowns"><i data-lucide="smile" class="w-4 h-4"></i> Ver Planes</button><button class="nav-action flex-1 bg-[#162032] border border-slate-700 hover:border-pink-500/50 text-slate-300 hover:text-white font-extrabold py-3.5 rounded-[18px] transition-all duration-300 text-sm flex justify-center items-center gap-2 shadow-inner hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] hover:-translate-y-1" data-action="close-modal" data-target-section="services"><i data-lucide="gift" class="w-4 h-4 text-pink-400"></i> Otros Servicios</button></div></div>` 
+            ? `<div class="text-center py-10 animate-slide-up"><div class="w-20 h-20 bg-[#162032] border border-purple-500/40 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(168,85,247,0.25)] relative badge-float"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/30 to-pink-500/10 rounded-[1.5rem]"></div><i data-lucide="shopping-cart" class="w-10 h-10 text-purple-400 drop-shadow-[0_0_15px_rgba(192,132,252,0.6)] relative z-10"></i></div><h3 class="text-2xl font-black text-white mb-2 font-nunito">Carrito Vacío</h3><p class="mb-8 text-slate-400 font-medium text-sm">¡Vamos a llenarlo de diversión!</p><div class="flex flex-col sm:flex-row justify-center gap-4 px-2"><button class="nav-action flex-1 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white font-extrabold py-3.5 rounded-[18px] transition-all duration-300 text-sm flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] hover:-translate-y-1" data-action="navigate-from-modal" data-target-section="clowns"><i data-lucide="smile" class="w-4 h-4"></i> Ver Planes</button><button class="nav-action flex-1 bg-[#162032] border border-slate-700 hover:border-pink-500/50 text-slate-300 hover:text-white font-extrabold py-3.5 rounded-[18px] transition-all duration-300 text-sm flex justify-center items-center gap-2 shadow-inner hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] hover:-translate-y-1" data-action="navigate-from-modal" data-target-section="services"><i data-lucide="gift" class="w-4 h-4 text-pink-400"></i> Otros Servicios</button></div></div>` 
             : app.cart.map(item => `<div class="flex flex-col bg-slate-800 p-3.5 rounded-xl shadow-sm mb-2.5 border border-slate-700"><div class="flex justify-between items-center"><span class="font-semibold text-white text-sm leading-tight pr-2">${item.name} <span class="text-slate-400 text-xs font-normal">x${item.quantity}</span></span><span class="font-extrabold text-purple-400 text-sm">$${(item.price * item.quantity).toFixed(2)}</span></div>${item.services && item.services.length > 0 ? `<div class="mt-2 pt-2 border-t border-slate-700/50"><ul class="text-[11px] text-slate-400 space-y-1">${item.services.map(s => `<li class="flex items-start gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i><span class="leading-snug">${s}</span></li>`).join('')}</ul></div>` : ''}</div>`).join('');
             
         const locationOptionsHtml = locations.map(opt => `<option value="${opt.value}" ${app.location === opt.value ? 'selected' : ''}>${opt.label}</option>`).join('');
@@ -992,31 +1169,103 @@
         }
     }
 
+    async function handleBookingSubmit(e) {
+        e.preventDefault();
+        if (app.cart.length === 0) return showToast('Selecciona al menos un servicio', 'error');
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        if(!submitBtn) return;
+        const originalBtnHTML = submitBtn.innerHTML;
+        submitBtn.disabled = true; submitBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-white inline-block align-middle mr-2"></div> Conectando...';
+
+        try {
+            const formData = new FormData(e.target), subtotal = app.cart.reduce((sum, item) => sum + (item.price * item.quantity), 0), transportCost = calculateTransportCost(app.location);
+            const locObj = locations.find(l => l.value === app.location);
+            const dataToSave = {
+                id: `web-${Date.now()}`, cliente: formData.get('name') || '', email: formData.get('email') || '', telefono: formData.get('phone') || '',
+                tipoEvento: formData.get('eventType') || 'Cumpleaños', ninos: formData.get('guests') || '', fecha: formData.get('date') || '', hora: formData.get('time') || '',
+                ubicacion: locObj ? locObj.label.replace(/📍 |\(\+\$\d+\)/g, '').trim() : 'Panamá Centro', direccion: formData.get('address') || '', comentarios: formData.get('comments') || '',
+                servicio: app.cart.map(item => item.quantity > 1 ? `${item.name} (x${item.quantity})` : item.name).join(' + '),
+                serviciosSeleccionados: app.cart.map(item => ({ id: item.id, nombre: item.name, precioOriginal: item.price, precio: item.price * item.quantity, cantidad: item.quantity, descripcion: item.description || '' })),
+                transporte: transportCost.toString(), gastos: '0', detalleGastos: '', total: (subtotal + transportCost).toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
+            };
+            await setDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos', dataToSave.id), dataToSave);
+            showModal('infoModal'); 
+            const modalMessage = $('#modalMessage'); if(modalMessage) modalMessage.textContent = '¡Gracias por elegir Diverty Eventos! Hemos recibido tu solicitud. Te contactaremos por WhatsApp en breve para confirmarla.';
+            app.cart = []; bookingFormState = {}; app.wizardStep = 1; updateCartUI(); renderBooking();
+        } catch (error) { console.error(error); showToast('Hubo un problema enviando tu reserva.', 'error'); } 
+        finally { submitBtn.disabled = false; submitBtn.innerHTML = originalBtnHTML; }
+    }
+
     async function initFirebaseAndData() {
         try {
             const fbApp = getApps().length === 0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
             db = getFirestore(fbApp); auth = getAuth(fbApp);
             if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token); else await signInAnonymously(auth);
 
+            try {
+                const catalogoSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web'));
+                const catalogoDinamico = catalogoSnap.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        id: doc.id,
+                        name: data.nombre,
+                        price: data.precio,
+                        originalPrice: data.precioOriginal || data.precio,
+                        discountApplied: data.oferta === true,
+                        description: data.descripcion,
+                        image: data.imagen,
+                        services: data.serviciosLista ? data.serviciosLista.split('\n').filter(s => s.trim() !== '') : [],
+                        isHourly: data.tipoCobro === 'hora',
+                        isPerChild: data.tipoCobro === 'nino',
+                        categoria: data.categoria
+                    };
+                });
+
+                if (catalogoDinamico.length > 0) {
+                    app.catalog = catalogoDinamico;
+                    
+                    let servDyn = catalogoDinamico.filter(item => item.categoria === 'servicios');
+                    let clownDyn = catalogoDinamico.filter(item => item.categoria === 'payasos');
+                    let bubbleDyn = catalogoDinamico.filter(item => item.categoria === 'burbujas');
+                    let santaDyn = catalogoDinamico.filter(item => item.categoria === 'santa');
+
+                    if(servDyn.length > 0) services = servDyn;
+                    if(clownDyn.length > 0) clownPackages = clownDyn;
+                    if(bubbleDyn.length > 0) bubblePackages = bubbleDyn;
+                    if(santaDyn.length > 0) santaPackages = santaDyn;
+                    
+                    allPurchasableItems = [...services, ...clownPackages, ...bubblePackages, ...santaPackages];
+                    allServices = [...allPurchasableItems];
+                }
+            } catch(e) { console.warn("Catálogo dinámico no encontrado, usando respaldo fijo."); }
+
             const eventsSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos'));
             bookedEvents = eventsSnap.docs.map(d => d.data()).filter(ev => ev.deletedLocally !== true && !['cancelado', 'rechazada', 'cot'].some(s => (ev.estado || '').toLowerCase().includes(s)));
-            if (app.activeSection === 'home') renderCalendar();
-        } catch(e) { console.warn("No se pudo cargar la agenda dinámicamente.", e); }
+            
+            if (app.activeSection === 'home') renderHome();
+            else setActiveSection(app.activeSection);
+        } catch(e) { console.warn("Error Firebase:", e); }
     }
 
     function setupEventListeners() {
         if (window.location.hash) { history.replaceState(null, null, ' '); }
         setTimeout(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, 50);
-        document.body.addEventListener('click', handleGlobalClick);
+        
         document.body.addEventListener('click', (e) => {
             const navLink = e.target.closest('.nav-action');
-            if (navLink && navLink.hash) {
-                e.preventDefault();
-                const modal = e.target.closest('.modal-backdrop');
-                if (modal) modal.classList.remove('show');
-                setActiveSection(navLink.hash.substring(1));
+            if (navLink) {
+                let target = navLink.dataset.targetSection;
+                if(!target && navLink.hash) target = navLink.hash.substring(1);
+                
+                if(target) {
+                    e.preventDefault();
+                    $$('.modal-backdrop').forEach(m => m.classList.remove('show'));
+                    setActiveSection(target);
+                }
             }
         });
+        
+        document.body.addEventListener('click', handleGlobalClick);
 
         const mobileToggle = $('#mobileToggle'); if(mobileToggle) mobileToggle.onclick = () => toggleMobileMenu(true);
         const closeMobile = $('#closeMobile'); if(closeMobile) closeMobile.onclick = () => toggleMobileMenu(false);
@@ -1033,8 +1282,13 @@
         });
     }
 
-    setupEventListeners(); populateLocationSelects(); initFirebaseAndData();
-    renderHome(); setActiveSection(window.location.hash.substring(1) || 'home'); updateCartUI(); lucide.createIcons();
+    // 12. Arranque de la aplicación
+    setupEventListeners(); 
+    populateLocationSelects(); 
+    initFirebaseAndData();
+    renderHome(); 
+    updateCartUI(); 
+    lucide.createIcons();
     document.body.classList.add('js-loaded');
     </script>
 </body>
