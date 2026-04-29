@@ -11,26 +11,35 @@
         body { font-family: 'Quicksand', sans-serif; background-color: #0F172A; color: #f8fafc; }
         h1, h2 { font-family: 'Nunito', sans-serif; }
         .glass-panel { background: #1E293B; border: 1px solid #334155; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input, select, textarea { width: 100%; background: #0B1121; border: 1px solid #334155; color: white; border-radius: 12px; padding: 12px; margin-top: 8px; outline: none; }
+        input[type="text"], input[type="number"], input[type="url"], select, textarea { width: 100%; background: #0B1121; border: 1px solid #334155; color: white; border-radius: 12px; padding: 12px; margin-top: 8px; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: #8b5cf6; box-shadow: 0 0 10px rgba(139,92,246,0.3); }
         .btn-pro { background: linear-gradient(90deg, #7C3AED, #E11D48); color: white; font-weight: bold; padding: 12px 24px; border-radius: 12px; cursor: pointer; transition: transform 0.2s; }
         .btn-pro:hover { transform: scale(1.02); }
+        .btn-pro:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+        .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; }
+        .btn-upload { background: #334155; color: white; padding: 12px; border-radius: 12px; border: 1px dashed #64748b; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
+        .file-upload-wrapper:hover .btn-upload { background: #475569; border-color: #a855f7; }
     </style>
 </head>
-<body class="p-6">
+<body class="p-4 sm:p-6">
 
     <div class="max-w-6xl mx-auto">
-        <header class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
-            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">
-                <i data-lucide="settings" class="inline w-8 h-8 text-purple-400 mr-2"></i>Diverty Admin
+        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-slate-800 pb-4 gap-4">
+            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 flex items-center">
+                <i data-lucide="settings" class="w-8 h-8 text-purple-400 mr-2"></i>Diverty Admin
             </h1>
-            <span class="bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-full text-sm font-bold border border-emerald-500/30">Conectado a Firebase</span>
+            <span class="bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-full text-sm font-bold border border-emerald-500/30 flex items-center gap-2">
+                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div> Conectado
+            </span>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Formulario para Agregar/Editar -->
-            <div class="lg:col-span-1 glass-panel h-fit sticky top-6">
-                <h2 class="text-xl font-bold mb-4 text-purple-300">Crear / Editar Paquete</h2>
+            <!-- Formulario -->
+            <div class="lg:col-span-1 glass-panel h-fit">
+                <h2 class="text-xl font-bold mb-4 text-purple-300 flex items-center gap-2">
+                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Crear Paquete
+                </h2>
                 <form id="adminForm">
                     <div class="mb-4">
                         <label class="text-xs text-slate-400 uppercase font-bold">Nombre del Paquete</label>
@@ -59,39 +68,66 @@
                             </select>
                         </div>
                     </div>
-                    <div class="mb-4 border border-pink-500/30 bg-pink-500/10 p-4 rounded-xl">
-                        <label class="flex items-center gap-2 cursor-pointer text-pink-400 font-bold mb-2">
-                            <input type="checkbox" id="oferta" class="w-5 h-5 accent-pink-500">
-                            ¿Es Oferta Especial?
+                    <div class="mb-4 border border-pink-500/30 bg-pink-500/10 p-4 rounded-xl transition-all">
+                        <label class="flex items-center gap-2 cursor-pointer text-pink-400 font-bold">
+                            <input type="checkbox" id="oferta" class="w-5 h-5 accent-pink-500 rounded">
+                            ¿Mostrar en Inicio como Oferta?
                         </label>
-                        <input type="number" id="precioOriginal" placeholder="Precio Original (Tachado)" class="hidden mt-2">
+                        <div id="precioOriginalContainer" class="hidden mt-3">
+                            <label class="text-xs text-pink-300 uppercase font-bold">Precio Original (Se verá tachado)</label>
+                            <input type="number" id="precioOriginal" placeholder="Ej: 180" class="!bg-pink-950/50 !border-pink-500/30">
+                        </div>
                     </div>
                     <div class="mb-4">
                         <label class="text-xs text-slate-400 uppercase font-bold">Descripción Corta</label>
                         <input type="text" id="descripcion" placeholder="Ej: Duración: 2 Horas y Media" required>
                     </div>
-                    <div class="mb-4">
-                        <label class="text-xs text-slate-400 uppercase font-bold">Link de la Imagen</label>
-                        <input type="url" id="imagen" placeholder="https://..." required>
+                    
+                    <!-- NUEVA ZONA DE IMAGEN -->
+                    <div class="mb-5 bg-slate-800/50 p-3 rounded-xl border border-slate-700">
+                        <label class="text-xs text-slate-400 uppercase font-bold block mb-2">Imagen del Paquete</label>
+                        
+                        <div class="file-upload-wrapper mb-2">
+                            <div class="btn-upload" id="uploadBtnUI">
+                                <i data-lucide="image-plus" class="w-5 h-5"></i> Subir foto desde el celular
+                            </div>
+                            <input type="file" id="imageFile" accept="image/*">
+                        </div>
+                        
+                        <div class="flex items-center gap-2 text-xs text-slate-500 mb-2 justify-center">
+                            <span>O pega un link directamente:</span>
+                        </div>
+                        
+                        <input type="url" id="imagen" placeholder="https://..." class="!mt-0 text-sm" required>
+                        
+                        <div id="imagePreview" class="hidden mt-3 w-full h-32 rounded-lg border border-slate-600 overflow-hidden relative bg-slate-900">
+                            <img id="previewImg" src="" class="w-full h-full object-cover">
+                            <div id="uploadProgress" class="absolute inset-0 bg-slate-900/80 flex items-center justify-center flex-col hidden">
+                                <i data-lucide="loader-2" class="w-8 h-8 text-purple-500 animate-spin mb-2"></i>
+                                <span class="text-xs font-bold text-purple-300">Subiendo...</span>
+                            </div>
+                        </div>
                     </div>
+                    <!-- FIN ZONA DE IMAGEN -->
+
                     <div class="mb-6">
                         <label class="text-xs text-slate-400 uppercase font-bold">¿Qué incluye? (Una cosa por línea)</label>
                         <textarea id="serviciosLista" rows="5" placeholder="Payaso Profesional&#10;Juegos y Dinámicas&#10;Pintacaritas"></textarea>
                     </div>
-                    <button type="submit" class="btn-pro w-full flex justify-center items-center gap-2">
+                    <button type="submit" id="submitBtn" class="btn-pro w-full flex justify-center items-center gap-2 shadow-lg">
                         <i data-lucide="save" class="w-5 h-5"></i> Guardar Paquete en la Web
                     </button>
                 </form>
             </div>
 
-            <!-- Lista de Paquetes Actuales -->
+            <!-- Lista -->
             <div class="lg:col-span-2 glass-panel">
-                <h2 class="text-xl font-bold mb-4 text-emerald-300 flex justify-between">
-                    Catálogo Actual Web
-                    <button id="refreshBtn" class="text-sm bg-slate-800 p-2 rounded-lg hover:text-white"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                <h2 class="text-xl font-bold mb-4 text-emerald-300 flex justify-between items-center border-b border-slate-800 pb-3">
+                    <span class="flex items-center gap-2"><i data-lucide="layout-grid" class="w-5 h-5"></i> Catálogo de la Web</span>
+                    <button id="refreshBtn" class="text-sm bg-slate-800 p-2 rounded-lg hover:text-white hover:bg-slate-700 transition-colors"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
                 </h2>
-                <div id="paquetesLista" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <p class="text-slate-500 italic">Cargando paquetes...</p>
+                <div id="paquetesLista" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    <div class="col-span-full flex justify-center py-8 text-slate-500"><i data-lucide="loader" class="animate-spin w-6 h-6"></i></div>
                 </div>
             </div>
         </div>
@@ -102,19 +138,76 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-storage.js";
         
         const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const storage = getStorage(app); // INICIALIZAMOS STORAGE PARA LAS FOTOS
 
         const form = document.getElementById('adminForm');
         const ofertaCheck = document.getElementById('oferta');
+        const precioOriginalContainer = document.getElementById('precioOriginalContainer');
         const precioOriginalInput = document.getElementById('precioOriginal');
         
+        const imageFileInput = document.getElementById('imageFile');
+        const imageUrlInput = document.getElementById('imagen');
+        const imagePreviewBox = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Mostrar campo de precio viejo si es oferta
         ofertaCheck.addEventListener('change', (e) => {
-            precioOriginalInput.classList.toggle('hidden', !e.target.checked);
+            precioOriginalContainer.classList.toggle('hidden', !e.target.checked);
         });
+
+        // ==========================================
+        // MAGIA PARA SUBIR FOTOS DESDE EL CELULAR
+        // ==========================================
+        imageFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Mostrar preview local rápido
+            imagePreviewBox.classList.remove('hidden');
+            previewImg.src = URL.createObjectURL(file);
+            uploadProgress.classList.remove('hidden');
+            submitBtn.disabled = true;
+
+            try {
+                // Crear una referencia en Firebase Storage (Carpeta: catalogo_images)
+                const storageRef = ref(storage, `catalogo_images/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`);
+                
+                // Subir el archivo
+                await uploadBytes(storageRef, file);
+                
+                // Obtener el link público
+                const downloadURL = await getDownloadURL(storageRef);
+                
+                // Poner el link en el input de texto automáticamente
+                imageUrlInput.value = downloadURL;
+                
+            } catch (error) {
+                console.error("Error subiendo imagen:", error);
+                alert("Hubo un error subiendo la imagen. Intenta pegar el link directamente.");
+            } finally {
+                uploadProgress.classList.add('hidden');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Mostrar preview si pegan un link manual
+        imageUrlInput.addEventListener('input', () => {
+            if(imageUrlInput.value) {
+                imagePreviewBox.classList.remove('hidden');
+                previewImg.src = imageUrlInput.value;
+            } else {
+                imagePreviewBox.classList.add('hidden');
+            }
+        });
+
 
         async function init() {
             await signInAnonymously(auth);
@@ -123,41 +216,49 @@
 
         async function loadCatalog() {
             const container = document.getElementById('paquetesLista');
-            container.innerHTML = '<p class="text-slate-500">Cargando...</p>';
+            container.innerHTML = '<div class="col-span-full flex justify-center py-8 text-slate-500"><i data-lucide="loader" class="animate-spin w-6 h-6"></i></div>';
+            lucide.createIcons();
+            
             try {
                 const querySnapshot = await getDocs(collection(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'catalogo_web'));
                 container.innerHTML = '';
                 
                 if (querySnapshot.empty) {
-                    container.innerHTML = '<p class="text-slate-500">No hay paquetes dinámicos en la base de datos.</p>';
+                    container.innerHTML = '<p class="text-slate-500 col-span-full text-center py-6 border border-dashed border-slate-700 rounded-xl">No has creado ningún paquete todavía.</p>';
                     return;
                 }
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
                     container.innerHTML += `
-                        <div class="bg-[#0F172A] border border-slate-700 p-4 rounded-xl relative group">
-                            ${data.oferta ? '<span class="absolute top-2 right-2 bg-pink-600 text-[10px] font-bold px-2 py-1 rounded-full">OFERTA</span>' : ''}
-                            <img src="${data.imagen || ''}" class="w-full h-24 object-cover rounded-lg mb-3 border border-slate-800">
-                            <div class="text-[10px] text-purple-400 font-bold uppercase mb-1">${data.categoria}</div>
-                            <h3 class="font-bold text-white leading-tight">${data.nombre}</h3>
+                        <div class="bg-slate-900/50 border border-slate-700/50 p-3 rounded-2xl relative group hover:border-purple-500/50 transition-colors">
+                            ${data.oferta ? '<span class="absolute top-2 right-2 bg-pink-600 text-[9px] font-black px-2 py-1 rounded-full shadow-lg z-10">EN INICIO</span>' : ''}
+                            <div class="w-full h-32 rounded-xl overflow-hidden mb-3 border border-slate-800 relative bg-slate-800">
+                                <img src="${data.imagen || ''}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 truncate">${data.categoria}</div>
+                            <h3 class="font-bold text-white leading-tight text-sm truncate">${data.nombre}</h3>
                             <p class="text-emerald-400 font-black mt-1">$${data.precio}</p>
-                            <button data-delete-id="${docSnap.id}" class="mt-3 w-full bg-rose-500/20 text-rose-400 hover:bg-rose-500 hover:text-white py-2 rounded-lg text-xs font-bold transition-colors">
-                                Eliminar
+                            <button data-delete-id="${docSnap.id}" class="mt-3 w-full bg-slate-800 text-rose-400 border border-slate-700 hover:bg-rose-500 hover:text-white py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1">
+                                <i data-lucide="trash-2" class="w-3 h-3"></i> Borrar
                             </button>
                         </div>
                     `;
                 });
+                lucide.createIcons();
             } catch (error) {
                 console.error(error);
-                container.innerHTML = '<p class="text-rose-500">Error cargando paquetes.</p>';
+                container.innerHTML = '<p class="text-rose-500 col-span-full">Error cargando paquetes.</p>';
             }
         }
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = form.querySelector('button');
-            btn.innerHTML = 'Guardando...';
+            submitBtn.disabled = true;
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Publicando...';
+            lucide.createIcons();
+            
             try {
                 await addDoc(collection(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'catalogo_web'), {
                     nombre: document.getElementById('nombre').value,
@@ -171,27 +272,38 @@
                     serviciosLista: document.getElementById('serviciosLista').value,
                     creadoEn: new Date().toISOString()
                 });
-                alert('¡Paquete publicado en la web con éxito!');
+                
+                alert('¡Paquete publicado en tu web!');
+                
+                // Limpiar formulario visualmente
                 form.reset();
-                precioOriginalInput.classList.add('hidden');
+                precioOriginalContainer.classList.add('hidden');
+                imagePreviewBox.classList.add('hidden');
+                previewImg.src = '';
+                
                 loadCatalog();
             } catch (error) {
                 console.error("Error al guardar: ", error);
-                alert('Hubo un error al guardar.');
+                alert('Hubo un error al publicar el paquete.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+                lucide.createIcons();
             }
-            btn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> Guardar Paquete en la Web';
-            lucide.createIcons();
         });
 
         document.getElementById('paquetesLista').addEventListener('click', async (e) => {
             const btn = e.target.closest('[data-delete-id]');
             if(btn) {
-                if(confirm('¿Seguro que deseas quitar este paquete de tu web?')) {
+                if(confirm('¿Seguro que deseas borrar este paquete de tu web?')) {
+                    btn.innerHTML = '<i data-lucide="loader" class="w-3 h-3 animate-spin"></i> Borrando...';
+                    lucide.createIcons();
                     try {
                         await deleteDoc(doc(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'catalogo_web', btn.dataset.deleteId));
                         loadCatalog();
                     } catch (error) {
                         alert('Error al eliminar.');
+                        loadCatalog();
                     }
                 }
             }
