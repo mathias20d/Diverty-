@@ -11,11 +11,15 @@
         body { font-family: 'Quicksand', sans-serif; background-color: #0F172A; color: #f8fafc; }
         h1, h2 { font-family: 'Nunito', sans-serif; }
         .glass-panel { background: #1E293B; border: 1px solid #334155; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input[type="text"], input[type="number"], input[type="url"], select, textarea { width: 100%; background: #0B1121; border: 1px solid #334155; color: white; border-radius: 12px; padding: 12px; margin-top: 8px; outline: none; }
+        input[type="text"], input[type="number"], input[type="url"], select, textarea { width: 100%; background: #0B1121; border: 1px solid #334155; color: white; border-radius: 12px; padding: 12px; margin-top: 8px; outline: none; transition: all 0.3s; }
         input:focus, select:focus, textarea:focus { border-color: #8b5cf6; box-shadow: 0 0 10px rgba(139,92,246,0.3); }
         .btn-pro { background: linear-gradient(90deg, #7C3AED, #E11D48); color: white; font-weight: bold; padding: 12px 24px; border-radius: 12px; cursor: pointer; transition: transform 0.2s; border: none;}
         .btn-pro:hover { transform: scale(1.02); }
         .btn-pro:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+        .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; }
+        .btn-upload { background: #334155; color: white; padding: 12px; border-radius: 12px; border: 1px dashed #64748b; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
+        .file-upload-wrapper:hover .btn-upload { background: #475569; border-color: #a855f7; }
     </style>
 </head>
 <body class="p-4 sm:p-6">
@@ -79,14 +83,28 @@
                         <input type="text" id="descripcion" placeholder="Ej: Duración: 2 Horas y Media" required>
                     </div>
                     
+                    <!-- ZONA CLOUDINARY CONECTADA A TU NUEVA CUENTA -->
                     <div class="mb-5 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
-                        <label class="text-xs text-slate-400 uppercase font-bold flex items-center gap-1"><i data-lucide="image" class="w-4 h-4"></i> Link de la Imagen</label>
-                        <p class="text-[10px] text-slate-400 mt-1 mb-2 leading-tight">Truco: Sube tu foto gratis a <a href="https://imgbb.com" target="_blank" class="text-purple-400 font-bold underline">imgbb.com</a> y pega aquí el "Enlace Directo".</p>
-                        <input type="url" id="imagen" placeholder="https://i.ibb.co/..." required>
-                        <div id="imagePreviewBox" class="hidden mt-3 w-full h-32 rounded-lg border border-slate-600 overflow-hidden bg-slate-900">
+                        <label class="text-xs text-slate-400 uppercase font-bold block mb-2"><i data-lucide="image" class="w-4 h-4 inline"></i> Imagen del Paquete</label>
+                        
+                        <div class="file-upload-wrapper mb-2">
+                            <div class="btn-upload" id="uploadBtnUI">
+                                <i data-lucide="cloud-upload" class="w-5 h-5"></i> Subir foto a Cloudinary
+                            </div>
+                            <input type="file" id="imageFile" accept="image/*">
+                        </div>
+                        
+                        <input type="url" id="imagen" placeholder="El link aparecerá aquí automáticamente..." required readonly class="!bg-slate-900 !text-emerald-400 !font-bold !text-xs opacity-80 pointer-events-none">
+                        
+                        <div id="imagePreviewBox" class="hidden mt-3 w-full h-32 rounded-lg border border-slate-600 overflow-hidden relative bg-slate-900">
                             <img id="previewImg" src="" class="w-full h-full object-cover">
+                            <div id="uploadProgress" class="absolute inset-0 bg-slate-900/80 flex flex-col items-center justify-center hidden">
+                                <i data-lucide="loader-2" class="w-8 h-8 text-purple-500 animate-spin mb-2"></i>
+                                <span class="text-xs font-bold text-purple-300">Subiendo a Cloudinary...</span>
+                            </div>
                         </div>
                     </div>
+                    <!-- FIN ZONA CLOUDINARY -->
 
                     <div class="mb-6">
                         <label class="text-xs text-slate-400 uppercase font-bold">¿Qué incluye? (Una cosa por línea)</label>
@@ -122,26 +140,67 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        // CLOUDINARY CONFIG - CONECTADO A TU NUEVA CUENTA
+        const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/djfbse8rg/image/upload';
+        const CLOUDINARY_UPLOAD_PRESET = 'diverty_web';
+
         const form = document.getElementById('adminForm');
         const ofertaCheck = document.getElementById('oferta');
         const precioOriginalContainer = document.getElementById('precioOriginalContainer');
         const precioOriginalInput = document.getElementById('precioOriginal');
+        
+        const imageFileInput = document.getElementById('imageFile');
         const imageUrlInput = document.getElementById('imagen');
         const imagePreviewBox = document.getElementById('imagePreviewBox');
         const previewImg = document.getElementById('previewImg');
+        const uploadProgress = document.getElementById('uploadProgress');
         const submitBtn = document.getElementById('submitBtn');
 
         ofertaCheck.addEventListener('change', (e) => {
             precioOriginalContainer.classList.toggle('hidden', !e.target.checked);
         });
 
-        // Previsualizar la imagen cuando se pega el link
-        imageUrlInput.addEventListener('input', () => {
-            if(imageUrlInput.value) {
-                imagePreviewBox.classList.remove('hidden');
-                previewImg.src = imageUrlInput.value;
-            } else {
+        // ==========================================
+        // SUBIDA AUTOMÁTICA A CLOUDINARY
+        // ==========================================
+        imageFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Mostrar preview y loading
+            imagePreviewBox.classList.remove('hidden');
+            previewImg.src = URL.createObjectURL(file);
+            uploadProgress.classList.remove('hidden');
+            submitBtn.disabled = true;
+            imageUrlInput.value = 'Subiendo imagen...';
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            try {
+                const response = await fetch(CLOUDINARY_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.secure_url) {
+                    // ¡Éxito!
+                    imageUrlInput.value = data.secure_url;
+                } else {
+                    throw new Error("No se pudo obtener el link");
+                }
+                
+            } catch (error) {
+                console.error("Error subiendo a Cloudinary:", error);
+                alert("Error al subir la imagen. Intenta de nuevo.");
+                imageUrlInput.value = '';
                 imagePreviewBox.classList.add('hidden');
+            } finally {
+                uploadProgress.classList.add('hidden');
+                submitBtn.disabled = false;
             }
         });
 
@@ -190,6 +249,12 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            if(!imageUrlInput.value || imageUrlInput.value === 'Subiendo imagen...') {
+                alert("Espera a que la imagen termine de subir.");
+                return;
+            }
+
             submitBtn.disabled = true;
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Publicando...';
