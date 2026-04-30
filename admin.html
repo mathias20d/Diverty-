@@ -272,7 +272,7 @@
 
     <div id="toast" class="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border">
         <div id="toastIconBg" class="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
-            <!-- El icono se insertará dinámicamente aquí -->
+            <!-- Icono dinámico -->
         </div>
         <p id="toastMessage" class="text-sm font-bold text-white pr-2 leading-snug"></p>
     </div>
@@ -303,6 +303,7 @@
         const uploadProgress = document.getElementById('uploadProgress');
         const removeImgBtn = document.getElementById('removeImgBtn');
         const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
         
         const tabBtns = document.querySelectorAll('.tab-btn');
         const viewCatalog = document.getElementById('view-catalog');
@@ -348,7 +349,7 @@
         }));
 
         // ==========================================
-        // TOAST NOTIFICATIONS (MOTOR BLINDADO)
+        // TOAST NOTIFICATIONS
         // ==========================================
         let toastTimeout;
         function showToast(message, type = 'success') {
@@ -356,7 +357,6 @@
             const iconBg = document.getElementById('toastIconBg');
             document.getElementById('toastMessage').textContent = message;
             
-            // Insertamos el SVG crudo usando innerHTML para evitar que falle al manipular atributos
             if (type === 'success') {
                 toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-emerald-500/50';
                 iconBg.className = 'w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-emerald-500/20';
@@ -371,11 +371,11 @@
             toast.classList.add('show');
             
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 3500);
+            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 5000);
         }
 
         // ==========================================
-        // INTERACCIONES Y SUBIDA A CLOUDINARY
+        // INTERACCIONES
         // ==========================================
         ofertaCheck.addEventListener('change', (e) => {
             precioOriginalContainer.classList.toggle('hidden', !e.target.checked);
@@ -401,17 +401,14 @@
             updatePreview();
         });
 
+        // ==========================================
+        // SUBIDA NATIVA A CLOUDINARY API CON DEBUG
+        // ==========================================
         imageFileNative.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Validación extra de tamaño (Cloudinary limita a 10MB en cuentas gratuitas)
-            if (file.size > 10 * 1024 * 1024) {
-                showToast("La foto es muy pesada (Máximo 10MB). Elige otra.", "error");
-                imageFileNative.value = '';
-                return;
-            }
-
+            // Bloquear publicación mientras sube
             submitBtn.disabled = true;
             imageUrlInput.value = 'Subiendo imagen a la nube...';
             
@@ -428,16 +425,24 @@
                     method: 'POST',
                     body: formData
                 });
+                
                 const data = await response.json();
                 
-                if (data.secure_url) {
+                if (response.ok && data.secure_url) {
                     imageUrlInput.value = data.secure_url;
-                    showToast("Foto procesada con éxito");
+                    showToast("¡Foto procesada con éxito!", "success");
                 } else {
-                    throw new Error("No se pudo obtener el link");
+                    // AQUÍ OBTENEMOS EL ERROR EXACTO DE CLOUDINARY
+                    console.error("Cloudinary Error:", data);
+                    throw new Error(data.error?.message || "Error desconocido del servidor");
                 }
             } catch (error) {
-                showToast("Error subiendo foto. Revisa tu internet.", "error");
+                console.error("Fallo completo:", error);
+                let errorMsg = error.message;
+                if (errorMsg === 'Failed to fetch') {
+                    errorMsg = "Bloqueado por navegador (AdBlock/Red).";
+                }
+                showToast("Cloudinary falló: " + errorMsg, "error");
                 imageUrlInput.value = '';
                 imagePreviewBox.classList.add('hidden');
             } finally {
@@ -535,7 +540,7 @@
         }
 
         // ==========================================
-        // GUARDADO CON VALIDACIÓN BLINDADA
+        // GUARDADO FINAL CON VALIDACIONES
         // ==========================================
         submitBtn.addEventListener('click', async (e) => {
             e.preventDefault(); 
@@ -553,12 +558,17 @@
             if(isOferta && (!precioOrigVal || precioOrigVal <= precioVal)) return showToast("El precio tachado debe ser mayor.", "error");
             
             if(!imagenVal || imagenVal === 'Subiendo imagen a la nube...') {
-                return showToast("Espera que la foto suba o agrega un enlace.", "error");
+                return showToast("Espera que la foto suba o agrega un enlace web.", "error");
             }
 
-            // Cambiamos el HTML completo del botón para evitar fallos de manipulación
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> <span id="submitText">Guardando en la Nube...</span>';
+            const originalText = submitText.textContent;
+            submitText.textContent = "Guardando en Firebase...";
+            const icon = submitBtn.querySelector('.lucide, i');
+            if (icon) {
+                icon.setAttribute('data-lucide', 'loader-2');
+                icon.classList.add('animate-spin');
+            }
             lucide.createIcons();
             
             try {
@@ -587,7 +597,12 @@
             } catch (error) {
                 showToast("Fallo al guardar. Revisa tu conexión.", "error");
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> <span id="submitText">Publicar Paquete</span>';
+                submitText.textContent = originalText;
+                const iconFail = submitBtn.querySelector('.lucide, i');
+                if (iconFail) {
+                    iconFail.setAttribute('data-lucide', 'check-circle');
+                    iconFail.classList.remove('animate-spin');
+                }
                 lucide.createIcons();
             }
         });
