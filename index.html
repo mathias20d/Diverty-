@@ -183,8 +183,8 @@
     </nav>
 
     <main id="mainContent" class="flex-grow flex flex-col min-h-screen w-full relative z-10">
-        <!-- Loader inicial para evitar pantalla negra o flasheo -->
-        <div class="flex-grow flex flex-col items-center justify-center py-32 text-slate-500">
+        <!-- PANTALLA DE ESPERA - Evita flash y congelamiento de scroll -->
+        <div class="flex-grow flex flex-col items-center justify-center py-32 text-slate-500 fade-in">
             <i data-lucide="loader-2" class="animate-spin w-12 h-12 mb-4 text-purple-500"></i>
             <p class="font-bold text-sm tracking-widest uppercase">Cargando diversión...</p>
         </div>
@@ -321,7 +321,6 @@
     // 2. Configuración y Datos
     const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
     const CRM_APP_ID = "diverty-oficial"; 
-    const bImg = 'https://images.weserv.nl/?url=i.ibb.co/', opt600 = '&w=600&output=webp', opt150 = '&w=150&output=webp';
     
     const locations = [
         { value: 'panama-centro', label: 'Panamá Centro (+$5)', cost: 5 }, { value: 'arraijan', label: 'Arraiján (+$15)', cost: 15 }, 
@@ -329,35 +328,10 @@
         { value: 'panama-este', label: 'Panamá Este (+$10)', cost: 10 }, { value: 'ancon', label: 'Ancón (+$10)', cost: 10 }
     ];
 
-    let services = [
-        { id: 'service_facepaint_premium', name: 'Pintacaritas Premium', price: 50, description: 'Materiales hipoalergénicos, Mesa y maleta de maquillaje. 1 hr.', image: bImg+'Kj8pkBJP/IMG-20250711-211956.jpg'+opt600, isHourly: true },
-        { id: 'service_facepaint_basic', name: 'Pintacaritas Básica', price: 35, description: 'Materiales hipoalergénicos y diseños básicos. 1 hr.', image: bImg+'Kj8pkBJP/IMG-20250711-211956.jpg'+opt600, isHourly: true },
-        { id: 'service_balloons', name: 'Globoflexia', price: 40, description: 'Payasito, figuras básicas (perros, espadas, flores). 1 hr.', image: bImg+'3nNBDNh/1000156690-f40525f3ffe7fcc4f65d41f55096c0bc-Editado-20250808-161453-0000.jpg'+opt600, isHourly: true },
-        { id: 'service_snacks', name: 'Máquinas Snack', price: 120, description: 'Algodón y palomitas. 3 hr.', image: bImg+'ycF665wh/1000166060-468200627b3f51bc4bbb7d47cc634544-Editado-20250812-132914-0000.jpg'+opt600 },
-        { id: 'service_inflatable', name: 'Inflables', price: 90, description: 'Modelos disponibles. 4 hr.', image: bImg+'zWqyrbKP/1000171895-1915883b5932d9d77d10e75b74d8102b-Editado-20250812-133521-0000.jpg'+opt600 },
-        { id: 'service_characters', name: 'Personajes', type: 'character-group', description: 'Favoritos para fotos!', characters: [ { id: 'char_mickey', name: 'Mickey Mouse', price: 75, image: bImg+'qMzjGmVP/1000115409-2be9f20a9f4b71257a0ef39431ce5e81-Editado-20250812-145651-0000.jpg'+opt150 }, { id: 'char_minnie', name: 'Minnie Mouse', price: 75, image: bImg+'7J86Pshb/1000173618-c8140aed0fade6ffd165667c35177481-Editado-20250812-152335-0000.jpg'+opt150 }, { id: 'char_mario', name: 'Mario Bros', price: 75, image: bImg+'V0L3smxc/9bc62c03-03f6-4693-be31-1ee6fc9cabaf-20250812-145204-0000.jpg'+opt150 }, { id: 'char_stitch', name: 'Stitch', price: 75, image: bImg+'39pNmTvD/1000173616-67a0a0a93ba9656714e1d4090d078cf7-Editado-20250812-145043-0000.jpg'+opt150 } ] },
-        { id: 'service_workshop', name: 'Taller de Arte', price: 12.00, description: 'Mín. 10 niños.', image: bImg+'ynXVt81f/IMG-20250709-164447.jpg'+opt600, isPerChild: true, minChildren: 10 },
-        { id: 'service_photos', name: 'Foto Impresa', price: 2.00, description: 'Recuerdo al instante.', image: bImg+'zvx6hbd/IMG-20251023-WA0020.jpg'+opt600, isPerChild: true, minChildren: 1 },
-        { id: 'service_decor', name: 'Decoración', price: 100, description: 'Transformamos tu espacio.', image: bImg+'p61CY7CW/IMG-20250624-WA0000.jpg'+opt600 }
-    ];
-
-    let clownPackages = [
-        { id: 'clown_circus', name: 'Plan Circo', originalPrice: 85, price: 85.00, discountApplied: false, services: ['Payaso (a)', 'Juegos, Dinámicas & concursos', 'Integración de Niños y Adultos', 'Música Infantil', 'Bocina y Micrófono', 'Globoflexia Básicas', 'Asistencia para la piñata', 'Canto de Cumpleaños'], description: 'Duración: 1 Hora y Media', image: bImg+'XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg'+opt600 },
-        { id: 'clown_recreative', name: 'Plan Recreativo Plus', originalPrice: 110, price: 110.00, discountApplied: false, services: ['Payaso (a)', 'Juegos, Dinámicas & concursos', 'Integración de Niños y Adultos', 'Música Infantil', 'Pintacaritas (mesa de maquillaje)', 'Globoflexia', 'Asistencia para la piñata', 'Canto de Cumpleaños'], description: 'Duración: 2 Horas', image: bImg+'ZRBN0mb5/2913b329-e65a-4574-846d-03d72a8ed6e1-20250808-145823-0000.jpg'+opt600 },
-        { id: 'clown_magic', name: 'Plan Magic', originalPrice: 135, price: 135.00, discountApplied: false, services: ['Payaso (a)', 'Juegos, Dinámicas & concursos', 'Integración de Niños y Adultos', 'Música Infantil', 'Show de Magia', 'Pintacaritas', 'Globoflexia', 'Asistencia para la piñata', 'Canto de Cumpleaños'], description: 'Duración: 2 Horas y Media', image: bImg+'Gvwbr34b/1000166148-07728f00941825383160a10b58da6f49-Editado-Editado-20250808-161017-0000.jpg'+opt600 },
-        { id: 'clown_diverty', name: 'Plan Diverty', originalPrice: 200, price: 200.00, discountApplied: false, services: ['Payaso Profesional', 'Juegos, Dinámicas & concursos', 'Integración de Niños y Adultos', 'Música Infantil', 'Bocina y Micrófono', 'Show de Burbujas', 'Pintacaritas', 'Globoflexia', 'Asistencia para la piñata', 'Canto de Cumpleaños'], description: 'Duración: 3 Horas', image: bImg+'JXbv2Hy/1000099577-6bef3c87bff7ee22e2b0606e02467bf8-Editado-20250808-150335-0000.jpg'+opt600 }
-    ];
-
-    let bubblePackages = [
-        { id: 'bubble_party', name: 'Fiesta Burbuja', price: 190, services: ['Animación', 'Juegos', '1 Animador@', 'Show Burbujas'], description: '2 horas mágicas con burbujas.', image: bImg+'p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg'+opt600 },
-        { id: 'bubble_premium', name: 'Burbujas Premium', price: 150, services: ['Burbujas gigantes', 'Efecto Humo', 'Burbujas LED', 'Fotos en burbuja'], description: '1 hora de espectáculo visual.', image: bImg+'MJQgpHx/IMG-20250706-172005.jpg'+opt600 },
-        { id: 'bubble_corporate', name: 'Show Corporativo', price: 220, services: ['Show personalizado', 'Malls o escuelas', 'Luces y sonido'], description: 'Impacto garantizado.', image: bImg+'qLdys8KJ/IMG-20250711-195845.jpg'+opt600 }
-    ];
-
-    let santaPackages = [
-        { id: 'santa_express', name: 'Visita Express', price: 50, services: ['Visita Santa (30 min)', 'Entrega regalos', 'Fotos'], description: 'Magia de la Navidad.', image: bImg+'FkcPQZdW/IMG-20251023-213119.jpg'+opt600 },
-        { id: 'santa_pintacaritas', name: 'Paquete Navideño', price: 135, services: ['Visita Santa (1 Hr)', 'Regalos', 'Animación', 'Globos'], description: 'Una hora de alegría.', image: bImg+'xKpznmQS/IMG-20251023-213325.jpg'+opt600 }
-    ];
+    let services = [];
+    let clownPackages = [];
+    let bubblePackages = [];
+    let santaPackages = [];
 
     const customerReviews = [ 
         { id: 1, name: "María G.", rating: 5, comment: "¡A todos les encantó!", color: "from-pink-500 to-rose-500", initial: "M", location: "Panamá Centro" }, 
@@ -366,20 +340,18 @@
     ];
 
     const gallery = [ 
-        { image: bImg+'MJQgpHx/IMG-20250706-172005.jpg'+opt600, alt: 'Burbujas' }, { image: bImg+'Kj8pkBJP/IMG-20250711-211956.jpg'+opt600, alt: 'Pintacaritas' }, 
-        { image: bImg+'21gCBMm3/IMG-20230423-173048-1.jpg'+opt600, alt: 'Globos' }, { image: bImg+'p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg'+opt600, alt: 'Jardín' }, 
-        { image: bImg+'p61CY7CW/IMG-20250624-WA0000.jpg'+opt600, alt: 'Decoración' }, { image: bImg+'nqvDyb7Y/IMG-20250623-WA0019.jpg'+opt600, alt: 'Personajes' }, 
-        { image: bImg+'ynXVt81f/IMG-20250709-164447.jpg'+opt600, alt: 'Taller' }, { image: bImg+'XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg'+opt600, alt: 'Payaso' } 
+        { image: 'https://images.weserv.nl/?url=i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg&w=600&output=webp', alt: 'Burbujas' }, 
+        { image: 'https://images.weserv.nl/?url=i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg&w=600&output=webp', alt: 'Pintacaritas' }, 
+        { image: 'https://images.weserv.nl/?url=i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg&w=600&output=webp', alt: 'Globos' }, 
+        { image: 'https://images.weserv.nl/?url=i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg&w=600&output=webp', alt: 'Jardín' }, 
+        { image: 'https://images.weserv.nl/?url=i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg&w=600&output=webp', alt: 'Decoración' }, 
+        { image: 'https://images.weserv.nl/?url=i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg&w=600&output=webp', alt: 'Personajes' }, 
+        { image: 'https://images.weserv.nl/?url=i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg&w=600&output=webp', alt: 'Taller' }, 
+        { image: 'https://images.weserv.nl/?url=i.ibb.co/XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg&w=600&output=webp', alt: 'Payaso' } 
     ];
 
-    const blogPosts = [ 
-        { id: 'blog1', title: 'Juegos de Verano', description: 'Ideas refrescantes.', image: bImg+'LX4wC8zS/file-0000000009586230bcad512887ad5a53-1.png'+opt600, date: '2026-01-02', author: 'Equipo Diverty' }, 
-        { id: 'blog2', title: 'Magia al Sol', description: 'Burbujas gigantes bajo el sol.', image: bImg+'7J5JM84n/file-000000003a0461fa918e3a8f30f312e2.png'+opt600, date: '2025-12-10', author: 'Equipo Diverty' }, 
-        { id: 'blog3', title: 'Fiestas Seguras', description: 'Cuidar a los pequeños.', image: bImg+'gb4WkYzD/aichat-423527.jpg'+opt600, date: '2025-12-05', author: 'Equipo Diverty' } 
-    ];
-
-    let allPurchasableItems = [...services.filter(s => s.type !== 'character-group'), ...clownPackages, ...bubblePackages, ...santaPackages, ...(services.find(s => s.type === 'character-group')?.characters || [])];
-    let allServices = [...services, ...clownPackages, ...bubblePackages, ...santaPackages];
+    let allPurchasableItems = [];
+    let allServices = [];
 
     // 3. Estado
     let db, auth; 
@@ -532,24 +504,25 @@
                 } break;
             }
             case 'remove-from-cart': removeFromCart(itemId); break;
+            
+            // AGREGADO: Manejo correcto de horas en items dinámicos
             case 'add-hourly-to-cart': {
-                const serviceHourly = services.find(s => s.id === itemId);
+                const serviceHourly = allPurchasableItems.find(s => s.id === itemId);
                 const qtyEl = document.querySelector(`#qty-${itemId}`);
                 const quantityHourly = qtyEl ? parseInt(qtyEl.textContent) : 1;
                 if (serviceHourly && quantityHourly > 0) {
-                    const item = { ...serviceHourly, id: `${serviceHourly.id}_${quantityHourly}h`, name: `${serviceHourly.name} (${quantityHourly} horas)`, price: serviceHourly.price * quantityHourly, quantity: 1 };
-                    addToCart(item);
+                    addToCart(serviceHourly, quantityHourly);
                 } break;
             }
             case 'add-workshop-to-cart': {
-                const serviceWorkshop = services.find(s => s.id === itemId);
+                const serviceWorkshop = allPurchasableItems.find(s => s.id === itemId);
                 const qtyEl = document.querySelector(`#qty-${itemId}`);
                 let quantityWorkshop = qtyEl ? parseInt(qtyEl.value) : 10;
                 if (!serviceWorkshop) return;
                 const minQty = (serviceWorkshop.id === 'service_photos') ? 1 : (serviceWorkshop.minChildren || 10);
                 if (quantityWorkshop < minQty) { showToast(`Se requiere un mínimo de ${minQty}.`, 'error'); quantityWorkshop = minQty; if(qtyEl) qtyEl.value = minQty; }
-                const itemWorkshop = { ...serviceWorkshop, id: `${serviceWorkshop.id}_${quantityWorkshop}kids`, name: `${serviceWorkshop.name} (${quantityWorkshop})`, price: serviceWorkshop.price * quantityWorkshop, quantity: 1 };
-                addToCart(itemWorkshop); break;
+                addToCart(serviceWorkshop, quantityWorkshop); 
+                break;
             }
             case 'change-service-qty': { const qtyElement = document.querySelector(`#qty-${itemId}`); if (qtyElement) { let currentQty = parseInt(qtyElement.textContent); qtyElement.textContent = Math.max(1, currentQty + parseInt(change)); } break; }
             case 'change-calc-qty': changeCalculatorQuantity(itemId, parseInt(change)); break;
@@ -632,22 +605,20 @@
         if(transportCostEl) transportCostEl.textContent = `$${transportCost.toFixed(2)}`;
         if(finalTotalEl) finalTotalEl.textContent = `$${(total + transportCost).toFixed(2)}`;
         
-        $$('button[data-action="add-to-cart"]').forEach(btn => {
+        // AGREGADO: Verifica y actualiza todos los tipos de botones para que cambien al añadirlos al carrito
+        $$('button[data-action="add-to-cart"], button[data-action="add-hourly-to-cart"], button[data-action="add-workshop-to-cart"]').forEach(btn => {
             const itemId = btn.dataset.itemId;
-            const isPackage = itemId && (itemId.includes('clown_') || itemId.includes('bubble_') || itemId.includes('santa_'));
-            if (isPackage) {
-                const inCart = app.cart.some(i => i.id === itemId);
-                if (!btn.dataset.origHtml) btn.dataset.origHtml = btn.innerHTML;
-                const isCurrentlySelected = btn.classList.contains('!bg-emerald-600');
-                if (inCart && !isCurrentlySelected) {
-                    btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Plan Seleccionado`;
-                    btn.classList.add('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none');
-                    lucide.createIcons({ root: btn });
-                } else if (!inCart && isCurrentlySelected) {
-                    btn.innerHTML = btn.dataset.origHtml;
-                    btn.classList.remove('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none');
-                    lucide.createIcons({ root: btn });
-                }
+            const inCart = app.cart.some(i => i.id === itemId);
+            if (!btn.dataset.origHtml) btn.dataset.origHtml = btn.innerHTML;
+            const isCurrentlySelected = btn.classList.contains('!bg-emerald-600');
+            if (inCart && !isCurrentlySelected) {
+                btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`;
+                btn.classList.add('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none');
+                lucide.createIcons({ root: btn });
+            } else if (!inCart && isCurrentlySelected) {
+                btn.innerHTML = btn.dataset.origHtml;
+                btn.classList.remove('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none');
+                lucide.createIcons({ root: btn });
             }
         });
 
@@ -748,36 +719,36 @@
             }
         }
 
-        // ======= CORRECCIÓN DEL ESPACIO GIGANTE =======
         let servicesListHTML = '';
         if (item.services && item.services.length > 0) {
             servicesListHTML = `<div class="mt-4 mb-4 relative z-20 w-full"><ul class="space-y-2 max-h-[170px] overflow-y-auto custom-scrollbar pr-2">` + item.services.map(s => `<li class="flex items-start text-[13px] text-slate-300 font-medium leading-snug group/item transition-colors hover:text-white"><div class="mt-0.5 mr-3 bg-purple-500/10 p-1 rounded-full group-hover/item:bg-pink-500/20 transition-colors border border-purple-500/20"><i data-lucide="check" class="w-3 h-3 text-purple-400 group-hover/item:text-pink-400 transition-colors"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('') + `</ul></div>`;
         }
 
-        // ======= CORRECCIÓN DEL ESPACIO GIGANTE =======
         let actionButtonHTML = '';
+        const inCart = app.cart.some(i => i.id === item.id);
+        const extraClasses = inCart ? '!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)] !bg-none' : '';
+        const btnIconText = isPackage ? 'calendar-plus' : 'shopping-cart';
+        const finalBtnText = inCart ? `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado` : `<i data-lucide="${btnIconText}" class="w-5 h-5 ${iconColor} group-hover:animate-pulse"></i> ${isPackage ? 'Reservar este plan' : 'Añadir al carrito'}`;
+
         if (item.isHourly) {
-            actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="flex items-center justify-between mb-3 bg-[#1E293B] border border-[#334155] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span id="qty-${item.id}" class="text-base font-bold text-white w-10 text-center">1</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="${btnClasses}"><i data-lucide="shopping-cart" class="w-4 h-4 ${iconColor} group-hover:animate-pulse"></i> Añadir al Carrito</button></div>`;
+            actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="flex items-center justify-between mb-3 bg-[#1E293B] border border-[#334155] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span id="qty-${item.id}" class="text-base font-bold text-white w-10 text-center">1</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="${btnClasses} ${extraClasses}">${finalBtnText}</button></div>`;
         } else if (item.isPerChild) {
             const minQty = item.id === 'service_photos' ? 1 : (item.minChildren || 10);
-            actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="mb-3"><label for="qty-${item.id}" class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Cantidad (mín. ${minQty}):</label><input type="number" id="qty-${item.id}" class="w-full bg-[#1E293B] border border-[#334155] text-center font-bold text-white p-2.5 rounded-xl outline-none focus:border-purple-400 shadow-inner" value="${minQty}" min="${minQty}"></div><button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="${btnClasses}"><i data-lucide="shopping-cart" class="w-4 h-4 ${iconColor} group-hover:animate-pulse"></i> Añadir al Carrito</button></div>`;
+            actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="mb-3"><label for="qty-${item.id}" class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Cantidad (mín. ${minQty}):</label><input type="number" id="qty-${item.id}" class="w-full bg-[#1E293B] border border-[#334155] text-center font-bold text-white p-2.5 rounded-xl outline-none focus:border-purple-400 shadow-inner" value="${minQty}" min="${minQty}"></div><button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="${btnClasses} ${extraClasses}">${finalBtnText}</button></div>`;
         } else if (item.type === 'character-group' && item.characters) {
             actionButtonHTML = `<div class="mt-auto max-h-40 overflow-y-auto pr-1 space-y-2 custom-scrollbar w-full pt-3 relative z-10">` + item.characters.map(char => `<div class="flex items-center justify-between p-2 bg-[#1E293B] rounded-xl border border-[#334155] hover:border-purple-500/50 transition-colors group/btn"><div class="w-10 h-10 rounded-full overflow-hidden mr-3 border border-slate-600"><img src="${char.image}" alt="${char.name}" class="w-full h-full object-cover group-hover/btn:scale-110 transition-transform" loading="lazy"></div><div class="flex-1"><p class="font-extrabold text-white text-xs tracking-tight">${char.name.replace('Personaje: ', '')}</p><p class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 text-[11px]">$${char.price.toFixed(0)}</p></div><button data-action="add-to-cart" data-item-id="${char.id}" class="w-8 h-8 rounded-lg bg-slate-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-white flex items-center justify-center transition-colors shadow-sm"><i data-lucide="plus" class="w-4 h-4"></i></button></div>`).join('') + `</div>`;
         } else {
-            const btnIcon = isPackage ? 'calendar-plus' : 'shopping-cart';
-            const btnText = isPackage ? 'Reservar este plan' : 'Añadir al carrito';
-            const extraClasses = app.cart.some(i => i.id === item.id) ? '!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)] !bg-none' : '';
-            const finalBtnText = app.cart.some(i => i.id === item.id) ? `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Plan Seleccionado` : `<i data-lucide="${btnIcon}" class="w-5 h-5 ${iconColor} group-hover:animate-pulse"></i> ${btnText}`;
             actionButtonHTML = `<div class="mt-auto w-full pt-4 relative z-10"><button data-action="add-to-cart" data-item-id="${item.id}" class="${btnClasses} ${extraClasses}">${finalBtnText}</button></div>`;
         }
         
         let topSection = `<div class="flex items-center gap-4 mb-1 relative z-10"><div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-slate-700/50 bg-[#162032] relative group-hover:border-purple-500/50 transition-colors"><img src="${item.image}" alt="${item.name || item.title}" class="w-full h-full object-cover relative z-10" loading="lazy"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20"></div></div><div class="flex flex-col justify-center flex-1"><h3 class="${titleClasses}">${item.name || item.title}</h3><p class="text-pink-400 text-[11px] sm:text-xs font-bold mt-1.5 leading-snug drop-shadow-sm opacity-90 group-hover:opacity-100 transition-opacity line-clamp-2">${item.description}</p></div></div>`;
         
+        // AGREGADO: Soporte táctil estricto (-webkit-overflow-scrolling: touch en el contenedor de abajo)
         return `<div class="w-[85vw] max-w-[360px] md:w-full snap-center flex-shrink-0 h-full snap-container animate-slide-up"><div class="${cardWrapperClasses}"><div class="absolute inset-0 overflow-hidden rounded-[2rem] z-0 pointer-events-none"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl transition-colors duration-500 group-hover:bg-purple-500/30"></div></div>${badgeHTML}${topSection}${servicesListHTML}${priceDisplayHTML}${actionButtonHTML}</div></div>`;
     }
 
     function renderSection(items, title, icon) { 
-        setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 text-white font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex md:hidden items-center justify-center mb-5 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span><div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700"><div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div></div></div><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-5 hide-scrollbar -mx-4 px-4 pt-6 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
+        setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 text-white font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex md:hidden items-center justify-center mb-5 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span><div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700"><div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div></div></div><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-5 hide-scrollbar -mx-4 px-4 pt-6 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch" style="-webkit-overflow-scrolling: touch;">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
     }
 
     // 9. Renders Principales
@@ -880,7 +851,7 @@
                                 <div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div>
                             </div>
                         </div>
-                        <div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 items-stretch px-2">
+                        <div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 items-stretch px-2" style="-webkit-overflow-scrolling: touch;">
                             ${extrasHTML}
                             ${featuredMagic ? createDetailedCardHTML(featuredMagic) : ''}
                             ${featuredDiverty ? createDetailedCardHTML(featuredDiverty) : ''}
@@ -1225,7 +1196,7 @@
                         description: data.descripcion,
                         image: data.imagen,
                         services: data.serviciosLista ? data.serviciosLista.split('\n').filter(s => s.trim() !== '') : [],
-                        isHourly: data.tipoCobro === 'hora',
+                        isHourly: data.tipoCobro === 'hora', // AQUI SE VALIDA QUE SEA "POR HORA"
                         isPerChild: data.tipoCobro === 'nino',
                         categoria: data.categoria
                     };
@@ -1234,13 +1205,16 @@
                 if (catalogoDinamico.length > 0) {
                     app.catalog = catalogoDinamico;
                     
-                    // Al haber datos en la nube, BORRAMOS los paquetes de prueba viejos
-                    // para que no se mezclen con los nuevos que creaste en el panel.
-                    services = catalogoDinamico.filter(item => item.categoria === 'servicios');
-                    clownPackages = catalogoDinamico.filter(item => item.categoria === 'payasos');
-                    bubblePackages = catalogoDinamico.filter(item => item.categoria === 'burbujas');
-                    santaPackages = catalogoDinamico.filter(item => item.categoria === 'santa');
+                    let servDyn = catalogoDinamico.filter(item => item.categoria === 'servicios');
+                    let clownDyn = catalogoDinamico.filter(item => item.categoria === 'payasos');
+                    let bubbleDyn = catalogoDinamico.filter(item => item.categoria === 'burbujas');
+                    let santaDyn = catalogoDinamico.filter(item => item.categoria === 'santa');
 
+                    if(servDyn.length > 0) services = servDyn;
+                    if(clownDyn.length > 0) clownPackages = clownDyn;
+                    if(bubbleDyn.length > 0) bubblePackages = bubbleDyn;
+                    if(santaDyn.length > 0) santaPackages = santaDyn;
+                    
                     allPurchasableItems = [...services, ...clownPackages, ...bubblePackages, ...santaPackages];
                     allServices = [...allPurchasableItems];
                 }
@@ -1287,20 +1261,25 @@
         });
     }
 
-    // 12. Arranque ASÍNCRONO de la aplicación (La clave de la solución)
+    // ====== ARRANQUE ASÍNCRONO LIMPIO (Soluciona el congelamiento del Slider) ======
     setupEventListeners(); 
     populateLocationSelects(); 
     lucide.createIcons();
 
-    // Esperamos a que Firebase cargue antes de pintar la web
     (async () => {
-        await initFirebaseAndData();
+        // 1. Espera a descargar TODO de Firebase primero
+        await initFirebaseAndData(); 
         
+        // 2. Dibuja la página UNA SOLA VEZ
         if (app.activeSection === 'home') renderHome();
         else setActiveSection(app.activeSection);
         
         updateCartUI(); 
+        
+        // 3. Oculta el mensaje de carga y muestra la magia
         document.body.classList.add('js-loaded');
+        const loader = document.getElementById('initial-loader');
+        if (loader) loader.style.display = 'none';
     })();
     </script>
 </body>
