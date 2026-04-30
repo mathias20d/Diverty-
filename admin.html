@@ -2,137 +2,285 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Panel Admin | Diverty Eventos</title>
+    
+    <!-- Scripts Externos -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
     <style>
-        body { font-family: 'Quicksand', sans-serif; background-color: #0F172A; color: #f8fafc; }
-        h1, h2 { font-family: 'Nunito', sans-serif; }
-        .glass-panel { background: #1E293B; border: 1px solid #334155; border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        input[type="text"], input[type="number"], input[type="url"], select, textarea { width: 100%; background: #0B1121; border: 1px solid #334155; color: white; border-radius: 12px; padding: 12px; margin-top: 8px; outline: none; transition: all 0.3s; }
-        input:focus, select:focus, textarea:focus { border-color: #8b5cf6; box-shadow: 0 0 10px rgba(139,92,246,0.3); }
-        .btn-pro { background: linear-gradient(90deg, #7C3AED, #E11D48); color: white; font-weight: bold; padding: 12px 24px; border-radius: 12px; cursor: pointer; transition: transform 0.2s; border: none;}
-        .btn-pro:hover { transform: scale(1.02); }
-        .btn-pro:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-        .file-upload-wrapper { position: relative; overflow: hidden; display: inline-block; width: 100%; }
-        .file-upload-wrapper input[type=file] { font-size: 100px; position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; }
-        .btn-upload { background: #334155; color: white; padding: 12px; border-radius: 12px; border: 1px dashed #64748b; text-align: center; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s; }
-        .file-upload-wrapper:hover .btn-upload { background: #475569; border-color: #a855f7; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #020617; 
+            color: #f8fafc; 
+            -webkit-font-smoothing: antialiased;
+            overscroll-behavior-y: none;
+        }
+        
+        ::-webkit-scrollbar { display: none; }
+
+        .saas-input {
+            width: 100%; background-color: #0F172A; border: 1px solid #1E293B; color: #F8FAFC;
+            border-radius: 16px; padding: 16px; font-size: 1rem; transition: all 0.2s ease; outline: none;
+        }
+        .saas-input:focus { border-color: #8B5CF6; background-color: #131C31; }
+        .saas-label { display: block; font-size: 0.7rem; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+
+        .toggle-checkbox:checked { right: 0; border-color: #EC4899; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #EC4899; }
+        .toggle-checkbox { right: 4px; z-index: 1; border-color: #334155; transition: all 0.3s ease; }
+        .toggle-label { background-color: #334155; transition: all 0.3s ease; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
+            color: white; font-weight: 700; padding: 18px 24px; border-radius: 16px; transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); border: 1px solid rgba(255,255,255,0.1); width: 100%;
+            font-size: 1.1rem;
+        }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { opacity: 0.7; pointer-events: none; filter: grayscale(1); }
+
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .bottom-action-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px);
+            border-top: 1px solid #1E293B; padding: 16px; z-index: 50;
+            transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .bottom-action-bar.show { transform: translateY(0); }
+        .has-bottom-bar { padding-bottom: 120px; }
+
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; width: 90%; max-width: 400px; }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        .premium-card {
+            background: #0B1120; border: 1px solid #1E293B; border-radius: 24px; overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); position: relative;
+        }
+        .premium-card:hover {
+            border-color: #4C1D95; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-4px);
+        }
+        .premium-card-img-container { position: relative; height: 180px; overflow: hidden; }
+        .premium-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; }
+        .premium-card:hover .premium-card-img { transform: scale(1.08); }
+        .glass-badge { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body class="p-4 sm:p-6">
+<body class="min-h-screen">
 
-    <div class="max-w-6xl mx-auto">
-        <header class="flex flex-col sm:flex-row justify-between items-center mb-8 border-b border-slate-800 pb-4 gap-4">
-            <h1 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 flex items-center">
-                <i data-lucide="settings" class="w-8 h-8 text-purple-400 mr-2"></i>Diverty Admin
-            </h1>
-            <span class="bg-emerald-500/20 text-emerald-400 px-4 py-2 rounded-full text-sm font-bold border border-emerald-500/30 flex items-center gap-2">
-                <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div> Conectado a Web
-            </span>
-        </header>
+    <header class="sticky top-0 z-50 bg-[#020617]/90 backdrop-blur-lg border-b border-slate-800">
+        <div class="px-4 h-16 flex items-center justify-between max-w-[800px] mx-auto">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/20">
+                    <i data-lucide="layers" class="w-4 h-4 text-white"></i>
+                </div>
+                <h1 class="text-lg font-bold text-white tracking-tight">Diverty <span class="text-slate-500 font-normal">Workspace</span></h1>
+            </div>
+            <div class="flex bg-slate-900 rounded-xl p-1 border border-slate-800">
+                <button data-tab="catalog" class="tab-btn active px-4 py-1.5 rounded-lg text-sm font-bold text-white bg-slate-800 shadow-sm transition-all">Catálogo</button>
+                <button data-tab="form" class="tab-btn px-4 py-1.5 rounded-lg text-sm font-bold text-slate-500 hover:text-white transition-all">Crear</button>
+            </div>
+        </div>
+    </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Formulario -->
-            <div class="lg:col-span-1 glass-panel h-fit">
-                <h2 class="text-xl font-bold mb-4 text-purple-300 flex items-center gap-2">
-                    <i data-lucide="plus-circle" class="w-5 h-5"></i> Crear Paquete
-                </h2>
-                <form id="adminForm">
-                    <div class="mb-4">
-                        <label class="text-xs text-slate-400 uppercase font-bold">Nombre del Paquete</label>
-                        <input type="text" id="nombre" placeholder="Ej: Plan Super Magic" required>
-                    </div>
-                    <div class="mb-4">
-                        <label class="text-xs text-slate-400 uppercase font-bold">Categoría</label>
-                        <select id="categoria" required>
-                            <option value="payasos">Planes de Payasos</option>
-                            <option value="burbujas">Shows de Burbujas</option>
-                            <option value="santa">Especial Navideño</option>
-                            <option value="servicios">Otros Servicios Extras</option>
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="text-xs text-slate-400 uppercase font-bold">Precio ($)</label>
-                            <input type="number" id="precio" placeholder="Ej: 150" required>
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 uppercase font-bold">Cobro por:</label>
-                            <select id="tipoCobro">
-                                <option value="paquete">Precio Fijo</option>
-                                <option value="hora">Por Hora</option>
-                                <option value="nino">Por Niño</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="mb-4 border border-pink-500/30 bg-pink-500/10 p-4 rounded-xl transition-all">
-                        <label class="flex items-center gap-2 cursor-pointer text-pink-400 font-bold">
-                            <input type="checkbox" id="oferta" class="w-5 h-5 accent-pink-500 rounded">
-                            ¿Mostrar en Inicio como Oferta?
-                        </label>
-                        <div id="precioOriginalContainer" class="hidden mt-3">
-                            <label class="text-xs text-pink-300 uppercase font-bold">Precio Original (Se verá tachado)</label>
-                            <input type="number" id="precioOriginal" placeholder="Ej: 180" class="!bg-pink-950/50 !border-pink-500/30">
-                        </div>
-                    </div>
-                    <div class="mb-4">
-                        <label class="text-xs text-slate-400 uppercase font-bold">Descripción Corta</label>
-                        <input type="text" id="descripcion" placeholder="Ej: Duración: 2 Horas y Media" required>
-                    </div>
-                    
-                    <!-- ZONA CLOUDINARY CONECTADA A TU NUEVA CUENTA -->
-                    <div class="mb-5 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
-                        <label class="text-xs text-slate-400 uppercase font-bold block mb-2"><i data-lucide="image" class="w-4 h-4 inline"></i> Imagen del Paquete</label>
-                        
-                        <div class="file-upload-wrapper mb-2">
-                            <div class="btn-upload" id="uploadBtnUI">
-                                <i data-lucide="cloud-upload" class="w-5 h-5"></i> Subir foto a Cloudinary
-                            </div>
-                            <input type="file" id="imageFile" accept="image/*">
-                        </div>
-                        
-                        <input type="url" id="imagen" placeholder="El link aparecerá aquí automáticamente..." required readonly class="!bg-slate-900 !text-emerald-400 !font-bold !text-xs opacity-80 pointer-events-none">
-                        
-                        <div id="imagePreviewBox" class="hidden mt-3 w-full h-32 rounded-lg border border-slate-600 overflow-hidden relative bg-slate-900">
-                            <img id="previewImg" src="" class="w-full h-full object-cover">
-                            <div id="uploadProgress" class="absolute inset-0 bg-slate-900/80 flex flex-col items-center justify-center hidden">
-                                <i data-lucide="loader-2" class="w-8 h-8 text-purple-500 animate-spin mb-2"></i>
-                                <span class="text-xs font-bold text-purple-300">Subiendo a Cloudinary...</span>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- FIN ZONA CLOUDINARY -->
-
-                    <div class="mb-6">
-                        <label class="text-xs text-slate-400 uppercase font-bold">¿Qué incluye? (Una cosa por línea)</label>
-                        <textarea id="serviciosLista" rows="5" placeholder="Payaso Profesional&#10;Juegos y Dinámicas&#10;Pintacaritas"></textarea>
-                    </div>
-                    <button type="submit" id="submitBtn" class="btn-pro w-full flex justify-center items-center gap-2 shadow-lg">
-                        <i data-lucide="save" class="w-5 h-5"></i> Guardar Paquete en la Web
-                    </button>
-                </form>
+    <main class="w-full max-w-[800px] mx-auto">
+        <!-- VISTA CATÁLOGO -->
+        <div id="view-catalog" class="view-section active px-4 py-6">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-white mb-1">Catálogo Activo</h2>
+                    <p class="text-sm text-slate-400">Gestiona tus planes publicados.</p>
+                </div>
+                <button id="refreshBtn" class="p-3 bg-slate-800 text-slate-300 rounded-xl border border-slate-700 active:scale-95 transition-all hover:bg-slate-700">
+                    <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                </button>
             </div>
 
-            <!-- Lista -->
-            <div class="lg:col-span-2 glass-panel">
-                <h2 class="text-xl font-bold mb-4 text-emerald-300 flex justify-between items-center border-b border-slate-800 pb-3">
-                    <span class="flex items-center gap-2"><i data-lucide="layout-grid" class="w-5 h-5"></i> Catálogo de la Web</span>
-                    <button id="refreshBtn" class="text-sm bg-slate-800 p-2 rounded-lg hover:text-white hover:bg-slate-700 transition-colors"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
-                </h2>
-                <div id="paquetesLista" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                    <div class="col-span-full flex justify-center py-8 text-slate-500"><i data-lucide="loader" class="animate-spin w-6 h-6"></i></div>
+            <div id="paquetesLista" class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
+                <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-500">
+                    <i data-lucide="loader-2" class="animate-spin w-8 h-8 mb-4 text-purple-500"></i>
+                    <p class="font-medium text-sm">Sincronizando catálogo...</p>
                 </div>
             </div>
         </div>
+
+        <!-- VISTA CREADOR / EDITOR -->
+        <div id="view-form" class="view-section px-4 py-6 has-bottom-bar">
+            
+            <div class="mb-6 flex items-center justify-between bg-gradient-to-r from-slate-900 to-[#0B1120] p-5 rounded-2xl border border-slate-800 shadow-lg">
+                <div>
+                    <h2 id="formMainTitle" class="text-xl font-bold text-white mb-1">Nuevo Paquete</h2>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+                        <p id="formSubTitle" class="text-xs text-slate-400 font-medium tracking-wide uppercase">Modo Creación</p>
+                    </div>
+                </div>
+                <button type="button" id="cancelEditBtn" class="hidden bg-slate-800 text-slate-300 hover:text-white hover:bg-slate-700 text-xs font-bold px-4 py-2.5 rounded-xl border border-slate-700 active:scale-95 flex items-center gap-2 transition-all">
+                    <i data-lucide="x" class="w-4 h-4"></i> Cancelar
+                </button>
+            </div>
+
+            <form id="adminForm" class="space-y-6">
+                
+                <!-- Sección 1: Info -->
+                <div class="bg-[#0B1120] rounded-2xl border border-slate-800 shadow-md overflow-hidden">
+                    <div class="p-4 bg-[#0B1120] flex items-center gap-3 text-slate-200 font-bold border-b border-slate-800/50">
+                        <div class="p-2 bg-slate-800/80 rounded-lg text-blue-400 border border-slate-700/50"><i data-lucide="file-text" class="w-4 h-4"></i></div>
+                        1. Información Básica
+                    </div>
+                    <div class="p-5 bg-[#0F172A]/30 space-y-5">
+                        <div>
+                            <label class="saas-label">Nombre del Paquete</label>
+                            <input type="text" id="nombre" class="saas-input" placeholder="Ej: Plan Super Magic" required>
+                        </div>
+                        <div>
+                            <label class="saas-label">Categoría</label>
+                            <div class="relative">
+                                <select id="categoria" class="saas-input appearance-none cursor-pointer" required>
+                                    <option value="payasos">Planes de Payasos</option>
+                                    <option value="burbujas">Shows de Burbujas</option>
+                                    <option value="santa">Especial Navideño</option>
+                                    <option value="servicios">Otros Servicios Extras</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="saas-label">Descripción Corta</label>
+                            <input type="text" id="descripcion" class="saas-input" placeholder="Ej: Duración: 2 Horas y Media" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 2: Precios -->
+                <div class="bg-[#0B1120] rounded-2xl border border-slate-800 shadow-md overflow-hidden">
+                    <div class="p-4 bg-[#0B1120] flex items-center gap-3 text-slate-200 font-bold border-b border-slate-800/50">
+                        <div class="p-2 bg-slate-800/80 rounded-lg text-emerald-400 border border-slate-700/50"><i data-lucide="tag" class="w-4 h-4"></i></div>
+                        2. Precio y Oferta
+                    </div>
+                    <div class="p-5 bg-[#0F172A]/30 space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="saas-label">Precio ($)</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
+                                    <input type="number" id="precio" class="saas-input pl-8 font-bold text-lg" placeholder="0" min="1" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="saas-label">Cobro por</label>
+                                <div class="relative">
+                                    <select id="tipoCobro" class="saas-input appearance-none px-3 font-medium cursor-pointer">
+                                        <option value="paquete">Total / Fijo</option>
+                                        <option value="hora">Por Hora</option>
+                                        <option value="nino">Por Niño</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-[#0B1120] border border-slate-700 rounded-xl p-5" id="ofertaBox">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-bold text-white flex items-center gap-2">
+                                        Es Oferta <i data-lucide="sparkles" class="w-3 h-3 text-pink-500"></i>
+                                    </p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Añade distintivo visual y precio tachado</p>
+                                </div>
+                                <div class="relative inline-block w-12 align-middle select-none h-6">
+                                    <input type="checkbox" id="oferta" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/>
+                                    <label for="oferta" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
+                                </div>
+                            </div>
+                            
+                            <div id="precioOriginalContainer" class="hidden mt-4 pt-4 border-t border-slate-800">
+                                <label class="saas-label text-pink-400">Precio Original Tachado ($)</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-pink-500/50 font-bold">$</span>
+                                    <input type="number" id="precioOriginal" class="saas-input pl-8 focus:border-pink-500 font-bold" placeholder="Debe ser mayor al final" min="1">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 3: Media -->
+                <div class="bg-[#0B1120] rounded-2xl border border-slate-800 shadow-md overflow-hidden">
+                    <div class="p-4 bg-[#0B1120] flex items-center gap-3 text-slate-200 font-bold border-b border-slate-800/50">
+                        <div class="p-2 bg-slate-800/80 rounded-lg text-purple-400 border border-slate-700/50"><i data-lucide="image" class="w-4 h-4"></i></div>
+                        3. Foto y Detalles
+                    </div>
+                    <div class="p-5 bg-[#0F172A]/30 space-y-6">
+                        
+                        <div>
+                            <label class="saas-label">Imagen de Portada</label>
+                            <div class="flex gap-2 relative">
+                                <input type="url" id="imagen" class="saas-input flex-grow pr-14" placeholder="Enlace web..." required>
+                                
+                                <!-- BOTÓN DE CÁMARA NATIVO -->
+                                <div class="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-purple-600 rounded-xl overflow-hidden shadow-md cursor-pointer hover:bg-purple-500 transition-colors">
+                                    <input type="file" id="imageFileNative" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                                    <div class="absolute inset-0 flex items-center justify-center text-white pointer-events-none z-10">
+                                        <i data-lucide="camera" class="w-5 h-5"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mt-2 flex items-start gap-1">
+                                <i data-lucide="info" class="w-3 h-3 shrink-0 mt-0.5"></i>
+                                Toca la cámara morada para subir desde tu galería, o pega un link web manualmente.
+                            </p>
+                            
+                            <div id="imagePreviewBox" class="hidden mt-4 w-full h-48 rounded-2xl border border-slate-700 overflow-hidden relative shadow-inner bg-[#0F172A]">
+                                <img id="previewImg" src="" class="w-full h-full object-cover">
+                                <div id="uploadProgress" class="absolute inset-0 bg-[#0B1120]/90 flex flex-col items-center justify-center hidden z-10">
+                                    <i data-lucide="loader-2" class="w-8 h-8 text-purple-500 animate-spin mb-2"></i>
+                                    <span class="text-xs font-bold text-purple-300">Subiendo a la nube...</span>
+                                </div>
+                                <button type="button" id="removeImgBtn" class="absolute top-3 right-3 bg-rose-500/90 backdrop-blur text-white p-2 rounded-xl active:scale-95 shadow-lg border border-rose-400/50 z-20" title="Quitar foto">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-end justify-between mb-2">
+                                <label class="saas-label !mb-0">Servicios Incluidos</label>
+                                <span class="text-[9px] text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded font-bold">1 x LÍNEA</span>
+                            </div>
+                            <textarea id="serviciosLista" rows="6" class="saas-input resize-none leading-relaxed" placeholder="Ejemplo:&#10;Payaso Profesional&#10;Juegos Didácticos&#10;Pintacaritas Premium"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="bottomActionBar" class="bottom-action-bar max-w-[800px] mx-auto">
+            <button type="submit" form="adminForm" id="submitBtn" class="btn-primary flex items-center justify-center gap-2">
+                <i data-lucide="check-circle" class="w-5 h-5"></i> 
+                <span id="submitText">Publicar Paquete</span>
+            </button>
+        </div>
+
+    </main>
+
+    <div id="toast" class="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border">
+        <div id="toastIconBg" class="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+            <i id="toastIcon" data-lucide="info" class="w-5 h-5"></i>
+        </div>
+        <p id="toastMessage" class="text-sm font-bold text-white pr-2 leading-snug"></p>
     </div>
 
-    <!-- Firebase y Lógica -->
+    <!-- Scripts (Firebase, Lógica + Cloudinary Nativo) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         
         const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
@@ -140,39 +288,133 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // CLOUDINARY CONFIG - CONECTADO A TU NUEVA CUENTA
+        // CLOUDINARY CONFIG
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/djfbse8rg/image/upload';
         const CLOUDINARY_UPLOAD_PRESET = 'diverty_web';
 
+        // DOM Elements
         const form = document.getElementById('adminForm');
         const ofertaCheck = document.getElementById('oferta');
         const precioOriginalContainer = document.getElementById('precioOriginalContainer');
         const precioOriginalInput = document.getElementById('precioOriginal');
-        
-        const imageFileInput = document.getElementById('imageFile');
         const imageUrlInput = document.getElementById('imagen');
         const imagePreviewBox = document.getElementById('imagePreviewBox');
         const previewImg = document.getElementById('previewImg');
+        const imageFileNative = document.getElementById('imageFileNative');
         const uploadProgress = document.getElementById('uploadProgress');
+        const removeImgBtn = document.getElementById('removeImgBtn');
         const submitBtn = document.getElementById('submitBtn');
+        const submitText = document.getElementById('submitText');
+        
+        // UI Navigation & Edit
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const viewCatalog = document.getElementById('view-catalog');
+        const viewForm = document.getElementById('view-form');
+        const bottomActionBar = document.getElementById('bottomActionBar');
+        const formMainTitle = document.getElementById('formMainTitle');
+        const formSubTitle = document.getElementById('formSubTitle');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
 
+        let paquetesLocales = {}; 
+        let editingId = null; 
+
+        // ==========================================
+        // UI: TABS
+        // ==========================================
+        function switchTab(tabId) {
+            tabBtns.forEach(btn => {
+                btn.classList.remove('active', 'bg-slate-800', 'text-white');
+                btn.classList.add('text-slate-500');
+                if(btn.dataset.tab === tabId) {
+                    btn.classList.add('active', 'bg-slate-800', 'text-white');
+                    btn.classList.remove('text-slate-500');
+                }
+            });
+
+            if(tabId === 'catalog') {
+                viewForm.classList.remove('active');
+                viewCatalog.classList.add('active');
+                bottomActionBar.classList.remove('show');
+            } else {
+                viewCatalog.classList.remove('active');
+                viewForm.classList.add('active');
+                bottomActionBar.classList.add('show');
+            }
+        }
+
+        tabBtns.forEach(btn => btn.addEventListener('click', (e) => {
+            if(editingId && e.target.dataset.tab === 'catalog') {
+                if(!confirm('¿Descartar cambios y volver al catálogo?')) return;
+                resetFormUI();
+            }
+            switchTab(e.target.dataset.tab);
+        }));
+
+        // ==========================================
+        // TOAST NOTIFICATIONS
+        // ==========================================
+        let toastTimeout;
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const iconBg = document.getElementById('toastIconBg');
+            const icon = document.getElementById('toastIcon');
+            document.getElementById('toastMessage').textContent = message;
+            
+            if (type === 'success') {
+                toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-emerald-500/50';
+                iconBg.className = 'w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-emerald-500/20';
+                icon.setAttribute('data-lucide', 'check-circle-2');
+                icon.className = 'w-6 h-6 text-emerald-400';
+            } else {
+                toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-rose-500/50';
+                iconBg.className = 'w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-rose-500/20';
+                icon.setAttribute('data-lucide', 'alert-triangle');
+                icon.className = 'w-6 h-6 text-rose-400';
+            }
+            lucide.createIcons();
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 3000);
+        }
+
+        // ==========================================
+        // INTERACCIONES Y SUBIDA A CLOUDINARY
+        // ==========================================
         ofertaCheck.addEventListener('change', (e) => {
             precioOriginalContainer.classList.toggle('hidden', !e.target.checked);
+            document.getElementById('ofertaBox').classList.toggle('border-pink-500/50', e.target.checked);
+            if(e.target.checked) document.getElementById('precioOriginal').focus();
         });
 
-        // ==========================================
-        // SUBIDA AUTOMÁTICA A CLOUDINARY
-        // ==========================================
-        imageFileInput.addEventListener('change', async (e) => {
+        function updatePreview() {
+            if(imageUrlInput.value) {
+                imagePreviewBox.classList.remove('hidden');
+                previewImg.src = imageUrlInput.value;
+            } else {
+                imagePreviewBox.classList.add('hidden');
+                previewImg.src = '';
+            }
+        }
+
+        imageUrlInput.addEventListener('input', updatePreview);
+
+        removeImgBtn.addEventListener('click', () => {
+            imageUrlInput.value = '';
+            imageFileNative.value = ''; // Limpiar input file
+            updatePreview();
+        });
+
+        // SUBIDA NATIVA A CLOUDINARY API
+        imageFileNative.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Mostrar preview y loading
+            submitBtn.disabled = true;
+            imageUrlInput.value = 'Subiendo imagen a la nube...';
+            
             imagePreviewBox.classList.remove('hidden');
             previewImg.src = URL.createObjectURL(file);
             uploadProgress.classList.remove('hidden');
-            submitBtn.disabled = true;
-            imageUrlInput.value = 'Subiendo imagen...';
 
             const formData = new FormData();
             formData.append('file', file);
@@ -183,27 +425,29 @@
                     method: 'POST',
                     body: formData
                 });
-                
                 const data = await response.json();
                 
                 if (data.secure_url) {
-                    // ¡Éxito!
                     imageUrlInput.value = data.secure_url;
+                    showToast("Foto procesada con éxito");
                 } else {
                     throw new Error("No se pudo obtener el link");
                 }
-                
             } catch (error) {
-                console.error("Error subiendo a Cloudinary:", error);
-                alert("Error al subir la imagen. Intenta de nuevo.");
+                showToast("Error subiendo foto. Revisa tu internet.", "error");
                 imageUrlInput.value = '';
                 imagePreviewBox.classList.add('hidden');
             } finally {
                 uploadProgress.classList.add('hidden');
                 submitBtn.disabled = false;
+                imageFileNative.value = ''; 
             }
         });
 
+
+        // ==========================================
+        // FIREBASE LOGIC & CATÁLOGO PREMIUM
+        // ==========================================
         async function init() {
             await signInAnonymously(auth);
             loadCatalog();
@@ -211,105 +455,245 @@
 
         async function loadCatalog() {
             const container = document.getElementById('paquetesLista');
-            container.innerHTML = '<div class="col-span-full flex justify-center py-8 text-slate-500"><i data-lucide="loader" class="animate-spin w-6 h-6"></i></div>';
-            lucide.createIcons();
-            
             try {
                 const querySnapshot = await getDocs(collection(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'catalogo_web'));
                 container.innerHTML = '';
+                paquetesLocales = {}; 
                 
                 if (querySnapshot.empty) {
-                    container.innerHTML = '<p class="text-slate-500 col-span-full text-center py-6 border border-dashed border-slate-700 rounded-xl">No has creado ningún paquete todavía.</p>';
+                    container.innerHTML = `
+                        <div class="col-span-full bg-[#0B1120] border border-dashed border-slate-700 rounded-3xl p-10 text-center flex flex-col items-center">
+                            <div class="w-16 h-16 bg-slate-800 rounded-2xl flex items-center justify-center mb-4 text-slate-500 shadow-inner">
+                                <i data-lucide="package-open" class="w-8 h-8"></i>
+                            </div>
+                            <h3 class="text-white font-bold text-lg mb-1">Catálogo Vacío</h3>
+                            <p class="text-slate-400 text-sm max-w-[250px]">No tienes planes publicados. Ve a la pestaña "Crear" para añadir uno.</p>
+                        </div>`;
+                    lucide.createIcons();
                     return;
                 }
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
+                    paquetesLocales[docSnap.id] = data; 
+                    
+                    const isHourly = data.tipoCobro === 'hora';
+                    const isChild = data.tipoCobro === 'nino';
+                    const cobroBadge = isHourly ? '/ hora' : isChild ? '/ niño' : 'Total';
+                    
                     container.innerHTML += `
-                        <div class="bg-slate-900/50 border border-slate-700/50 p-3 rounded-2xl relative group hover:border-purple-500/50 transition-colors">
-                            ${data.oferta ? '<span class="absolute top-2 right-2 bg-pink-600 text-[9px] font-black px-2 py-1 rounded-full shadow-lg z-10">EN INICIO</span>' : ''}
-                            <div class="w-full h-32 rounded-xl overflow-hidden mb-3 border border-slate-800 relative bg-slate-800">
-                                <img src="${data.imagen || ''}" class="w-full h-full object-cover">
+                        <div class="premium-card flex flex-col">
+                            <div class="absolute top-4 left-4 z-20 flex flex-col gap-2 items-start">
+                                <span class="glass-badge text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-sm border border-slate-600/50">
+                                    ${data.categoria.replace(/planes de |shows de |especial |otros /i, '')}
+                                </span>
+                                ${data.oferta ? '<span class="bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3 h-3"></i> Oferta Especial</span>' : ''}
                             </div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1 truncate">${data.categoria}</div>
-                            <h3 class="font-bold text-white leading-tight text-sm truncate">${data.nombre}</h3>
-                            <p class="text-emerald-400 font-black mt-1">$${data.precio}</p>
-                            <button data-delete-id="${docSnap.id}" class="mt-3 w-full bg-slate-800 text-rose-400 border border-slate-700 hover:bg-rose-500 hover:text-white py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1">
-                                <i data-lucide="trash-2" class="w-3 h-3"></i> Borrar
-                            </button>
+                            
+                            <div class="premium-card-img-container bg-[#0F172A] shrink-0">
+                                <img src="${data.imagen || ''}" class="premium-card-img">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#0B1120] via-transparent to-transparent opacity-90"></div>
+                            </div>
+
+                            <div class="p-5 flex flex-col flex-grow relative -mt-8 z-10">
+                                <h3 class="text-white font-extrabold text-xl leading-tight mb-2 drop-shadow-md">${data.nombre}</h3>
+                                <p class="text-slate-400 text-sm line-clamp-2 mb-6 leading-relaxed">${data.descripcion}</p>
+                                
+                                <div class="mt-auto flex items-end justify-between bg-slate-900/80 p-4 rounded-xl border border-slate-800 shadow-inner">
+                                    <div class="flex flex-col">
+                                        <span class="text-slate-500 text-[10px] uppercase font-bold tracking-widest mb-0.5">Inversión ${cobroBadge}</span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-emerald-400 font-black text-2xl tracking-tighter">$${data.precio}</span>
+                                            ${data.oferta && data.precioOriginal ? `<span class="text-slate-500 text-sm font-medium line-through decoration-pink-500/50">$${data.precioOriginal}</span>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="px-5 pb-5 pt-0 mt-auto">
+                                <div class="flex items-center gap-2">
+                                    <button data-edit-id="${docSnap.id}" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-purple-500/20 active:scale-[0.98]">
+                                        <i data-lucide="edit-3" class="w-4 h-4"></i> Editar
+                                    </button>
+                                    <button data-duplicate-id="${docSnap.id}" class="w-12 h-12 shrink-0 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 flex items-center justify-center transition-colors active:scale-[0.98]" title="Duplicar">
+                                        <i data-lucide="copy" class="w-5 h-5"></i>
+                                    </button>
+                                    <button data-delete-id="${docSnap.id}" class="w-12 h-12 shrink-0 bg-slate-800 hover:bg-rose-500 text-rose-400 hover:text-white rounded-xl border border-slate-700 hover:border-rose-500 flex items-center justify-center transition-colors active:scale-[0.98]" title="Borrar">
+                                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     `;
                 });
                 lucide.createIcons();
             } catch (error) {
-                console.error(error);
-                container.innerHTML = '<p class="text-rose-500 col-span-full">Error cargando paquetes.</p>';
+                showToast("Error de conexión al cargar catálogo.", "error");
             }
         }
 
+        // ==========================================
+        // FORM SUBMIT
+        // ==========================================
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            if(!imageUrlInput.value || imageUrlInput.value === 'Subiendo imagen...') {
-                alert("Espera a que la imagen termine de subir.");
-                return;
-            }
+            const nombreVal = document.getElementById('nombre').value.trim();
+            const precioVal = Number(document.getElementById('precio').value);
+            const isOferta = ofertaCheck.checked;
+            const precioOrigVal = Number(precioOriginalInput.value);
+            const imagenVal = imageUrlInput.value.trim();
+
+            if(nombreVal.length < 3) return showToast("El nombre es muy corto.", "error");
+            if(precioVal <= 0) return showToast("El precio debe ser válido.", "error");
+            if(isOferta && precioOrigVal <= precioVal) return showToast("Precio original debe ser mayor.", "error");
+            if(!imagenVal) return showToast("La imagen es obligatoria.", "error");
 
             submitBtn.disabled = true;
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Publicando...';
+            const originalText = submitText.textContent;
+            submitText.textContent = "Guardando en la Nube...";
+            const icon = submitBtn.querySelector('.lucide, i');
+            if (icon) {
+                icon.setAttribute('data-lucide', 'loader-2');
+                icon.classList.add('animate-spin');
+            }
             lucide.createIcons();
             
             try {
-                await addDoc(collection(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'catalogo_web'), {
-                    nombre: document.getElementById('nombre').value,
-                    categoria: document.getElementById('categoria').value,
-                    precio: Number(document.getElementById('precio').value),
-                    tipoCobro: document.getElementById('tipoCobro').value,
-                    oferta: ofertaCheck.checked,
-                    precioOriginal: ofertaCheck.checked ? Number(precioOriginalInput.value) : null,
-                    descripcion: document.getElementById('descripcion').value,
-                    imagen: document.getElementById('imagen').value,
+                const dataToSave = {
+                    nombre: nombreVal, categoria: document.getElementById('categoria').value,
+                    precio: precioVal, tipoCobro: document.getElementById('tipoCobro').value,
+                    oferta: isOferta, precioOriginal: isOferta ? precioOrigVal : null,
+                    descripcion: document.getElementById('descripcion').value, imagen: imagenVal,
                     serviciosLista: document.getElementById('serviciosLista').value,
-                    creadoEn: new Date().toISOString()
-                });
+                    actualizadoEn: new Date().toISOString()
+                };
+
+                if (editingId) {
+                    await updateDoc(doc(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'catalogo_web', editingId), dataToSave);
+                    showToast("¡Modificaciones guardadas!");
+                } else {
+                    dataToSave.creadoEn = new Date().toISOString();
+                    await addDoc(collection(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'catalogo_web'), dataToSave);
+                    showToast("¡Nuevo Paquete Publicado!");
+                }
                 
-                alert('¡Paquete publicado en tu web!');
-                
-                form.reset();
-                precioOriginalContainer.classList.add('hidden');
-                imagePreviewBox.classList.add('hidden');
-                previewImg.src = '';
-                
+                resetFormUI();
                 loadCatalog();
+                switchTab('catalog');
+                
             } catch (error) {
-                console.error("Error al guardar: ", error);
-                alert('Hubo un error al publicar el paquete.');
-            } finally {
+                showToast("Fallo al guardar. Revisa tu conexión.", "error");
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
+                submitText.textContent = originalText;
+                const iconFail = submitBtn.querySelector('.lucide, i');
+                if (iconFail) {
+                    iconFail.setAttribute('data-lucide', 'check-circle');
+                    iconFail.classList.remove('animate-spin');
+                }
                 lucide.createIcons();
             }
         });
 
+        // ==========================================
+        // EDIT / DUP / DEL
+        // ==========================================
+        function populateForm(data, isEdit) {
+            document.getElementById('nombre').value = isEdit ? data.nombre : data.nombre + " (Copia)";
+            document.getElementById('categoria').value = data.categoria || 'payasos';
+            document.getElementById('descripcion').value = data.descripcion || '';
+            document.getElementById('precio').value = data.precio || '';
+            document.getElementById('tipoCobro').value = data.tipoCobro || 'paquete';
+            document.getElementById('serviciosLista').value = data.serviciosLista || '';
+            
+            ofertaCheck.checked = data.oferta || false;
+            precioOriginalContainer.classList.toggle('hidden', !data.oferta);
+            document.getElementById('ofertaBox').classList.toggle('border-pink-500/50', data.oferta);
+            document.getElementById('precioOriginal').value = data.precioOriginal || '';
+
+            if(data.imagen) {
+                imageUrlInput.value = data.imagen;
+                updatePreview();
+            } else { removeImgBtn.click(); }
+            
+            switchTab('form');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetFormUI() {
+            form.reset(); editingId = null;
+            removeImgBtn.click(); ofertaCheck.dispatchEvent(new Event('change'));
+            
+            formMainTitle.textContent = "Nuevo Paquete";
+            formSubTitle.textContent = "Modo Creación";
+            submitBtn.disabled = false;
+            submitText.textContent = "Publicar Paquete";
+            
+            const icon = submitBtn.querySelector('.lucide, i');
+            if (icon) {
+                icon.setAttribute('data-lucide', 'check-circle');
+                icon.classList.remove('animate-spin');
+            }
+            
+            cancelEditBtn.classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        cancelEditBtn.addEventListener('click', () => { resetFormUI(); switchTab('catalog'); });
+
         document.getElementById('paquetesLista').addEventListener('click', async (e) => {
-            const btn = e.target.closest('[data-delete-id]');
-            if(btn) {
-                if(confirm('¿Seguro que deseas borrar este paquete de tu web?')) {
-                    btn.innerHTML = '<i data-lucide="loader" class="w-3 h-3 animate-spin"></i> Borrando...';
-                    lucide.createIcons();
-                    try {
-                        await deleteDoc(doc(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'catalogo_web', btn.dataset.deleteId));
-                        loadCatalog();
-                    } catch (error) {
-                        alert('Error al eliminar.');
-                        loadCatalog();
+            const btnDelete = e.target.closest('[data-delete-id]');
+            if(btnDelete) {
+                if(confirm('¿Eliminar definitivamente este paquete de la web?')) {
+                    const icon = btnDelete.querySelector('.lucide, i');
+                    if (icon) {
+                        icon.setAttribute('data-lucide', 'loader-2'); 
+                        icon.classList.add('animate-spin');
                     }
-                }
+                    lucide.createIcons();
+                    btnDelete.classList.add('pointer-events-none', 'opacity-50');
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', 'diverty-oficial', 'public', 'data', 'catalogo_web', btnDelete.dataset.deleteId));
+                        showToast("Paquete borrado", "success"); loadCatalog();
+                    } catch (error) { 
+                        showToast("Error al borrar.", "error"); 
+                        loadCatalog(); 
+                    }
+                } return;
+            }
+
+            const btnEdit = e.target.closest('[data-edit-id]');
+            if(btnEdit) {
+                const id = btnEdit.dataset.editId; const data = paquetesLocales[id];
+                if(data) {
+                    editingId = id; populateForm(data, true);
+                    formMainTitle.textContent = "Editar Paquete";
+                    formSubTitle.textContent = "Guardar cambios reemplazará el actual";
+                    submitText.textContent = "Actualizar Paquete";
+                    cancelEditBtn.classList.remove('hidden');
+                } return;
+            }
+
+            const btnDup = e.target.closest('[data-duplicate-id]');
+            if(btnDup) {
+                const data = paquetesLocales[btnDup.dataset.duplicateId];
+                if(data) {
+                    resetFormUI(); populateForm(data, false);
+                    showToast("Atributos clonados. Listo para publicar.", "info");
+                } return;
             }
         });
 
-        document.getElementById('refreshBtn').addEventListener('click', loadCatalog);
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            const icon = document.querySelector('#refreshBtn .lucide, #refreshBtn i');
+            if (icon) icon.classList.add('animate-spin');
+            loadCatalog().then(() => {
+                setTimeout(() => {
+                    if (icon) icon.classList.remove('animate-spin');
+                }, 500);
+            });
+        });
+        
         lucide.createIcons();
         init();
     </script>
