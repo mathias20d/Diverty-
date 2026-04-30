@@ -128,7 +128,7 @@
         }
     </style>
 </head>
-<body class="flex flex-col relative">
+<body class="flex flex-col relative min-h-screen">
 
     <header id="mainHeader" class="fixed top-0 left-0 w-full z-40 px-4 transition-all duration-200 pointer-events-none">
         <div class="container mx-auto flex justify-between items-center pointer-events-auto">
@@ -182,11 +182,11 @@
         </div>
     </nav>
 
-    <main id="mainContent" class="flex-grow flex flex-col min-h-screen w-full relative z-10">
-        <!-- PANTALLA DE ESPERA - Evita flash y congelamiento de scroll -->
-        <div class="flex-grow flex flex-col items-center justify-center py-32 text-slate-500 fade-in">
+    <!-- Loader inicial para evitar pantalla negra o flasheo -->
+    <main id="mainContent" class="flex-grow flex flex-col w-full relative z-10">
+        <div id="initial-loader" class="flex-grow flex flex-col items-center justify-center py-32 text-slate-500 fade-in">
             <i data-lucide="loader-2" class="animate-spin w-12 h-12 mb-4 text-purple-500"></i>
-            <p class="font-bold text-sm tracking-widest uppercase">Cargando diversión...</p>
+            <p class="font-bold text-sm tracking-widest uppercase text-slate-400">Cargando diversión...</p>
         </div>
     </main>
 
@@ -277,24 +277,6 @@
             </div>
         </div>
     </div>
-    
-    <div id="calculatorModal" class="modal-backdrop z-[1050]">
-        <div class="modal-content border border-slate-700/50 shadow-[0_0_50px_rgba(0,0,0,0.8)] max-w-2xl">
-            <div class="shrink-0 p-5 sm:p-6 pb-2 relative z-10 border-b border-slate-800/50"><h2 class="text-2xl font-extrabold flex items-center justify-center gap-2 text-white"><i data-lucide="calculator" class="text-cyan-400"></i>Calculadora Rápida</h2></div>
-            <div class="flex-1 overflow-y-auto px-5 sm:px-6 py-4 custom-scrollbar relative z-10 min-h-[80px]">
-                <div class="bg-slate-800/50 rounded-2xl p-5 mb-5 border border-slate-700"><h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3">Servicios:</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="calculatorServices"></div></div>
-                <div class="bg-slate-800/50 rounded-2xl p-5 mb-2 border border-slate-700"><h3 class="text-sm font-bold text-slate-400 uppercase tracking-wide mb-3">Ubicación:</h3><select id="calculatorLocation" class="w-full bg-[#1E293B] border border-slate-600 rounded-2xl py-3.5 px-4 text-sm font-bold text-white outline-none focus:border-cyan-400 transition-colors"></select></div>
-            </div>
-            <div class="shrink-0 p-5 sm:p-6 pt-4 relative z-10 border-t border-slate-800/50 bg-[#0B1121]/95 backdrop-blur-md">
-                <div class="bg-slate-950 text-white rounded-3xl p-5 mb-5 border border-slate-800 shadow-inner">
-                    <div class="flex justify-between items-center mb-1"><span class="text-sm font-medium text-slate-400">Subtotal:</span><span id="calcSubtotal" class="text-lg font-bold text-white">$0.00</span></div>
-                    <div class="flex justify-between items-center mb-3"><span class="text-sm font-medium text-slate-400">Transporte:</span><span id="calcTransport" class="text-lg font-bold text-white">$0.00</span></div>
-                    <div class="border-t border-slate-800 pt-3"><div class="flex justify-between items-baseline"><span class="text-sm font-bold text-slate-400 uppercase">TOTAL ESTIMADO:</span><span id="calcTotal" class="text-3xl font-extrabold text-emerald-400 drop-shadow-md">$0.00</span></div></div>
-                </div>
-                <div class="flex gap-3"><button data-action="close-modal" class="bg-[#1E293B] border border-slate-700 text-slate-300 flex-1 hover:bg-[#2A364A] hover:text-white font-extrabold rounded-[18px] transition-all duration-300 text-[15px] shadow-sm h-[54px]">Cerrar</button><button data-action="add-calculated-to-cart" class="bg-emerald-500 hover:bg-emerald-400 flex-1 text-white font-bold rounded-[18px] flex justify-center items-center gap-2 transition-colors h-[54px] shadow-md"><i data-lucide="check" class="w-5 h-5"></i> Aceptar</button></div>
-            </div>
-        </div>
-    </div>
 
     <div id="bookingConfirmModal" class="modal-backdrop z-[1100]">
         <div class="modal-content bg-[#0B1121] border border-slate-700/50 text-white rounded-[32px] sm:rounded-[40px] shadow-[0_0_50px_rgba(0,0,0,0.8)] p-8 sm:p-10 max-w-md w-full relative overflow-hidden text-center justify-center">
@@ -321,6 +303,7 @@
     // 2. Configuración y Datos
     const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
     const CRM_APP_ID = "diverty-oficial"; 
+    const bImg = 'https://images.weserv.nl/?url=i.ibb.co/', opt600 = '&w=600&output=webp', opt150 = '&w=150&output=webp';
     
     const locations = [
         { value: 'panama-centro', label: 'Panamá Centro (+$5)', cost: 5 }, { value: 'arraijan', label: 'Arraiján (+$15)', cost: 15 }, 
@@ -340,14 +323,10 @@
     ];
 
     const gallery = [ 
-        { image: 'https://images.weserv.nl/?url=i.ibb.co/MJQgpHx/IMG-20250706-172005.jpg&w=600&output=webp', alt: 'Burbujas' }, 
-        { image: 'https://images.weserv.nl/?url=i.ibb.co/Kj8pkBJP/IMG-20250711-211956.jpg&w=600&output=webp', alt: 'Pintacaritas' }, 
-        { image: 'https://images.weserv.nl/?url=i.ibb.co/21gCBMm3/IMG-20230423-173048-1.jpg&w=600&output=webp', alt: 'Globos' }, 
-        { image: 'https://images.weserv.nl/?url=i.ibb.co/p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg&w=600&output=webp', alt: 'Jardín' }, 
-        { image: 'https://images.weserv.nl/?url=i.ibb.co/p61CY7CW/IMG-20250624-WA0000.jpg&w=600&output=webp', alt: 'Decoración' }, 
-        { image: 'https://images.weserv.nl/?url=i.ibb.co/nqvDyb7Y/IMG-20250623-WA0019.jpg&w=600&output=webp', alt: 'Personajes' }, 
-        { image: 'https://images.weserv.nl/?url=i.ibb.co/ynXVt81f/IMG-20250709-164447.jpg&w=600&output=webp', alt: 'Taller' }, 
-        { image: 'https://images.weserv.nl/?url=i.ibb.co/XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg&w=600&output=webp', alt: 'Payaso' } 
+        { image: bImg+'MJQgpHx/IMG-20250706-172005.jpg'+opt600, alt: 'Burbujas' }, { image: bImg+'Kj8pkBJP/IMG-20250711-211956.jpg'+opt600, alt: 'Pintacaritas' }, 
+        { image: bImg+'21gCBMm3/IMG-20230423-173048-1.jpg'+opt600, alt: 'Globos' }, { image: bImg+'p6gZT5JD/d8f8cf5e-4117-4f65-990e-43730827aa41-20250412-012526-0000.jpg'+opt600, alt: 'Jardín' }, 
+        { image: bImg+'p61CY7CW/IMG-20250624-WA0000.jpg'+opt600, alt: 'Decoración' }, { image: bImg+'nqvDyb7Y/IMG-20250623-WA0019.jpg'+opt600, alt: 'Personajes' }, 
+        { image: bImg+'ynXVt81f/IMG-20250709-164447.jpg'+opt600, alt: 'Taller' }, { image: bImg+'XZSZ4zTV/1000071229-68972d392b6b1b8ff16caa7bd7f56686-Editado-20250808-152555-0000.jpg'+opt600, alt: 'Payaso' } 
     ];
 
     let allPurchasableItems = [];
@@ -358,7 +337,6 @@
     let bookedEvents = []; 
     let currentCalDate = new Date(); 
     let bookingFormState = {}; 
-    let calculatorItems = []; 
     let selectedCalendarDate = null; 
     let isSoundPlaying = false;
     const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [] };
@@ -406,7 +384,7 @@
     
     function populateLocationSelects() { 
         const optionsHtml = locations.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join(''); 
-        $$('#cartLocation, #calculatorLocation, select[name="location"]').forEach(select => { 
+        $$('#cartLocation, select[name="location"]').forEach(select => { 
             if (select) { const cv = select.value; select.innerHTML = optionsHtml; if (cv) select.value = cv; } 
         }); 
     }
@@ -460,7 +438,7 @@
         app.activeSection = sectionId;
         $$('.nav-link, .mobile-nav-link').forEach(link => link.classList.remove('active'));
         
-        const navMap = { home: ['#navHome', '#mobileHome'], santa: ['#navSanta', '#mobileSanta'], services: ['#navServices', '#mobileServices'], clowns: ['#navClowns', '#mobileClowns'], bubbles: ['#navBubbles', '#mobileBubbles'], gallery: ['#navGallery', '#mobileGallery'], blog: ['#navBlog', '#mobileBlog'], reviews: ['#navReviews', '#mobileReviews'], booking: ['#navBooking', '#mobileBooking'], portal: ['#navPortal', '#mobilePortal'] };
+        const navMap = { home: ['#navHome', '#mobileHome'], santa: ['#navSanta', '#mobileSanta'], services: ['#navServices', '#mobileServices'], clowns: ['#navClowns', '#mobileClowns'], bubbles: ['#navBubbles', '#mobileBubbles'], gallery: ['#navGallery', '#mobileGallery'], booking: ['#navBooking', '#mobileBooking'], portal: ['#navPortal', '#mobilePortal'] };
         if (navMap[sectionId]) navMap[sectionId].forEach(selector => { const el = $(selector); if(el) el.classList.add('active'); });
         
         if (sectionId === 'home') renderHome();
@@ -469,7 +447,6 @@
         else if (sectionId === 'clowns') renderClowns();
         else if (sectionId === 'bubbles') renderBubbles();
         else if (sectionId === 'gallery') renderGallery();
-        else if (sectionId === 'reviews') renderReviews();
         else if (sectionId === 'booking') renderBooking();
         else if (sectionId === 'portal') renderPortal();
         
@@ -493,40 +470,58 @@
                     if (dateInput && selectedCalendarDate) { dateInput.value = selectedCalendarDate; validateAvailability(); }
                     const bForm = document.getElementById('bookingForm'); if(bForm) bForm.scrollIntoView({behavior: 'smooth', block: 'center'}); showToast('Fecha seleccionada. ¡Asegura tu cupo!', 'success');
                 }, 50); break;
+            
             case 'add-to-cart': {
                 const item = allPurchasableItems.find(s => s.id === itemId);
                 if (item) {
-                    const isPackage = itemId.includes('clown_') || itemId.includes('bubble_') || itemId.includes('santa_') || item.categoria === 'payasos' || item.categoria === 'burbujas' || item.categoria === 'santa';
-                    if (isPackage) { 
-                        if (!app.cart.find(i => i.id === itemId)) addToCart(item); 
-                        const m = $('#cartModal'); if(m) m.classList.add('show');
-                    } else addToCart(item);
+                    if (!app.cart.find(i => i.id === itemId)) addToCart(item); 
+                    const m = $('#cartModal'); if(m) m.classList.add('show');
                 } break;
             }
+            
             case 'remove-from-cart': removeFromCart(itemId); break;
             
-            // AGREGADO: Manejo correcto de horas en items dinámicos
             case 'add-hourly-to-cart': {
                 const serviceHourly = allPurchasableItems.find(s => s.id === itemId);
                 const qtyEl = document.querySelector(`#qty-${itemId}`);
                 const quantityHourly = qtyEl ? parseInt(qtyEl.textContent) : 1;
                 if (serviceHourly && quantityHourly > 0) {
-                    addToCart(serviceHourly, quantityHourly);
+                    const existing = app.cart.find(i => i.id === itemId);
+                    if (existing) {
+                        existing.quantity = quantityHourly;
+                        updateCartUI();
+                        showToast(`Cantidad actualizada a ${quantityHourly}`, 'success');
+                    } else {
+                        addToCart(serviceHourly, quantityHourly);
+                    }
                 } break;
             }
-            case 'add-workshop-to-cart': {
-                const serviceWorkshop = allPurchasableItems.find(s => s.id === itemId);
-                const qtyEl = document.querySelector(`#qty-${itemId}`);
-                let quantityWorkshop = qtyEl ? parseInt(qtyEl.value) : 10;
-                if (!serviceWorkshop) return;
-                const minQty = (serviceWorkshop.id === 'service_photos') ? 1 : (serviceWorkshop.minChildren || 10);
-                if (quantityWorkshop < minQty) { showToast(`Se requiere un mínimo de ${minQty}.`, 'error'); quantityWorkshop = minQty; if(qtyEl) qtyEl.value = minQty; }
-                addToCart(serviceWorkshop, quantityWorkshop); 
-                break;
+
+            case 'change-service-qty': { 
+                const qtyElement = document.querySelector(`#qty-${itemId}`); 
+                if (qtyElement) { 
+                    let currentQty = parseInt(qtyElement.textContent); 
+                    let newQty = Math.max(1, currentQty + parseInt(change));
+                    qtyElement.textContent = newQty; 
+                    
+                    const btn = document.querySelector(`button[data-action="add-hourly-to-cart"][data-item-id="${itemId}"]`);
+                    const inCart = app.cart.find(i => i.id === itemId);
+                    if(btn && inCart) {
+                        if (inCart.quantity !== newQty) {
+                            btn.innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5 text-white"></i> Actualizar`;
+                            btn.classList.remove('!bg-emerald-600', '!border-emerald-500');
+                            btn.classList.add('!bg-amber-500', '!border-amber-400');
+                        } else {
+                            btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`;
+                            btn.classList.add('!bg-emerald-600', '!border-emerald-500');
+                            btn.classList.remove('!bg-amber-500', '!border-amber-400');
+                        }
+                        lucide.createIcons({ root: btn.parentElement });
+                    }
+                } 
+                break; 
             }
-            case 'change-service-qty': { const qtyElement = document.querySelector(`#qty-${itemId}`); if (qtyElement) { let currentQty = parseInt(qtyElement.textContent); qtyElement.textContent = Math.max(1, currentQty + parseInt(change)); } break; }
-            case 'change-calc-qty': changeCalculatorQuantity(itemId, parseInt(change)); break;
-            case 'add-calculated-to-cart': addCalculatedToCart(); break;
+            
             case 'close-modal': { 
                 const modal = target.closest('.modal-backdrop'); 
                 if(modal) modal.classList.remove('show'); 
@@ -589,13 +584,6 @@
                                 <button data-action="remove-from-cart" data-item-id="${item.id}" class="w-7 h-7 rounded-full bg-slate-700/50 text-slate-400 hover:text-white hover:bg-rose-500/80 flex items-center justify-center transition-all border border-slate-600/50 ml-1" aria-label="Eliminar"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
                             </div>
                         </div>
-                        ${item.services && item.services.length > 0 ? `
-                        <div class="mt-2 pt-2 border-t border-slate-700/50 pl-[52px]">
-                            <ul class="text-[11px] text-slate-400 space-y-1">
-                                ${item.services.map(s => `<li class="flex items-start gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i><span class="leading-snug">${s}</span></li>`).join('')}
-                            </ul>
-                        </div>
-                        ` : ''}
                     </div>`).join('') + '</div>';
             }
         }
@@ -605,19 +593,31 @@
         if(transportCostEl) transportCostEl.textContent = `$${transportCost.toFixed(2)}`;
         if(finalTotalEl) finalTotalEl.textContent = `$${(total + transportCost).toFixed(2)}`;
         
-        // AGREGADO: Verifica y actualiza todos los tipos de botones para que cambien al añadirlos al carrito
-        $$('button[data-action="add-to-cart"], button[data-action="add-hourly-to-cart"], button[data-action="add-workshop-to-cart"]').forEach(btn => {
+        // Actualiza el aspecto de todos los botones de las tarjetas
+        $$('button[data-action="add-to-cart"], button[data-action="add-hourly-to-cart"]').forEach(btn => {
             const itemId = btn.dataset.itemId;
-            const inCart = app.cart.some(i => i.id === itemId);
+            const inCartItem = app.cart.find(i => i.id === itemId);
+            
             if (!btn.dataset.origHtml) btn.dataset.origHtml = btn.innerHTML;
-            const isCurrentlySelected = btn.classList.contains('!bg-emerald-600');
-            if (inCart && !isCurrentlySelected) {
-                btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`;
-                btn.classList.add('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none');
+            
+            if (inCartItem) {
+                const qtyEl = document.querySelector(`#qty-${itemId}`);
+                const visibleQty = qtyEl ? parseInt(qtyEl.textContent) : inCartItem.quantity;
+                
+                // Si la cantidad en el mostrador es diferente a la del carrito, pone boton en Naranja
+                if (visibleQty !== inCartItem.quantity && btn.dataset.action === 'add-hourly-to-cart') {
+                    btn.innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5 text-white"></i> Actualizar`;
+                    btn.classList.add('!bg-amber-500', '!border-amber-400', '!text-white', '!shadow-[0_0_25px_rgba(245,158,11,0.5)]', '!bg-none');
+                    btn.classList.remove('!bg-emerald-600', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]');
+                } else { // Si la cantidad coincide, pone boton en Verde
+                    btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`;
+                    btn.classList.add('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none');
+                    btn.classList.remove('!bg-amber-500', '!border-amber-400', '!shadow-[0_0_25px_rgba(245,158,11,0.5)]');
+                }
                 lucide.createIcons({ root: btn });
-            } else if (!inCart && isCurrentlySelected) {
+            } else {
                 btn.innerHTML = btn.dataset.origHtml;
-                btn.classList.remove('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none');
+                btn.classList.remove('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none', '!bg-amber-500', '!border-amber-400', '!shadow-[0_0_25px_rgba(245,158,11,0.5)]');
                 lucide.createIcons({ root: btn });
             }
         });
@@ -625,48 +625,6 @@
         populateLocationSelects();
         const cartLocationEl = $('#cartLocation');
         if (cartLocationEl) cartLocationEl.value = app.location;
-        lucide.createIcons({root: cartItemsEl});
-    }
-
-    function changeCalculatorQuantity(serviceId, change) {
-        const service = allServices.find(s => s.id === serviceId);
-        if (!service) return;
-        const existingItem = calculatorItems.find(item => item.id === serviceId);
-        if (existingItem) {
-            existingItem.quantity = Math.max(0, existingItem.quantity + change);
-            if (existingItem.quantity === 0) calculatorItems = calculatorItems.filter(item => item.id !== serviceId);
-        } else if (change > 0) { calculatorItems.push({ ...service, quantity: 1 }); }
-        const calcQtyEl = $(`#calc-qty-${service.id}`);
-        if(calcQtyEl) calcQtyEl.textContent = calculatorItems.find(item => item.id === serviceId)?.quantity || 0;
-        updateCalculatorTotal();
-    }
-
-    function updateCalculatorTotal() {
-        const subtotal = calculatorItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const locEl = $('#calculatorLocation');
-        const transportCost = calculateTransportCost(locEl ? locEl.value : 'panama-centro');
-        
-        const calcSubtotal = $('#calcSubtotal'), calcTransport = $('#calcTransport'), calcTotal = $('#calcTotal');
-        if(calcSubtotal) calcSubtotal.textContent = `$${subtotal.toFixed(2)}`;
-        if(calcTransport) calcTransport.textContent = `$${transportCost.toFixed(2)}`;
-        if(calcTotal) calcTotal.textContent = `$${(subtotal + transportCost).toFixed(2)}`;
-    }
-
-    function addCalculatedToCart() {
-        if (calculatorItems.length === 0) { showToast('Selecciona al menos un servicio', 'error'); return; }
-        calculatorItems.forEach(item => { if(item.quantity > 0) addToCart(item, item.quantity); });
-        const m = $('#calculatorModal'); if(m) m.classList.remove('show'); 
-        showToast('Servicios agregados al carrito', 'success'); calculatorItems = [];
-    }
-
-    function openCalculator() {
-        const container = $('#calculatorServices');
-        if(container) {
-            container.innerHTML = allPurchasableItems.map(item => `<div class="flex justify-between items-center bg-slate-800 p-3 rounded-xl border border-slate-700 shadow-sm mb-2"><div class="flex flex-col"><span class="text-sm font-bold text-white">${item.name}</span><span class="text-xs text-purple-400 font-bold">$${item.price.toFixed(2)}</span></div><div class="flex items-center gap-3 bg-slate-900 p-1 rounded-lg border border-slate-700"><button data-action="change-calc-qty" data-item-id="${item.id}" data-change="-1" class="w-7 h-7 bg-slate-800 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"><i data-lucide="minus" class="w-3 h-3"></i></button><span id="calc-qty-${item.id}" class="text-sm font-bold w-6 text-center text-white">${calculatorItems.find(i => i.id === item.id)?.quantity || 0}</span><button data-action="change-calc-qty" data-item-id="${item.id}" data-change="1" class="w-7 h-7 bg-slate-800 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"><i data-lucide="plus" class="w-3 h-3"></i></button></div></div>`).join('');
-        }
-        updateCalculatorTotal(); 
-        const m = $('#calculatorModal'); if(m) m.classList.add('show'); 
-        lucide.createIcons({root: container});
     }
 
     // 8. Constructores e Compoñentes UI
@@ -688,7 +646,6 @@
     }
 
     function createDetailedCardHTML(item) {
-        const isPackage = item.id && (item.id.includes('clown') || item.id.includes('bubble') || item.id.includes('santa') || item.categoria === 'payasos' || item.categoria === 'burbujas' || item.categoria === 'santa');
         let badgeHTML = '', cardWrapperClasses = 'bg-[#0B1121] border border-purple-500/30 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(139,92,246,0.15)] hover:shadow-[0_0_45px_rgba(139,92,246,0.5)] hover:border-purple-400 hover:-translate-y-2';
         let btnClasses = 'w-full bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-purple-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(139,92,246,0.7)]';
         let iconColor = 'text-white', titleClasses = 'text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300 drop-shadow-[0_2px_10px_rgba(139,92,246,0.3)]';
@@ -710,12 +667,12 @@
             cardWrapperClasses = 'bg-[#0B1121] border border-pink-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(244,63,94,0.25)] hover:shadow-[0_0_45px_rgba(244,63,94,0.5)] hover:border-pink-400 hover:-translate-y-2';
         }
 
-        let priceDisplayHTML = '', priceText = item.price || (item.type === 'character-group' && item.characters && item.characters[0].price);
+        let priceDisplayHTML = '', priceText = item.price;
         if (priceText) {
             if (item.discountApplied) {
                 priceDisplayHTML = `<div class="flex items-end justify-between mt-auto mb-4 w-full relative z-10"><div class="flex items-end gap-2.5"><span class="text-4xl font-black ${priceColor} leading-none tracking-tight">$${item.price.toFixed(2)}</span><span class="text-slate-500 line-through text-sm font-bold leading-none mb-1.5">$${item.originalPrice.toFixed(2)}</span></div><span class="bg-pink-500/20 text-pink-400 text-[10px] font-black px-2.5 py-1 rounded-lg border border-pink-500/30 badge-float shadow-[0_0_10px_rgba(236,72,153,0.3)]">OFERTA</span></div>`;
             } else {
-                priceDisplayHTML = `<div class="flex items-end justify-end mt-auto mb-4 w-full relative z-10"><span class="text-3xl font-black ${priceColor} transition-all duration-300 leading-none tracking-tight">$${priceText.toFixed(2)}</span>${item.isHourly ? '<span class="text-slate-500 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/hr</span>' : ''}${item.isPerChild ? '<span class="text-slate-500 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/niño</span>' : ''}</div>`;
+                priceDisplayHTML = `<div class="flex items-end justify-end mt-auto mb-4 w-full relative z-10"><span class="text-3xl font-black ${priceColor} transition-all duration-300 leading-none tracking-tight">$${priceText.toFixed(2)}</span>${item.isHourly ? '<span class="text-slate-500 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/hr</span>' : ''}</div>`;
             }
         }
 
@@ -724,27 +681,29 @@
             servicesListHTML = `<div class="mt-4 mb-4 relative z-20 w-full"><ul class="space-y-2 max-h-[170px] overflow-y-auto custom-scrollbar pr-2">` + item.services.map(s => `<li class="flex items-start text-[13px] text-slate-300 font-medium leading-snug group/item transition-colors hover:text-white"><div class="mt-0.5 mr-3 bg-purple-500/10 p-1 rounded-full group-hover/item:bg-pink-500/20 transition-colors border border-purple-500/20"><i data-lucide="check" class="w-3 h-3 text-purple-400 group-hover/item:text-pink-400 transition-colors"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('') + `</ul></div>`;
         }
 
-        let actionButtonHTML = '';
-        const inCart = app.cart.some(i => i.id === item.id);
-        const extraClasses = inCart ? '!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)] !bg-none' : '';
-        const btnIconText = isPackage ? 'calendar-plus' : 'shopping-cart';
-        const finalBtnText = inCart ? `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado` : `<i data-lucide="${btnIconText}" class="w-5 h-5 ${iconColor} group-hover:animate-pulse"></i> ${isPackage ? 'Reservar este plan' : 'Añadir al carrito'}`;
+        // AGREGADO: Verifica si el item está en el carrito para mostrar la cantidad correcta
+        const inCartItem = app.cart.find(i => i.id === item.id);
+        const inCart = !!inCartItem;
+        const currentQty = inCartItem ? inCartItem.quantity : 1;
 
+        let actionButtonHTML = '';
         if (item.isHourly) {
-            actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="flex items-center justify-between mb-3 bg-[#1E293B] border border-[#334155] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span id="qty-${item.id}" class="text-base font-bold text-white w-10 text-center">1</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="${btnClasses} ${extraClasses}">${finalBtnText}</button></div>`;
-        } else if (item.isPerChild) {
-            const minQty = item.id === 'service_photos' ? 1 : (item.minChildren || 10);
-            actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="mb-3"><label for="qty-${item.id}" class="text-center text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Cantidad (mín. ${minQty}):</label><input type="number" id="qty-${item.id}" class="w-full bg-[#1E293B] border border-[#334155] text-center font-bold text-white p-2.5 rounded-xl outline-none focus:border-purple-400 shadow-inner" value="${minQty}" min="${minQty}"></div><button data-action="add-workshop-to-cart" data-item-id="${item.id}" class="${btnClasses} ${extraClasses}">${finalBtnText}</button></div>`;
-        } else if (item.type === 'character-group' && item.characters) {
-            actionButtonHTML = `<div class="mt-auto max-h-40 overflow-y-auto pr-1 space-y-2 custom-scrollbar w-full pt-3 relative z-10">` + item.characters.map(char => `<div class="flex items-center justify-between p-2 bg-[#1E293B] rounded-xl border border-[#334155] hover:border-purple-500/50 transition-colors group/btn"><div class="w-10 h-10 rounded-full overflow-hidden mr-3 border border-slate-600"><img src="${char.image}" alt="${char.name}" class="w-full h-full object-cover group-hover/btn:scale-110 transition-transform" loading="lazy"></div><div class="flex-1"><p class="font-extrabold text-white text-xs tracking-tight">${char.name.replace('Personaje: ', '')}</p><p class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 text-[11px]">$${char.price.toFixed(0)}</p></div><button data-action="add-to-cart" data-item-id="${char.id}" class="w-8 h-8 rounded-lg bg-slate-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 text-white flex items-center justify-center transition-colors shadow-sm"><i data-lucide="plus" class="w-4 h-4"></i></button></div>`).join('') + `</div>`;
+            const extraClasses = inCart ? '!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)] !bg-none' : '';
+            const finalBtnText = inCart ? `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado` : `<i data-lucide="shopping-cart" class="w-5 h-5 ${iconColor} group-hover:animate-pulse"></i> Añadir al Carrito`;
+
+            actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="flex items-center justify-between mb-3 bg-[#1E293B] border border-[#334155] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span id="qty-${item.id}" class="text-base font-bold text-white w-10 text-center">${currentQty}</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="${btnClasses} ${extraClasses}">${finalBtnText}</button></div>`;
         } else {
+            const isPackage = item.id.includes('clown') || item.categoria === 'payasos';
+            const btnIconText = isPackage ? 'calendar-plus' : 'shopping-cart';
+            const extraClasses = inCart ? '!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)] !bg-none' : '';
+            const finalBtnText = inCart ? `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Plan Seleccionado` : `<i data-lucide="${btnIconText}" class="w-5 h-5 ${iconColor} group-hover:animate-pulse"></i> ${isPackage ? 'Reservar este plan' : 'Añadir al carrito'}`;
+            
             actionButtonHTML = `<div class="mt-auto w-full pt-4 relative z-10"><button data-action="add-to-cart" data-item-id="${item.id}" class="${btnClasses} ${extraClasses}">${finalBtnText}</button></div>`;
         }
         
         let topSection = `<div class="flex items-center gap-4 mb-1 relative z-10"><div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-slate-700/50 bg-[#162032] relative group-hover:border-purple-500/50 transition-colors"><img src="${item.image}" alt="${item.name || item.title}" class="w-full h-full object-cover relative z-10" loading="lazy"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20"></div></div><div class="flex flex-col justify-center flex-1"><h3 class="${titleClasses}">${item.name || item.title}</h3><p class="text-pink-400 text-[11px] sm:text-xs font-bold mt-1.5 leading-snug drop-shadow-sm opacity-90 group-hover:opacity-100 transition-opacity line-clamp-2">${item.description}</p></div></div>`;
         
-        // AGREGADO: Soporte táctil estricto (-webkit-overflow-scrolling: touch en el contenedor de abajo)
-        return `<div class="w-[85vw] max-w-[360px] md:w-full snap-center flex-shrink-0 h-full snap-container animate-slide-up"><div class="${cardWrapperClasses}"><div class="absolute inset-0 overflow-hidden rounded-[2rem] z-0 pointer-events-none"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl transition-colors duration-500 group-hover:bg-purple-500/30"></div></div>${badgeHTML}${topSection}${servicesListHTML}${priceDisplayHTML}${actionButtonHTML}</div></div>`;
+        return `<div class="w-[85vw] max-w-[360px] md:w-full snap-center flex-shrink-0 h-full snap-container animate-slide-up" style="transform: translateZ(0);"><div class="${cardWrapperClasses}"><div class="absolute inset-0 overflow-hidden rounded-[2rem] z-0 pointer-events-none"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl transition-colors duration-500 group-hover:bg-purple-500/30"></div></div>${badgeHTML}${topSection}${servicesListHTML}${priceDisplayHTML}${actionButtonHTML}</div></div>`;
     }
 
     function renderSection(items, title, icon) { 
@@ -1196,7 +1155,10 @@
                         description: data.descripcion,
                         image: data.imagen,
                         services: data.serviciosLista ? data.serviciosLista.split('\n').filter(s => s.trim() !== '') : [],
-                        isHourly: data.tipoCobro === 'hora', // AQUI SE VALIDA QUE SEA "POR HORA"
+                        
+                        // EL FIX DE LAS HORAS: Ahora cualquier cosa creada como "Servicios Extras" tendrá botones de + y -
+                        isHourly: data.tipoCobro === 'hora' || data.categoria === 'servicios',
+                        
                         isPerChild: data.tipoCobro === 'nino',
                         categoria: data.categoria
                     };
@@ -1261,22 +1223,20 @@
         });
     }
 
-    // ====== ARRANQUE ASÍNCRONO LIMPIO (Soluciona el congelamiento del Slider) ======
+    // EL FIX DEL CONGELAMIENTO (Arranca todo 1 sola vez y en orden)
     setupEventListeners(); 
     populateLocationSelects(); 
     lucide.createIcons();
 
     (async () => {
-        // 1. Espera a descargar TODO de Firebase primero
-        await initFirebaseAndData(); 
+        await initFirebaseAndData();
         
-        // 2. Dibuja la página UNA SOLA VEZ
         if (app.activeSection === 'home') renderHome();
         else setActiveSection(app.activeSection);
         
         updateCartUI(); 
         
-        // 3. Oculta el mensaje de carga y muestra la magia
+        // Quitar la pantalla de carga
         document.body.classList.add('js-loaded');
         const loader = document.getElementById('initial-loader');
         if (loader) loader.style.display = 'none';
