@@ -48,6 +48,7 @@
             color: white; font-weight: 700; padding: 18px 24px; border-radius: 16px; transition: all 0.2s ease;
             box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); border: 1px solid rgba(255,255,255,0.1); width: 100%;
             font-size: 1.1rem;
+            cursor: pointer;
         }
         .btn-primary:active { transform: scale(0.98); }
         .btn-primary:disabled { opacity: 0.7; pointer-events: none; filter: grayscale(1); }
@@ -63,7 +64,7 @@
             transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .bottom-action-bar.show { transform: translateY(0); }
-        .has-bottom-bar { padding-bottom: 100px; }
+        .has-bottom-bar { padding-bottom: 120px; }
 
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; width: 90%; max-width: 400px; }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -136,149 +137,134 @@
                 </button>
             </div>
 
-            <form id="adminForm" class="space-y-4">
+            <form id="adminForm" class="space-y-6">
                 
-                <!-- Acordeón 1: Info -->
-                <div class="accordion-item bg-[#0B1120] rounded-2xl border border-slate-800 shadow-md overflow-hidden">
-                    <button type="button" class="accordion-header active w-full flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <div class="flex items-center gap-3 text-slate-200 font-bold">
-                            <div class="p-2 bg-slate-800/80 rounded-lg text-blue-400 border border-slate-700/50"><i data-lucide="file-text" class="w-4 h-4"></i></div>
-                            1. Información Básica
+                <!-- Sección 1: Info -->
+                <div class="bg-[#0B1120] rounded-2xl border border-slate-800 shadow-md overflow-hidden">
+                    <div class="p-4 bg-[#0B1120] flex items-center gap-3 text-slate-200 font-bold border-b border-slate-800/50">
+                        <div class="p-2 bg-slate-800/80 rounded-lg text-blue-400 border border-slate-700/50"><i data-lucide="file-text" class="w-4 h-4"></i></div>
+                        1. Información Básica
+                    </div>
+                    <div class="p-5 bg-[#0F172A]/30 space-y-5">
+                        <div>
+                            <label class="saas-label">Nombre del Paquete <span class="text-pink-500">*</span></label>
+                            <input type="text" id="nombre" class="saas-input" placeholder="Ej: Plan Super Magic">
                         </div>
-                        <div class="p-1.5 bg-slate-800/50 rounded-lg"><i data-lucide="chevron-down" class="chevron w-4 h-4 text-slate-400"></i></div>
-                    </button>
-                    <div class="accordion-content expanded px-5 border-t border-slate-800/50 bg-[#0F172A]/30">
-                        <div class="space-y-5">
-                            <div>
-                                <label class="saas-label">Nombre del Paquete</label>
-                                <input type="text" id="nombre" class="saas-input" placeholder="Ej: Plan Super Magic" required>
+                        <div>
+                            <label class="saas-label">Categoría</label>
+                            <div class="relative">
+                                <select id="categoria" class="saas-input appearance-none cursor-pointer">
+                                    <option value="payasos">Planes de Payasos</option>
+                                    <option value="burbujas">Shows de Burbujas</option>
+                                    <option value="santa">Especial Navideño</option>
+                                    <option value="servicios">Otros Servicios Extras</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none"></i>
                             </div>
+                        </div>
+                        <div>
+                            <label class="saas-label">Descripción Corta <span class="text-pink-500">*</span></label>
+                            <input type="text" id="descripcion" class="saas-input" placeholder="Ej: Duración: 2 Horas y Media">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 2: Precios -->
+                <div class="bg-[#0B1120] rounded-2xl border border-slate-800 shadow-md overflow-hidden">
+                    <div class="p-4 bg-[#0B1120] flex items-center gap-3 text-slate-200 font-bold border-b border-slate-800/50">
+                        <div class="p-2 bg-slate-800/80 rounded-lg text-emerald-400 border border-slate-700/50"><i data-lucide="tag" class="w-4 h-4"></i></div>
+                        2. Precio y Oferta
+                    </div>
+                    <div class="p-5 bg-[#0F172A]/30 space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="saas-label">Categoría</label>
+                                <label class="saas-label">Precio ($) <span class="text-pink-500">*</span></label>
                                 <div class="relative">
-                                    <select id="categoria" class="saas-input appearance-none cursor-pointer" required>
-                                        <option value="payasos">Planes de Payasos</option>
-                                        <option value="burbujas">Shows de Burbujas</option>
-                                        <option value="santa">Especial Navideño</option>
-                                        <option value="servicios">Otros Servicios Extras</option>
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
+                                    <input type="number" id="precio" class="saas-input pl-8 font-bold text-lg" placeholder="0" min="1">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="saas-label">Cobro por</label>
+                                <div class="relative">
+                                    <select id="tipoCobro" class="saas-input appearance-none px-3 font-medium cursor-pointer">
+                                        <option value="paquete">Total / Fijo</option>
+                                        <option value="hora">Por Hora</option>
+                                        <option value="nino">Por Niño</option>
                                     </select>
-                                    <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none"></i>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"></i>
                                 </div>
                             </div>
-                            <div>
-                                <label class="saas-label">Descripción Corta</label>
-                                <input type="text" id="descripcion" class="saas-input" placeholder="Ej: Duración: 2 Horas y Media" required>
-                            </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Acordeón 2: Precios -->
-                <div class="accordion-item bg-[#0B1120] rounded-2xl border border-slate-800 shadow-md overflow-hidden">
-                    <button type="button" class="accordion-header w-full flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <div class="flex items-center gap-3 text-slate-200 font-bold">
-                            <div class="p-2 bg-slate-800/80 rounded-lg text-emerald-400 border border-slate-700/50"><i data-lucide="tag" class="w-4 h-4"></i></div>
-                            2. Precio y Oferta
-                        </div>
-                        <div class="p-1.5 bg-slate-800/50 rounded-lg"><i data-lucide="chevron-down" class="chevron w-4 h-4 text-slate-400"></i></div>
-                    </button>
-                    <div class="accordion-content px-5 border-t border-slate-800/50 bg-[#0F172A]/30">
-                        <div class="space-y-5">
-                            <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-[#0B1120] border border-slate-700 rounded-xl p-5" id="ofertaBox">
+                            <div class="flex items-center justify-between">
                                 <div>
-                                    <label class="saas-label">Precio ($)</label>
-                                    <div class="relative">
-                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
-                                        <input type="number" id="precio" class="saas-input pl-8 font-bold text-lg" placeholder="0" min="1" required>
-                                    </div>
+                                    <p class="text-sm font-bold text-white flex items-center gap-2">
+                                        Es Oferta <i data-lucide="sparkles" class="w-3 h-3 text-pink-500"></i>
+                                    </p>
+                                    <p class="text-[10px] text-slate-400 mt-0.5">Añade distintivo visual y precio tachado</p>
                                 </div>
-                                <div>
-                                    <label class="saas-label">Cobro por</label>
-                                    <div class="relative">
-                                        <select id="tipoCobro" class="saas-input appearance-none px-3 font-medium cursor-pointer">
-                                            <option value="paquete">Total / Fijo</option>
-                                            <option value="hora">Por Hora</option>
-                                            <option value="nino">Por Niño</option>
-                                        </select>
-                                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none"></i>
-                                    </div>
+                                <div class="relative inline-block w-12 align-middle select-none h-6">
+                                    <input type="checkbox" id="oferta" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/>
+                                    <label for="oferta" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
                                 </div>
                             </div>
-
-                            <div class="bg-[#0B1120] border border-slate-700 rounded-xl p-5" id="ofertaBox">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="text-sm font-bold text-white flex items-center gap-2">
-                                            Es Oferta <i data-lucide="sparkles" class="w-3 h-3 text-pink-500"></i>
-                                        </p>
-                                        <p class="text-[10px] text-slate-400 mt-0.5">Añade distintivo visual y precio tachado</p>
-                                    </div>
-                                    <div class="relative inline-block w-12 align-middle select-none h-6">
-                                        <input type="checkbox" id="oferta" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/>
-                                        <label for="oferta" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label>
-                                    </div>
-                                </div>
-                                
-                                <div id="precioOriginalContainer" class="hidden mt-4 pt-4 border-t border-slate-800">
-                                    <label class="saas-label text-pink-400">Precio Original Tachado ($)</label>
-                                    <div class="relative">
-                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-pink-500/50 font-bold">$</span>
-                                        <input type="number" id="precioOriginal" class="saas-input pl-8 focus:border-pink-500 font-bold" placeholder="Debe ser mayor al final" min="1">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Acordeón 3: Media -->
-                <div class="accordion-item bg-[#0B1120] rounded-2xl border border-slate-800 shadow-md overflow-hidden">
-                    <button type="button" class="accordion-header w-full flex items-center justify-between focus:outline-none" onclick="toggleAccordion(this)">
-                        <div class="flex items-center gap-3 text-slate-200 font-bold">
-                            <div class="p-2 bg-slate-800/80 rounded-lg text-purple-400 border border-slate-700/50"><i data-lucide="image" class="w-4 h-4"></i></div>
-                            3. Foto y Detalles
-                        </div>
-                        <div class="p-1.5 bg-slate-800/50 rounded-lg"><i data-lucide="chevron-down" class="chevron w-4 h-4 text-slate-400"></i></div>
-                    </button>
-                    <div class="accordion-content px-5 border-t border-slate-800/50 bg-[#0F172A]/30">
-                        <div class="space-y-6">
                             
-                            <div>
-                                <label class="saas-label">Imagen de Portada (URL)</label>
-                                <div class="flex gap-2 relative">
-                                    <input type="text" id="imagen" class="saas-input flex-grow pr-14" placeholder="Enlace web o sube foto">
-                                    
-                                    <div class="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-purple-600 rounded-xl overflow-hidden shadow-md cursor-pointer hover:bg-purple-500 transition-colors">
-                                        <input type="file" id="imageFileNative" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
-                                        <div class="absolute inset-0 flex items-center justify-center text-white pointer-events-none z-10">
-                                            <i data-lucide="camera" class="w-5 h-5"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <p class="text-[10px] text-slate-500 mt-2 flex items-start gap-1">
-                                    <i data-lucide="info" class="w-3 h-3 shrink-0 mt-0.5"></i>
-                                    Toca la cámara morada para subir desde tu galería, o pega un link web manualmente.
-                                </p>
-                                
-                                <div id="imagePreviewBox" class="hidden mt-4 w-full h-48 rounded-2xl border border-slate-700 overflow-hidden relative shadow-inner bg-[#0F172A]">
-                                    <img id="previewImg" src="" class="w-full h-full object-cover">
-                                    <div id="uploadProgress" class="absolute inset-0 bg-[#0B1120]/90 flex flex-col items-center justify-center hidden z-10">
-                                        <i data-lucide="loader-2" class="w-8 h-8 text-purple-500 animate-spin mb-2"></i>
-                                        <span class="text-xs font-bold text-purple-300">Subiendo a la nube...</span>
-                                    </div>
-                                    <button type="button" id="removeImgBtn" class="absolute top-3 right-3 bg-rose-500/90 backdrop-blur text-white p-2 rounded-xl active:scale-95 shadow-lg border border-rose-400/50 z-20" title="Quitar foto">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
+                            <div id="precioOriginalContainer" class="hidden mt-4 pt-4 border-t border-slate-800">
+                                <label class="saas-label text-pink-400">Precio Original Tachado ($)</label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-pink-500/50 font-bold">$</span>
+                                    <input type="number" id="precioOriginal" class="saas-input pl-8 focus:border-pink-500 font-bold" placeholder="Debe ser mayor al final" min="1">
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <div>
-                                <div class="flex items-end justify-between mb-2">
-                                    <label class="saas-label !mb-0">Servicios Incluidos</label>
-                                    <span class="text-[9px] text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded font-bold">1 x LÍNEA</span>
+                <!-- Sección 3: Media -->
+                <div class="bg-[#0B1120] rounded-2xl border border-slate-800 shadow-md overflow-hidden">
+                    <div class="p-4 bg-[#0B1120] flex items-center gap-3 text-slate-200 font-bold border-b border-slate-800/50">
+                        <div class="p-2 bg-slate-800/80 rounded-lg text-purple-400 border border-slate-700/50"><i data-lucide="image" class="w-4 h-4"></i></div>
+                        3. Foto y Detalles
+                    </div>
+                    <div class="p-5 bg-[#0F172A]/30 space-y-6">
+                        
+                        <div>
+                            <label class="saas-label">Imagen de Portada <span class="text-pink-500">*</span></label>
+                            <div class="flex gap-2 relative">
+                                <input type="text" id="imagen" class="saas-input flex-grow pr-14" placeholder="Enlace web o sube foto">
+                                
+                                <div class="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-purple-600 rounded-xl overflow-hidden shadow-md cursor-pointer hover:bg-purple-500 transition-colors">
+                                    <input type="file" id="imageFileNative" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
+                                    <div class="absolute inset-0 flex items-center justify-center text-white pointer-events-none z-10">
+                                        <i data-lucide="camera" class="w-5 h-5"></i>
+                                    </div>
                                 </div>
-                                <textarea id="serviciosLista" rows="6" class="saas-input resize-none leading-relaxed" placeholder="Ejemplo:&#10;Payaso Profesional&#10;Juegos Didácticos&#10;Pintacaritas Premium"></textarea>
                             </div>
+                            <p class="text-[10px] text-slate-500 mt-2 flex items-start gap-1">
+                                <i data-lucide="info" class="w-3 h-3 shrink-0 mt-0.5"></i>
+                                Toca la cámara morada para subir desde tu galería, o pega un link web manualmente.
+                            </p>
+                            
+                            <div id="imagePreviewBox" class="hidden mt-4 w-full h-48 rounded-2xl border border-slate-700 overflow-hidden relative shadow-inner bg-[#0F172A]">
+                                <img id="previewImg" src="" class="w-full h-full object-cover">
+                                <div id="uploadProgress" class="absolute inset-0 bg-[#0B1120]/90 flex flex-col items-center justify-center hidden z-10">
+                                    <i data-lucide="loader-2" class="w-8 h-8 text-purple-500 animate-spin mb-2"></i>
+                                    <span class="text-xs font-bold text-purple-300">Subiendo a la nube...</span>
+                                </div>
+                                <button type="button" id="removeImgBtn" class="absolute top-3 right-3 bg-rose-500/90 backdrop-blur text-white p-2 rounded-xl active:scale-95 shadow-lg border border-rose-400/50 z-20" title="Quitar foto">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex items-end justify-between mb-2">
+                                <label class="saas-label !mb-0">Servicios Incluidos</label>
+                                <span class="text-[9px] text-slate-500 bg-slate-800 px-1.5 py-0.5 rounded font-bold">1 x LÍNEA</span>
+                            </div>
+                            <textarea id="serviciosLista" rows="6" class="saas-input resize-none leading-relaxed" placeholder="Ejemplo:&#10;Payaso Profesional&#10;Juegos Didácticos&#10;Pintacaritas Premium"></textarea>
                         </div>
                     </div>
                 </div>
@@ -301,7 +287,7 @@
         <p id="toastMessage" class="text-sm font-bold text-white pr-2 leading-snug"></p>
     </div>
 
-    <!-- Scripts -->
+    <!-- Scripts (Firebase + Lógica Cloudinary Directa) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -312,9 +298,12 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        // CONFIGURACIÓN DE CLOUDINARY - BLINDADA CON API KEY
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/djfbse8rg/image/upload';
         const CLOUDINARY_UPLOAD_PRESET = 'diverty_web';
+        const CLOUDINARY_API_KEY = '169774187321867'; // Obtenido de tu captura original
 
+        // DOM Elements
         const form = document.getElementById('adminForm');
         const ofertaCheck = document.getElementById('oferta');
         const precioOriginalContainer = document.getElementById('precioOriginalContainer');
@@ -339,6 +328,9 @@
         let paquetesLocales = {}; 
         let editingId = null; 
 
+        // ==========================================
+        // UI: TABS
+        // ==========================================
         function switchTab(tabId) {
             tabBtns.forEach(btn => {
                 btn.classList.remove('active', 'bg-slate-800', 'text-white');
@@ -368,19 +360,9 @@
             switchTab(e.target.dataset.tab);
         }));
 
-        window.toggleAccordion = function(btn) {
-            const content = btn.nextElementSibling;
-            const isExpanded = btn.classList.contains('active');
-            
-            document.querySelectorAll('.accordion-header').forEach(h => h.classList.remove('active'));
-            document.querySelectorAll('.accordion-content').forEach(c => c.classList.remove('expanded'));
-            
-            if (!isExpanded) {
-                btn.classList.add('active');
-                content.classList.add('expanded');
-            }
-        }
-
+        // ==========================================
+        // TOAST NOTIFICATIONS
+        // ==========================================
         let toastTimeout;
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
@@ -401,9 +383,12 @@
             toast.classList.add('show');
             
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 6000); // 6 segundos para poder leer bien el error
+            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 5000);
         }
 
+        // ==========================================
+        // INTERACCIONES Y PREVIEW
+        // ==========================================
         ofertaCheck.addEventListener('change', (e) => {
             precioOriginalContainer.classList.toggle('hidden', !e.target.checked);
             document.getElementById('ofertaBox').classList.toggle('border-pink-500/50', e.target.checked);
@@ -428,12 +413,19 @@
             updatePreview();
         });
 
-        // ==============================================================
-        // MOTOR DE SUBIDA A CLOUDINARY RE-ESCRITO (CON CHIVATO DE ERRORES)
-        // ==============================================================
+        // ==========================================
+        // SUBIDA A CLOUDINARY (BLINDADA)
+        // ==========================================
         imageFileNative.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
+
+            // Validación de peso extra: Máximo 10 MB (límite de Cloudinary Gratis)
+            if (file.size > 10 * 1024 * 1024) {
+                showToast("La foto es muy pesada (Máximo 10MB). Elige otra.", "error");
+                imageFileNative.value = '';
+                return;
+            }
 
             submitBtn.disabled = true;
             imageUrlInput.value = 'Subiendo imagen a la nube...';
@@ -445,6 +437,7 @@
             const formData = new FormData();
             formData.append('file', file);
             formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            formData.append('api_key', CLOUDINARY_API_KEY); // AGREGADO PARA EVITAR ERROR DE SEGURIDAD
 
             try {
                 const response = await fetch(CLOUDINARY_URL, {
@@ -458,21 +451,18 @@
                     imageUrlInput.value = data.secure_url;
                     showToast("¡Foto procesada con éxito!", "success");
                 } else {
-                    // SI LLEGA AQUÍ, CLOUDINARY RECHAZÓ LA FOTO. 
-                    // ESTO NOS MOSTRARÁ EL MOTIVO EXACTO:
-                    const mensajeError = data.error?.message || "Error desconocido";
-                    throw new Error("Cloudinary dice: " + mensajeError);
+                    console.error("Cloudinary rechazó la imagen:", data);
+                    throw new Error(data.error?.message || "Error desconocido en Cloudinary");
                 }
             } catch (error) {
-                // AQUÍ CAPTURAMOS EL ERROR Y LO MOSTRAMOS EN LA CAJA ROJA
                 console.error("Fallo:", error);
                 
                 let errorFinal = error.message;
                 if (errorFinal.includes('Failed to fetch')) {
-                    errorFinal = "El navegador o el internet está bloqueando la conexión.";
+                    errorFinal = "El navegador bloqueó la subida. Intenta con otra foto.";
                 }
                 
-                showToast(errorFinal, "error"); // ¡Mostrará el error exacto en pantalla!
+                showToast("Fallo Cloudinary: " + errorFinal, "error");
                 
                 imageUrlInput.value = '';
                 imagePreviewBox.classList.add('hidden');
@@ -483,6 +473,9 @@
             }
         });
 
+        // ==========================================
+        // FIREBASE LOGIC & CATÁLOGO
+        // ==========================================
         async function init() {
             await signInAnonymously(auth);
             loadCatalog();
@@ -567,6 +560,9 @@
             }
         }
 
+        // ==========================================
+        // GUARDADO DE PAQUETE EN FIREBASE
+        // ==========================================
         submitBtn.addEventListener('click', async (e) => {
             e.preventDefault(); 
             
@@ -582,7 +578,7 @@
             if(!precioVal || precioVal <= 0) return showToast("Agrega un Precio válido.", "error");
             if(isOferta && (!precioOrigVal || precioOrigVal <= precioVal)) return showToast("El precio tachado debe ser mayor al final.", "error");
             
-            if(!imagenVal || imagenVal === 'Subiendo imagen a la nube...') {
+            if(!imagenVal || !imagenVal.startsWith('http')) {
                 return showToast("Espera que la foto suba o agrega un enlace web.", "error");
             }
 
@@ -651,7 +647,6 @@
             } else { removeImgBtn.click(); }
             
             switchTab('form');
-            document.querySelector('.accordion-header').click(); 
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -662,14 +657,7 @@
             formMainTitle.textContent = "Nuevo Paquete";
             formSubTitle.textContent = "Modo Creación";
             submitBtn.disabled = false;
-            submitText.textContent = "Publicar Paquete";
-            
-            const icon = submitBtn.querySelector('.lucide, i');
-            if (icon) {
-                icon.setAttribute('data-lucide', 'check-circle');
-                icon.classList.remove('animate-spin');
-            }
-            
+            submitBtn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> <span id="submitText">Publicar Paquete</span>';
             cancelEditBtn.classList.add('hidden');
             lucide.createIcons();
         }
@@ -680,11 +668,8 @@
             const btnDelete = e.target.closest('[data-delete-id]');
             if(btnDelete) {
                 if(confirm('¿Eliminar definitivamente este paquete de la web?')) {
-                    const icon = btnDelete.querySelector('.lucide, i');
-                    if (icon) {
-                        icon.setAttribute('data-lucide', 'loader-2'); 
-                        icon.classList.add('animate-spin');
-                    }
+                    const originalHtml = btnDelete.innerHTML;
+                    btnDelete.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>';
                     lucide.createIcons();
                     btnDelete.classList.add('pointer-events-none', 'opacity-50');
                     try {
@@ -692,7 +677,9 @@
                         showToast("Paquete borrado", "success"); loadCatalog();
                     } catch (error) { 
                         showToast("Error al borrar.", "error"); 
-                        loadCatalog(); 
+                        btnDelete.innerHTML = originalHtml;
+                        btnDelete.classList.remove('pointer-events-none', 'opacity-50');
+                        lucide.createIcons();
                     }
                 } return;
             }
@@ -703,9 +690,10 @@
                 if(data) {
                     editingId = id; populateForm(data, true);
                     formMainTitle.textContent = "Editar Paquete";
-                    formSubTitle.textContent = "Guardar cambios reemplazará el actual";
-                    submitText.textContent = "Actualizar Paquete";
+                    formSubTitle.textContent = "Guardando reemplazará el actual";
+                    submitBtn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> <span id="submitText">Actualizar Paquete</span>';
                     cancelEditBtn.classList.remove('hidden');
+                    lucide.createIcons();
                 } return;
             }
 
