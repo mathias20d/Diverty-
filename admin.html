@@ -38,6 +38,7 @@
             color: white; font-weight: 700; padding: 18px 24px; border-radius: 16px; transition: all 0.2s ease;
             box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); border: 1px solid rgba(255,255,255,0.1); width: 100%;
             font-size: 1.1rem;
+            cursor: pointer;
         }
         .btn-primary:active { transform: scale(0.98); }
         .btn-primary:disabled { opacity: 0.7; pointer-events: none; filter: grayscale(1); }
@@ -136,13 +137,13 @@
                     </div>
                     <div class="p-5 bg-[#0F172A]/30 space-y-5">
                         <div>
-                            <label class="saas-label">Nombre del Paquete</label>
-                            <input type="text" id="nombre" class="saas-input" placeholder="Ej: Plan Super Magic" required>
+                            <label class="saas-label">Nombre del Paquete <span class="text-pink-500">*</span></label>
+                            <input type="text" id="nombre" class="saas-input" placeholder="Ej: Plan Super Magic">
                         </div>
                         <div>
                             <label class="saas-label">Categoría</label>
                             <div class="relative">
-                                <select id="categoria" class="saas-input appearance-none cursor-pointer" required>
+                                <select id="categoria" class="saas-input appearance-none cursor-pointer">
                                     <option value="payasos">Planes de Payasos</option>
                                     <option value="burbujas">Shows de Burbujas</option>
                                     <option value="santa">Especial Navideño</option>
@@ -152,8 +153,8 @@
                             </div>
                         </div>
                         <div>
-                            <label class="saas-label">Descripción Corta</label>
-                            <input type="text" id="descripcion" class="saas-input" placeholder="Ej: Duración: 2 Horas y Media" required>
+                            <label class="saas-label">Descripción Corta <span class="text-pink-500">*</span></label>
+                            <input type="text" id="descripcion" class="saas-input" placeholder="Ej: Duración: 2 Horas y Media">
                         </div>
                     </div>
                 </div>
@@ -167,10 +168,10 @@
                     <div class="p-5 bg-[#0F172A]/30 space-y-5">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="saas-label">Precio ($)</label>
+                                <label class="saas-label">Precio ($) <span class="text-pink-500">*</span></label>
                                 <div class="relative">
                                     <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold">$</span>
-                                    <input type="number" id="precio" class="saas-input pl-8 font-bold text-lg" placeholder="0" min="1" required>
+                                    <input type="number" id="precio" class="saas-input pl-8 font-bold text-lg" placeholder="0" min="1">
                                 </div>
                             </div>
                             <div>
@@ -220,10 +221,9 @@
                     <div class="p-5 bg-[#0F172A]/30 space-y-6">
                         
                         <div>
-                            <label class="saas-label">Imagen de Portada</label>
+                            <label class="saas-label">Imagen de Portada <span class="text-pink-500">*</span></label>
                             <div class="flex gap-2 relative">
-                                <!-- CAMBIO CLAVE AQUÍ: type="text" en lugar de type="url" para evitar bloqueos del navegador -->
-                                <input type="text" id="imagen" class="saas-input flex-grow pr-14" placeholder="Enlace web..." required>
+                                <input type="text" id="imagen" class="saas-input flex-grow pr-14" placeholder="Enlace web o sube foto">
                                 
                                 <!-- BOTÓN DE CÁMARA NATIVO -->
                                 <div class="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-purple-600 rounded-xl overflow-hidden shadow-md cursor-pointer hover:bg-purple-500 transition-colors">
@@ -263,7 +263,8 @@
         </div>
 
         <div id="bottomActionBar" class="bottom-action-bar max-w-[800px] mx-auto">
-            <button type="submit" form="adminForm" id="submitBtn" class="btn-primary flex items-center justify-center gap-2">
+            <!-- CAMBIO CLAVE AQUÍ: button type="button" para evitar fallos del navegador móvil -->
+            <button type="button" id="submitBtn" class="btn-primary flex items-center justify-center gap-2">
                 <i data-lucide="check-circle" class="w-5 h-5"></i> 
                 <span id="submitText">Publicar Paquete</span>
             </button>
@@ -289,7 +290,6 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // CLOUDINARY CONFIG
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/djfbse8rg/image/upload';
         const CLOUDINARY_UPLOAD_PRESET = 'diverty_web';
 
@@ -307,7 +307,6 @@
         const submitBtn = document.getElementById('submitBtn');
         const submitText = document.getElementById('submitText');
         
-        // UI Navigation & Edit
         const tabBtns = document.querySelectorAll('.tab-btn');
         const viewCatalog = document.getElementById('view-catalog');
         const viewForm = document.getElementById('view-form');
@@ -375,7 +374,7 @@
             lucide.createIcons();
             toast.classList.add('show');
             clearTimeout(toastTimeout);
-            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 3000);
+            toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 3500);
         }
 
         // ==========================================
@@ -401,16 +400,14 @@
 
         removeImgBtn.addEventListener('click', () => {
             imageUrlInput.value = '';
-            imageFileNative.value = ''; // Limpiar input file
+            imageFileNative.value = ''; 
             updatePreview();
         });
 
-        // SUBIDA NATIVA A CLOUDINARY API
         imageFileNative.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
 
-            // Bloquear publicación mientras sube
             submitBtn.disabled = true;
             imageUrlInput.value = 'Subiendo imagen a la nube...';
             
@@ -445,7 +442,6 @@
                 imageFileNative.value = ''; 
             }
         });
-
 
         // ==========================================
         // FIREBASE LOGIC & CATÁLOGO PREMIUM
@@ -489,7 +485,7 @@
                                 <span class="glass-badge text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-sm border border-slate-600/50">
                                     ${data.categoria.replace(/planes de |shows de |especial |otros /i, '')}
                                 </span>
-                                ${data.oferta ? '<span class="bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3 h-3"></i> Oferta Especial</span>' : ''}
+                                ${data.oferta ? '<span class="bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3 h-3"></i> Oferta</span>' : ''}
                             </div>
                             
                             <div class="premium-card-img-container bg-[#0F172A] shrink-0">
@@ -535,32 +531,33 @@
         }
 
         // ==========================================
-        // FORM SUBMIT Y VALIDACIONES INTELIGENTES
+        // GUARDADO CON VALIDACIÓN PERSONALIZADA
         // ==========================================
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        submitBtn.addEventListener('click', async (e) => {
+            e.preventDefault(); // Detiene cualquier comportamiento por defecto del navegador
             
+            // Recolectar datos
             const nombreVal = document.getElementById('nombre').value.trim();
             const precioVal = Number(document.getElementById('precio').value);
+            const descVal = document.getElementById('descripcion').value.trim();
             const isOferta = ofertaCheck.checked;
             const precioOrigVal = Number(precioOriginalInput.value);
             const imagenVal = imageUrlInput.value.trim();
 
-            if(nombreVal.length < 3) return showToast("El nombre es muy corto.", "error");
-            if(precioVal <= 0) return showToast("El precio debe ser válido.", "error");
-            if(isOferta && precioOrigVal <= precioVal) return showToast("Precio original debe ser mayor.", "error");
+            // Validaciones Manuales (Se mostrará nuestro Toast en vez del error feo del navegador)
+            if(!nombreVal) return showToast("Falta escribir el Nombre del Paquete.", "error");
+            if(!descVal) return showToast("Falta escribir la Descripción.", "error");
+            if(!precioVal || precioVal <= 0) return showToast("Agrega un Precio válido mayor a 0.", "error");
+            if(isOferta && (!precioOrigVal || precioOrigVal <= precioVal)) return showToast("Si es oferta, el precio tachado debe ser mayor.", "error");
             
-            // Verificamos si aún se está subiendo o si no hay enlace válido
-            if(imagenVal.includes('Subiendo')) {
-                return showToast("Espera a que termine de subir la foto.", "error");
-            }
-            if(!imagenVal || !imagenVal.startsWith('http')) {
-                return showToast("Añade una foto válida antes de publicar.", "error");
+            if(!imagenVal || imagenVal === 'Subiendo imagen a la nube...') {
+                return showToast("Espera que la foto suba o agrega un enlace.", "error");
             }
 
+            // Iniciar proceso de guardado
             submitBtn.disabled = true;
             const originalText = submitText.textContent;
-            submitText.textContent = "Guardando...";
+            submitText.textContent = "Guardando en la Nube...";
             const icon = submitBtn.querySelector('.lucide, i');
             if (icon) {
                 icon.setAttribute('data-lucide', 'loader-2');
@@ -570,10 +567,14 @@
             
             try {
                 const dataToSave = {
-                    nombre: nombreVal, categoria: document.getElementById('categoria').value,
-                    precio: precioVal, tipoCobro: document.getElementById('tipoCobro').value,
-                    oferta: isOferta, precioOriginal: isOferta ? precioOrigVal : null,
-                    descripcion: document.getElementById('descripcion').value, imagen: imagenVal,
+                    nombre: nombreVal, 
+                    categoria: document.getElementById('categoria').value,
+                    precio: precioVal, 
+                    tipoCobro: document.getElementById('tipoCobro').value,
+                    oferta: isOferta, 
+                    precioOriginal: isOferta ? precioOrigVal : null,
+                    descripcion: descVal, 
+                    imagen: imagenVal,
                     serviciosLista: document.getElementById('serviciosLista').value,
                     actualizadoEn: new Date().toISOString()
                 };
