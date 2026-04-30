@@ -222,7 +222,8 @@
                         <div>
                             <label class="saas-label">Imagen de Portada</label>
                             <div class="flex gap-2 relative">
-                                <input type="url" id="imagen" class="saas-input flex-grow pr-14" placeholder="Enlace web..." required>
+                                <!-- CAMBIO CLAVE AQUÍ: type="text" en lugar de type="url" para evitar bloqueos del navegador -->
+                                <input type="text" id="imagen" class="saas-input flex-grow pr-14" placeholder="Enlace web..." required>
                                 
                                 <!-- BOTÓN DE CÁMARA NATIVO -->
                                 <div class="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-purple-600 rounded-xl overflow-hidden shadow-md cursor-pointer hover:bg-purple-500 transition-colors">
@@ -387,7 +388,7 @@
         });
 
         function updatePreview() {
-            if(imageUrlInput.value) {
+            if(imageUrlInput.value && imageUrlInput.value.startsWith('http')) {
                 imagePreviewBox.classList.remove('hidden');
                 previewImg.src = imageUrlInput.value;
             } else {
@@ -409,6 +410,7 @@
             const file = e.target.files[0];
             if (!file) return;
 
+            // Bloquear publicación mientras sube
             submitBtn.disabled = true;
             imageUrlInput.value = 'Subiendo imagen a la nube...';
             
@@ -533,7 +535,7 @@
         }
 
         // ==========================================
-        // FORM SUBMIT
+        // FORM SUBMIT Y VALIDACIONES INTELIGENTES
         // ==========================================
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -547,11 +549,18 @@
             if(nombreVal.length < 3) return showToast("El nombre es muy corto.", "error");
             if(precioVal <= 0) return showToast("El precio debe ser válido.", "error");
             if(isOferta && precioOrigVal <= precioVal) return showToast("Precio original debe ser mayor.", "error");
-            if(!imagenVal) return showToast("La imagen es obligatoria.", "error");
+            
+            // Verificamos si aún se está subiendo o si no hay enlace válido
+            if(imagenVal.includes('Subiendo')) {
+                return showToast("Espera a que termine de subir la foto.", "error");
+            }
+            if(!imagenVal || !imagenVal.startsWith('http')) {
+                return showToast("Añade una foto válida antes de publicar.", "error");
+            }
 
             submitBtn.disabled = true;
             const originalText = submitText.textContent;
-            submitText.textContent = "Guardando en la Nube...";
+            submitText.textContent = "Guardando...";
             const icon = submitBtn.querySelector('.lucide, i');
             if (icon) {
                 icon.setAttribute('data-lucide', 'loader-2');
