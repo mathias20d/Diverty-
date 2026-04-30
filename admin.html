@@ -225,7 +225,6 @@
                             <div class="flex gap-2 relative">
                                 <input type="text" id="imagen" class="saas-input flex-grow pr-14" placeholder="Enlace web o sube foto">
                                 
-                                <!-- BOTÓN DE CÁMARA NATIVO -->
                                 <div class="absolute right-1.5 top-1.5 bottom-1.5 aspect-square bg-purple-600 rounded-xl overflow-hidden shadow-md cursor-pointer hover:bg-purple-500 transition-colors">
                                     <input type="file" id="imageFileNative" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
                                     <div class="absolute inset-0 flex items-center justify-center text-white pointer-events-none z-10">
@@ -263,7 +262,6 @@
         </div>
 
         <div id="bottomActionBar" class="bottom-action-bar max-w-[800px] mx-auto">
-            <!-- CAMBIO CLAVE AQUÍ: button type="button" para evitar fallos del navegador móvil -->
             <button type="button" id="submitBtn" class="btn-primary flex items-center justify-center gap-2">
                 <i data-lucide="check-circle" class="w-5 h-5"></i> 
                 <span id="submitText">Publicar Paquete</span>
@@ -274,7 +272,7 @@
 
     <div id="toast" class="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border">
         <div id="toastIconBg" class="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
-            <i id="toastIcon" data-lucide="info" class="w-5 h-5"></i>
+            <!-- El icono se insertará dinámicamente aquí -->
         </div>
         <p id="toastMessage" class="text-sm font-bold text-white pr-2 leading-snug"></p>
     </div>
@@ -305,7 +303,6 @@
         const uploadProgress = document.getElementById('uploadProgress');
         const removeImgBtn = document.getElementById('removeImgBtn');
         const submitBtn = document.getElementById('submitBtn');
-        const submitText = document.getElementById('submitText');
         
         const tabBtns = document.querySelectorAll('.tab-btn');
         const viewCatalog = document.getElementById('view-catalog');
@@ -351,28 +348,28 @@
         }));
 
         // ==========================================
-        // TOAST NOTIFICATIONS
+        // TOAST NOTIFICATIONS (MOTOR BLINDADO)
         // ==========================================
         let toastTimeout;
         function showToast(message, type = 'success') {
             const toast = document.getElementById('toast');
             const iconBg = document.getElementById('toastIconBg');
-            const icon = document.getElementById('toastIcon');
             document.getElementById('toastMessage').textContent = message;
             
+            // Insertamos el SVG crudo usando innerHTML para evitar que falle al manipular atributos
             if (type === 'success') {
                 toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-emerald-500/50';
                 iconBg.className = 'w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-emerald-500/20';
-                icon.setAttribute('data-lucide', 'check-circle-2');
-                icon.className = 'w-6 h-6 text-emerald-400';
+                iconBg.innerHTML = '<i data-lucide="check-circle-2" class="w-6 h-6 text-emerald-400"></i>';
             } else {
                 toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-rose-500/50';
                 iconBg.className = 'w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-rose-500/20';
-                icon.setAttribute('data-lucide', 'alert-triangle');
-                icon.className = 'w-6 h-6 text-rose-400';
+                iconBg.innerHTML = '<i data-lucide="alert-triangle" class="w-6 h-6 text-rose-400"></i>';
             }
+            
             lucide.createIcons();
             toast.classList.add('show');
+            
             clearTimeout(toastTimeout);
             toastTimeout = setTimeout(() => { toast.classList.remove('show'); }, 3500);
         }
@@ -407,6 +404,13 @@
         imageFileNative.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (!file) return;
+
+            // Validación extra de tamaño (Cloudinary limita a 10MB en cuentas gratuitas)
+            if (file.size > 10 * 1024 * 1024) {
+                showToast("La foto es muy pesada (Máximo 10MB). Elige otra.", "error");
+                imageFileNative.value = '';
+                return;
+            }
 
             submitBtn.disabled = true;
             imageUrlInput.value = 'Subiendo imagen a la nube...';
@@ -485,7 +489,7 @@
                                 <span class="glass-badge text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-lg shadow-sm border border-slate-600/50">
                                     ${data.categoria.replace(/planes de |shows de |especial |otros /i, '')}
                                 </span>
-                                ${data.oferta ? '<span class="bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3 h-3"></i> Oferta</span>' : ''}
+                                ${data.oferta ? '<span class="bg-pink-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5"><i data-lucide="sparkles" class="w-3 h-3"></i> Oferta Especial</span>' : ''}
                             </div>
                             
                             <div class="premium-card-img-container bg-[#0F172A] shrink-0">
@@ -531,12 +535,11 @@
         }
 
         // ==========================================
-        // GUARDADO CON VALIDACIÓN PERSONALIZADA
+        // GUARDADO CON VALIDACIÓN BLINDADA
         // ==========================================
         submitBtn.addEventListener('click', async (e) => {
-            e.preventDefault(); // Detiene cualquier comportamiento por defecto del navegador
+            e.preventDefault(); 
             
-            // Recolectar datos
             const nombreVal = document.getElementById('nombre').value.trim();
             const precioVal = Number(document.getElementById('precio').value);
             const descVal = document.getElementById('descripcion').value.trim();
@@ -544,37 +547,26 @@
             const precioOrigVal = Number(precioOriginalInput.value);
             const imagenVal = imageUrlInput.value.trim();
 
-            // Validaciones Manuales (Se mostrará nuestro Toast en vez del error feo del navegador)
             if(!nombreVal) return showToast("Falta escribir el Nombre del Paquete.", "error");
             if(!descVal) return showToast("Falta escribir la Descripción.", "error");
-            if(!precioVal || precioVal <= 0) return showToast("Agrega un Precio válido mayor a 0.", "error");
-            if(isOferta && (!precioOrigVal || precioOrigVal <= precioVal)) return showToast("Si es oferta, el precio tachado debe ser mayor.", "error");
+            if(!precioVal || precioVal <= 0) return showToast("Agrega un Precio válido.", "error");
+            if(isOferta && (!precioOrigVal || precioOrigVal <= precioVal)) return showToast("El precio tachado debe ser mayor.", "error");
             
             if(!imagenVal || imagenVal === 'Subiendo imagen a la nube...') {
                 return showToast("Espera que la foto suba o agrega un enlace.", "error");
             }
 
-            // Iniciar proceso de guardado
+            // Cambiamos el HTML completo del botón para evitar fallos de manipulación
             submitBtn.disabled = true;
-            const originalText = submitText.textContent;
-            submitText.textContent = "Guardando en la Nube...";
-            const icon = submitBtn.querySelector('.lucide, i');
-            if (icon) {
-                icon.setAttribute('data-lucide', 'loader-2');
-                icon.classList.add('animate-spin');
-            }
+            submitBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> <span id="submitText">Guardando en la Nube...</span>';
             lucide.createIcons();
             
             try {
                 const dataToSave = {
-                    nombre: nombreVal, 
-                    categoria: document.getElementById('categoria').value,
-                    precio: precioVal, 
-                    tipoCobro: document.getElementById('tipoCobro').value,
-                    oferta: isOferta, 
-                    precioOriginal: isOferta ? precioOrigVal : null,
-                    descripcion: descVal, 
-                    imagen: imagenVal,
+                    nombre: nombreVal, categoria: document.getElementById('categoria').value,
+                    precio: precioVal, tipoCobro: document.getElementById('tipoCobro').value,
+                    oferta: isOferta, precioOriginal: isOferta ? precioOrigVal : null,
+                    descripcion: descVal, imagen: imagenVal,
                     serviciosLista: document.getElementById('serviciosLista').value,
                     actualizadoEn: new Date().toISOString()
                 };
@@ -595,12 +587,7 @@
             } catch (error) {
                 showToast("Fallo al guardar. Revisa tu conexión.", "error");
                 submitBtn.disabled = false;
-                submitText.textContent = originalText;
-                const iconFail = submitBtn.querySelector('.lucide, i');
-                if (iconFail) {
-                    iconFail.setAttribute('data-lucide', 'check-circle');
-                    iconFail.classList.remove('animate-spin');
-                }
+                submitBtn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> <span id="submitText">Publicar Paquete</span>';
                 lucide.createIcons();
             }
         });
@@ -637,14 +624,7 @@
             formMainTitle.textContent = "Nuevo Paquete";
             formSubTitle.textContent = "Modo Creación";
             submitBtn.disabled = false;
-            submitText.textContent = "Publicar Paquete";
-            
-            const icon = submitBtn.querySelector('.lucide, i');
-            if (icon) {
-                icon.setAttribute('data-lucide', 'check-circle');
-                icon.classList.remove('animate-spin');
-            }
-            
+            submitBtn.innerHTML = '<i data-lucide="check-circle" class="w-5 h-5"></i> <span id="submitText">Publicar Paquete</span>';
             cancelEditBtn.classList.add('hidden');
             lucide.createIcons();
         }
@@ -655,11 +635,8 @@
             const btnDelete = e.target.closest('[data-delete-id]');
             if(btnDelete) {
                 if(confirm('¿Eliminar definitivamente este paquete de la web?')) {
-                    const icon = btnDelete.querySelector('.lucide, i');
-                    if (icon) {
-                        icon.setAttribute('data-lucide', 'loader-2'); 
-                        icon.classList.add('animate-spin');
-                    }
+                    const originalHtml = btnDelete.innerHTML;
+                    btnDelete.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>';
                     lucide.createIcons();
                     btnDelete.classList.add('pointer-events-none', 'opacity-50');
                     try {
@@ -667,7 +644,9 @@
                         showToast("Paquete borrado", "success"); loadCatalog();
                     } catch (error) { 
                         showToast("Error al borrar.", "error"); 
-                        loadCatalog(); 
+                        btnDelete.innerHTML = originalHtml;
+                        btnDelete.classList.remove('pointer-events-none', 'opacity-50');
+                        lucide.createIcons();
                     }
                 } return;
             }
@@ -678,9 +657,10 @@
                 if(data) {
                     editingId = id; populateForm(data, true);
                     formMainTitle.textContent = "Editar Paquete";
-                    formSubTitle.textContent = "Guardar cambios reemplazará el actual";
-                    submitText.textContent = "Actualizar Paquete";
+                    formSubTitle.textContent = "Guardando reemplazará el actual";
+                    submitBtn.innerHTML = '<i data-lucide="save" class="w-5 h-5"></i> <span id="submitText">Actualizar Paquete</span>';
                     cancelEditBtn.classList.remove('hidden');
+                    lucide.createIcons();
                 } return;
             }
 
