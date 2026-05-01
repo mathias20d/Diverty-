@@ -125,15 +125,21 @@
                 </div>
                 <div class="bg-[#0B1120] p-4 rounded-xl border border-slate-800">
                     <label class="saas-label">Imagen de Portada</label>
-                    <div class="flex gap-2 mb-3">
+                    <div class="flex gap-2 mb-2">
                         <input type="text" id="imagen" class="saas-input" placeholder="URL o subir ->">
-                        <div class="w-12 shrink-0 bg-purple-600 rounded-xl relative flex items-center justify-center cursor-pointer">
+                        <div class="w-12 shrink-0 bg-purple-600 hover:bg-purple-500 transition-colors rounded-xl relative flex items-center justify-center cursor-pointer shadow-md">
                             <input type="file" id="imageFileNative" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
                             <i data-lucide="camera" class="w-4 h-4 text-white z-10"></i>
                         </div>
                     </div>
+                    
+                    <!-- ESTE ES EL ELEMENTO QUE FALTABA Y HACÍA CRASHEAR TU APP -->
+                    <div id="uploadProgress" class="hidden text-[10px] uppercase tracking-widest text-purple-400 font-bold mb-3 flex items-center gap-2">
+                        <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Subiendo imagen a la nube...
+                    </div>
+
                     <div id="imagePreviewBox" class="hidden h-32 rounded-xl bg-slate-900 mb-3 overflow-hidden relative"><img id="previewImg" class="w-full h-full object-cover"></div>
-                    <label class="saas-label">Servicios Incluidos (1 por línea)</label>
+                    <label class="saas-label mt-3">Servicios Incluidos (1 por línea)</label>
                     <textarea id="serviciosLista" rows="4" class="saas-input"></textarea>
                 </div>
             </form>
@@ -159,10 +165,10 @@
             <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6 text-center">
                 <h3 class="text-sm font-bold text-purple-400 mb-2">Subir Nueva Foto</h3>
                 <p class="text-xs text-slate-400 mb-4">Aparecerá directamente en tu web.</p>
-                <div class="relative w-full h-32 border-2 border-dashed border-purple-500/50 rounded-2xl bg-purple-500/10 flex flex-col items-center justify-center hover:bg-purple-500/20 transition-colors">
+                <div class="relative w-full h-32 border-2 border-dashed border-purple-500/50 rounded-2xl bg-purple-500/10 flex flex-col items-center justify-center hover:bg-purple-500/20 transition-colors cursor-pointer">
                     <input type="file" id="galleryUploadInput" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
-                    <i data-lucide="upload-cloud" class="w-8 h-8 text-purple-400 mb-2"></i>
-                    <span id="galleryUploadText" class="text-xs font-bold text-purple-300">Toca para seleccionar foto</span>
+                    <i data-lucide="upload-cloud" class="w-8 h-8 text-purple-400 mb-2 pointer-events-none"></i>
+                    <span id="galleryUploadText" class="text-xs font-bold text-purple-300 pointer-events-none">Toca para seleccionar foto</span>
                 </div>
             </div>
             <h3 class="text-white font-bold mb-3">Galería Web</h3>
@@ -297,7 +303,6 @@
                 const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web'));
                 container.innerHTML = ''; paquetesLocales = {};
                 
-                // Reiniciar el filtro visual a "Todos"
                 const filterBtns = document.querySelectorAll('.filter-btn');
                 if(filterBtns.length > 0) window.filterCatalog(filterBtns[0], 'all');
 
@@ -313,7 +318,6 @@
                 
                 qSnap.forEach(docSnap => {
                     const data = docSnap.data(); paquetesLocales[docSnap.id] = data;
-                    // Se agregan los atributos data-categoria y data-oferta para el filtrado
                     container.innerHTML += `
                         <div class="premium-card flex flex-col p-4 bg-slate-900 border border-slate-700 package-card-item" data-categoria="${data.categoria}" data-oferta="${data.oferta}">
                             <div class="flex gap-3 items-start">
@@ -334,9 +338,7 @@
             } catch (e) { showToast("Error cargando catálogo", "error"); }
         }
 
-        // LÓGICA DE FILTROS EN CATÁLOGO
         window.filterCatalog = function(btn, filterText) {
-            // Actualizar aspecto de botones
             document.querySelectorAll('.filter-btn').forEach(b => {
                 b.classList.remove('bg-purple-600', 'text-white', 'border-purple-500', 'shadow-[0_0_10px_rgba(139,92,246,0.3)]');
                 b.classList.add('bg-slate-800', 'text-slate-400', 'border-slate-700');
@@ -344,25 +346,18 @@
             btn.classList.remove('bg-slate-800', 'text-slate-400', 'border-slate-700');
             btn.classList.add('bg-purple-600', 'text-white', 'border-purple-500', 'shadow-[0_0_10px_rgba(139,92,246,0.3)]');
 
-            // Filtrar las tarjetas
             const cards = document.querySelectorAll('.package-card-item');
             let count = 0;
-            
             cards.forEach(card => {
                 let show = false;
                 if (filterText === 'all') show = true;
                 else if (filterText === 'ofertas' && card.dataset.oferta === 'true') show = true;
                 else if (card.dataset.categoria === filterText) show = true;
 
-                if (show) {
-                    card.style.display = 'flex';
-                    count++;
-                } else {
-                    card.style.display = 'none';
-                }
+                if (show) { card.style.display = 'flex'; count++; } 
+                else { card.style.display = 'none'; }
             });
 
-            // Mostrar mensaje si está vacío
             let emptyMsg = document.getElementById('emptyFilterMsg');
             if (count === 0) {
                 if (!emptyMsg) {
@@ -431,7 +426,7 @@
             document.getElementById('transName').value = ''; document.getElementById('transCost').value = ''; showToast("Zona Guardada"); window.loadTransport();
         };
 
-        // --- 4. GALERÍA ---
+        // --- 4. GALERÍA (CON CÓDIGO CORREGIDO Y SEGURO) ---
         window.loadGallery = async function loadGallery() {
             const container = document.getElementById('galleryList');
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'));
@@ -441,15 +436,38 @@
             });
             lucide.createIcons();
         }
+
         document.getElementById('galleryUploadInput').addEventListener('change', async (e) => {
-            const file = e.target.files[0]; if(!file) return;
-            document.getElementById('galleryUploadText').textContent = "Subiendo...";
-            const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            const file = e.target.files[0]; 
+            if(!file) return;
+            
+            const uploadText = document.getElementById('galleryUploadText');
+            uploadText.textContent = "Subiendo imagen...";
+            showToast("Subiendo a la galería...", "info");
+            
+            const formData = new FormData(); 
+            formData.append('file', file); 
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            
             try {
-                const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); const data = await res.json();
-                if(data.secure_url) { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url, createdAt: new Date().toISOString() }); showToast("Foto publicada"); window.loadGallery(); }
-            } catch(e) { showToast("Error al subir", "error"); }
-            document.getElementById('galleryUploadText').textContent = "Toca para seleccionar foto";
+                const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); 
+                const data = await res.json();
+                
+                if(data.secure_url) { 
+                    await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url, createdAt: new Date().toISOString() }); 
+                    showToast("¡Foto publicada con éxito!", "success"); 
+                    window.loadGallery(); 
+                } else {
+                    console.error("Error de Cloudinary:", data);
+                    showToast("Falló la conexión con Cloudinary", "error");
+                }
+            } catch(error) { 
+                console.error(error);
+                showToast("Error de internet al subir", "error"); 
+            }
+            
+            uploadText.textContent = "Toca para seleccionar foto";
+            e.target.value = ''; // Esto soluciona que a veces no te dejaba elegir la misma foto 2 veces seguidas
         });
 
         // --- 5. RESEÑAS ---
@@ -502,12 +520,40 @@
             showToast("Ajustes Web Guardados");
         };
 
-        // UTILS
+        // UTILS Y CÓDIGO CORREGIDO PARA SUBIDA DE PORTADAS
         window.deleteDocGen = async (col, id, callback) => { if(confirm("¿Eliminar?")) { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id)); showToast("Eliminado"); callback(); } };
+        
         async function uploadToCloudinary(file, inputUrl, box, img, prog) {
-            if(!file) return; prog.classList.remove('hidden'); box.classList.remove('hidden'); img.src = URL.createObjectURL(file);
-            const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-            try { const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); const data = await res.json(); if(data.secure_url) { inputUrl.value = data.secure_url; showToast("Foto lista"); } } catch(e) { showToast("Error Cloudinary", "error"); } finally { prog.classList.add('hidden'); }
+            if(!file) return; 
+            
+            // VERIFICACIONES SEGURAS PARA EVITAR CRASHEOS
+            if(prog) prog.classList.remove('hidden'); 
+            if(box) box.classList.remove('hidden'); 
+            if(img) img.src = URL.createObjectURL(file);
+            showToast("Subiendo imagen...", "info");
+            
+            const formData = new FormData(); 
+            formData.append('file', file); 
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            
+            try { 
+                const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); 
+                const data = await res.json(); 
+                
+                if(data.secure_url) { 
+                    inputUrl.value = data.secure_url; 
+                    showToast("¡Foto de portada lista!", "success"); 
+                } else {
+                    console.error("Error al subir a Cloudinary:", data);
+                    showToast("Error desde servidor de imágenes", "error");
+                }
+            } catch(e) { 
+                console.error(e);
+                showToast("Error de conexión, intenta de nuevo", "error"); 
+            } finally { 
+                if(prog) prog.classList.add('hidden'); 
+                document.getElementById('imageFileNative').value = ''; // Permite subir la misma foto si te equivocas
+            }
         }
 
         document.getElementById('refreshBtn').addEventListener('click', () => loadDataForTab(currentTab));
@@ -516,7 +562,6 @@
         // INICIALIZACIÓN CON BLINDAJE DE AUTENTICACIÓN
         async function init() {
             try {
-                // Paso 1: Intentamos autenticar con el token
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     try {
                         await signInWithCustomToken(auth, __initial_auth_token);
@@ -528,7 +573,6 @@
                     await signInAnonymously(auth);
                 }
                 
-                // Paso 2: Solo cuando la autenticación está lista, cargamos los datos
                 loadDataForTab(currentTab);
                 
             } catch (error) {
@@ -540,4 +584,4 @@
         init();
     </script>
 </body>
-                    </html>
+</html>
