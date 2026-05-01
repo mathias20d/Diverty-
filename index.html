@@ -38,11 +38,17 @@
         .mobile-nav-link.active .lucide-chevron-right { color: #fff; transform: translateX(4px); }
         .mobile-nav-link.active > div { background: rgba(255,255,255,0.1) !important; border-color: rgba(255,255,255,0.3) !important; box-shadow: 0 0 15px rgba(255,255,255,0.1); }
         .mobile-nav-link.active > div > svg { filter: drop-shadow(0 0 5px currentColor); }
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42,.85); z-index: 1050; display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; visibility: hidden; transition: opacity .3s ease; backdrop-filter: blur(8px); }
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(15, 23, 42,.85); z-index: 1050; display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; backdrop-filter: blur(8px); }
         @media (max-width: 640px) { .modal-backdrop { padding: 1rem; } }
         .modal-backdrop.show { opacity: 1; visibility: visible; }
         .modal-content { background: #0B1121; color: white; border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); width: 100%; max-width: 28rem; max-height: 100%; display: flex; flex-direction: column; transform: scale(.95) translateY(10px); transition: transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; }
         .modal-backdrop.show .modal-content { transform: scale(1) translateY(0); }
+        
+        /* Efecto Especial Pop-up Promocional */
+        #promoModal .modal-content { max-width: 24rem; text-align: center; }
+        #promoModal.show .modal-content { animation: tada 0.5s ease-out; }
+        @keyframes tada { 0% { transform: scale(0.9); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
         .wizard-content { display: none; } 
         .wizard-content.active { display: block; }
         .loading-spinner { border: 3px solid #334155; border-top: 3px solid #8B5CF6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
@@ -72,15 +78,17 @@
         .group-hover-playful img { transition: transform 0.4s ease; }
         .animate-swipe { animation: swipe 2s ease-in-out infinite; } 
         @keyframes swipe { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(40px); } }
-        /* AJUSTE PARA WHATSAPP: Posición más natural sin menú inferior */
         .whatsapp-container { position: fixed; bottom: 30px; right: 20px; z-index: 998; display: flex; align-items: center; gap: 12px; pointer-events: none; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .whatsapp-container > * { pointer-events: auto; } 
         body.has-cart .whatsapp-container { bottom: 120px; }
         .whatsapp-btn { width: 60px; height: 60px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(37,211,102,0.5); animation: glowing-wa 2s infinite; transition: transform 0.2s ease; } 
         .whatsapp-btn:hover, .whatsapp-btn:active { transform: scale(1.05); }
         @keyframes glowing-wa { 0% { box-shadow: 0 0 15px rgba(37,211,102,0.4); } 50% { box-shadow: 0 0 30px rgba(37,211,102,0.8), 0 0 10px rgba(255,255,255,0.3) inset; } 100% { box-shadow: 0 0 15px rgba(37,211,102,0.4); } }
-        #topAnnouncementBanner { background: linear-gradient(90deg, #db2777, #7c3aed); position: relative; width: 100%; z-index: 60; justify-content: center; align-items: center; padding: 6px 16px; font-weight: 800; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.05em; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        
+        /* Banner Controlado CSS */
+        #topAnnouncementBanner { background: linear-gradient(90deg, #db2777, #7c3aed); position: relative; width: 100%; z-index: 60; padding: 6px 16px; font-weight: 800; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.05em; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
         video.bg-video-optimized { transform: translateZ(0); will-change: transform; backface-visibility: hidden; perspective: 1000; }
+        
         @media (max-width: 768px) {
             .backdrop-blur-md, .backdrop-blur-sm, #headerWrapper.scrolled #mainHeader { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(15, 23, 42, 0.98) !important; }
             .btn-animated-gradient { animation: none !important; background-size: 100% 100% !important; }
@@ -92,8 +100,10 @@
 
     <h1 class="sr-only">Diverty Eventos: La mejor animación, payasos y planes de fiestas infantiles en Panamá</h1>
 
+    <!-- HEADER Y BANNER -->
     <div id="headerWrapper" class="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none transition-all duration-300">
-        <div id="topAnnouncementBanner" class="hidden shadow-md pointer-events-auto">
+        <!-- Banner firmemente oculto por defecto -->
+        <div id="topAnnouncementBanner" style="display: none;" class="justify-center items-center shadow-md pointer-events-auto">
             <i data-lucide="megaphone" class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2"></i> <span id="bannerTextSpan">¡Promoción especial activa!</span>
         </div>
         <header id="mainHeader" class="w-full px-4 transition-all duration-200 pointer-events-auto">
@@ -122,7 +132,6 @@
         </header>
     </div>
     
-    <!-- AJUSTE: El carrito flotante bajó a bottom-6 porque ya no hay menú que estorbe -->
     <div id="cartSummary" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-40 bg-[#1E293B]/95 backdrop-blur-sm border border-slate-700 p-3 shadow-2xl rounded-2xl">
         <div class="flex justify-between items-center gap-3">
             <div class="flex items-center gap-2 text-white font-semibold">
@@ -133,7 +142,7 @@
         </div>
     </div>
 
-    <!-- Menú Móvil Lateral Premium -->
+    <!-- MENÚ MÓVIL (Hamburguesa) -->
     <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[999] opacity-0 visibility-hidden transition-all duration-300"></div>
     <nav id="mobileMenu" class="relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none z-0"></div>
@@ -192,7 +201,7 @@
         </div>
     </main>
 
-    <!-- AJUSTE: El padding inferior del footer (pb-12) se redujo drásticamente al eliminar el menú inferior -->
+    <!-- FOOTER -->
     <footer class="bg-[#0B1121] text-white relative pt-16 pb-12 border-t border-slate-800 mt-auto overflow-hidden">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50"></div>
         <div class="absolute -top-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -242,6 +251,7 @@
         </a>
     </div>
     
+    <!-- MODAL DE INFORMACIÓN -->
     <div id="infoModal" class="modal-backdrop z-[1100]">
         <div class="modal-content bg-[#0B1121] border border-slate-700/50 text-white rounded-[32px] sm:rounded-[40px] shadow-[0_0_50px_rgba(0,0,0,0.8)] p-8 sm:p-10 max-w-md w-full relative overflow-hidden text-center justify-center">
             <div class="absolute -top-32 -right-32 w-64 h-64 bg-emerald-600/20 rounded-full blur-[60px] pointer-events-none z-0"></div>
@@ -253,6 +263,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE CARRITO -->
     <div id="cartModal" class="modal-backdrop z-[1060]">
         <div class="modal-content border border-slate-700/50 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
             <div class="absolute -top-32 -right-32 w-64 h-64 bg-purple-600/20 rounded-full blur-[60px] pointer-events-none z-0"></div>
@@ -268,6 +279,7 @@
         </div>
     </div>
 
+    <!-- MODAL DE CONFIRMACIÓN -->
     <div id="bookingConfirmModal" class="modal-backdrop z-[1100]">
         <div class="modal-content bg-[#0B1121] border border-slate-700/50 text-white rounded-[32px] sm:rounded-[40px] shadow-[0_0_50px_rgba(0,0,0,0.8)] p-8 sm:p-10 max-w-md w-full relative overflow-hidden text-center justify-center">
             <div class="absolute -top-32 -right-32 w-64 h-64 bg-indigo-600/20 rounded-full blur-[60px] pointer-events-none z-0"></div>
@@ -280,15 +292,46 @@
             </div>
         </div>
     </div>
+
+    <!-- POP-UP PROMOCIONAL (DISEÑO PREMIUM) -->
+    <div id="promoModal" class="modal-backdrop z-[1200]" style="display: none;" onclick="if(event.target.id === 'promoModal') window.closePromoModal()">
+        <div class="modal-content bg-[#0B1121] border border-slate-700/50 text-white rounded-[32px] shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden max-w-[320px] w-[90%] mx-auto relative flex flex-col transform scale-95 transition-transform duration-500">
+            <button onclick="window.closePromoModal()" class="absolute top-3 right-3 bg-black/50 backdrop-blur-md p-2 rounded-full text-white/80 hover:text-white hover:bg-black/70 z-30 transition-all border border-white/10"><i data-lucide="x" class="w-4 h-4"></i></button>
+            <div id="promoImgBox" class="w-full h-44 bg-slate-800 relative hidden">
+                <img id="promoImg" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0B1121] via-transparent to-transparent opacity-90"></div>
+            </div>
+            <div class="p-8 text-center relative z-10 flex flex-col items-center">
+                <div id="promoIconFallback" class="w-16 h-16 bg-gradient-to-tr from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-[0_10px_25px_rgba(219,39,119,0.4)] mb-5 transform -rotate-3 border border-pink-400/50">
+                    <i data-lucide="gift" class="w-8 h-8 text-white"></i>
+                </div>
+                <h3 id="promoTitle" class="text-2xl font-black mb-3 font-nunito leading-tight text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Oferta Especial</h3>
+                <p id="promoMessage" class="text-slate-300 text-sm font-medium leading-relaxed mb-6">Aprovecha nuestra promoción por tiempo limitado.</p>
+                <button onclick="window.closePromoModal()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white font-extrabold py-3.5 rounded-[18px] shadow-[0_8px_20px_rgba(219,39,119,0.3)] transition-transform hover:scale-[1.03] active:scale-[0.98] border border-pink-400/30">Entendido</button>
+            </div>
+        </div>
+    </div>
     
     <div id="toast"></div>
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+
+        // ==========================================
+        // 0. DEFINICIÓN GLOBAL DIRECTA PARA EL POPUP
+        // ==========================================
+        window.closePromoModal = function() {
+            const pm = document.getElementById('promoModal');
+            if (pm) {
+                pm.classList.remove('show');
+                setTimeout(() => { pm.style.display = 'none'; }, 350); 
+            }
+            sessionStorage.setItem('promo_popup_seen', 'true');
+        };
 
         const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
         const CRM_APP_ID = "diverty-oficial"; 
@@ -310,6 +353,10 @@
         let appliedCoupon = null;
         const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [] };
 
+        // ==========================================
+        // 1. FUNCIONES UTILITARIAS Y GLOBALES
+        // ==========================================
+        
         function setContent(html) { const mc = document.getElementById('mainContent'); if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); } }
         function showModal(modalId) { const mod = document.getElementById(modalId); if(mod) mod.classList.add('show'); }
         function showToast(msg, type='info') { 
@@ -337,7 +384,10 @@
             if(show){ o.style.opacity='1'; o.style.visibility='visible'; m.classList.add('open'); } else { o.style.opacity='0'; o.style.visibility='hidden'; m.classList.remove('open'); } 
         }
 
-        // JS CORREGIDO: Removidas las referencias al menú inferior
+        // ==========================================
+        // 2. NAVEGACIÓN Y MANEJO DE RUTAS
+        // ==========================================
+
         function setActiveSection(sectionId) {
             if (!sectionId) sectionId = 'home';
             document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('show'));
@@ -382,8 +432,13 @@
             window.scrollTo(0, 0);
         }
 
+        // ==========================================
+        // 3. GENERADORES DE HTML Y UI
+        // ==========================================
+
         function createInput(label, name, type, extra='') { return `<div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">${label} *</label><input type="${type}" name="${name}" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" ${extra}></div>`; }
         function createWizardStep(step, icon, text, opacity) { return `<div class="wizard-step flex flex-col items-center relative z-10 ${opacity}"><div class="w-10 h-10 rounded-full ${opacity ? 'bg-slate-800 text-slate-500 border border-slate-700' : 'bg-purple-600 text-white border-2 border-purple-400'} flex items-center justify-center font-bold shadow-sm"><i data-lucide="${icon}" class="w-5 h-5"></i></div><span class="text-xs font-bold ${opacity ? 'text-slate-500' : 'text-purple-400'} mt-2">${text}</span></div>`; }
+        
         function getPortalResultCard(ev) {
             const tot = parseFloat(ev.total||0), abo = parseFloat(ev.abono||0), saldo = Math.max(0, tot-abo);
             let color = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
@@ -391,6 +446,7 @@
             if(ev.estado.toLowerCase()==='completado') color = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
             return `<div class="border border-slate-700 rounded-2xl overflow-hidden bg-[#1E293B] shadow-lg transition-all animate-slide-up"><div class="p-6 border-b border-slate-700/50"><div class="flex justify-between items-start mb-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${color} shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-80"></div> ${ev.estado}</span></div><h4 class="text-2xl font-black text-white mb-1 capitalize">${ev.cliente}</h4><p class="text-sm text-slate-400 flex items-center gap-1.5 font-semibold mb-4"><i data-lucide="calendar-days" class="w-4 h-4 text-purple-400"></i> ${ev.fecha?String(ev.fecha).split('-').reverse().join('/'):'Por definir'} a las ${ev.hora}</p><div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex items-start gap-3"><div class="bg-purple-500/20 p-2 rounded-lg text-purple-400 mt-0.5"><i data-lucide="gift" class="w-5 h-5"></i></div><div><p class="text-[10px] font-bold text-purple-300 uppercase tracking-wider mb-1">Paquete / Servicio</p><p class="text-sm font-bold text-white leading-snug">${ev.servicio||'Servicio no especificado'}</p></div></div></div><div class="bg-slate-900/50 p-6 flex flex-col gap-3"><div class="flex justify-between items-center text-sm font-semibold text-slate-400"><span>Costo Total</span><span class="text-white">$${tot.toFixed(2)}</span></div><div class="flex justify-between items-center text-sm font-semibold text-emerald-400"><span>Abono Realizado</span><span>$${abo.toFixed(2)}</span></div><div class="w-full h-px bg-slate-700 my-1"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Saldo Pendiente</span><span class="text-2xl font-black ${saldo>0?'text-pink-500':'text-emerald-400'}">$${saldo.toFixed(2)}</span></div>${saldo===0?`<div class="mt-2 text-center bg-emerald-500/20 text-emerald-400 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 border border-emerald-500/30"><i data-lucide="check-circle" class="w-4 h-4"></i> Totalmente Pagado</div>`:''}</div></div>`;
         }
+
         function createDetailedCardHTML(item) {
             const isPkg = item.id && (String(item.id).includes('clown') || String(item.id).includes('bubble') || String(item.id).includes('santa') || item.categoria==='payasos' || item.categoria==='burbujas' || item.categoria==='santa');
             let b='', cw='bg-[#0B1121] border border-purple-500/30 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(139,92,246,0.15)] hover:shadow-[0_0_45px_rgba(139,92,246,0.5)] hover:border-purple-400 hover:-translate-y-2';
@@ -407,7 +463,7 @@
             }
             
             let sl='';
-            if(item.services&&item.services.length>0){ sl=`<div class="mt-4 mb-4 relative z-20 w-full"><ul class="space-y-2 max-h-[170px] overflow-y-auto custom-scrollbar pr-2">`+item.services.map(s=>`<li class="flex items-start text-[13px] text-slate-300 font-medium leading-snug group/item transition-colors hover:text-white"><div class="mt-0.5 mr-3 bg-purple-500/10 p-1 rounded-full group-hover/item:bg-pink-500/20 transition-colors border border-purple-500/20"><i data-lucide="check" class="w-3 h-3 text-purple-400 group-hover/item:text-pink-400 transition-colors"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('')+`</ul></div>`; }
+            if(item.services&&item.services.length>0){ sl=`<div class="mt-4 mb-4 relative z-20 w-full flex-grow"><ul class="space-y-2.5 w-full">`+item.services.map(s=>`<li class="flex items-start text-[13px] text-slate-300 font-medium leading-snug group/item transition-colors hover:text-white"><div class="mt-0.5 mr-3 shrink-0 bg-purple-500/10 p-1 rounded-full group-hover/item:bg-pink-500/20 transition-colors border border-purple-500/20"><i data-lucide="check" class="w-3 h-3 text-purple-400 group-hover/item:text-pink-400 transition-colors"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('')+`</ul></div>`; }
 
             const ic=app.cart.find(i=>i.id===item.id); const iq=ic?ic.quantity:1;
             let ab='';
@@ -422,51 +478,34 @@
             return `<div class="w-[85vw] max-w-[360px] md:w-full snap-center flex-shrink-0 h-full snap-container animate-slide-up" style="transform: translateZ(0);"><div class="${cw}"><div class="absolute inset-0 overflow-hidden rounded-[2rem] z-0 pointer-events-none"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl transition-colors duration-500 group-hover:bg-purple-500/30"></div></div>${b}${ts}${sl}${pd}${ab}</div></div>`;
         }
 
-        function validateAvailabilityLogic() {
-            const dInput = document.querySelector('input[name="date"]'), tInput = document.querySelector('input[name="time"]');
-            const warning = document.getElementById('availability-warning'), warningText = document.getElementById('availability-text');
-            if(!dInput || !warning) return true;
-            const dv = dInput.value, tv = tInput ? tInput.value : '';
-            if(!dv) return false;
-            const eod = bookedEvents.filter(ev => ev.fecha === dv);
-            if(eod.length >= 3){ warningText.textContent = 'Este día ya está lleno. Elige otra fecha.'; warning.classList.remove('hidden'); return false; }
-            if(tv && eod.some(ev => ev.hora === tv)){ warningText.textContent = 'Ya hay un evento a esa hora. Elige otra.'; warning.classList.remove('hidden'); return false; }
-            warning.classList.add('hidden'); return true;
-        }
+        // ==========================================
+        // 4. FUNCIONES DE RENDERIZADO PRINCIPALES
+        // ==========================================
 
-        function refreshDynamicData() {
-            try {
-                if (app.activeSection === 'home') {
-                    const fw = document.getElementById('home-featured-wrapper');
-                    if (fw) {
-                        let eh = '';
-                        if (app.catalog && app.catalog.length > 0) {
-                            const of = app.catalog.filter(i => i.oferta || i.discountApplied);
-                            if (of.length > 0) eh += of.map(createDetailedCardHTML).join('');
-                            else eh += app.catalog.slice(0, 3).map(createDetailedCardHTML).join('');
-                        }
-                        if (eh) fw.innerHTML = `<div class="flex md:hidden items-center justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 px-2">${eh}</div>`;
-                        else fw.innerHTML = '';
+        function renderHome() {
+            let ex = '';
+            if(!isFirebaseLoaded){ 
+                ex = `<div class="w-full flex justify-center py-10"><i data-lucide="loader-2" class="w-10 h-10 text-purple-500 animate-spin"></i></div>`; 
+            } else {
+                let eh = '';
+                if(app.catalog && app.catalog.length>0){ 
+                    const destacados = app.catalog.filter(i => i.destacado === true || String(i.destacado).toLowerCase() === 'true'); 
+                    if(destacados.length > 0) {
+                        eh += destacados.map(createDetailedCardHTML).join(''); 
+                        ex = `<div class="flex md:hidden justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 px-2">${eh}</div>`;
+                    } else {
+                        ex = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="sparkles" class="w-10 h-10 mx-auto mb-3 text-purple-500/50"></i><p class="text-slate-400 text-sm font-bold">Nuevos paquetes espectaculares próximamente.</p></div>`;
                     }
-
-                    if (typeof renderCalendar === 'function') renderCalendar();
-
-                    const rw = document.getElementById('home-reviews-wrapper');
-                    if (rw && customerReviews && customerReviews.length > 0) {
-                        rw.innerHTML = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-400 font-bold uppercase px-3 py-1 rounded-full border border-slate-700">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-[#0B1121] border border-slate-700/50 flex flex-col h-full rounded-[2rem] p-6 shadow-md relative overflow-hidden group hover:border-purple-500/30 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-white font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-400 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-300 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-800/80 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
-                    } else if (rw) {
-                        rw.innerHTML = '';
-                    }
-                    if(typeof lucide !== 'undefined') lucide.createIcons();
-                } else {
-                    setActiveSection(app.activeSection);
                 }
-            } catch(e) {
-                console.warn(e);
             }
+            let rc = '';
+            if(isFirebaseLoaded && customerReviews && customerReviews.length>0){
+                rc = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-400 font-bold uppercase px-3 py-1 rounded-full border border-slate-700">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-[#0B1121] border border-slate-700/50 flex flex-col h-full rounded-[2rem] p-6 shadow-md relative overflow-hidden group hover:border-purple-500/30 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-white font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-400 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-300 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-800/80 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
+            }
+            setContent(`<div id="hero-section-identifier"><div class="bg-[#0F172A]"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-gradient-to-b from-[#0F172A]/60 via-[#0F172A]/80 to-[#0F172A] z-10 pointer-events-none"></div><div class="hero-content z-20 relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg badge-float"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-extrabold mb-4 font-poppins leading-[1.1] text-white drop-shadow-2xl">Fiestas infantiles inolvidables en <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 btn-animated-gradient">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-300 font-medium drop-shadow-md font-quicksand leading-relaxed">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/10 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/10 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-400 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/10 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-400 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-400 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] shadow-[0_8px_20px_rgba(219,39,119,0.4)] font-bold text-base"><i data-lucide="calendar-check" class="w-5 h-5 group-hover:animate-pulse"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="clowns" class="nav-action w-full bg-[#162032] border border-slate-600 hover:border-purple-500/50 hover:bg-[#1E293B] text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-md"><i data-lucide="eye" class="w-5 h-5"></i> Ver planes</button></div></div></section><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-3xl mx-auto px-2 sm:px-4"><div class="bg-[#0B1121] p-6 sm:p-8 rounded-[32px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] border border-slate-800 relative overflow-hidden" id="calendar-card-inner"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 rounded-xl border border-purple-500/30 bg-purple-500/10 flex items-center justify-center text-purple-400"><i data-lucide="calendar" class="w-5 h-5"></i></div><div class="text-left"><h2 class="text-2xl font-extrabold text-white font-poppins leading-none">Selecciona tu fecha</h2><p class="text-slate-400 text-sm mt-1">Elige un día disponible para tu fiesta</p></div></div><div class="bg-indigo-900/20 border border-indigo-500/20 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4"><i data-lucide="clock" class="w-5 h-5 text-indigo-400 mt-0.5 shrink-0"></i><p class="text-indigo-200 text-sm font-medium leading-tight">Selecciona una fecha disponible para reservar en segundos</p></div><div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-slate-900/50 py-2 rounded-xl border border-slate-800"><button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><h3 id="cal-month-year" class="text-lg font-bold text-white capitalize leading-none font-poppins">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
+            if(typeof renderCalendar === 'function') renderCalendar(); 
         }
 
-        // RENDER VIEWS (MANTENIENDO EL TÍTULO SI ESTÁN VACÍOS)
         function renderSection(items, title, icon) { 
             if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p class="font-bold text-sm tracking-widest uppercase text-slate-400">Cargando...</p></div>`); return; }
             if(items.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-12 text-white font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400"></i></h2><div class="text-center text-slate-500 animate-slide-up"><i data-lucide="folder-open" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Próximamente más opciones.</p></div></section></div>`); return; }
@@ -482,6 +521,7 @@
             if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-white font-nunito">Nuestra Galería</h2><p class="text-center text-slate-400 max-w-2xl mx-auto mb-12 font-medium text-sm">Momentos llenos de alegría.</p><div class="text-center text-slate-500 animate-slide-up"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
             setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-white font-nunito">Nuestra Galería</h2><p class="text-center text-slate-400 max-w-2xl mx-auto mb-6 font-medium text-sm">Momentos llenos de alegría.</p><div class="flex md:hidden items-center justify-center mb-6 opacity-80 w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${i.image}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-slate-700/50 rounded-[2rem] overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.05)] hover:shadow-[0_0_35px_rgba(139,92,246,0.3)] hover:border-purple-500/50 transition-all duration-500 relative"><img src="${i.image}" loading="lazy" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"><div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center"><div class="bg-purple-600/80 p-3 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.6)]"><i data-lucide="zoom-in" class="text-white w-8 h-8"></i></div></div></a>`).join('')}</div></section></div>`);
         }
+
         function renderCalendar() {
             const grid = document.getElementById('availability-calendar-grid'); if(!grid) return;
             const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth();
@@ -515,6 +555,7 @@
             }
             if(typeof lucide !== 'undefined') lucide.createIcons({root: document.getElementById('calendar-section')});
         }
+
         function renderPortal() {
             setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-lg"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold text-white font-nunito tracking-tight">Portal del Cliente</h2><p class="text-slate-400 mt-2 font-medium text-sm">Consulta el estado de tu evento de forma rápida.</p></div><div class="bg-slate-900 p-6 sm:p-10 rounded-[2rem] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] border border-slate-800"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-[#1E293B] border border-slate-700 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold text-white outline-none focus:border-indigo-400 transition-colors shadow-inner" required></div><button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_20px_rgba(79,70,229,0.3)] flex justify-center items-center gap-2 text-sm transition-transform hover:scale-[1.02]"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-slate-700 rounded-2xl bg-slate-800/30"><p class="text-slate-500 font-semibold">Ingresa tu número para ver tus reservas activas.</p></div></div></div></section></div>`);
             const form = document.getElementById('portalSearchForm');
@@ -533,6 +574,7 @@
                 }
             }
         }
+
         function renderBooking() {
             const subtotal = app.cart.reduce((s, i) => s + (Number(i.price)*i.quantity), 0);
             const tCost = calculateTransportCost(app.location);
@@ -575,28 +617,25 @@
                 if(bp) bp.onclick=()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); updUI(); } };
             }
         }
-        function renderHome() {
-            let ex = '';
-            if(!isFirebaseLoaded){ ex = `<div class="w-full flex justify-center py-10"><i data-lucide="loader-2" class="w-10 h-10 text-purple-500 animate-spin"></i></div>`; }
-            else {
-                let eh = '';
-                if(app.catalog && app.catalog.length>0){ const of=app.catalog.filter(i=>i.oferta||i.discountApplied); if(of.length>0) eh+=of.map(createDetailedCardHTML).join(''); else eh+=app.catalog.slice(0,3).map(createDetailedCardHTML).join(''); }
-                if(eh) ex=`<div class="flex md:hidden justify-center mb-3 opacity-80 animate-slide-up"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 px-2">${eh}</div>`;
-            }
-            let rc = '';
-            if(isFirebaseLoaded && customerReviews && customerReviews.length>0){
-                rc = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-400 font-bold uppercase px-3 py-1 rounded-full border border-slate-700">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-[#0B1121] border border-slate-700/50 flex flex-col h-full rounded-[2rem] p-6 shadow-md relative overflow-hidden group hover:border-purple-500/30 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-white font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-400 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-300 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-800/80 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
-            }
-            setContent(`<div id="hero-section-identifier"><div class="bg-[#0F172A]"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-gradient-to-b from-[#0F172A]/60 via-[#0F172A]/80 to-[#0F172A] z-10 pointer-events-none"></div><div class="hero-content z-20 relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg badge-float"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-extrabold mb-4 font-poppins leading-[1.1] text-white drop-shadow-2xl">Fiestas infantiles inolvidables en <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 btn-animated-gradient">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-300 font-medium drop-shadow-md font-quicksand leading-relaxed">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/10 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/10 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-400 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/10 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-400 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-400 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] shadow-[0_8px_20px_rgba(219,39,119,0.4)] font-bold text-base"><i data-lucide="calendar-check" class="w-5 h-5 group-hover:animate-pulse"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="clowns" class="nav-action w-full bg-[#162032] border border-slate-600 hover:border-purple-500/50 hover:bg-[#1E293B] text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-md"><i data-lucide="eye" class="w-5 h-5"></i> Ver planes</button></div></div></section><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-3xl mx-auto px-2 sm:px-4"><div class="bg-[#0B1121] p-6 sm:p-8 rounded-[32px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] border border-slate-800 relative overflow-hidden" id="calendar-card-inner"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 rounded-xl border border-purple-500/30 bg-purple-500/10 flex items-center justify-center text-purple-400"><i data-lucide="calendar" class="w-5 h-5"></i></div><div class="text-left"><h2 class="text-2xl font-extrabold text-white font-poppins leading-none">Selecciona tu fecha</h2><p class="text-slate-400 text-sm mt-1">Elige un día disponible para tu fiesta</p></div></div><div class="bg-indigo-900/20 border border-indigo-500/20 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4"><i data-lucide="clock" class="w-5 h-5 text-indigo-400 mt-0.5 shrink-0"></i><p class="text-indigo-200 text-sm font-medium leading-tight">Selecciona una fecha disponible para reservar en segundos</p></div><div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-slate-900/50 py-2 rounded-xl border border-slate-800"><button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><h3 id="cal-month-year" class="text-lg font-bold text-white capitalize leading-none font-poppins">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
-            if(typeof renderCalendar === 'function') renderCalendar(); 
-        }
+
+        // ==========================================
+        // 5. FUNCIONES DEL CARRITO Y ACCIONES
+        // ==========================================
 
         function addToCart(item, qty=1) {
             const e = app.cart.find(i=>i.id===item.id);
             if(e) e.quantity+=qty; else app.cart.push({...item,quantity:qty});
-            updateCartUI(); showToast(`${item.name} añadido al carrito`, 'success');
+            updateCartUI(); 
+            showToast(`${item.name} añadido al carrito`, 'success');
+            setTimeout(() => showModal('cartModal'), 250); 
         }
-        function removeFromCart(id) { app.cart=app.cart.filter(i=>i.id!==id); if(app.cart.length===0) appliedCoupon=null; updateCartUI(); showToast('Plan eliminado', 'info'); }
+
+        function removeFromCart(id) { 
+            app.cart=app.cart.filter(i=>i.id!==id); 
+            if(app.cart.length===0) appliedCoupon=null; 
+            updateCartUI(); showToast('Plan eliminado', 'info'); 
+        }
+
         function updateCartUI() {
             const count = app.cart.reduce((s, i) => s + i.quantity, 0);
             const sub = app.cart.reduce((s, i) => s + (Number(i.price)*i.quantity), 0);
@@ -628,13 +667,20 @@
                     if(vq!==ic.quantity && b.dataset.action==='add-hourly-to-cart'){ b.innerHTML=`<i data-lucide="refresh-cw" class="w-5 h-5 text-white"></i> Actualizar`; b.className="w-full text-white font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 text-[11px] sm:text-xs relative z-10 transition-all !bg-amber-500 !border-amber-400 !shadow-[0_0_25px_rgba(245,158,11,0.5)]"; }
                     else { b.innerHTML=`<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`; b.className="w-full text-white font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 text-[11px] sm:text-xs relative z-10 transition-all !bg-emerald-600 !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)]"; }
                     if(typeof lucide !== 'undefined') lucide.createIcons({root:b});
-                } else { b.innerHTML=b.dataset.origHtml; b.className="w-full bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-purple-400/50 hover:scale-[1.02] transition-all font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 uppercase text-[11px] sm:text-xs relative z-10"; if(typeof lucide !== 'undefined') lucide.createIcons({root:b}); }
+                } else { b.innerHTML=b.dataset.origHtml; b.className="w-full bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-purple-400/50 hover:scale-[1.02] transition-all font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(219,39,119,0.8)]"; if(typeof lucide !== 'undefined') lucide.createIcons({root:b}); }
             });
             populateLocationSelects(); const cle = document.getElementById('cartLocation'); if(cle) cle.value = app.location;
         }
 
         function handleGlobalClick(e) {
             const target = e.target.closest('[data-action]');
+            
+            // Usando la funcion que debe estar en el scope de ventana
+            if (e.target.closest('#closePromoBtn') || e.target.closest('#promoActionBtn') || e.target.id === 'promoModal') {
+                if(typeof window.closePromoModal === 'function') window.closePromoModal();
+                return;
+            }
+
             if (e.target.closest('#prevMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() - 1); renderCalendar(); return; }
             if (e.target.closest('#nextMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() + 1); renderCalendar(); return; }
             if (e.target.closest('[data-action="apply-coupon"]')) {
@@ -650,12 +696,41 @@
             switch (action) {
                 case 'select-date': playPopSound(); selectedCalendarDate = date; renderCalendar(); break;
                 case 'confirm-date': playPopSound(); setActiveSection('booking'); setTimeout(() => { const di = document.querySelector('input[name="date"]'); if(di&&selectedCalendarDate){ di.value=selectedCalendarDate; validateAvailability(); } const bf = document.getElementById('bookingForm'); if(bf) bf.scrollIntoView({behavior:'smooth', block:'center'}); showToast('Fecha seleccionada. ¡Asegura tu cupo!', 'success'); }, 50); break;
-                case 'add-to-cart': { playPopSound(); const it = allPurchasableItems.find(s=>s.id===itemId); if(it){ if(!app.cart.find(i=>i.id===itemId)) addToCart(it); showModal('cartModal'); } break; }
+                case 'add-to-cart': { 
+                    playPopSound(); 
+                    const it = allPurchasableItems.find(s=>s.id===itemId); 
+                    if(it){ 
+                        if(!app.cart.find(i=>i.id===itemId)) {
+                            addToCart(it); 
+                        } else {
+                            showModal('cartModal');
+                        }
+                    } 
+                    break; 
+                }
                 case 'remove-from-cart': playPopSound(); removeFromCart(itemId); break;
-                case 'add-hourly-to-cart': { playPopSound(); const sh = allPurchasableItems.find(s=>s.id===itemId); const qe = document.querySelector(`#qty-${itemId}`); const qh = qe?parseInt(qe.textContent):1; if(sh&&qh>0){ const ex=app.cart.find(i=>i.id===itemId); if(ex){ ex.quantity=qh; updateCartUI(); showToast(`Cantidad actualizada`, 'success'); } else addToCart(sh, qh); } break; }
+                case 'add-hourly-to-cart': { 
+                    playPopSound(); 
+                    const sh = allPurchasableItems.find(s=>s.id===itemId); 
+                    const qe = document.querySelector(`#qty-${itemId}`); 
+                    const qh = qe?parseInt(qe.textContent):1; 
+                    if(sh&&qh>0){ 
+                        const ex=app.cart.find(i=>i.id===itemId); 
+                        if(ex){ 
+                            ex.quantity=qh; 
+                            updateCartUI(); 
+                            showToast(`Cantidad actualizada`, 'success'); 
+                            showModal('cartModal'); 
+                        } else {
+                            addToCart(sh, qh); 
+                        }
+                    } 
+                    break; 
+                }
                 case 'change-service-qty': { playPopSound(); const qe = document.querySelector(`#qty-${itemId}`); if(qe){ let cq=parseInt(qe.textContent); let nq=Math.max(1, cq+parseInt(change)); qe.textContent=nq; updateCartUI(); } break; }
                 case 'close-modal': { const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); if(targetSection){ if(app.activeSection!==targetSection) playPopSound(); setTimeout(()=>setActiveSection(targetSection), 50); } break; }
                 case 'navigate-from-modal': { playPopSound(); const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); if(targetSection) setTimeout(()=>setActiveSection(targetSection), 150); break; }
+                case 'close-promo': if(typeof window.closePromoModal === 'function') window.closePromoModal(); break;
             }
         }
 
@@ -681,6 +756,40 @@
             finally{ sBtn.disabled=false; sBtn.innerHTML=obh; }
         }
 
+        // ==========================================
+        // 6. INICIALIZACIÓN Y CONFIGURACIÓN FIREBASE
+        // ==========================================
+
+        function refreshDynamicData() {
+            try {
+                if (app.activeSection === 'home') {
+                    const fw = document.getElementById('home-featured-wrapper');
+                    if (fw) {
+                        let eh = '';
+                        if (app.catalog && app.catalog.length > 0) {
+                            const destacados = app.catalog.filter(i => i.destacado === true || String(i.destacado).toLowerCase() === 'true');
+                            if (destacados.length > 0) {
+                                eh += destacados.map(createDetailedCardHTML).join('');
+                                fw.innerHTML = `<div class="flex md:hidden items-center justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 px-2">${eh}</div>`;
+                            } else {
+                                fw.innerHTML = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="sparkles" class="w-10 h-10 mx-auto mb-3 text-purple-500/50"></i><p class="text-slate-400 text-sm font-bold">Nuevos paquetes espectaculares próximamente.</p></div>`;
+                            }
+                        } else { fw.innerHTML = ''; }
+                    }
+
+                    if (typeof renderCalendar === 'function') renderCalendar();
+
+                    const rw = document.getElementById('home-reviews-wrapper');
+                    if (rw && customerReviews && customerReviews.length > 0) {
+                        rw.innerHTML = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-400 font-bold uppercase px-3 py-1 rounded-full border border-slate-700">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-[#0B1121] border border-slate-700/50 flex flex-col h-full rounded-[2rem] p-6 shadow-md relative overflow-hidden group hover:border-purple-500/30 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-white font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-400 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-300 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-800/80 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
+                    } else if (rw) { rw.innerHTML = ''; }
+                    if(typeof lucide !== 'undefined') lucide.createIcons();
+                } else {
+                    setActiveSection(app.activeSection);
+                }
+            } catch(e) { console.warn(e); }
+        }
+
         async function initFirebaseAndData() {
             try {
                 const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
@@ -688,7 +797,19 @@
                 try{ if(typeof __initial_auth_token !== 'undefined' && __initial_auth_token){ try{ await signInWithCustomToken(auth, __initial_auth_token); }catch(e){ await signInAnonymously(auth); } } else { await signInAnonymously(auth); } }catch(e){}
                 try {
                     const cs = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web'));
-                    const cd = cs.docs.map(d => { const dt=d.data(); return { id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied:dt.oferta===true, description:dt.descripcion, image:dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria }; });
+                    const cd = cs.docs.map(d => { 
+                        const dt=d.data(); 
+                        return { 
+                            id:d.id, name:dt.nombre, price:dt.precio, 
+                            originalPrice:dt.precioOriginal||dt.precio, 
+                            discountApplied:dt.oferta===true, 
+                            destacado:dt.destacado===true, 
+                            description:dt.descripcion, image:dt.imagen, 
+                            services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], 
+                            isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', 
+                            isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria 
+                        }; 
+                    });
                     if(cd.length>0){ app.catalog=cd; services=cd.filter(i=>i.categoria==='servicios'); clownPackages=cd.filter(i=>i.categoria==='payasos'); bubblePackages=cd.filter(i=>i.categoria==='burbujas'); santaPackages=cd.filter(i=>i.categoria==='santa'); allPurchasableItems=[...services,...clownPackages,...bubblePackages,...santaPackages]; }
                 } catch(e){}
                 try { const ts = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')); if(!ts.empty) locations = ts.docs.map(d=>d.data()); } catch(e){}
@@ -696,36 +817,103 @@
                 try { const rs = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){}
                 try { const cs = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web')); activeCoupons = cs.docs.map(d=>d.data()).filter(c=>c.active); } catch(e){}
                 try {
-                    const cfs = await getDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global'));
-                    if(cfs.exists()){ 
-                        const cf=cfs.data(); 
-                        const b=document.getElementById('topAnnouncementBanner'); 
-                        const isActive = cf.bannerActive === true || String(cf.bannerActive).toLowerCase() === 'true';
-                        
-                        if(isActive && cf.bannerText){ 
-                            if(b){ 
-                                document.getElementById('bannerTextSpan').textContent=cf.bannerText; 
-                                b.classList.remove('hidden'); 
-                                b.classList.add('flex'); 
-                                document.documentElement.style.setProperty('--banner-offset', b.offsetHeight+'px'); 
-                            } 
-                        } else if(b){ 
-                            b.classList.add('hidden'); 
-                            b.classList.remove('flex'); 
-                            document.documentElement.style.setProperty('--banner-offset', '0px'); 
-                        } 
-                    }
-                } catch(e){}
+                    // SE USA ONSNAPSHOT PARA CONTROLAR BANNER Y POPUP EN TIEMPO REAL DESDE ADMIN
+                    onSnapshot(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global'), (docSnap) => {
+                        const b = document.getElementById('topAnnouncementBanner');
+                        const pm = document.getElementById('promoModal');
+
+                        if(docSnap.exists()){
+                            const cf = docSnap.data();
+
+                            // 1. LÓGICA DEL BANNER
+                            const isBannerActive = cf.bannerActive === true || String(cf.bannerActive).toLowerCase() === 'true';
+                            if(isBannerActive && cf.bannerText){
+                                if(b){
+                                    const bSpan = document.getElementById('bannerTextSpan');
+                                    if(bSpan) bSpan.textContent = cf.bannerText;
+                                    b.style.display = 'flex';
+                                    b.classList.remove('hidden');
+                                    b.classList.add('flex');
+                                    document.documentElement.style.setProperty('--banner-offset', b.offsetHeight+'px');
+                                }
+                            } else {
+                                if(b){
+                                    b.style.display = 'none';
+                                    b.classList.add('hidden');
+                                    b.classList.remove('flex');
+                                    document.documentElement.style.setProperty('--banner-offset', '0px');
+                                }
+                            }
+
+                            // 2. LÓGICA DEL POP-UP PROMOCIONAL
+                            const isPopupActive = cf.popupActive === true || String(cf.popupActive).toLowerCase() === 'true';
+
+                            if (isPopupActive) {
+                                if (!sessionStorage.getItem('promo_popup_seen')) {
+                                    
+                                    const pt = document.getElementById('promoTitle');
+                                    if (cf.popupTitle && pt) pt.textContent = cf.popupTitle;
+                                    
+                                    const pMsg = document.getElementById('promoMessage');
+                                    if (cf.popupMessage && pMsg) pMsg.textContent = cf.popupMessage;
+                                    
+                                    const pBtn = document.getElementById('promoActionBtn');
+                                    if (cf.popupButton && pBtn) pBtn.textContent = cf.popupButton;
+
+                                    const imgBox = document.getElementById('promoImgBox');
+                                    const imgEl = document.getElementById('promoImg');
+                                    const iconFallback = document.getElementById('promoIconFallback');
+
+                                    if (cf.popupImage && cf.popupImage.trim() !== '') {
+                                        if(imgEl) imgEl.src = cf.popupImage;
+                                        if(imgBox) imgBox.classList.remove('hidden');
+                                        if(iconFallback) iconFallback.classList.add('hidden');
+                                    } else {
+                                        if(imgBox) imgBox.classList.add('hidden');
+                                        if(iconFallback) iconFallback.classList.remove('hidden');
+                                    }
+
+                                    setTimeout(() => { if(pm) { pm.style.display = 'flex'; pm.classList.add('show'); } }, 1200);
+                                }
+                            } else {
+                                // Si está apagado en admin, forzamos que se esconda inmediatamente
+                                if(pm) { pm.classList.remove('show'); pm.style.display = 'none'; }
+                            }
+                        } else {
+                            // Si el documento no existe, escondemos por precaución
+                            if (b) { b.style.display = 'none'; b.classList.add('hidden'); }
+                            if (pm) { pm.classList.remove('show'); pm.style.display = 'none'; }
+                        }
+                    });
+                } catch(e){ console.error(e); }
                 const es = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos'));
                 bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(ev.estado||'').toLowerCase().includes(s)));
             } catch(e){ console.error(e); }
         }
 
+        // ==========================================
+        // 7. ARRANQUE
+        // ==========================================
+
         function setupEventListeners() {
             if (window.location.hash) { history.replaceState(null, null, ' '); }
             setTimeout(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, 50);
-            document.body.addEventListener('click', (e) => { const nl = e.target.closest('.nav-action'); if(nl){ let t=nl.dataset.targetSection; if(!t&&nl.hash) t=nl.hash.substring(1); if(t){ e.preventDefault(); document.querySelectorAll('.modal-backdrop').forEach(m=>m.classList.remove('show')); setActiveSection(t); } } });
+            
             document.body.addEventListener('click', handleGlobalClick);
+            
+            document.body.addEventListener('click', (e) => { 
+                const nl = e.target.closest('.nav-action'); 
+                if(nl){ 
+                    let t=nl.dataset.targetSection; 
+                    if(!t&&nl.hash) t=nl.hash.substring(1); 
+                    if(t){ 
+                        e.preventDefault(); 
+                        document.querySelectorAll('.modal-backdrop').forEach(m=>m.classList.remove('show')); 
+                        setActiveSection(t); 
+                    } 
+                } 
+            });
+            
             const mt = document.getElementById('mobileToggle'); if(mt) mt.onclick = () => toggleMobileMenu(true);
             const cm = document.getElementById('closeMobile'); if(cm) cm.onclick = () => toggleMobileMenu(false);
             const mmo = document.getElementById('mobileMenuOverlay'); if(mmo) mmo.onclick = () => toggleMobileMenu(false);
