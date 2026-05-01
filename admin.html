@@ -22,6 +22,17 @@
         .toggle-checkbox { right: 4px; z-index: 1; border-color: #334155; transition: all 0.3s ease; }
         .toggle-label { background-color: #334155; transition: all 0.3s ease; }
 
+        .toggle-checkbox-star:checked { right: 0; border-color: #EAB308; }
+        .toggle-checkbox-star:checked + .toggle-label-star { background-color: #EAB308; }
+        .toggle-checkbox-star { right: 4px; z-index: 1; border-color: #334155; transition: all 0.3s ease; }
+        .toggle-label-star { background-color: #334155; transition: all 0.3s ease; }
+
+        /* Toggle Morado para el Pop-up */
+        .toggle-checkbox-purple:checked { right: 0; border-color: #8B5CF6; }
+        .toggle-checkbox-purple:checked + .toggle-label-purple { background-color: #8B5CF6; }
+        .toggle-checkbox-purple { right: 4px; z-index: 1; border-color: #334155; transition: all 0.3s ease; }
+        .toggle-label-purple { background-color: #334155; transition: all 0.3s ease; }
+
         .btn-primary { background: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%); color: white; font-weight: 700; padding: 14px 20px; border-radius: 12px; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); border: 1px solid rgba(255,255,255,0.1); width: 100%; font-size: 1rem; cursor: pointer; }
         .btn-primary:active { transform: scale(0.98); }
         .btn-primary:disabled { opacity: 0.7; pointer-events: none; filter: grayscale(1); }
@@ -86,6 +97,7 @@
             <!-- BARRA DE FILTROS DESLIZABLE -->
             <div class="flex overflow-x-auto gap-2 mb-6 pb-2 hide-scroll-bar" style="-webkit-overflow-scrolling: touch;">
                 <button onclick="filterCatalog(this, 'all')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-purple-600 text-white border border-purple-500 shadow-[0_0_10px_rgba(139,92,246,0.3)]">Todos</button>
+                <button onclick="filterCatalog(this, 'destacados')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">En Inicio 🌟</button>
                 <button onclick="filterCatalog(this, 'ofertas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Ofertas 🔥</button>
                 <button onclick="filterCatalog(this, 'payasos')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Payasos 🤡</button>
                 <button onclick="filterCatalog(this, 'burbujas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Burbujas 🫧</button>
@@ -118,26 +130,31 @@
                         <div><label class="saas-label">Cobro por</label><select id="tipoCobro" class="saas-input appearance-none"><option value="paquete">Fijo</option><option value="hora">Por Hora</option><option value="nino">Por Niño</option></select></div>
                     </div>
                     <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-700">
-                        <span class="text-sm font-bold">Es Oferta</span>
+                        <span class="text-sm font-bold">Es Oferta 🔥</span>
                         <div class="relative inline-block w-10 h-5"><input type="checkbox" id="oferta" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/><label for="oferta" class="toggle-label block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
                     </div>
-                    <div id="precioOriginalContainer" class="hidden mt-3"><label class="saas-label text-pink-400">Precio Tachado ($)</label><input type="number" id="precioOriginal" class="saas-input"></div>
+                    <div id="precioOriginalContainer" class="hidden mt-3 mb-3"><label class="saas-label text-pink-400">Precio Tachado ($)</label><input type="number" id="precioOriginal" class="saas-input"></div>
+                    
+                    <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-700 mt-3">
+                        <div class="flex flex-col">
+                            <span class="text-sm font-bold text-yellow-400">Destacar en Inicio 🌟</span>
+                            <span class="text-[10px] text-slate-400">Marcar para mostrar en tu web principal</span>
+                        </div>
+                        <div class="relative inline-block w-10 h-5"><input type="checkbox" id="destacado" class="toggle-checkbox-star absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/><label for="destacado" class="toggle-label-star block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
+                    </div>
                 </div>
                 <div class="bg-[#0B1120] p-4 rounded-xl border border-slate-800">
                     <label class="saas-label">Imagen de Portada</label>
-                    <div class="flex gap-2 mb-2">
+                    <div class="flex gap-2 mb-3">
                         <input type="text" id="imagen" class="saas-input" placeholder="URL o subir ->">
                         <div class="w-12 shrink-0 bg-purple-600 hover:bg-purple-500 transition-colors rounded-xl relative flex items-center justify-center cursor-pointer shadow-md">
                             <input type="file" id="imageFileNative" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
                             <i data-lucide="camera" class="w-4 h-4 text-white z-10"></i>
                         </div>
                     </div>
-                    
-                    <!-- ESTE ES EL ELEMENTO QUE FALTABA Y HACÍA CRASHEAR TU APP -->
                     <div id="uploadProgress" class="hidden text-[10px] uppercase tracking-widest text-purple-400 font-bold mb-3 flex items-center gap-2">
                         <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Subiendo imagen a la nube...
                     </div>
-
                     <div id="imagePreviewBox" class="hidden h-32 rounded-xl bg-slate-900 mb-3 overflow-hidden relative"><img id="previewImg" class="w-full h-full object-cover"></div>
                     <label class="saas-label mt-3">Servicios Incluidos (1 por línea)</label>
                     <textarea id="serviciosLista" rows="4" class="saas-input"></textarea>
@@ -210,8 +227,10 @@
             <div id="couponsList" class="space-y-2"></div>
         </div>
 
-        <!-- 7. VISTA AJUSTES (BANNER) -->
+        <!-- 7. VISTA AJUSTES -->
         <div id="view-settings" class="view-section">
+            
+            <!-- AJUSTE: BANNER -->
             <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6">
                 <h3 class="text-sm font-bold text-cyan-400 mb-4 flex items-center gap-2"><i data-lucide="megaphone" class="w-4 h-4"></i> Banner Superior de Anuncios</h3>
                 <div class="flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-700 mb-4">
@@ -219,9 +238,42 @@
                     <div class="relative inline-block w-12 h-6"><input type="checkbox" id="bannerActive" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/><label for="bannerActive" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
                 </div>
                 <label class="saas-label">Mensaje del Banner</label>
-                <input type="text" id="bannerText" class="saas-input mb-4" placeholder="Ej: ¡Aprovecha 10% OFF este mes!">
-                <button onclick="saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-3 rounded-xl text-sm">Guardar Ajustes</button>
+                <input type="text" id="bannerText" class="saas-input mb-2" placeholder="Ej: ¡Aprovecha 10% OFF este mes!">
             </div>
+
+            <!-- NUEVO AJUSTE: POP-UP PROMOCIONAL -->
+            <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6">
+                <h3 class="text-sm font-bold text-purple-400 mb-4 flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4"></i> Pop-up de Bienvenida Promocional</h3>
+                <p class="text-xs text-slate-400 mb-4">Aparecerá en el centro de la pantalla la primera vez que un cliente entre a tu web.</p>
+                
+                <div class="flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-700 mb-4">
+                    <span class="text-sm font-bold text-white">Activar Pop-up</span>
+                    <div class="relative inline-block w-12 h-6"><input type="checkbox" id="popupActive" class="toggle-checkbox-purple absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/><label for="popupActive" class="toggle-label-purple block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
+                </div>
+                
+                <div class="space-y-4">
+                    <div><label class="saas-label">Título del Pop-up</label><input type="text" id="popupTitle" class="saas-input" placeholder="Ej: ¡Llegó el Black Friday!"></div>
+                    <div><label class="saas-label">Texto / Mensaje</label><textarea id="popupMessage" class="saas-input" rows="2" placeholder="Ej: Usa el código PROMOHOY y llévate 15% de descuento en tu reserva."></textarea></div>
+                    <div><label class="saas-label">Texto del Botón</label><input type="text" id="popupButton" class="saas-input" placeholder="Ej: Entendido"></div>
+                    <div>
+                        <label class="saas-label">Imagen (Opcional)</label>
+                        <div class="flex gap-2 mb-2">
+                            <input type="text" id="popupImage" class="saas-input" placeholder="Sube una foto promocional ->">
+                            <div class="w-12 shrink-0 bg-purple-600 hover:bg-purple-500 transition-colors rounded-xl relative flex items-center justify-center cursor-pointer shadow-md">
+                                <input type="file" id="popupImageNative" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
+                                <i data-lucide="camera" class="w-4 h-4 text-white z-10"></i>
+                            </div>
+                        </div>
+                        <div id="popupUploadProgress" class="hidden text-[10px] uppercase tracking-widest text-purple-400 font-bold flex items-center gap-2">
+                            <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Subiendo...
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTÓN GUARDAR AJUSTES GLOBALES -->
+            <button onclick="saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl text-sm shadow-[0_4px_15px_rgba(8,145,178,0.3)] hover:scale-[0.98] transition-transform">Guardar Todos los Ajustes</button>
+
         </div>
 
     </main>
@@ -319,11 +371,14 @@
                 qSnap.forEach(docSnap => {
                     const data = docSnap.data(); paquetesLocales[docSnap.id] = data;
                     container.innerHTML += `
-                        <div class="premium-card flex flex-col p-4 bg-slate-900 border border-slate-700 package-card-item" data-categoria="${data.categoria}" data-oferta="${data.oferta}">
+                        <div class="premium-card flex flex-col p-4 bg-slate-900 border border-slate-700 package-card-item" data-categoria="${data.categoria}" data-oferta="${data.oferta}" data-destacado="${data.destacado || false}">
                             <div class="flex gap-3 items-start">
                                 <img src="${data.imagen || ''}" class="w-16 h-16 rounded-xl object-cover shrink-0 bg-slate-800">
-                                <div>
-                                    <h3 class="text-white font-bold text-sm leading-tight">${data.nombre}</h3>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-start justify-between">
+                                        <h3 class="text-white font-bold text-sm leading-tight pr-2 truncate">${data.nombre}</h3>
+                                        ${data.destacado ? '<span class="text-[10px] text-yellow-400 font-bold bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20 shrink-0">⭐ INICIO</span>' : ''}
+                                    </div>
                                     <p class="text-emerald-400 font-black text-sm">$${data.precio}</p>
                                     <span class="text-[9px] text-purple-400 uppercase tracking-widest font-bold">${data.categoria}</span>
                                 </div>
@@ -352,6 +407,7 @@
                 let show = false;
                 if (filterText === 'all') show = true;
                 else if (filterText === 'ofertas' && card.dataset.oferta === 'true') show = true;
+                else if (filterText === 'destacados' && card.dataset.destacado === 'true') show = true;
                 else if (card.dataset.categoria === filterText) show = true;
 
                 if (show) { card.style.display = 'flex'; count++; } 
@@ -364,7 +420,7 @@
                     emptyMsg = document.createElement('div');
                     emptyMsg.id = 'emptyFilterMsg';
                     emptyMsg.className = 'col-span-full py-12 text-center text-slate-500';
-                    emptyMsg.innerHTML = '<i data-lucide="filter-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i><p class="font-bold text-sm text-slate-400">No hay paquetes en esta categoría.</p>';
+                    emptyMsg.innerHTML = '<i data-lucide="filter-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i><p class="font-bold text-sm text-slate-400">No hay paquetes aquí.</p>';
                     document.getElementById('paquetesLista').appendChild(emptyMsg);
                     lucide.createIcons();
                 }
@@ -391,10 +447,11 @@
 
         document.getElementById('submitBtn').addEventListener('click', async (e) => {
             const nombre = document.getElementById('nombre').value; const precio = Number(document.getElementById('precio').value);
-            const oferta = document.getElementById('oferta').checked; const img = document.getElementById('imagen').value;
+            const oferta = document.getElementById('oferta').checked; const destacado = document.getElementById('destacado').checked;
+            const img = document.getElementById('imagen').value;
             if(!nombre || !precio || !img) return showToast("Llena campos obligatorios", "error");
             
-            const dataToSave = { nombre, categoria: document.getElementById('categoria').value, precio, tipoCobro: document.getElementById('tipoCobro').value, oferta, precioOriginal: oferta ? Number(document.getElementById('precioOriginal').value) : null, descripcion: document.getElementById('descripcion').value, imagen: img, serviciosLista: document.getElementById('serviciosLista').value };
+            const dataToSave = { nombre, categoria: document.getElementById('categoria').value, precio, tipoCobro: document.getElementById('tipoCobro').value, oferta, destacado, precioOriginal: oferta ? Number(document.getElementById('precioOriginal').value) : null, descripcion: document.getElementById('descripcion').value, imagen: img, serviciosLista: document.getElementById('serviciosLista').value };
             
             try {
                 if (editingId) { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', editingId), dataToSave); showToast("Actualizado"); } 
@@ -404,7 +461,24 @@
             } catch(e) { showToast("Error guardando", "error"); }
         });
 
-        window.editPackage = id => { editingId = id; const d = paquetesLocales[id]; document.getElementById('nombre').value = d.nombre; document.getElementById('precio').value = d.precio; document.getElementById('categoria').value = d.categoria; document.getElementById('tipoCobro').value = d.tipoCobro; document.getElementById('descripcion').value = d.descripcion; document.getElementById('imagen').value = d.imagen; document.getElementById('serviciosLista').value = d.serviciosLista; document.getElementById('oferta').checked = d.oferta; document.getElementById('precioOriginalContainer').classList.toggle('hidden', !d.oferta); document.getElementById('precioOriginal').value = d.precioOriginal||''; document.getElementById('imagePreviewBox').classList.remove('hidden'); document.getElementById('previewImg').src = d.imagen; document.querySelector('[data-tab="form"]').click(); window.scrollTo(0,0); };
+        window.editPackage = id => { 
+            editingId = id; const d = paquetesLocales[id]; 
+            document.getElementById('nombre').value = d.nombre; 
+            document.getElementById('precio').value = d.precio; 
+            document.getElementById('categoria').value = d.categoria; 
+            document.getElementById('tipoCobro').value = d.tipoCobro; 
+            document.getElementById('descripcion').value = d.descripcion; 
+            document.getElementById('imagen').value = d.imagen; 
+            document.getElementById('serviciosLista').value = d.serviciosLista; 
+            document.getElementById('oferta').checked = d.oferta || false; 
+            document.getElementById('destacado').checked = d.destacado || false; 
+            document.getElementById('precioOriginalContainer').classList.toggle('hidden', !d.oferta); 
+            document.getElementById('precioOriginal').value = d.precioOriginal||''; 
+            document.getElementById('imagePreviewBox').classList.remove('hidden'); 
+            document.getElementById('previewImg').src = d.imagen; 
+            document.querySelector('[data-tab="form"]').click(); 
+            window.scrollTo(0,0); 
+        };
         window.deletePackage = async id => { if(confirm("¿Borrar paquete?")) { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', id)); loadCatalog(); showToast("Borrado"); } };
 
         // --- 3. TRANSPORTE ---
@@ -426,7 +500,7 @@
             document.getElementById('transName').value = ''; document.getElementById('transCost').value = ''; showToast("Zona Guardada"); window.loadTransport();
         };
 
-        // --- 4. GALERÍA (CON CÓDIGO CORREGIDO Y SEGURO) ---
+        // --- 4. GALERÍA ---
         window.loadGallery = async function loadGallery() {
             const container = document.getElementById('galleryList');
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'));
@@ -436,38 +510,16 @@
             });
             lucide.createIcons();
         }
-
         document.getElementById('galleryUploadInput').addEventListener('change', async (e) => {
-            const file = e.target.files[0]; 
-            if(!file) return;
-            
-            const uploadText = document.getElementById('galleryUploadText');
-            uploadText.textContent = "Subiendo imagen...";
-            showToast("Subiendo a la galería...", "info");
-            
-            const formData = new FormData(); 
-            formData.append('file', file); 
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-            
+            const file = e.target.files[0]; if(!file) return;
+            document.getElementById('galleryUploadText').textContent = "Subiendo...";
+            const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
             try {
-                const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); 
-                const data = await res.json();
-                
-                if(data.secure_url) { 
-                    await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url, createdAt: new Date().toISOString() }); 
-                    showToast("¡Foto publicada con éxito!", "success"); 
-                    window.loadGallery(); 
-                } else {
-                    console.error("Error de Cloudinary:", data);
-                    showToast("Falló la conexión con Cloudinary", "error");
-                }
-            } catch(error) { 
-                console.error(error);
-                showToast("Error de internet al subir", "error"); 
-            }
-            
-            uploadText.textContent = "Toca para seleccionar foto";
-            e.target.value = ''; // Esto soluciona que a veces no te dejaba elegir la misma foto 2 veces seguidas
+                const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); const data = await res.json();
+                if(data.secure_url) { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url, createdAt: new Date().toISOString() }); showToast("Foto publicada"); window.loadGallery(); }
+            } catch(e) { showToast("Error al subir", "error"); }
+            document.getElementById('galleryUploadText').textContent = "Toca para seleccionar foto";
+            e.target.value = '';
         });
 
         // --- 5. RESEÑAS ---
@@ -506,81 +558,72 @@
             document.getElementById('coupCode').value = ''; document.getElementById('coupValue').value = ''; showToast("Cupón Activado"); window.loadCoupons();
         };
 
-        // --- 7. AJUSTES (BANNER) ---
+        // --- 7. AJUSTES ---
         window.loadSettings = async function loadSettings() {
             const docSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'));
             if(docSnap.exists()) {
                 const d = docSnap.data();
+                // Banner
                 document.getElementById('bannerActive').checked = d.bannerActive || false;
                 document.getElementById('bannerText').value = d.bannerText || '';
+                // Pop-up Promocional
+                document.getElementById('popupActive').checked = d.popupActive || false;
+                document.getElementById('popupTitle').value = d.popupTitle || '';
+                document.getElementById('popupMessage').value = d.popupMessage || '';
+                document.getElementById('popupButton').value = d.popupButton || 'Entendido';
+                document.getElementById('popupImage').value = d.popupImage || '';
             }
         }
+        
         window.saveSettings = async () => {
-            await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive: document.getElementById('bannerActive').checked, bannerText: document.getElementById('bannerText').value }, {merge: true});
+            await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { 
+                bannerActive: document.getElementById('bannerActive').checked, 
+                bannerText: document.getElementById('bannerText').value,
+                popupActive: document.getElementById('popupActive').checked,
+                popupTitle: document.getElementById('popupTitle').value,
+                popupMessage: document.getElementById('popupMessage').value,
+                popupButton: document.getElementById('popupButton').value,
+                popupImage: document.getElementById('popupImage').value
+            }, {merge: true});
             showToast("Ajustes Web Guardados");
         };
 
-        // UTILS Y CÓDIGO CORREGIDO PARA SUBIDA DE PORTADAS
+        // Subida de imagen para el Pop-up
+        document.getElementById('popupImageNative').addEventListener('change', async (e) => uploadToCloudinary(e.target.files[0], document.getElementById('popupImage'), null, null, document.getElementById('popupUploadProgress')));
+
+        // UTILS
         window.deleteDocGen = async (col, id, callback) => { if(confirm("¿Eliminar?")) { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id)); showToast("Eliminado"); callback(); } };
-        
         async function uploadToCloudinary(file, inputUrl, box, img, prog) {
             if(!file) return; 
-            
-            // VERIFICACIONES SEGURAS PARA EVITAR CRASHEOS
             if(prog) prog.classList.remove('hidden'); 
             if(box) box.classList.remove('hidden'); 
             if(img) img.src = URL.createObjectURL(file);
-            showToast("Subiendo imagen...", "info");
-            
-            const formData = new FormData(); 
-            formData.append('file', file); 
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-            
+            showToast("Subiendo...", "info");
+            const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
             try { 
                 const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); 
                 const data = await res.json(); 
-                
-                if(data.secure_url) { 
-                    inputUrl.value = data.secure_url; 
-                    showToast("¡Foto de portada lista!", "success"); 
-                } else {
-                    console.error("Error al subir a Cloudinary:", data);
-                    showToast("Error desde servidor de imágenes", "error");
-                }
-            } catch(e) { 
-                console.error(e);
-                showToast("Error de conexión, intenta de nuevo", "error"); 
-            } finally { 
-                if(prog) prog.classList.add('hidden'); 
-                document.getElementById('imageFileNative').value = ''; // Permite subir la misma foto si te equivocas
-            }
+                if(data.secure_url) { inputUrl.value = data.secure_url; showToast("Imagen lista"); } 
+            } catch(e) { showToast("Error Cloudinary", "error"); } finally { if(prog) prog.classList.add('hidden'); }
         }
 
         document.getElementById('refreshBtn').addEventListener('click', () => loadDataForTab(currentTab));
         lucide.createIcons();
 
-        // INICIALIZACIÓN CON BLINDAJE DE AUTENTICACIÓN
+        // INICIALIZACIÓN
         async function init() {
             try {
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch (tokenErr) {
-                        console.warn("El token inicial no coincide. Cambiando a sesión anónima...", tokenErr);
-                        await signInAnonymously(auth);
-                    }
+                    try { await signInWithCustomToken(auth, __initial_auth_token); } 
+                    catch (tokenErr) { await signInAnonymously(auth); }
                 } else {
                     await signInAnonymously(auth);
                 }
-                
                 loadDataForTab(currentTab);
-                
             } catch (error) {
-                console.error("Error crítico de autenticación:", error);
                 showToast("Fallo al conectar con la base de datos.", "error");
             }
         }
-
         init();
     </script>
 </body>
