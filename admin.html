@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Librería de compresión de imágenes en el navegador -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; -webkit-font-smoothing: antialiased; overscroll-behavior-y: none; }
@@ -14,7 +17,7 @@
         .hide-scroll-bar { -ms-overflow-style: none; scrollbar-width: none; }
         
         .saas-input { width: 100%; background-color: #0F172A; border: 1px solid #1E293B; color: #F8FAFC; border-radius: 12px; padding: 12px; font-size: 0.9rem; transition: all 0.2s ease; outline: none; }
-        .saas-input:focus { border-color: #8B5CF6; background-color: #131C31; }
+        .saas-input:focus { border-color: #8B5CF6; background-color: #131C31; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
         .saas-label { display: block; font-size: 0.65rem; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
 
         .toggle-checkbox:checked { right: 0; border-color: #EC4899; }
@@ -27,7 +30,6 @@
         .toggle-checkbox-star { right: 4px; z-index: 1; border-color: #334155; transition: all 0.3s ease; }
         .toggle-label-star { background-color: #334155; transition: all 0.3s ease; }
 
-        /* Toggle Morado para el Pop-up */
         .toggle-checkbox-purple:checked { right: 0; border-color: #8B5CF6; }
         .toggle-checkbox-purple:checked + .toggle-label-purple { background-color: #8B5CF6; }
         .toggle-checkbox-purple { right: 4px; z-index: 1; border-color: #334155; transition: all 0.3s ease; }
@@ -41,14 +43,9 @@
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .bottom-action-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px); border-top: 1px solid #1E293B; padding: 16px; z-index: 50; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .bottom-action-bar.show { transform: translateY(0); }
-        .has-bottom-bar { padding-bottom: 120px; }
-
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; width: 90%; max-width: 400px; }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; width: 90%; max-width: 400px; pointer-events: none; }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        .premium-card { background: #0B1120; border: 1px solid #1E293B; border-radius: 20px; overflow: hidden; position: relative; }
         .tab-btn.active { background: #1E293B; color: white; border-color: #334155; }
         
         .highlight-field { animation: highlightPulse 1.5s ease; }
@@ -57,6 +54,15 @@
             70% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); border-color: #8B5CF6; }
             100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); border-color: #1E293B; }
         }
+
+        /* Modal Premium para confirmar borrado */
+        .modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
+        .modal-backdrop.show { opacity: 1; visibility: visible; }
+        .modal-content { transform: scale(0.95); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-backdrop.show .modal-content { transform: scale(1); }
+
+        /* Barra Sticky para guardar en el formulario */
+        .sticky-action-bar { position: sticky; bottom: 0; left: 0; right: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px); padding: 16px; border-top: 1px solid #1E293B; margin: 0 -16px -24px -16px; z-index: 40; display: flex; gap: 12px; }
     </style>
 </head>
 <body class="min-h-screen pb-20">
@@ -71,16 +77,15 @@
         </div>
         <div class="overflow-x-auto hide-scroll-bar px-4 pb-3 flex gap-2 max-w-[800px] mx-auto" style="-webkit-overflow-scrolling: touch;">
             <button data-tab="catalog" class="tab-btn active shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Catálogo</button>
-            <button data-tab="form" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Paquetes</button>
+            <button data-tab="form" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Crear Paquete</button>
             <button data-tab="transport" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Transporte</button>
             <button data-tab="gallery" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Galería</button>
-            <button data-tab="reviews" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Reseñas</button>
             <button data-tab="coupons" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Cupones</button>
-            <button data-tab="settings" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Ajustes</button>
+            <button data-tab="settings" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Ajustes Web</button>
         </div>
     </header>
 
-    <main class="w-full max-w-[800px] mx-auto px-4 py-6">
+    <main class="w-full max-w-[800px] mx-auto px-4 py-6 relative">
         
         <!-- 1. VISTA CATÁLOGO -->
         <div id="view-catalog" class="view-section active">
@@ -89,23 +94,29 @@
                     <h2 class="text-xl font-bold text-white mb-1">Catálogo Activo</h2>
                     <p class="text-sm text-slate-400">Gestiona tus planes publicados.</p>
                 </div>
-                <button id="refreshBtn" class="p-2 bg-slate-800 text-slate-300 rounded-lg active:scale-95 shadow-sm">
+                <button id="refreshBtn" class="p-2.5 bg-slate-800 text-slate-300 rounded-xl active:scale-95 shadow-sm border border-slate-700 hover:bg-slate-700 transition-colors">
                     <i data-lucide="refresh-cw" class="w-4 h-4"></i>
                 </button>
             </div>
 
-            <!-- BARRA DE FILTROS DESLIZABLE -->
-            <div class="flex overflow-x-auto gap-2 mb-6 pb-2 hide-scroll-bar" style="-webkit-overflow-scrolling: touch;">
-                <button onclick="filterCatalog(this, 'all')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-purple-600 text-white border border-purple-500 shadow-[0_0_10px_rgba(139,92,246,0.3)]">Todos</button>
-                <button onclick="filterCatalog(this, 'destacados')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">En Inicio 🌟</button>
-                <button onclick="filterCatalog(this, 'ofertas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Ofertas 🔥</button>
-                <button onclick="filterCatalog(this, 'payasos')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Payasos 🤡</button>
-                <button onclick="filterCatalog(this, 'burbujas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Burbujas 🫧</button>
-                <button onclick="filterCatalog(this, 'santa')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Navidad 🎅</button>
-                <button onclick="filterCatalog(this, 'servicios')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Servicios 🎁</button>
+            <!-- BUSCADOR -->
+            <div class="relative mb-4">
+                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                <input type="text" id="searchInput" onkeyup="window.handleSearch(this.value)" class="saas-input pl-10" placeholder="Buscar por nombre...">
             </div>
 
-            <div id="paquetesLista" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8">
+            <!-- BARRA DE FILTROS DESLIZABLE -->
+            <div class="flex overflow-x-auto gap-2 mb-6 pb-2 hide-scroll-bar" style="-webkit-overflow-scrolling: touch;">
+                <button onclick="window.setFilterCategory(this, 'all')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-purple-600 text-white border border-purple-500 shadow-[0_0_10px_rgba(139,92,246,0.3)]">Todos</button>
+                <button onclick="window.setFilterCategory(this, 'destacados')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">En Inicio 🌟</button>
+                <button onclick="window.setFilterCategory(this, 'ofertas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Ofertas 🔥</button>
+                <button onclick="window.setFilterCategory(this, 'payasos')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Payasos 🤡</button>
+                <button onclick="window.setFilterCategory(this, 'burbujas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Burbujas 🫧</button>
+                <button onclick="window.setFilterCategory(this, 'santa')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Navidad 🎅</button>
+                <button onclick="window.setFilterCategory(this, 'servicios')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Servicios 🎁</button>
+            </div>
+
+            <div id="paquetesLista" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-8">
                 <!-- Loader Animado -->
                 <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-500">
                     <i data-lucide="loader-2" class="animate-spin w-8 h-8 mb-4 text-purple-500"></i>
@@ -115,32 +126,32 @@
         </div>
 
         <!-- 2. VISTA CREADOR DE PAQUETES -->
-        <div id="view-form" class="view-section has-bottom-bar">
+        <div id="view-form" class="view-section relative min-h-[80vh]">
             <h2 id="formMainTitle" class="text-xl font-bold text-white mb-4">Crear Paquete / Servicio</h2>
-            <form id="adminForm" class="space-y-4">
+            <form id="adminForm" class="space-y-4 pb-4">
                 <div class="bg-[#0B1120] p-4 rounded-xl border border-slate-800">
-                    <label class="saas-label">Nombre</label><input type="text" id="nombre" class="saas-input mb-3">
+                    <label class="saas-label">Nombre</label><input type="text" id="nombre" class="saas-input mb-3" placeholder="Ej: Show de Burbujas Mágico">
                     <label class="saas-label">Categoría</label>
                     <select id="categoria" class="saas-input mb-3 appearance-none"><option value="payasos">Payasos</option><option value="burbujas">Burbujas</option><option value="santa">Navidad</option><option value="servicios">Servicios Extras</option></select>
-                    <label class="saas-label">Descripción Corta</label><input type="text" id="descripcion" class="saas-input">
+                    <label class="saas-label">Descripción Corta</label><input type="text" id="descripcion" class="saas-input" placeholder="Ej: Ideal para espacios cerrados">
                 </div>
                 <div class="bg-[#0B1120] p-4 rounded-xl border border-slate-800">
                     <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div><label class="saas-label">Precio ($)</label><input type="number" id="precio" class="saas-input"></div>
+                        <div><label class="saas-label">Precio ($)</label><input type="number" id="precio" class="saas-input" placeholder="0.00"></div>
                         <div><label class="saas-label">Cobro por</label><select id="tipoCobro" class="saas-input appearance-none"><option value="paquete">Fijo</option><option value="hora">Por Hora</option><option value="nino">Por Niño</option></select></div>
                     </div>
                     <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-700">
-                        <span class="text-sm font-bold">Es Oferta 🔥</span>
-                        <div class="relative inline-block w-10 h-5"><input type="checkbox" id="oferta" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/><label for="oferta" class="toggle-label block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
+                        <span class="text-sm font-bold text-white">Es Oferta 🔥</span>
+                        <div class="relative inline-block w-10 h-5"><input type="checkbox" id="oferta" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="oferta" class="toggle-label block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
                     </div>
-                    <div id="precioOriginalContainer" class="hidden mt-3 mb-3"><label class="saas-label text-pink-400">Precio Tachado ($)</label><input type="number" id="precioOriginal" class="saas-input"></div>
+                    <div id="precioOriginalContainer" class="hidden mt-3 mb-3"><label class="saas-label text-pink-400">Precio Tachado Anterior ($)</label><input type="number" id="precioOriginal" class="saas-input" placeholder="Ej: 150"></div>
                     
                     <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-700 mt-3">
                         <div class="flex flex-col">
                             <span class="text-sm font-bold text-yellow-400">Destacar en Inicio 🌟</span>
                             <span class="text-[10px] text-slate-400">Marcar para mostrar en tu web principal</span>
                         </div>
-                        <div class="relative inline-block w-10 h-5"><input type="checkbox" id="destacado" class="toggle-checkbox-star absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/><label for="destacado" class="toggle-label-star block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
+                        <div class="relative inline-block w-10 h-5"><input type="checkbox" id="destacado" class="toggle-checkbox-star absolute block w-5 h-5 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="destacado" class="toggle-label-star block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
                     </div>
                 </div>
                 <div class="bg-[#0B1120] p-4 rounded-xl border border-slate-800">
@@ -153,14 +164,20 @@
                         </div>
                     </div>
                     <div id="uploadProgress" class="hidden text-[10px] uppercase tracking-widest text-purple-400 font-bold mb-3 flex items-center gap-2">
-                        <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Subiendo imagen a la nube...
+                        <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Procesando imagen...
                     </div>
-                    <div id="imagePreviewBox" class="hidden h-32 rounded-xl bg-slate-900 mb-3 overflow-hidden relative"><img id="previewImg" class="w-full h-full object-cover"></div>
+                    <div id="imagePreviewBox" class="hidden h-32 rounded-xl bg-slate-900 mb-3 overflow-hidden relative border border-slate-700"><img id="previewImg" class="w-full h-full object-cover"></div>
+                    
                     <label class="saas-label mt-3">Servicios Incluidos (1 por línea)</label>
-                    <textarea id="serviciosLista" rows="4" class="saas-input"></textarea>
+                    <textarea id="serviciosLista" rows="5" class="saas-input leading-relaxed" placeholder="1 hora de show&#10;Pintacaritas&#10;Globoflexia"></textarea>
                 </div>
             </form>
-            <div class="mt-4 flex gap-2"><button type="button" id="cancelEditBtn" class="hidden bg-slate-800 text-white px-4 py-3 rounded-xl font-bold border border-slate-700">Cancelar</button><button type="button" id="submitBtn" class="btn-primary flex-1">Guardar Paquete</button></div>
+            
+            <!-- STICKY ACTION BAR PARA GUARDAR -->
+            <div class="sticky-action-bar">
+                <button type="button" id="cancelEditBtn" onclick="window.cancelEditing()" class="hidden bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 px-4 rounded-xl border border-slate-700 transition-colors shrink-0">Cancelar</button>
+                <button type="button" id="submitBtn" class="btn-primary flex-1 shadow-[0_0_20px_rgba(139,92,246,0.3)] text-[15px]">Guardar Paquete</button>
+            </div>
         </div>
 
         <!-- 3. VISTA TRANSPORTE -->
@@ -171,7 +188,7 @@
                     <div><label class="saas-label">Nombre de Zona</label><input type="text" id="transName" class="saas-input" placeholder="Ej: Arraiján"></div>
                     <div><label class="saas-label">Costo Extra ($)</label><input type="number" id="transCost" class="saas-input" placeholder="15"></div>
                 </div>
-                <button onclick="saveTransport()" class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm mt-2">Agregar Zona</button>
+                <button onclick="saveTransport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm mt-2 transition-colors">Agregar Zona</button>
             </div>
             <h3 class="text-white font-bold mb-3">Zonas Activas</h3>
             <div id="transportList" class="space-y-2"></div>
@@ -181,7 +198,7 @@
         <div id="view-gallery" class="view-section">
             <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6 text-center">
                 <h3 class="text-sm font-bold text-purple-400 mb-2">Subir Nueva Foto</h3>
-                <p class="text-xs text-slate-400 mb-4">Aparecerá directamente en tu web.</p>
+                <p class="text-xs text-slate-400 mb-4">Se comprimirá automáticamente y aparecerá en tu web.</p>
                 <div class="relative w-full h-32 border-2 border-dashed border-purple-500/50 rounded-2xl bg-purple-500/10 flex flex-col items-center justify-center hover:bg-purple-500/20 transition-colors cursor-pointer">
                     <input type="file" id="galleryUploadInput" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
                     <i data-lucide="upload-cloud" class="w-8 h-8 text-purple-400 mb-2 pointer-events-none"></i>
@@ -192,42 +209,22 @@
             <div id="galleryList" class="grid grid-cols-2 gap-3"></div>
         </div>
 
-        <!-- 5. VISTA RESEÑAS -->
-        <div id="view-reviews" class="view-section">
-            <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6">
-                <h3 class="text-sm font-bold text-yellow-400 mb-4 flex items-center gap-2"><i data-lucide="star" class="w-4 h-4"></i> Añadir Testimonio</h3>
-                <div class="grid grid-cols-2 gap-3 mb-3">
-                    <div><label class="saas-label">Cliente</label><input type="text" id="revName" class="saas-input" placeholder="María G."></div>
-                    <div><label class="saas-label">Ubicación</label><input type="text" id="revLocation" class="saas-input" placeholder="Panamá"></div>
-                </div>
-                <div class="mb-3">
-                    <label class="saas-label">Estrellas</label>
-                    <select id="revStars" class="saas-input"><option value="5">5 Estrellas ⭐⭐⭐⭐⭐</option><option value="4">4 Estrellas ⭐⭐⭐⭐</option></select>
-                </div>
-                <label class="saas-label">Comentario</label>
-                <textarea id="revComment" class="saas-input mb-4" rows="2" placeholder="¡Me encantó el show!"></textarea>
-                <button onclick="saveReview()" class="w-full bg-yellow-500 text-slate-900 font-extrabold py-3 rounded-xl text-sm">Publicar Reseña</button>
-            </div>
-            <h3 class="text-white font-bold mb-3">Reseñas Publicadas</h3>
-            <div id="reviewsList" class="space-y-3"></div>
-        </div>
-
-        <!-- 6. VISTA CUPONES -->
+        <!-- 5. VISTA CUPONES -->
         <div id="view-coupons" class="view-section">
             <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6">
                 <h3 class="text-sm font-bold text-pink-400 mb-4 flex items-center gap-2"><i data-lucide="ticket" class="w-4 h-4"></i> Crear Cupón de Descuento</h3>
                 <div class="mb-3"><label class="saas-label">Código (Mayúsculas)</label><input type="text" id="coupCode" class="saas-input uppercase" placeholder="EJ: FIESTA20"></div>
                 <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div><label class="saas-label">Tipo</label><select id="coupType" class="saas-input"><option value="fixed">$ Monto Fijo</option><option value="percent">% Porcentaje</option></select></div>
+                    <div><label class="saas-label">Tipo</label><select id="coupType" class="saas-input appearance-none"><option value="fixed">$ Monto Fijo</option><option value="percent">% Porcentaje</option></select></div>
                     <div><label class="saas-label">Valor</label><input type="number" id="coupValue" class="saas-input" placeholder="10"></div>
                 </div>
-                <button onclick="saveCoupon()" class="w-full bg-pink-600 text-white font-bold py-3 rounded-xl text-sm">Activar Cupón</button>
+                <button onclick="saveCoupon()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3.5 rounded-xl text-sm transition-colors">Activar Cupón</button>
             </div>
             <h3 class="text-white font-bold mb-3">Cupones Activos</h3>
             <div id="couponsList" class="space-y-2"></div>
         </div>
 
-        <!-- 7. VISTA AJUSTES -->
+        <!-- 6. VISTA AJUSTES -->
         <div id="view-settings" class="view-section">
             
             <!-- AJUSTE: BANNER -->
@@ -235,20 +232,20 @@
                 <h3 class="text-sm font-bold text-cyan-400 mb-4 flex items-center gap-2"><i data-lucide="megaphone" class="w-4 h-4"></i> Banner Superior de Anuncios</h3>
                 <div class="flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-700 mb-4">
                     <span class="text-sm font-bold text-white">Mostrar Banner en la Web</span>
-                    <div class="relative inline-block w-12 h-6"><input type="checkbox" id="bannerActive" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/><label for="bannerActive" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
+                    <div class="relative inline-block w-12 h-6"><input type="checkbox" id="bannerActive" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="bannerActive" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
                 </div>
                 <label class="saas-label">Mensaje del Banner</label>
                 <input type="text" id="bannerText" class="saas-input mb-2" placeholder="Ej: ¡Aprovecha 10% OFF este mes!">
             </div>
 
-            <!-- NUEVO AJUSTE: POP-UP PROMOCIONAL -->
+            <!-- AJUSTE: POP-UP PROMOCIONAL -->
             <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6">
                 <h3 class="text-sm font-bold text-purple-400 mb-4 flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4"></i> Pop-up de Bienvenida Promocional</h3>
                 <p class="text-xs text-slate-400 mb-4">Aparecerá en el centro de la pantalla la primera vez que un cliente entre a tu web.</p>
                 
                 <div class="flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-700 mb-4">
                     <span class="text-sm font-bold text-white">Activar Pop-up</span>
-                    <div class="relative inline-block w-12 h-6"><input type="checkbox" id="popupActive" class="toggle-checkbox-purple absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer mt-0"/><label for="popupActive" class="toggle-label-purple block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
+                    <div class="relative inline-block w-12 h-6"><input type="checkbox" id="popupActive" class="toggle-checkbox-purple absolute block w-6 h-6 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="popupActive" class="toggle-label-purple block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
                 </div>
                 
                 <div class="space-y-4">
@@ -265,22 +262,39 @@
                             </div>
                         </div>
                         <div id="popupUploadProgress" class="hidden text-[10px] uppercase tracking-widest text-purple-400 font-bold flex items-center gap-2">
-                            <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Subiendo...
+                            <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Subiendo y comprimiendo...
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- BOTÓN GUARDAR AJUSTES GLOBALES -->
-            <button onclick="saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl text-sm shadow-[0_4px_15px_rgba(8,145,178,0.3)] hover:scale-[0.98] transition-transform">Guardar Todos los Ajustes</button>
+            <button onclick="saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl text-[15px] shadow-[0_4px_15px_rgba(8,145,178,0.3)] hover:scale-[0.98] transition-transform">Guardar Todos los Ajustes</button>
 
         </div>
 
     </main>
 
+    <!-- TOAST DE NOTIFICACIONES -->
     <div id="toast" class="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border">
         <div id="toastIconBg" class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"></div>
         <p id="toastMessage" class="text-xs font-bold text-white pr-2"></p>
+    </div>
+
+    <!-- MODAL DE CONFIRMACIÓN PROPIO -->
+    <div id="confirmModal" class="modal-backdrop">
+        <div class="modal-content bg-[#0F172A] border border-slate-700 rounded-3xl shadow-2xl p-6 max-w-xs w-full text-center mx-4 relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-24 h-24 bg-rose-600/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="w-16 h-16 bg-slate-900 border border-slate-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner relative z-10">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-rose-500"></i>
+            </div>
+            <h3 id="confirmTitle" class="text-xl font-black text-white mb-2 relative z-10">¿Estás seguro?</h3>
+            <p id="confirmMessage" class="text-sm text-slate-400 mb-6 relative z-10 font-medium leading-relaxed"></p>
+            <div class="flex gap-3 relative z-10">
+                <button onclick="window.closeConfirm()" class="flex-1 bg-slate-800 text-white font-bold py-3 rounded-xl border border-slate-700 hover:bg-slate-700 transition-colors text-sm">Cancelar</button>
+                <button id="confirmActionBtn" class="flex-1 bg-rose-600 text-white font-bold py-3 rounded-xl shadow-[0_0_15px_rgba(225,29,72,0.4)] hover:bg-rose-500 transition-colors text-sm">Sí, Borrar</button>
+            </div>
+        </div>
     </div>
 
     <!-- Scripts -->
@@ -298,6 +312,14 @@
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/djfboe8rg/image/upload';
         const CLOUDINARY_UPLOAD_PRESET = 'diverty_web';
 
+        // COMPRESIÓN DE IMÁGENES
+        async function compressImage(file) {
+            if (!file || !file.type.startsWith('image/')) return file;
+            const options = { maxSizeMB: 0.3, maxWidthOrHeight: 1200, useWebWorker: true };
+            try { return await window.imageCompression(file, options); } 
+            catch (e) { return file; }
+        }
+
         // LÓGICA DE PESTAÑAS
         const tabBtns = document.querySelectorAll('.tab-btn');
         let currentTab = 'catalog';
@@ -312,6 +334,23 @@
             currentTab = e.target.dataset.tab;
             loadDataForTab(currentTab);
         }));
+
+        // MODAL DE CONFIRMACIÓN CUSTOM
+        let confirmCallback = null;
+        window.showConfirm = function(title, message, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            confirmCallback = callback;
+            document.getElementById('confirmModal').classList.add('show');
+        }
+        window.closeConfirm = function() {
+            document.getElementById('confirmModal').classList.remove('show');
+            confirmCallback = null;
+        }
+        document.getElementById('confirmActionBtn').addEventListener('click', () => {
+            if(confirmCallback) confirmCallback();
+            window.closeConfirm();
+        });
 
         // NOTIFICACIONES (TOAST)
         let toastTimeout;
@@ -342,22 +381,22 @@
             if(tab === 'catalog') loadCatalog();
             if(tab === 'transport') window.loadTransport();
             if(tab === 'gallery') window.loadGallery();
-            if(tab === 'reviews') window.loadReviews();
             if(tab === 'coupons') window.loadCoupons();
             if(tab === 'settings') window.loadSettings();
         }
 
         // --- 1. CATÁLOGO / PAQUETES ---
-        let paquetesLocales = {}; let editingId = null;
+        let paquetesLocales = {}; 
+        let editingId = null;
+        window.activeCategoryFilter = 'all';
+        window.searchQuery = '';
+
         async function loadCatalog() {
             const container = document.getElementById('paquetesLista');
             try {
                 const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web'));
                 container.innerHTML = ''; paquetesLocales = {};
                 
-                const filterBtns = document.querySelectorAll('.filter-btn');
-                if(filterBtns.length > 0) window.filterCatalog(filterBtns[0], 'all');
-
                 if (qSnap.empty) { 
                     container.innerHTML = `
                         <div class="col-span-full flex flex-col items-center py-10 text-slate-500 bg-slate-900/50 rounded-xl border border-slate-800 border-dashed">
@@ -370,47 +409,62 @@
                 
                 qSnap.forEach(docSnap => {
                     const data = docSnap.data(); paquetesLocales[docSnap.id] = data;
+                    
+                    // Diseño Premium de Tarjeta con Etiquetas
+                    let tagHtml = '';
+                    if(data.tipoCobro === 'hora') {
+                        tagHtml = `<span class="text-[9px] font-bold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">POR HORA</span>`;
+                    } else if(data.tipoCobro === 'nino') {
+                        tagHtml = `<span class="text-[9px] font-bold bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded border border-orange-500/30">POR NIÑO</span>`;
+                    } else {
+                        tagHtml = `<span class="text-[9px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">FIJO</span>`;
+                    }
+
                     container.innerHTML += `
-                        <div class="premium-card flex flex-col p-4 bg-slate-900 border border-slate-700 package-card-item" data-categoria="${data.categoria}" data-oferta="${data.oferta}" data-destacado="${data.destacado || false}">
-                            <div class="flex gap-3 items-start">
-                                <img src="${data.imagen || ''}" class="w-16 h-16 rounded-xl object-cover shrink-0 bg-slate-800">
+                        <div class="flex flex-col p-4 bg-[#0F172A] border border-slate-700/50 rounded-2xl shadow-lg relative overflow-hidden group transition-all package-card-item" data-nombre="${(data.nombre||'').toLowerCase()}" data-categoria="${data.categoria}" data-oferta="${data.oferta}" data-destacado="${data.destacado || false}">
+                            <div class="flex gap-3 items-start relative z-10">
+                                <img src="${data.imagen || ''}" class="w-16 h-16 rounded-xl object-cover shrink-0 bg-slate-800 shadow-md">
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex items-start justify-between">
-                                        <h3 class="text-white font-bold text-sm leading-tight pr-2 truncate">${data.nombre}</h3>
-                                        ${data.destacado ? '<span class="text-[10px] text-yellow-400 font-bold bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20 shrink-0">⭐ INICIO</span>' : ''}
+                                    <div class="flex items-start justify-between mb-1">
+                                        <h3 class="text-white font-bold text-[13px] leading-tight pr-2 truncate">${data.nombre}</h3>
+                                        ${data.destacado ? '<span class="text-[9px] text-yellow-400 font-bold bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20 shrink-0 shadow-sm">⭐ INICIO</span>' : ''}
                                     </div>
-                                    <p class="text-emerald-400 font-black text-sm">$${data.precio}</p>
-                                    <span class="text-[9px] text-purple-400 uppercase tracking-widest font-bold">${data.categoria}</span>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <p class="text-pink-400 font-black text-sm">$${data.precio}</p>
+                                        ${tagHtml}
+                                    </div>
+                                    <span class="text-[9px] text-slate-500 uppercase tracking-widest font-bold">${data.categoria}</span>
                                 </div>
                             </div>
-                            <div class="flex gap-2 mt-4 pt-3 border-t border-slate-800">
-                                <button onclick="editPackage('${docSnap.id}')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 rounded-lg transition-colors">Editar</button>
-                                <button onclick="deletePackage('${docSnap.id}')" class="w-10 h-10 bg-rose-500/10 text-rose-500 rounded-lg flex items-center justify-center hover:bg-rose-500 hover:text-white transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <div class="flex gap-2 mt-4 pt-3 border-t border-slate-800/80 relative z-10">
+                                <button onclick="editPackage('${docSnap.id}')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 rounded-lg transition-colors border border-slate-700"><i data-lucide="edit-3" class="w-3.5 h-3.5 inline mr-1"></i> Editar</button>
+                                <button onclick="deletePackage('${docSnap.id}')" class="w-10 h-10 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-lg flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </div>
                         </div>`;
                 });
                 lucide.createIcons();
+                window.applyCatalogFilters(); // Aplica filtros al recargar
             } catch (e) { showToast("Error cargando catálogo", "error"); }
         }
 
-        window.filterCatalog = function(btn, filterText) {
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.classList.remove('bg-purple-600', 'text-white', 'border-purple-500', 'shadow-[0_0_10px_rgba(139,92,246,0.3)]');
-                b.classList.add('bg-slate-800', 'text-slate-400', 'border-slate-700');
-            });
-            btn.classList.remove('bg-slate-800', 'text-slate-400', 'border-slate-700');
-            btn.classList.add('bg-purple-600', 'text-white', 'border-purple-500', 'shadow-[0_0_10px_rgba(139,92,246,0.3)]');
-
+        // Lógica Combinada de Filtro y Búsqueda
+        window.applyCatalogFilters = function() {
             const cards = document.querySelectorAll('.package-card-item');
             let count = 0;
+            
             cards.forEach(card => {
-                let show = false;
-                if (filterText === 'all') show = true;
-                else if (filterText === 'ofertas' && card.dataset.oferta === 'true') show = true;
-                else if (filterText === 'destacados' && card.dataset.destacado === 'true') show = true;
-                else if (card.dataset.categoria === filterText) show = true;
+                let showByCat = false;
+                if (window.activeCategoryFilter === 'all') showByCat = true;
+                else if (window.activeCategoryFilter === 'ofertas' && card.dataset.oferta === 'true') showByCat = true;
+                else if (window.activeCategoryFilter === 'destacados' && card.dataset.destacado === 'true') showByCat = true;
+                else if (card.dataset.categoria === window.activeCategoryFilter) showByCat = true;
 
-                if (show) { card.style.display = 'flex'; count++; } 
+                let showBySearch = true;
+                if(window.searchQuery.trim() !== '') {
+                    showBySearch = card.dataset.nombre.includes(window.searchQuery);
+                }
+
+                if (showByCat && showBySearch) { card.style.display = 'flex'; count++; } 
                 else { card.style.display = 'none'; }
             });
 
@@ -420,7 +474,7 @@
                     emptyMsg = document.createElement('div');
                     emptyMsg.id = 'emptyFilterMsg';
                     emptyMsg.className = 'col-span-full py-12 text-center text-slate-500';
-                    emptyMsg.innerHTML = '<i data-lucide="filter-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i><p class="font-bold text-sm text-slate-400">No hay paquetes aquí.</p>';
+                    emptyMsg.innerHTML = '<i data-lucide="filter-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i><p class="font-bold text-sm text-slate-400">No se encontraron resultados.</p>';
                     document.getElementById('paquetesLista').appendChild(emptyMsg);
                     lucide.createIcons();
                 }
@@ -428,6 +482,23 @@
             } else {
                 if (emptyMsg) emptyMsg.style.display = 'none';
             }
+        }
+
+        window.setFilterCategory = function(btn, filterText) {
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('bg-purple-600', 'text-white', 'border-purple-500', 'shadow-[0_0_10px_rgba(139,92,246,0.3)]');
+                b.classList.add('bg-slate-800', 'text-slate-400', 'border-slate-700');
+            });
+            btn.classList.remove('bg-slate-800', 'text-slate-400', 'border-slate-700');
+            btn.classList.add('bg-purple-600', 'text-white', 'border-purple-500', 'shadow-[0_0_10px_rgba(139,92,246,0.3)]');
+            
+            window.activeCategoryFilter = filterText;
+            window.applyCatalogFilters();
+        };
+
+        window.handleSearch = function(val) {
+            window.searchQuery = val.toLowerCase();
+            window.applyCatalogFilters();
         };
 
         // Lógica Formulario Paquetes
@@ -436,11 +507,12 @@
                 document.getElementById('tipoCobro').value = 'hora'; 
                 document.getElementById('tipoCobro').classList.add('highlight-field');
                 setTimeout(() => document.getElementById('tipoCobro').classList.remove('highlight-field'), 1500);
-                showToast("Cobro automático: Por Hora", "info");
+                showToast("Sugerencia: Cobro Por Hora", "info");
             } else {
                 document.getElementById('tipoCobro').value = 'paquete';
             }
         });
+        
         document.getElementById('oferta').addEventListener('change', e => document.getElementById('precioOriginalContainer').classList.toggle('hidden', !e.target.checked));
         
         document.getElementById('imageFileNative').addEventListener('change', async (e) => uploadToCloudinary(e.target.files[0], document.getElementById('imagen'), document.getElementById('imagePreviewBox'), document.getElementById('previewImg'), document.getElementById('uploadProgress')));
@@ -449,20 +521,25 @@
             const nombre = document.getElementById('nombre').value; const precio = Number(document.getElementById('precio').value);
             const oferta = document.getElementById('oferta').checked; const destacado = document.getElementById('destacado').checked;
             const img = document.getElementById('imagen').value;
-            if(!nombre || !precio || !img) return showToast("Llena campos obligatorios", "error");
+            if(!nombre || !precio || !img) return showToast("Llena nombre, precio e imagen", "error");
             
             const dataToSave = { nombre, categoria: document.getElementById('categoria').value, precio, tipoCobro: document.getElementById('tipoCobro').value, oferta, destacado, precioOriginal: oferta ? Number(document.getElementById('precioOriginal').value) : null, descripcion: document.getElementById('descripcion').value, imagen: img, serviciosLista: document.getElementById('serviciosLista').value };
             
+            const btn = e.target; const oHtml = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>'; btn.disabled = true;
+
             try {
-                if (editingId) { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', editingId), dataToSave); showToast("Actualizado"); } 
-                else { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web'), dataToSave); showToast("Publicado"); }
-                document.getElementById('adminForm').reset(); editingId = null; document.getElementById('imagePreviewBox').classList.add('hidden');
-                document.querySelector('[data-tab="catalog"]').click();
+                if (editingId) { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', editingId), dataToSave); showToast("Paquete Actualizado"); } 
+                else { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web'), dataToSave); showToast("Paquete Creado"); }
+                
+                window.cancelEditing();
             } catch(e) { showToast("Error guardando", "error"); }
+            finally { btn.innerHTML = oHtml; btn.disabled = false; lucide.createIcons(); }
         });
 
         window.editPackage = id => { 
             editingId = id; const d = paquetesLocales[id]; 
+            document.getElementById('formMainTitle').textContent = "Editando: " + d.nombre;
             document.getElementById('nombre').value = d.nombre; 
             document.getElementById('precio').value = d.precio; 
             document.getElementById('categoria').value = d.categoria; 
@@ -476,10 +553,29 @@
             document.getElementById('precioOriginal').value = d.precioOriginal||''; 
             document.getElementById('imagePreviewBox').classList.remove('hidden'); 
             document.getElementById('previewImg').src = d.imagen; 
+            
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
             document.querySelector('[data-tab="form"]').click(); 
             window.scrollTo(0,0); 
         };
-        window.deletePackage = async id => { if(confirm("¿Borrar paquete?")) { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', id)); loadCatalog(); showToast("Borrado"); } };
+
+        window.cancelEditing = () => {
+            document.getElementById('adminForm').reset(); 
+            editingId = null; 
+            document.getElementById('formMainTitle').textContent = "Crear Paquete / Servicio";
+            document.getElementById('imagePreviewBox').classList.add('hidden');
+            document.getElementById('precioOriginalContainer').classList.add('hidden');
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.querySelector('[data-tab="catalog"]').click();
+        }
+
+        window.deletePackage = async id => { 
+            window.showConfirm("Eliminar Paquete", "¿Seguro que quieres borrar este paquete? Esta acción no se puede deshacer.", async () => {
+                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', id)); 
+                loadCatalog(); 
+                showToast("Paquete eliminado", "success");
+            });
+        };
 
         // --- 3. TRANSPORTE ---
         window.loadTransport = async function loadTransport() {
@@ -488,7 +584,7 @@
             container.innerHTML = '';
             qSnap.forEach(d => {
                 const data = d.data();
-                container.innerHTML += `<div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-slate-700"><div class="flex flex-col"><span class="text-white font-bold text-sm">${data.label}</span><span class="text-emerald-400 font-black text-xs">+$${data.cost}</span></div><button onclick="deleteDocGen('transporte_web', '${d.id}', window.loadTransport)" class="text-rose-500 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+                container.innerHTML += `<div class="flex justify-between items-center bg-[#0F172A] p-4 rounded-xl border border-slate-700/50 shadow-sm"><div class="flex flex-col"><span class="text-white font-bold text-sm">${data.label}</span><span class="text-emerald-400 font-black text-xs mt-0.5">+$${data.cost}</span></div><button onclick="deleteDocGen('transporte_web', '${d.id}', window.loadTransport)" class="text-rose-500 p-2 hover:bg-rose-500/10 rounded-lg transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
             });
             if(qSnap.empty) container.innerHTML = '<p class="text-slate-500 text-xs">Añade tu primera zona.</p>';
             lucide.createIcons();
@@ -506,48 +602,41 @@
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'));
             container.innerHTML = '';
             qSnap.forEach(d => {
-                container.innerHTML += `<div class="relative rounded-xl overflow-hidden h-24 border border-slate-700 group"><img src="${d.data().image}" class="w-full h-full object-cover"><button onclick="deleteDocGen('galeria_web', '${d.id}', window.loadGallery)" class="absolute top-1 right-1 bg-rose-500 p-1.5 rounded-lg text-white opacity-80 hover:opacity-100"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div>`;
+                container.innerHTML += `<div class="relative rounded-2xl overflow-hidden h-32 border border-slate-700 group shadow-lg"><img src="${d.data().image}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><button onclick="deleteDocGen('galeria_web', '${d.id}', window.loadGallery)" class="bg-rose-600 p-2.5 rounded-xl text-white shadow-lg transform scale-90 group-hover:scale-100 transition-all"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div></div>`;
             });
             lucide.createIcons();
         }
+        
         document.getElementById('galleryUploadInput').addEventListener('change', async (e) => {
             const file = e.target.files[0]; if(!file) return;
-            document.getElementById('galleryUploadText').textContent = "Subiendo...";
-            const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            const textElement = document.getElementById('galleryUploadText');
+            const icon = document.querySelector('#view-gallery .lucide-upload-cloud');
+            
+            textElement.textContent = "Comprimiendo..."; icon.classList.add('animate-bounce');
+            const compressedFile = await compressImage(file);
+            
+            textElement.textContent = "Subiendo a la nube...";
+            const formData = new FormData(); 
+            formData.append('file', compressedFile); 
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            
             try {
                 const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); const data = await res.json();
-                if(data.secure_url) { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url, createdAt: new Date().toISOString() }); showToast("Foto publicada"); window.loadGallery(); }
+                if(data.secure_url) { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url, createdAt: new Date().toISOString() }); showToast("Foto publicada en galería", "success"); window.loadGallery(); }
             } catch(e) { showToast("Error al subir", "error"); }
-            document.getElementById('galleryUploadText').textContent = "Toca para seleccionar foto";
+            
+            textElement.textContent = "Toca para seleccionar foto"; icon.classList.remove('animate-bounce');
             e.target.value = '';
         });
 
-        // --- 5. RESEÑAS ---
-        window.loadReviews = async function loadReviews() {
-            const container = document.getElementById('reviewsList');
-            const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'resenas_web'));
-            container.innerHTML = '';
-            qSnap.forEach(d => {
-                const data = d.data();
-                container.innerHTML += `<div class="bg-slate-900 p-4 rounded-xl border border-slate-700 relative"><h4 class="text-white font-bold text-sm">${data.name} <span class="text-yellow-400 text-xs ml-2">${'⭐'.repeat(data.rating)}</span></h4><p class="text-slate-400 text-xs mb-2">${data.location}</p><p class="text-slate-300 text-sm italic">"${data.comment}"</p><button onclick="deleteDocGen('resenas_web', '${d.id}', window.loadReviews)" class="absolute top-2 right-2 text-rose-500 p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
-            });
-            lucide.createIcons();
-        }
-        window.saveReview = async () => {
-            const name = document.getElementById('revName').value, location = document.getElementById('revLocation').value, comment = document.getElementById('revComment').value, rating = Number(document.getElementById('revStars').value);
-            if(!name || !comment) return showToast("Falta nombre o comentario", "error");
-            await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'resenas_web'), { name, location, comment, rating, initial: name.charAt(0).toUpperCase(), color: "from-purple-500 to-indigo-500" });
-            ['revName','revLocation','revComment'].forEach(id=>document.getElementById(id).value=''); showToast("Reseña publicada"); window.loadReviews();
-        };
-
-        // --- 6. CUPONES ---
+        // --- 5. CUPONES ---
         window.loadCoupons = async function loadCoupons() {
             const container = document.getElementById('couponsList');
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'cupones_web'));
             container.innerHTML = '';
             qSnap.forEach(d => {
                 const data = d.data();
-                container.innerHTML += `<div class="flex justify-between items-center bg-slate-900 p-3 rounded-xl border border-pink-500/30"><div class="flex flex-col"><span class="text-pink-400 font-black tracking-widest">${data.code}</span><span class="text-slate-400 font-medium text-xs">Descuento: ${data.type==='percent'? data.discount+'%': '$'+data.discount}</span></div><button onclick="deleteDocGen('cupones_web', '${d.id}', window.loadCoupons)" class="text-rose-500 p-2"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+                container.innerHTML += `<div class="flex justify-between items-center bg-[#0F172A] p-4 rounded-xl border border-pink-500/30 shadow-md"><div class="flex flex-col"><span class="text-pink-400 font-black tracking-widest text-lg">${data.code}</span><span class="text-slate-400 font-bold text-xs mt-0.5">Descuento: ${data.type==='percent'? data.discount+'%': '$'+data.discount}</span></div><button onclick="deleteDocGen('cupones_web', '${d.id}', window.loadCoupons)" class="text-rose-500 p-2 hover:bg-rose-500/10 rounded-lg transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
             });
             lucide.createIcons();
         }
@@ -555,18 +644,16 @@
             const code = document.getElementById('coupCode').value.toUpperCase(), type = document.getElementById('coupType').value, discount = Number(document.getElementById('coupValue').value);
             if(!code || !discount) return showToast("Datos incompletos", "error");
             await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'cupones_web', code), { code, type, discount, active: true });
-            document.getElementById('coupCode').value = ''; document.getElementById('coupValue').value = ''; showToast("Cupón Activado"); window.loadCoupons();
+            document.getElementById('coupCode').value = ''; document.getElementById('coupValue').value = ''; showToast("Cupón Activado", "success"); window.loadCoupons();
         };
 
-        // --- 7. AJUSTES ---
+        // --- 6. AJUSTES WEB ---
         window.loadSettings = async function loadSettings() {
             const docSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'));
             if(docSnap.exists()) {
                 const d = docSnap.data();
-                // Banner
                 document.getElementById('bannerActive').checked = d.bannerActive || false;
                 document.getElementById('bannerText').value = d.bannerText || '';
-                // Pop-up Promocional
                 document.getElementById('popupActive').checked = d.popupActive || false;
                 document.getElementById('popupTitle').value = d.popupTitle || '';
                 document.getElementById('popupMessage').value = d.popupMessage || '';
@@ -576,6 +663,8 @@
         }
         
         window.saveSettings = async () => {
+            const btn = document.querySelector('#view-settings button'); const oText = btn.textContent;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>';
             await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { 
                 bannerActive: document.getElementById('bannerActive').checked, 
                 bannerText: document.getElementById('bannerText').value,
@@ -585,26 +674,40 @@
                 popupButton: document.getElementById('popupButton').value,
                 popupImage: document.getElementById('popupImage').value
             }, {merge: true});
-            showToast("Ajustes Web Guardados");
+            btn.textContent = oText;
+            showToast("Ajustes Web Guardados", "success");
         };
 
-        // Subida de imagen para el Pop-up
+        // Subida Pop-up con Compresión
         document.getElementById('popupImageNative').addEventListener('change', async (e) => uploadToCloudinary(e.target.files[0], document.getElementById('popupImage'), null, null, document.getElementById('popupUploadProgress')));
 
-        // UTILS
-        window.deleteDocGen = async (col, id, callback) => { if(confirm("¿Eliminar?")) { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id)); showToast("Eliminado"); callback(); } };
+        // UTILS GLOBALES DE SUBIDA Y BORRADO
+        window.deleteDocGen = async (col, id, callback) => { 
+            window.showConfirm("Eliminar Elemento", "¿Seguro que quieres borrar esto? Se quitará de tu web al instante.", async () => {
+                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id)); 
+                showToast("Eliminado con éxito", "success"); 
+                callback(); 
+            });
+        };
+        
         async function uploadToCloudinary(file, inputUrl, box, img, prog) {
             if(!file) return; 
             if(prog) prog.classList.remove('hidden'); 
             if(box) box.classList.remove('hidden'); 
-            if(img) img.src = URL.createObjectURL(file);
-            showToast("Subiendo...", "info");
-            const formData = new FormData(); formData.append('file', file); formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            
+            const compressedFile = await compressImage(file);
+            
+            if(img) img.src = URL.createObjectURL(compressedFile);
+            showToast("Subiendo a la nube...", "info");
+            
+            const formData = new FormData(); 
+            formData.append('file', compressedFile); 
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
             try { 
                 const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); 
                 const data = await res.json(); 
-                if(data.secure_url) { inputUrl.value = data.secure_url; showToast("Imagen lista"); } 
-            } catch(e) { showToast("Error Cloudinary", "error"); } finally { if(prog) prog.classList.add('hidden'); }
+                if(data.secure_url) { inputUrl.value = data.secure_url; showToast("Imagen lista", "success"); } 
+            } catch(e) { showToast("Error al subir", "error"); } finally { if(prog) prog.classList.add('hidden'); }
         }
 
         document.getElementById('refreshBtn').addEventListener('click', () => loadDataForTab(currentTab));
