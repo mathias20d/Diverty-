@@ -94,6 +94,9 @@
 </head>
 <body class="flex flex-col relative min-h-screen">
 
+    <!-- SOLUCIÓN SEO: H1 Oculto pero legible para los robots de Google -->
+    <h1 class="sr-only">Diverty Eventos: La mejor animación, payasos y planes de fiestas infantiles en Panamá</h1>
+
     <div id="headerWrapper" class="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none transition-all duration-300">
         <div id="topAnnouncementBanner" class="hidden shadow-md pointer-events-auto">
             <i data-lucide="megaphone" class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2"></i> <span id="bannerTextSpan">¡Promoción especial activa!</span>
@@ -134,7 +137,7 @@
         </div>
     </div>
 
-    <!-- Menú Lateral Premium Rediseñado -->
+    <!-- Menú Móvil Lateral Premium -->
     <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[999] opacity-0 visibility-hidden transition-all duration-300"></div>
     <nav id="mobileMenu" class="relative overflow-hidden">
         <div class="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] pointer-events-none z-0"></div>
@@ -185,7 +188,7 @@
         </div>
     </nav>
 
-    <!-- Loader inicial -->
+    <!-- Main Content -->
     <main id="mainContent" class="flex-grow flex flex-col w-full relative z-10">
         <div id="initial-loader" class="flex-grow flex flex-col items-center justify-center py-32 text-slate-500 fade-in">
             <i data-lucide="loader-2" class="animate-spin w-12 h-12 mb-4 text-purple-500"></i>
@@ -200,25 +203,40 @@
             <h2 class="text-3xl md:text-4xl font-extrabold text-white font-nunito mb-2">¿Listo para reservar tu fiesta?</h2>
             <p class="text-slate-400 mb-10 font-medium">Escríbenos ahora y asegura tu fecha</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-12">
-                <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" class="flex items-center justify-start gap-4 bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-purple-500/50 transition-all group">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center shadow-sm shrink-0"><i data-lucide="instagram" class="w-5 h-5 text-white"></i></div>
-                    <span class="font-bold text-slate-200 group-hover:text-white truncate">@diverty_eventos_pty</span>
-                </a>
-                <a href="https://wa.me/50766677965" target="_blank" class="flex items-center justify-start gap-4 bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-emerald-500/50 transition-all group">
-                    <div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-sm shrink-0"><i data-lucide="phone" class="w-5 h-5 text-white"></i></div>
-                    <span class="font-bold text-slate-200 group-hover:text-white truncate">+507 6667-7965</span>
-                </a>
-                <a href="mailto:corporativo@divertyeventos.online" class="flex items-center justify-start gap-4 bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-blue-500/50 transition-all group sm:col-span-2 md:col-span-1">
-                    <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center shadow-sm shrink-0"><i data-lucide="mail" class="w-5 h-5 text-white"></i></div>
-                    <span class="font-bold text-slate-200 group-hover:text-white truncate">corporativo@divertyeventos.online</span>
-                </a>
+                <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" rel="noopener noreferrer" class="flex items-center justify-start gap-4 bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-purple-500/50 transition-all group"><div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 flex items-center justify-center shadow-sm shrink-0"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></div><span class="font-bold text-slate-200 group-hover:text-white truncate">@diverty_eventos_pty</span></a>
+                <a href="https://wa.me/50766677965" target="_blank" rel="noopener noreferrer" class="flex items-center justify-start gap-4 bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-emerald-500/50 transition-all group"><div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-sm shrink-0"><i data-lucide="phone" class="w-5 h-5 text-white"></i></div><span class="font-bold text-slate-200 group-hover:text-white truncate">+507 6667-7965</span></a>
+                <a href="mailto:corporativo@divertyeventos.online" class="flex items-center justify-start gap-4 bg-white/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/10 hover:bg-white/10 hover:border-blue-500/50 transition-all group sm:col-span-2 md:col-span-1"><div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center shadow-sm shrink-0"><i data-lucide="mail" class="w-5 h-5 text-white"></i></div><span class="font-bold text-slate-200 group-hover:text-white truncate">corporativo@divertyeventos.online</span></a>
             </div>
-            <div class="flex flex-col items-center gap-3 mb-10">
-                <div class="flex items-center gap-2 text-slate-300 font-medium"><i data-lucide="star" class="w-5 h-5 text-yellow-500 fill-yellow-500"></i><span>Más de <span class="text-white font-bold">500 eventos</span> realizados</span></div>
-                <div class="flex items-center gap-2 text-slate-300 font-medium"><i data-lucide="star" class="w-5 h-5 text-yellow-500 fill-yellow-500"></i><span><span class="text-white font-bold">4.9/5</span> en Google</span></div>
-                <div class="flex items-center gap-2 text-slate-300 font-medium"><span class="text-xl leading-none">🎉</span><span>Diversión garantizada</span></div>
+            <div class="flex flex-col items-center gap-3 mb-10"><div class="flex items-center gap-2 text-slate-300 font-medium"><i data-lucide="star" class="w-5 h-5 text-yellow-500 fill-yellow-500"></i><span>Más de <span class="text-white font-bold">500 eventos</span> realizados</span></div><div class="flex items-center gap-2 text-slate-300 font-medium"><i data-lucide="star" class="w-5 h-5 text-yellow-500 fill-yellow-500"></i><span><span class="text-white font-bold">4.9/5</span> en Google</span></div><div class="flex items-center gap-2 text-slate-300 font-medium"><span class="text-xl leading-none">🎉</span><span>Diversión garantizada</span></div></div>
+            
+            <!-- SOLUCIÓN SEO: Enlaces Internos Reales -->
+            <div class="mt-8 pt-8 border-t border-slate-800 flex flex-col items-center">
+                <nav aria-label="Enlaces del sitio" class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6 text-[11px] sm:text-xs font-bold text-slate-500">
+                    <a href="#home" data-target-section="home" class="nav-action hover:text-purple-400 transition-colors">Inicio</a>
+                    <a href="#services" data-target-section="services" class="nav-action hover:text-purple-400 transition-colors">Servicios</a>
+                    <a href="#clowns" data-target-section="clowns" class="nav-action hover:text-purple-400 transition-colors">Planes</a>
+                    <a href="#bubbles" data-target-section="bubbles" class="nav-action hover:text-purple-400 transition-colors">Burbujas</a>
+                    <a href="#gallery" data-target-section="gallery" class="nav-action hover:text-purple-400 transition-colors">Galería</a>
+                    <a href="#booking" data-target-section="booking" class="nav-action hover:text-purple-400 transition-colors">Reservar</a>
+                    <a href="#portal" data-target-section="portal" class="nav-action hover:text-purple-400 transition-colors">Mi Reserva</a>
+                </nav>
+                <p class="text-sm font-medium text-slate-500">&copy; 2026 Diverty Eventos ✨ Haciendo cada fiesta mágica en Panamá</p>
             </div>
-            <div class="border-t border-slate-800 pt-8 mt-4 max-w-2xl mx-auto"><p class="text-sm font-medium text-slate-500">&copy; 2026 Diverty Eventos ✨ Haciendo cada fiesta mágica</p></div>
+            
+            <!-- TEXTO SEO OPTIMIZADO (Oculto en un Acordeón Elegante) -->
+            <div class="mt-6 text-center max-w-4xl mx-auto border-t border-slate-800/50 pt-6 pb-2">
+                <details class="group cursor-pointer">
+                    <summary class="flex items-center justify-center gap-2 text-slate-500 text-[10px] font-bold uppercase tracking-widest list-none outline-none hover:text-purple-400 transition-colors [&::-webkit-details-marker]:hidden">
+                        <span>Conoce más sobre nosotros</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 transition-transform duration-300 group-open:rotate-180"><path d="m6 9 6 6 6-6"/></svg>
+                    </summary>
+                    <div class="mt-6 space-y-4 text-slate-600 text-[11px] font-medium opacity-60 text-left px-4 animate-slide-up">
+                        <p>En <strong>Diverty Eventos</strong>, somos especialistas en crear las mejores <strong>fiestas infantiles en Panamá</strong>. Entendemos que cada celebración es un momento único e irrepetible para ti y tu familia. Por eso, hemos diseñado los más completos <strong>planes de fiestas en Panamá</strong>, adaptándonos a tus necesidades y garantizando la máxima diversión para niños y adultos. Nuestro compromiso es brindarte un servicio integral, puntual y lleno de alegría en cada rincón.</p>
+                        <p>Contamos con un equipo de profesionales apasionados por el entretenimiento. Ofrecemos desde talentosos <strong>payasitos</strong> y <strong>animadores</strong> que mantendrán a todos los invitados riendo a carcajadas, hasta expertas <strong>pintacaritas</strong> que transformarán a los más pequeños en sus personajes favoritos. Además, nuestros asombrosos <strong>shows de burbujas</strong> gigantes dejarán fascinados a grandes y chicos, creando un ambiente verdaderamente mágico y espectacular para las fotos.</p>
+                        <p>Si buscas una experiencia inolvidable, sin preocupaciones y con la certeza de que cada detalle será perfecto, no dudes en contactarnos hoy mismo. Nos encargamos de llevar la alegría directamente a la ubicación de tu evento. Explora nuestros paquetes, verifica nuestra disponibilidad en línea desde tu celular y prepárate para vivir una celebración espectacular con la calidad, seguridad y confianza que solo nosotros podemos ofrecerte.</p>
+                    </div>
+                </details>
+            </div>
         </div>
     </footer>
     
@@ -241,18 +259,13 @@
         <div class="modal-content bg-[#0B1121] border border-slate-700/50 text-white rounded-[32px] sm:rounded-[40px] shadow-[0_0_50px_rgba(0,0,0,0.8)] p-8 sm:p-10 max-w-md w-full relative overflow-hidden text-center justify-center">
             <div class="absolute -top-32 -right-32 w-64 h-64 bg-emerald-600/20 rounded-full blur-[60px] pointer-events-none z-0"></div>
             <div class="relative z-10">
-                <div class="w-20 h-20 bg-[#162032] border border-emerald-500/30 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.15)] badge-float relative group">
-                    <div class="absolute inset-0 bg-gradient-to-tr from-emerald-600/20 to-transparent opacity-100 rounded-3xl"></div>
-                    <i data-lucide="check-circle" class="w-10 h-10 text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]"></i>
-                </div>
-                <h3 class="text-3xl font-black text-white mb-3 font-nunito tracking-tight">¡Solicitud Exitosa!</h3>
-                <p id="modalMessage" class="text-sm text-slate-400 font-medium leading-relaxed mb-8 px-2"></p>
+                <div class="w-20 h-20 bg-[#162032] border border-emerald-500/30 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(16,185,129,0.15)] badge-float relative group"><div class="absolute inset-0 bg-gradient-to-tr from-emerald-600/20 to-transparent opacity-100 rounded-3xl"></div><i data-lucide="check-circle" class="w-10 h-10 text-emerald-400 drop-shadow-[0_0_15px_rgba(16,185,129,0.5)]"></i></div>
+                <h3 class="text-3xl font-black text-white mb-3 font-nunito tracking-tight">¡Solicitud Exitosa!</h3><p id="modalMessage" class="text-sm text-slate-400 font-medium leading-relaxed mb-8 px-2"></p>
                 <button data-action="close-modal" class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 btn-animated-gradient border border-emerald-400/40 text-white font-extrabold py-4 rounded-[20px] transition-all duration-300 text-[15px] flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.6)]"><i data-lucide="check" class="w-5 h-5"></i> Entendido</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE CARRITO -->
     <div id="cartModal" class="modal-backdrop z-[1060]">
         <div class="modal-content border border-slate-700/50 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
             <div class="absolute -top-32 -right-32 w-64 h-64 bg-purple-600/20 rounded-full blur-[60px] pointer-events-none z-0"></div>
@@ -260,34 +273,10 @@
             <div class="shrink-0 p-5 sm:p-6 pb-2 relative z-10"><h2 class="text-2xl sm:text-3xl font-extrabold flex items-center justify-center gap-2 text-white font-nunito tracking-tight"><i data-lucide="shopping-cart" class="text-purple-400 w-6 h-6 sm:w-7 sm:h-7"></i>Tu Carrito</h2></div>
             <div id="cartItems" class="flex-1 overflow-y-auto px-5 sm:px-6 custom-scrollbar relative z-10 min-h-[80px]"></div>
             <div class="shrink-0 p-5 sm:p-6 pt-4 relative z-10 border-t border-slate-800/50 bg-[#0B1121]/95 backdrop-blur-md">
-                
-                <div class="mb-4">
-                    <label class="font-bold text-slate-400 text-[10px] uppercase tracking-wider mb-2 block pl-1">Código de Descuento (Opcional):</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="couponCodeInput" class="w-full bg-[#162032] border border-slate-700/50 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-pink-400 uppercase" placeholder="EJ: FIESTA20">
-                        <button data-action="apply-coupon" class="bg-pink-600 text-white px-4 font-bold rounded-xl text-sm hover:bg-pink-500 transition-colors">Aplicar</button>
-                    </div>
-                </div>
-
-                <div class="mb-4">
-                    <label class="font-bold text-slate-400 text-[10px] uppercase tracking-wider mb-2 block pl-1">Ubicación del Evento:</label>
-                    <div class="relative group">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i data-lucide="map-pin" class="w-4 h-4 text-rose-400"></i></div>
-                        <select id="cartLocation" class="w-full bg-[#162032] border border-slate-700/50 rounded-xl py-3 pl-10 pr-10 text-sm font-bold text-white outline-none focus:border-purple-400 transition-all appearance-none shadow-inner cursor-pointer group-hover:border-slate-600"></select>
-                        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none"><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i></div>
-                    </div>
-                </div>
-                <div class="mb-5 pl-1 pr-1 bg-[#162032]/50 p-4 rounded-xl border border-slate-700/30 shadow-inner">
-                    <div class="flex justify-between items-center mb-2"><span class="text-xs font-medium text-slate-400">Subtotal:</span><span id="cartTotal" class="text-xs font-bold text-white w-20 text-right">$0.00</span></div>
-                    <div id="discountRow" class="flex justify-between items-center mb-2 hidden"><span class="text-xs font-bold text-pink-400 flex items-center gap-1"><i data-lucide="tag" class="w-3 h-3"></i> Descuento:</span><span id="discountAmount" class="text-xs font-bold text-pink-400 w-20 text-right">-$0.00</span></div>
-                    <div class="flex justify-between items-center mb-3"><span class="text-xs font-medium text-slate-400">Transporte:</span><span id="transportCost" class="text-xs font-bold text-white w-20 text-right">$0.00</span></div>
-                    <div class="w-full h-px bg-slate-700/50 mb-3"></div>
-                    <div class="flex justify-between items-end"><span class="text-sm font-extrabold text-white uppercase tracking-wider">Total</span><span id="finalTotal" class="text-2xl font-black text-emerald-400 drop-shadow-md leading-none">$0.00</span></div>
-                </div>
-                <div class="flex gap-3">
-                    <button data-action="close-modal" class="bg-[#1E293B] border border-slate-700 text-slate-300 flex-1 hover:bg-[#2A364A] hover:text-white font-extrabold rounded-[18px] transition-all duration-300 text-[15px] shadow-sm flex items-center justify-center gap-2 h-[54px]">Cerrar</button>
-                    <button data-action="navigate-from-modal" data-target-section="booking" class="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white flex-1 font-extrabold rounded-[18px] text-center transition-all duration-300 text-[15px] flex justify-center items-center shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] h-[54px] gap-2">Reservar <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
-                </div>
+                <div class="mb-4"><label class="font-bold text-slate-400 text-[10px] uppercase tracking-wider mb-2 block pl-1">Código de Descuento (Opcional):</label><div class="flex gap-2"><input type="text" id="couponCodeInput" class="w-full bg-[#162032] border border-slate-700/50 rounded-xl py-3 px-4 text-sm font-bold text-white outline-none focus:border-pink-400 uppercase" placeholder="EJ: FIESTA20"><button data-action="apply-coupon" class="bg-pink-600 text-white px-4 font-bold rounded-xl text-sm hover:bg-pink-500 transition-colors">Aplicar</button></div></div>
+                <div class="mb-4"><label class="font-bold text-slate-400 text-[10px] uppercase tracking-wider mb-2 block pl-1">Ubicación del Evento:</label><div class="relative group"><div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i data-lucide="map-pin" class="w-4 h-4 text-rose-400"></i></div><select id="cartLocation" class="w-full bg-[#162032] border border-slate-700/50 rounded-xl py-3 pl-10 pr-10 text-sm font-bold text-white outline-none focus:border-purple-400 transition-all appearance-none shadow-inner cursor-pointer group-hover:border-slate-600"></select><div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none"><i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i></div></div></div>
+                <div class="mb-5 pl-1 pr-1 bg-[#162032]/50 p-4 rounded-xl border border-slate-700/30 shadow-inner"><div class="flex justify-between items-center mb-2"><span class="text-xs font-medium text-slate-400">Subtotal:</span><span id="cartTotal" class="text-xs font-bold text-white w-20 text-right">$0.00</span></div><div id="discountRow" class="flex justify-between items-center mb-2 hidden"><span class="text-xs font-bold text-pink-400 flex items-center gap-1"><i data-lucide="tag" class="w-3 h-3"></i> Descuento:</span><span id="discountAmount" class="text-xs font-bold text-pink-400 w-20 text-right">-$0.00</span></div><div class="flex justify-between items-center mb-3"><span class="text-xs font-medium text-slate-400">Transporte:</span><span id="transportCost" class="text-xs font-bold text-white w-20 text-right">$0.00</span></div><div class="w-full h-px bg-slate-700/50 mb-3"></div><div class="flex justify-between items-end"><span class="text-sm font-extrabold text-white uppercase tracking-wider">Total</span><span id="finalTotal" class="text-2xl font-black text-emerald-400 drop-shadow-md leading-none">$0.00</span></div></div>
+                <div class="flex gap-3"><button data-action="close-modal" class="bg-[#1E293B] border border-slate-700 text-slate-300 flex-1 hover:bg-[#2A364A] hover:text-white font-extrabold rounded-[18px] transition-all duration-300 text-[15px] shadow-sm flex items-center justify-center gap-2 h-[54px]">Cerrar</button><button data-action="navigate-from-modal" data-target-section="booking" class="bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white flex-1 font-extrabold rounded-[18px] text-center transition-all duration-300 text-[15px] flex justify-center items-center shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] h-[54px] gap-2">Reservar <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
             </div>
         </div>
     </div>
@@ -308,996 +297,450 @@
     <div id="toast"></div>
 
     <script type="module">
-    // DECLARACIÓN DE TODAS LAS FUNCIONES AL INICIO DEL SCRIPT PARA EVITAR ERRORES DE REFERENCEERROR
-    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-    import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getFirestore, doc, collection, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, doc, collection, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
-    const CRM_APP_ID = "diverty-oficial"; 
-    
-    let locations = [{ value: 'panama-centro', label: 'Panamá Centro (Base)', cost: 0 }];
-    let services = [];
-    let clownPackages = [];
-    let bubblePackages = [];
-    let santaPackages = [];
-    let gallery = [];
-    let activeCoupons = [];
-    let allPurchasableItems = [];
-    
-    let customerReviews = [ 
-        { id: 1, name: "María G.", rating: 5, comment: "¡A todos les encantó el show! Los niños no pararon de reír en toda la tarde.", color: "from-pink-500 to-rose-500", initial: "M", location: "Panamá Centro" }, 
-        { id: 2, name: "Carlos M.", rating: 5, comment: "Muy puntuales y profesionales. La decoración y animación de primera.", color: "from-blue-500 to-cyan-500", initial: "C", location: "Arraiján" }, 
-        { id: 3, name: "Ana R.", rating: 5, comment: "El pintacaritas fue un éxito. Diseños hermosos y mucha amabilidad.", color: "from-purple-500 to-indigo-500", initial: "A", location: "La Chorrera" } 
-    ];
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
 
-    let db, auth; 
-    let bookedEvents = []; 
-    let currentCalDate = new Date(); 
-    let bookingFormState = {}; 
-    let selectedCalendarDate = null; 
-    let isSoundPlaying = false;
-    let isFirebaseLoaded = false;
-    let appliedCoupon = null;
-    const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [] };
+        const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
+        const CRM_APP_ID = "diverty-oficial"; 
 
-    function setContent(html) { 
-        const mainContent = document.getElementById('mainContent'); 
-        if (mainContent) { mainContent.innerHTML = html; lucide.createIcons({ root: mainContent }); } 
-    }
-    
-    function showModal(modalId) { 
-        const modal = document.getElementById(modalId); 
-        if (modal) modal.classList.add('show'); 
-    }
-    
-    function showToast(message, type = 'info') { 
-        const toast = document.getElementById('toast'); if(!toast) return; 
-        toast.className = `show ${type}`; 
-        let iconName = 'info';
-        if(type === 'success') iconName = 'check-circle';
-        if(type === 'error') iconName = 'alert-circle';
-        toast.innerHTML = `<div class="toast-icon-bg"><i data-lucide="${iconName}" class="w-5 h-5"></i></div> <span class="pr-2">${message}</span>`; 
-        lucide.createIcons({ root: toast }); 
-        if(toast.timeoutId) clearTimeout(toast.timeoutId);
-        toast.timeoutId = setTimeout(() => toast.classList.remove('show'), 3000); 
-    }
+        let locations = [{ value: 'panama-centro', label: 'Panamá Centro (Base)', cost: 0 }];
+        let services = [], clownPackages = [], bubblePackages = [], santaPackages = [], gallery = [], activeCoupons = [], allPurchasableItems = [];
+        let customerReviews = [ 
+            { id: 1, name: "María G.", rating: 5, comment: "¡A todos les encantó el show! Los niños no pararon de reír en toda la tarde.", color: "from-pink-500 to-rose-500", initial: "M", location: "Panamá Centro" }, 
+            { id: 2, name: "Carlos M.", rating: 5, comment: "Muy puntuales y profesionales. La decoración y animación de primera.", color: "from-blue-500 to-cyan-500", initial: "C", location: "Arraiján" }, 
+            { id: 3, name: "Ana R.", rating: 5, comment: "El pintacaritas fue un éxito. Diseños hermosos y mucha amabilidad.", color: "from-purple-500 to-indigo-500", initial: "A", location: "La Chorrera" } 
+        ];
+        let db, auth; 
+        let bookedEvents = []; 
+        let currentCalDate = new Date(); 
+        let bookingFormState = {}; 
+        let selectedCalendarDate = null; 
+        let isSoundPlaying = false;
+        let isFirebaseLoaded = false;
+        let appliedCoupon = null;
+        const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [] };
 
-    function playPopSound() { 
-        if (isSoundPlaying) return; 
-        if (Tone.context.state !== 'running') Tone.start(); 
-        const popSound = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, envelope: { attack: 0.001, decay: 0.3, sustain: 0.01, release: 0.2 } }).toDestination();
-        popSound.triggerAttackRelease("C2", "8n", Tone.now()); 
-        isSoundPlaying = true; 
-        setTimeout(() => { isSoundPlaying = false; }, 100); 
-    }
-    
-    function calculateTransportCost(locationValue) { 
-        const location = locations.find(l => l.value === locationValue); 
-        return location ? location.cost : 0; 
-    }
-    
-    function populateLocationSelects() { 
-        const optionsHtml = locations.map(opt => `<option value="${opt.value}">${opt.label}</option>`).join(''); 
-        document.querySelectorAll('#cartLocation, select[name="location"]').forEach(select => { 
-            if (select) { const cv = select.value; select.innerHTML = optionsHtml; if (cv) select.value = cv; } 
-        }); 
-    }
-    
-    function toggleMobileMenu(show) { 
-        const menu = document.getElementById('mobileMenu'), overlay = document.getElementById('mobileMenuOverlay'); 
-        if(!menu || !overlay) return; 
-        if (show) { overlay.style.opacity = '1'; overlay.style.visibility = 'visible'; menu.classList.add('open'); } 
-        else { overlay.style.opacity = '0'; overlay.style.visibility = 'hidden'; menu.classList.remove('open'); } 
-    }
-
-    function validateAvailability() {
-        const dInput = document.querySelector('input[name="date"]');
-        const tInput = document.querySelector('input[name="time"]');
-        const warning = document.getElementById('availability-warning');
-        const warningText = document.getElementById('availability-text');
-        
-        if (!dInput || !warning) return true;
-        
-        const dateVal = dInput.value;
-        const timeVal = tInput ? tInput.value : '';
-        
-        if (!dateVal) return false;
-        
-        const eventsOnDate = bookedEvents.filter(ev => ev.fecha === dateVal);
-        if (eventsOnDate.length >= 3) {
-            warningText.textContent = 'Este día ya está lleno. Elige otra fecha.';
-            warning.classList.remove('hidden');
-            return false;
+        function setContent(html) { const mc = document.getElementById('mainContent'); if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); } }
+        function showModal(modalId) { const mod = document.getElementById(modalId); if(mod) mod.classList.add('show'); }
+        function showToast(msg, type='info') { 
+            const t = document.getElementById('toast'); if(!t) return; 
+            t.className = `show ${type}`; 
+            t.innerHTML = `<div class="toast-icon-bg"><i data-lucide="${type==='success'?'check-circle':type==='error'?'alert-circle':'info'}" class="w-5 h-5"></i></div> <span class="pr-2">${msg}</span>`; 
+            if(typeof lucide!=='undefined') lucide.createIcons({ root: t }); 
+            if(t.timeoutId) clearTimeout(t.timeoutId);
+            t.timeoutId = setTimeout(() => t.classList.remove('show'), 3000); 
         }
-        
-        if (timeVal) {
-            const conflict = eventsOnDate.some(ev => ev.hora === timeVal);
-            if (conflict) {
-                warningText.textContent = 'Ya hay un evento a esa hora. Elige otra.';
-                warning.classList.remove('hidden');
-                return false;
+        function playPopSound() { 
+            if(isSoundPlaying) return; 
+            if(Tone.context.state !== 'running') Tone.start(); 
+            const pop = new Tone.MembraneSynth({ pitchDecay: 0.01, octaves: 6, envelope: { attack: 0.001, decay: 0.3, sustain: 0.01, release: 0.2 } }).toDestination();
+            pop.triggerAttackRelease("C2", "8n", Tone.now()); isSoundPlaying = true; setTimeout(() => { isSoundPlaying = false; }, 100); 
+        }
+        function calculateTransportCost(locVal) { const l = locations.find(x => x.value === locVal); return l ? l.cost : 0; }
+        function populateLocationSelects() { 
+            const html = locations.map(o => `<option value="${o.value}">${o.label}</option>`).join(''); 
+            document.querySelectorAll('#cartLocation, select[name="location"]').forEach(s => { if(s){ const cv = s.value; s.innerHTML = html; if(cv) s.value = cv; } }); 
+        }
+        function toggleMobileMenu(show) { 
+            const m = document.getElementById('mobileMenu'), o = document.getElementById('mobileMenuOverlay'); 
+            if(!m || !o) return; 
+            if(show){ o.style.opacity='1'; o.style.visibility='visible'; m.classList.add('open'); } else { o.style.opacity='0'; o.style.visibility='hidden'; m.classList.remove('open'); } 
+        }
+
+        function setActiveSection(sectionId) {
+            if (!sectionId) sectionId = 'home';
+            document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('show'));
+            if (sectionId === 'booking' && !sessionStorage.getItem('bookingNoticeShown')) { 
+                sessionStorage.setItem('bookingNoticeShown', 'true'); 
+                const m = document.getElementById('bookingConfirmModal'); 
+                if(m) m.classList.add('show'); 
+                return; 
             }
+            
+            app.activeSection = sectionId;
+            document.querySelectorAll('.nav-link, .mobile-nav-link, #mobile-nav button').forEach(link => link.classList.remove('active'));
+            
+            const navMap = { 
+                home: ['#navHome', '#mobileHome', '#bottomHome'], 
+                santa: ['#navSanta', '#mobileSanta', '#bottomSanta'], 
+                services: ['#navServices', '#mobileServices', '#bottomServices'], 
+                clowns: ['#navClowns', '#mobileClowns', '#bottomClowns'], 
+                bubbles: ['#navBubbles', '#mobileBubbles', '#bottomBubbles'], 
+                gallery: ['#navGallery', '#mobileGallery', '#bottomGallery'], 
+                booking: ['#navBooking', '#mobileBooking', '#bottomBooking'], 
+                portal: ['#navPortal', '#mobilePortal', '#bottomPortal'] 
+            };
+            
+            if (navMap[sectionId]) {
+                navMap[sectionId].forEach(selector => { 
+                    const el = document.querySelector(selector); 
+                    if(el) el.classList.add('active'); 
+                });
+            }
+            
+            if (sectionId === 'home') renderHome();
+            else if (sectionId === 'santa') renderSanta();
+            else if (sectionId === 'services') renderServices();
+            else if (sectionId === 'clowns') renderClowns();
+            else if (sectionId === 'bubbles') renderBubbles();
+            else if (sectionId === 'gallery') renderGallery();
+            else if (sectionId === 'booking') renderBooking();
+            else if (sectionId === 'portal') renderPortal();
+            
+            toggleMobileMenu(false); 
+            window.scrollTo(0, 0);
         }
-        
-        warning.classList.add('hidden');
-        return true;
-    }
 
-    function setActiveSection(sectionId) {
-        if (!sectionId) sectionId = 'home';
-        document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('show'));
-        if (sectionId === 'booking' && !sessionStorage.getItem('bookingNoticeShown')) { sessionStorage.setItem('bookingNoticeShown', 'true'); const m = document.getElementById('bookingConfirmModal'); if(m) m.classList.add('show'); return; }
-        
-        app.activeSection = sectionId;
-        document.querySelectorAll('.nav-link, .mobile-nav-link, #mobile-nav button').forEach(link => link.classList.remove('active'));
-        
-        const navMap = { 
-            home: ['#navHome', '#mobileHome', '#bottomHome'], 
-            santa: ['#navSanta', '#mobileSanta', '#bottomSanta'], 
-            services: ['#navServices', '#mobileServices', '#bottomServices'], 
-            clowns: ['#navClowns', '#mobileClowns', '#bottomClowns'], 
-            bubbles: ['#navBubbles', '#mobileBubbles', '#bottomBubbles'], 
-            gallery: ['#navGallery', '#mobileGallery', '#bottomGallery'], 
-            booking: ['#navBooking', '#mobileBooking', '#bottomBooking'], 
-            portal: ['#navPortal', '#mobilePortal', '#bottomPortal'] 
-        };
-        
-        if (navMap[sectionId]) navMap[sectionId].forEach(selector => { const el = document.querySelector(selector); if(el) el.classList.add('active'); });
-        
-        if (sectionId === 'home') renderHome();
-        else if (sectionId === 'santa') renderSanta();
-        else if (sectionId === 'services') renderServices();
-        else if (sectionId === 'clowns') renderClowns();
-        else if (sectionId === 'bubbles') renderBubbles();
-        else if (sectionId === 'gallery') renderGallery();
-        else if (sectionId === 'booking') renderBooking();
-        else if (sectionId === 'portal') renderPortal();
-        
-        toggleMobileMenu(false); window.scrollTo(0, 0);
-    }
+        function createInput(label, name, type, extra='') { return `<div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">${label} *</label><input type="${type}" name="${name}" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" ${extra}></div>`; }
+        function createWizardStep(step, icon, text, opacity) { return `<div class="wizard-step flex flex-col items-center relative z-10 ${opacity}"><div class="w-10 h-10 rounded-full ${opacity ? 'bg-slate-800 text-slate-500 border border-slate-700' : 'bg-purple-600 text-white border-2 border-purple-400'} flex items-center justify-center font-bold shadow-sm"><i data-lucide="${icon}" class="w-5 h-5"></i></div><span class="text-xs font-bold ${opacity ? 'text-slate-500' : 'text-purple-400'} mt-2">${text}</span></div>`; }
+        function getPortalResultCard(ev) {
+            const tot = parseFloat(ev.total||0), abo = parseFloat(ev.abono||0), saldo = Math.max(0, tot-abo);
+            let color = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+            if(ev.estado.toLowerCase()==='confirmado') color = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+            if(ev.estado.toLowerCase()==='completado') color = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+            return `<div class="border border-slate-700 rounded-2xl overflow-hidden bg-[#1E293B] shadow-lg transition-all animate-slide-up"><div class="p-6 border-b border-slate-700/50"><div class="flex justify-between items-start mb-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${color} shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-80"></div> ${ev.estado}</span></div><h4 class="text-2xl font-black text-white mb-1 capitalize">${ev.cliente}</h4><p class="text-sm text-slate-400 flex items-center gap-1.5 font-semibold mb-4"><i data-lucide="calendar-days" class="w-4 h-4 text-purple-400"></i> ${ev.fecha?String(ev.fecha).split('-').reverse().join('/'):'Por definir'} a las ${ev.hora}</p><div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex items-start gap-3"><div class="bg-purple-500/20 p-2 rounded-lg text-purple-400 mt-0.5"><i data-lucide="gift" class="w-5 h-5"></i></div><div><p class="text-[10px] font-bold text-purple-300 uppercase tracking-wider mb-1">Paquete / Servicio</p><p class="text-sm font-bold text-white leading-snug">${ev.servicio||'Servicio no especificado'}</p></div></div></div><div class="bg-slate-900/50 p-6 flex flex-col gap-3"><div class="flex justify-between items-center text-sm font-semibold text-slate-400"><span>Costo Total</span><span class="text-white">$${tot.toFixed(2)}</span></div><div class="flex justify-between items-center text-sm font-semibold text-emerald-400"><span>Abono Realizado</span><span>$${abo.toFixed(2)}</span></div><div class="w-full h-px bg-slate-700 my-1"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Saldo Pendiente</span><span class="text-2xl font-black ${saldo>0?'text-pink-500':'text-emerald-400'}">$${saldo.toFixed(2)}</span></div>${saldo===0?`<div class="mt-2 text-center bg-emerald-500/20 text-emerald-400 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 border border-emerald-500/30"><i data-lucide="check-circle" class="w-4 h-4"></i> Totalmente Pagado</div>`:''}</div></div>`;
+        }
+        function createDetailedCardHTML(item) {
+            const isPkg = item.id && (String(item.id).includes('clown') || String(item.id).includes('bubble') || String(item.id).includes('santa') || item.categoria==='payasos' || item.categoria==='burbujas' || item.categoria==='santa');
+            let b='', cw='bg-[#0B1121] border border-purple-500/30 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(139,92,246,0.15)] hover:shadow-[0_0_45px_rgba(139,92,246,0.5)] hover:border-purple-400 hover:-translate-y-2';
+            let btn='w-full bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-purple-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(139,92,246,0.7)]';
+            let tc='text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300 drop-shadow-[0_2px_10px_rgba(139,92,246,0.3)]', pc='text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 drop-shadow-[0_0_15px_rgba(219,39,119,0.6)]';
+            if(item.id==='clown_magic'){ b=`<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(219,39,119,0.8)] z-30 flex items-center gap-1.5 badge-float border border-pink-400/50"><i data-lucide="star" class="w-3 h-3 fill-white"></i> Más Popular</div>`; cw='bg-[#0B1121] border border-pink-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(219,39,119,0.25)] hover:shadow-[0_0_45px_rgba(219,39,119,0.5)] hover:border-pink-400 hover:-translate-y-2'; btn='w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(219,39,119,0.5)] border border-pink-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(219,39,119,0.8)]'; tc='text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300 text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 drop-shadow-[0_2px_10px_rgba(219,39,119,0.4)]'; }
+            else if(item.id==='clown_diverty'){ b=`<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.8)] z-30 flex items-center gap-1.5 badge-float border border-emerald-300/50"><i data-lucide="thumbs-up" class="w-3 h-3 fill-white"></i> Recomendado</div>`; cw='bg-[#0B1121] border border-emerald-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(16,185,129,0.25)] hover:shadow-[0_0_45px_rgba(16,185,129,0.5)] hover:border-emerald-400 hover:-translate-y-2'; btn='w-full bg-gradient-to-r from-emerald-500 to-teal-500 btn-animated-gradient text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(16,185,129,0.8)]'; tc='text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 drop-shadow-[0_2px_10px_rgba(16,185,129,0.2)] text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300'; pc='text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.6)]'; }
+            else if(item.discountApplied||item.oferta){ b=`<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(244,63,94,0.8)] z-30 flex items-center gap-1.5 badge-float border border-pink-400/50"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> Oferta</div>`; cw='bg-[#0B1121] border border-pink-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(244,63,94,0.25)] hover:shadow-[0_0_45px_rgba(244,63,94,0.5)] hover:border-pink-400 hover:-translate-y-2'; }
+            
+            let pd='', px=Number(item.price);
+            if(px||px===0){
+                if(item.discountApplied||item.oferta) pd=`<div class="flex items-end justify-between mt-auto mb-4 w-full relative z-10"><div class="flex items-end gap-2.5"><span class="text-4xl font-black ${pc} leading-none tracking-tight">$${px.toFixed(2)}</span><span class="text-slate-500 line-through text-sm font-bold leading-none mb-1.5">$${Number(item.originalPrice).toFixed(2)}</span></div><span class="bg-pink-500/20 text-pink-400 text-[10px] font-black px-2.5 py-1 rounded-lg border border-pink-500/30 badge-float shadow-[0_0_10px_rgba(236,72,153,0.3)]">OFERTA</span></div>`;
+                else pd=`<div class="flex items-end justify-end mt-auto mb-4 w-full relative z-10"><span class="text-3xl font-black ${pc} transition-all duration-300 leading-none tracking-tight">$${px.toFixed(2)}</span>${item.isHourly?'<span class="text-slate-500 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/hr</span>':''}</div>`;
+            }
+            
+            let sl='';
+            if(item.services&&item.services.length>0){ sl=`<div class="mt-4 mb-4 relative z-20 w-full"><ul class="space-y-2 max-h-[170px] overflow-y-auto custom-scrollbar pr-2">`+item.services.map(s=>`<li class="flex items-start text-[13px] text-slate-300 font-medium leading-snug group/item transition-colors hover:text-white"><div class="mt-0.5 mr-3 bg-purple-500/10 p-1 rounded-full group-hover/item:bg-pink-500/20 transition-colors border border-purple-500/20"><i data-lucide="check" class="w-3 h-3 text-purple-400 group-hover/item:text-pink-400 transition-colors"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('')+`</ul></div>`; }
 
-    function refreshDynamicData() {
-        try {
-            if (app.activeSection === 'home') {
-                const featuredWrapper = document.getElementById('home-featured-wrapper');
-                if (featuredWrapper) {
-                    let extrasHTML = '';
-                    if (app.catalog && app.catalog.length > 0) {
-                        const ofertas = app.catalog.filter(i => i.oferta || i.discountApplied);
-                        if (ofertas.length > 0) { extrasHTML += ofertas.map(createDetailedCardHTML).join(''); }
-                        else { extrasHTML += app.catalog.slice(0, 3).map(createDetailedCardHTML).join(''); }
-                    }
-                    if (extrasHTML) {
-                        featuredWrapper.innerHTML = `<div class="flex md:hidden items-center justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 items-stretch px-2" style="-webkit-overflow-scrolling: touch;">${extrasHTML}</div>`;
-                    } else {
-                        featuredWrapper.innerHTML = '';
-                    }
-                }
-
-                renderCalendar();
-
-                const reviewsWrapper = document.getElementById('home-reviews-wrapper');
-                if (reviewsWrapper && customerReviews && customerReviews.length > 0) {
-                    reviewsWrapper.innerHTML = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito flex justify-center items-center gap-3">Reseñas de Clientes <i data-lucide="star" class="w-8 h-8 text-yellow-400 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80 w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span><div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700"><div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div></div></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto" style="-webkit-overflow-scrolling: touch;">` + customerReviews.map((review, index) => `<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-[#0B1121] border border-slate-700/50 flex flex-col h-full rounded-[2rem] p-6 shadow-[0_0_15px_rgba(139,92,246,0.05)] relative overflow-hidden group hover:border-purple-500/30 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${review.color || 'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none group-hover:opacity-20 transition-opacity"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${review.color || 'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl shadow-md shrink-0">${review.initial}</div><div class="flex-1 min-w-0"><div class="text-white font-bold text-base truncate">${review.name}</div><div class="text-[11px] text-slate-400 truncate flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3 h-3"></i>${review.location}</div></div></div><div class="text-slate-300 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words" style="word-break: break-word;">"${review.comment}"</p></div><div class="border-t border-slate-800/80 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(review.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 flex items-center bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20"><i data-lucide="check-circle" class="w-3 h-3 mr-1"></i>Verificado</div></div></div></div>`).join('') + `</div></div>`;
-                } else if (reviewsWrapper) {
-                    reviewsWrapper.innerHTML = '';
-                }
-                lucide.createIcons();
+            const ic=app.cart.find(i=>i.id===item.id); const iq=ic?ic.quantity:1;
+            let ab='';
+            if(item.isHourly){
+                ab=`<div class="mt-auto w-full pt-3 relative z-10"><div class="flex items-center justify-between mb-3 bg-[#1E293B] border border-[#334155] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span id="qty-${item.id}" class="text-base font-bold text-white w-10 text-center">${iq}</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="${btn} ${ic?'!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)] !bg-none':''}">${ic?`<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`:`<i data-lucide="shopping-cart" class="w-5 h-5 text-white group-hover:animate-pulse"></i> Añadir al Carrito`}</button></div>`;
             } else {
-                setActiveSection(app.activeSection);
-            }
-        } catch(error) {
-            console.warn("Recarga de UI prevenida para proteger la navegación:", error);
-        }
-    }
-
-    function handleGlobalClick(e) {
-        const target = e.target.closest('[data-action]');
-        if (e.target.closest('#prevMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() - 1); renderCalendar(); return; }
-        if (e.target.closest('#nextMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() + 1); renderCalendar(); return; }
-        
-        if (e.target.closest('[data-action="apply-coupon"]')) {
-            e.preventDefault();
-            const codeInput = document.getElementById('couponCodeInput') ? document.getElementById('couponCodeInput').value.toUpperCase() : '';
-            if(!codeInput) return showToast("Escribe un cupón", "error");
-            const found = activeCoupons.find(c => c.code === codeInput);
-            if(found) {
-                appliedCoupon = found;
-                showToast(`¡Cupón ${found.code} aplicado!`, "success");
-                updateCartUI();
-            } else {
-                showToast("Cupón inválido o expirado", "error");
-                appliedCoupon = null; updateCartUI();
-            }
-            return;
-        }
-
-        if (!target) return;
-        
-        const { action, itemId, change, date, targetSection } = target.dataset;
-
-        switch (action) {
-            case 'select-date': playPopSound(); selectedCalendarDate = date; renderCalendar(); break;
-            case 'confirm-date':
-                playPopSound();
-                setActiveSection('booking');
-                setTimeout(() => {
-                    const dateInput = document.querySelector('input[name="date"]');
-                    if (dateInput && selectedCalendarDate) { dateInput.value = selectedCalendarDate; validateAvailability(); }
-                    const bForm = document.getElementById('bookingForm'); if(bForm) bForm.scrollIntoView({behavior: 'smooth', block: 'center'}); showToast('Fecha seleccionada. ¡Asegura tu cupo!', 'success');
-                }, 50); break;
-            
-            case 'add-to-cart': {
-                playPopSound();
-                const item = allPurchasableItems.find(s => s.id === itemId);
-                if (item) {
-                    if (!app.cart.find(i => i.id === itemId)) addToCart(item); 
-                    const m = document.getElementById('cartModal'); if(m) m.classList.add('show');
-                } break;
+                ab=`<div class="mt-auto w-full pt-4 relative z-10"><button data-action="add-to-cart" data-item-id="${item.id}" class="${btn} ${ic?'!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)] !bg-none':''}">${ic?`<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Plan Seleccionado`:`<i data-lucide="${isPkg?'calendar-plus':'shopping-cart'}" class="w-5 h-5 text-white group-hover:animate-pulse"></i> ${isPkg?'Reservar este plan':'Añadir al carrito'}`}</button></div>`;
             }
             
-            case 'remove-from-cart': playPopSound(); removeFromCart(itemId); break;
+            let ts=`<div class="flex items-center gap-4 mb-1 relative z-10"><div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-slate-700/50 bg-[#162032] relative group-hover:border-purple-500/50 transition-colors"><img src="${item.image}" alt="${item.name||item.title}" class="w-full h-full object-cover relative z-10" loading="lazy"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20"></div></div><div class="flex flex-col justify-center flex-1"><h3 class="${tc}">${item.name||item.title}</h3><p class="text-pink-400 text-[11px] sm:text-xs font-bold mt-1.5 leading-snug drop-shadow-sm opacity-90 group-hover:opacity-100 transition-opacity line-clamp-2">${item.description||''}</p></div></div>`;
             
-            case 'add-hourly-to-cart': {
-                playPopSound();
-                const serviceHourly = allPurchasableItems.find(s => s.id === itemId);
-                const qtyEl = document.querySelector(`#qty-${itemId}`);
-                const quantityHourly = qtyEl ? parseInt(qtyEl.textContent) : 1;
-                if (serviceHourly && quantityHourly > 0) {
-                    const existing = app.cart.find(i => i.id === itemId);
-                    if (existing) {
-                        existing.quantity = quantityHourly;
-                        updateCartUI();
-                        showToast(`Cantidad actualizada a ${quantityHourly}`, 'success');
-                    } else {
-                        addToCart(serviceHourly, quantityHourly);
-                    }
-                } break;
-            }
-
-            case 'change-service-qty': { 
-                playPopSound();
-                const qtyElement = document.querySelector(`#qty-${itemId}`); 
-                if (qtyElement) { 
-                    let currentQty = parseInt(qtyElement.textContent); 
-                    let newQty = Math.max(1, currentQty + parseInt(change));
-                    qtyElement.textContent = newQty; 
-                    
-                    const btn = document.querySelector(`button[data-action="add-hourly-to-cart"][data-item-id="${itemId}"]`);
-                    const inCart = app.cart.find(i => i.id === itemId);
-                    if(btn && inCart) {
-                        if (inCart.quantity !== newQty) {
-                            btn.innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5 text-white"></i> Actualizar`;
-                            btn.classList.remove('!bg-emerald-600', '!border-emerald-500');
-                            btn.classList.add('!bg-amber-500', '!border-amber-400');
-                        } else {
-                            btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`;
-                            btn.classList.add('!bg-emerald-600', '!border-emerald-500');
-                            btn.classList.remove('!bg-amber-500', '!border-amber-400');
-                        }
-                        lucide.createIcons({ root: btn.parentElement });
-                    }
-                } 
-                break; 
-            }
-            
-            case 'close-modal': { 
-                const modal = target.closest('.modal-backdrop'); 
-                if(modal) modal.classList.remove('show'); 
-                
-                if(targetSection) {
-                    if (app.activeSection !== targetSection) playPopSound();
-                    setTimeout(() => setActiveSection(targetSection), 50);
-                }
-                break; 
-            }
-            case 'navigate-from-modal': {
-                playPopSound();
-                const modal = target.closest('.modal-backdrop'); 
-                if(modal) modal.classList.remove('show');
-                if(targetSection) setTimeout(() => setActiveSection(targetSection), 150);
-                break;
-            }
-        }
-    }
-
-    function addToCart(item, quantity = 1) {
-        const existing = app.cart.find(i => i.id === item.id);
-        if (existing) existing.quantity += quantity; else app.cart.push({ ...item, quantity });
-        updateCartUI(); showToast(`${item.name} añadido al carrito`, 'success');
-    }
-
-    function removeFromCart(itemId) { 
-        app.cart = app.cart.filter(i => i.id !== itemId); 
-        if(app.cart.length === 0) appliedCoupon = null;
-        updateCartUI(); showToast('Plan eliminado', 'info'); 
-    }
-
-    function updateCartUI() {
-        const count = app.cart.reduce((sum, item) => sum + item.quantity, 0);
-        const subtotal = app.cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
-        const transportCost = calculateTransportCost(app.location);
-        
-        let discountVal = 0;
-        if (appliedCoupon && count > 0) {
-            if(appliedCoupon.type === 'percent') discountVal = subtotal * (Number(appliedCoupon.discount) / 100);
-            else discountVal = Number(appliedCoupon.discount);
+            return `<div class="w-[85vw] max-w-[360px] md:w-full snap-center flex-shrink-0 h-full snap-container animate-slide-up" style="transform: translateZ(0);"><div class="${cw}"><div class="absolute inset-0 overflow-hidden rounded-[2rem] z-0 pointer-events-none"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl transition-colors duration-500 group-hover:bg-purple-500/30"></div></div>${b}${ts}${sl}${pd}${ab}</div></div>`;
         }
 
-        const finalTotal = subtotal - discountVal + transportCost;
-
-        const itemCountEl = document.getElementById('itemCount'), totalPriceEl = document.getElementById('totalPrice'), cartSummaryEl = document.getElementById('cartSummary');
-        if(itemCountEl) itemCountEl.textContent = count;
-        if(totalPriceEl) totalPriceEl.textContent = `$${Math.max(0, finalTotal).toFixed(2)}`;
-        
-        if(cartSummaryEl) {
-            if (count > 0) { cartSummaryEl.classList.remove('hidden'); document.body.classList.add('has-cart'); } 
-            else { cartSummaryEl.classList.add('hidden'); document.body.classList.remove('has-cart'); }
-        }
-
-        const cartItemsEl = document.getElementById('cartItems');
-        if (cartItemsEl) {
-            if (app.cart.length === 0) {
-                cartItemsEl.innerHTML = `<div class="flex flex-col items-center justify-center h-full py-8 px-2 text-center animate-slide-up mt-4"><div class="w-20 h-20 bg-[#162032] border border-purple-500/40 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(168,85,247,0.25)] relative badge-float"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/30 to-pink-500/10 rounded-[1.5rem]"></div><i data-lucide="shopping-cart" class="w-10 h-10 text-purple-400 drop-shadow-[0_0_15px_rgba(192,132,252,0.6)] relative z-10"></i></div><h3 class="text-3xl font-black text-white mb-2 font-nunito tracking-tight">Carrito Vacío</h3><p class="mb-8 text-slate-400 font-medium text-sm">¡Vamos a llenarlo de diversión!</p><div class="flex flex-col w-full gap-3 mt-auto"><button data-action="navigate-from-modal" data-target-section="clowns" class="nav-action w-full bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white font-extrabold py-4 rounded-[20px] transition-all duration-300 text-[15px] flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] hover:-translate-y-1"><i data-lucide="smile" class="w-5 h-5"></i> Ver Planes</button><button data-action="navigate-from-modal" data-target-section="services" class="nav-action w-full bg-[#162032] border border-slate-700 hover:border-pink-500/50 text-slate-300 hover:text-white font-extrabold py-4 rounded-[20px] transition-all duration-300 text-[15px] flex justify-center items-center gap-2 shadow-inner hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] hover:-translate-y-1"><i data-lucide="gift" class="w-4 h-4 text-pink-400"></i> Otros Servicios</button></div></div>`;
-            } else {
-                cartItemsEl.innerHTML = '<div class="bg-[#162032]/80 backdrop-blur-sm border border-slate-700/50 rounded-[20px] p-2 space-y-2 shadow-inner">' + app.cart.map(item => `
-                    <div class="flex flex-col bg-slate-800 p-3 rounded-[16px] transition-colors border border-slate-700/30 group">
-                        <div class="flex justify-between items-center w-full">
-                            <div class="flex items-center gap-3 overflow-hidden flex-1">
-                                <img src="${item.image || 'https://placehold.co/48x48/cbd5e1/ffffff?text=IMG'}" alt="${item.name}" class="w-10 h-10 object-cover rounded-xl shadow-sm shrink-0 border border-slate-700" loading="lazy">
-                                <div class="flex flex-col min-w-0 pr-2">
-                                    <span class="font-bold text-white text-[13px] leading-tight truncate">${item.name}</span>
-                                    <span class="text-slate-400 text-[10px] font-semibold mt-0.5">Cant: ${item.quantity}</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2 shrink-0 pl-1">
-                                <span class="font-extrabold text-pink-400 text-[14px] drop-shadow-sm w-16 text-right">$${(Number(item.price) * item.quantity).toFixed(2)}</span>
-                                <button data-action="remove-from-cart" data-item-id="${item.id}" class="w-7 h-7 rounded-full bg-slate-700/50 text-slate-400 hover:text-white hover:bg-rose-500/80 flex items-center justify-center transition-all border border-slate-600/50 ml-1" aria-label="Eliminar"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
-                            </div>
-                        </div>
-                        ${item.services && item.services.length > 0 ? `<div class="mt-2 pt-2 border-t border-slate-700/50 pl-[52px]"><ul class="text-[11px] text-slate-400 space-y-1">${item.services.map(s => `<li class="flex items-start gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i><span class="leading-snug">${s}</span></li>`).join('')}</ul></div>` : ''}
-                    </div>`).join('') + '</div>';
-            }
-        }
-        
-        const cartTotalEl = document.getElementById('cartTotal'), transportCostEl = document.getElementById('transportCost'), finalTotalEl = document.getElementById('finalTotal'), discountRow = document.getElementById('discountRow'), discountAmountEl = document.getElementById('discountAmount');
-        if(cartTotalEl) cartTotalEl.textContent = `$${subtotal.toFixed(2)}`;
-        if(transportCostEl) transportCostEl.textContent = `$${transportCost.toFixed(2)}`;
-        
-        if (discountVal > 0 && discountRow) {
-            discountRow.classList.remove('hidden');
-            if(discountAmountEl) discountAmountEl.textContent = `-$${discountVal.toFixed(2)}`;
-        } else if (discountRow) {
-            discountRow.classList.add('hidden');
-        }
-
-        if(finalTotalEl) finalTotalEl.textContent = `$${Math.max(0, finalTotal).toFixed(2)}`;
-        
-        document.querySelectorAll('button[data-action="add-to-cart"], button[data-action="add-hourly-to-cart"]').forEach(btn => {
-            const itemId = btn.dataset.itemId;
-            const inCartItem = app.cart.find(i => i.id === itemId);
-            if (!btn.dataset.origHtml) btn.dataset.origHtml = btn.innerHTML;
-            if (inCartItem) {
-                const qtyEl = document.querySelector(`#qty-${itemId}`);
-                const visibleQty = qtyEl ? parseInt(qtyEl.textContent) : inCartItem.quantity;
-                if (visibleQty !== inCartItem.quantity && btn.dataset.action === 'add-hourly-to-cart') {
-                    btn.innerHTML = `<i data-lucide="refresh-cw" class="w-5 h-5 text-white"></i> Actualizar`;
-                    btn.classList.add('!bg-amber-500', '!border-amber-400', '!text-white', '!shadow-[0_0_25px_rgba(245,158,11,0.5)]', '!bg-none');
-                    btn.classList.remove('!bg-emerald-600', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]');
-                } else { 
-                    btn.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`;
-                    btn.classList.add('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none');
-                    btn.classList.remove('!bg-amber-500', '!border-amber-400', '!shadow-[0_0_25px_rgba(245,158,11,0.5)]');
-                }
-                lucide.createIcons({ root: btn });
-            } else {
-                btn.innerHTML = btn.dataset.origHtml;
-                btn.classList.remove('!bg-emerald-600', '!text-white', '!border-emerald-500', '!shadow-[0_0_25px_rgba(16,185,129,0.5)]', '!bg-none', '!bg-amber-500', '!border-amber-400', '!shadow-[0_0_25px_rgba(245,158,11,0.5)]');
-                lucide.createIcons({ root: btn });
-            }
-        });
-
-        populateLocationSelects();
-        const cartLocationEl = document.getElementById('cartLocation');
-        if (cartLocationEl) cartLocationEl.value = app.location;
-    }
-
-    function createInput(label, name, type, extra='') { return `<div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">${label} *</label><input type="${type}" name="${name}" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" ${extra}></div>`; }
-    function createWizardStep(step, icon, text, opacity) { return `<div class="wizard-step flex flex-col items-center relative z-10 ${opacity}"><div class="w-10 h-10 rounded-full ${opacity ? 'bg-slate-800 text-slate-500 border border-slate-700' : 'bg-purple-600 text-white border-2 border-purple-400'} flex items-center justify-center font-bold shadow-sm"><i data-lucide="${icon}" class="w-5 h-5"></i></div><span class="text-xs font-bold ${opacity ? 'text-slate-500' : 'text-purple-400'} mt-2">${text}</span></div>`; }
-
-    function getPortalResultCard(ev) {
-        const tot = parseFloat(ev.total || 0), abo = parseFloat(ev.abono || 0), saldo = Math.max(0, tot - abo);
-        let statusColor = 'bg-amber-500/20 text-amber-400 border-amber-500/30';
-        if (ev.estado.toLowerCase() === 'confirmado') statusColor = 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-        if (ev.estado.toLowerCase() === 'completado') statusColor = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-
-        return `<div class="border border-slate-700 rounded-2xl overflow-hidden bg-[#1E293B] shadow-lg transition-all animate-slide-up"><div class="p-6 border-b border-slate-700/50"><div class="flex justify-between items-start mb-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${statusColor} shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-80"></div> ${ev.estado}</span></div><h4 class="text-2xl font-black text-white mb-1 capitalize">${ev.cliente}</h4><p class="text-sm text-slate-400 flex items-center gap-1.5 font-semibold mb-4"><i data-lucide="calendar-days" class="w-4 h-4 text-purple-400"></i> ${ev.fecha ? String(ev.fecha).split('-').reverse().join('/') : 'Por definir'} a las ${ev.hora}</p><div class="bg-slate-800 border border-slate-700 rounded-xl p-4 flex items-start gap-3"><div class="bg-purple-500/20 p-2 rounded-lg text-purple-400 mt-0.5"><i data-lucide="gift" class="w-5 h-5"></i></div><div><p class="text-[10px] font-bold text-purple-300 uppercase tracking-wider mb-1">Paquete / Servicio</p><p class="text-sm font-bold text-white leading-snug">${ev.servicio || 'Servicio no especificado'}</p></div></div></div><div class="bg-slate-900/50 p-6 flex flex-col gap-3"><div class="flex justify-between items-center text-sm font-semibold text-slate-400"><span>Costo Total</span><span class="text-white">$${tot.toFixed(2)}</span></div><div class="flex justify-between items-center text-sm font-semibold text-emerald-400"><span>Abono Realizado</span><span>$${abo.toFixed(2)}</span></div><div class="w-full h-px bg-slate-700 my-1"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Saldo Pendiente</span><span class="text-2xl font-black ${saldo > 0 ? 'text-pink-500' : 'text-emerald-400'}">$${saldo.toFixed(2)}</span></div>${saldo === 0 ? `<div class="mt-2 text-center bg-emerald-500/20 text-emerald-400 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 border border-emerald-500/30"><i data-lucide="check-circle" class="w-4 h-4"></i> Totalmente Pagado</div>` : ''}</div></div>`;
-    }
-
-    function createDetailedCardHTML(item) {
-        const isPackage = item.id && (String(item.id).includes('clown') || String(item.id).includes('bubble') || String(item.id).includes('santa') || item.categoria === 'payasos' || item.categoria === 'burbujas' || item.categoria === 'santa');
-        let badgeHTML = '', cardWrapperClasses = 'bg-[#0B1121] border border-purple-500/30 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(139,92,246,0.15)] hover:shadow-[0_0_45px_rgba(139,92,246,0.5)] hover:border-purple-400 hover:-translate-y-2';
-        let btnClasses = 'w-full bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-purple-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(139,92,246,0.7)]';
-        let iconColor = 'text-white', titleClasses = 'text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-indigo-300 drop-shadow-[0_2px_10px_rgba(139,92,246,0.3)]';
-        let priceColor = 'text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-500 drop-shadow-[0_0_15px_rgba(219,39,119,0.6)]';
-
-        if (item.id === 'clown_magic') {
-            badgeHTML = `<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-purple-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(219,39,119,0.8)] z-30 flex items-center gap-1.5 badge-float border border-pink-400/50"><i data-lucide="star" class="w-3 h-3 fill-white"></i> Más Popular</div>`;
-            cardWrapperClasses = 'bg-[#0B1121] border border-pink-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(219,39,119,0.25)] hover:shadow-[0_0_45px_rgba(219,39,119,0.5)] hover:border-pink-400 hover:-translate-y-2';
-            btnClasses = 'w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(219,39,119,0.5)] border border-pink-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(219,39,119,0.8)]';
-            titleClasses = 'text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300 text-transparent bg-clip-text bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 drop-shadow-[0_2px_10px_rgba(219,39,119,0.4)]';
-        } else if (item.id === 'clown_diverty') {
-            badgeHTML = `<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-400 to-teal-500 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(16,185,129,0.8)] z-30 flex items-center gap-1.5 badge-float border border-emerald-300/50"><i data-lucide="thumbs-up" class="w-3 h-3 fill-white"></i> Recomendado</div>`;
-            cardWrapperClasses = 'bg-[#0B1121] border border-emerald-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(16,185,129,0.25)] hover:shadow-[0_0_45px_rgba(16,185,129,0.5)] hover:border-emerald-400 hover:-translate-y-2';
-            btnClasses = 'w-full bg-gradient-to-r from-emerald-500 to-teal-500 btn-animated-gradient text-white shadow-[0_0_20px_rgba(16,185,129,0.5)] border border-emerald-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(16,185,129,0.8)]';
-            titleClasses = 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 drop-shadow-[0_2px_10px_rgba(16,185,129,0.2)] text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300';
-            priceColor = 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500 drop-shadow-[0_0_15px_rgba(16,185,129,0.6)]';
-        } else if (item.discountApplied || item.oferta) {
-            badgeHTML = `<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-[0_0_20px_rgba(244,63,94,0.8)] z-30 flex items-center gap-1.5 badge-float border border-pink-400/50"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> Oferta</div>`;
-            cardWrapperClasses = 'bg-[#0B1121] border border-pink-500/50 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(244,63,94,0.25)] hover:shadow-[0_0_45px_rgba(244,63,94,0.5)] hover:border-pink-400 hover:-translate-y-2';
-        }
-
-        let priceDisplayHTML = '', priceText = Number(item.price);
-        if (priceText || priceText === 0) {
-            if (item.discountApplied || item.oferta) {
-                priceDisplayHTML = `<div class="flex items-end justify-between mt-auto mb-4 w-full relative z-10"><div class="flex items-end gap-2.5"><span class="text-4xl font-black ${priceColor} leading-none tracking-tight">$${Number(item.price).toFixed(2)}</span><span class="text-slate-500 line-through text-sm font-bold leading-none mb-1.5">$${Number(item.originalPrice).toFixed(2)}</span></div><span class="bg-pink-500/20 text-pink-400 text-[10px] font-black px-2.5 py-1 rounded-lg border border-pink-500/30 badge-float shadow-[0_0_10px_rgba(236,72,153,0.3)]">OFERTA</span></div>`;
-            } else {
-                priceDisplayHTML = `<div class="flex items-end justify-end mt-auto mb-4 w-full relative z-10"><span class="text-3xl font-black ${priceColor} transition-all duration-300 leading-none tracking-tight">$${priceText.toFixed(2)}</span>${item.isHourly ? '<span class="text-slate-500 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/hr</span>' : ''}</div>`;
-            }
-        }
-
-        let servicesListHTML = '';
-        if (item.services && item.services.length > 0) {
-            servicesListHTML = `<div class="mt-4 mb-4 relative z-20 w-full"><ul class="space-y-2 max-h-[170px] overflow-y-auto custom-scrollbar pr-2">` + item.services.map(s => `<li class="flex items-start text-[13px] text-slate-300 font-medium leading-snug group/item transition-colors hover:text-white"><div class="mt-0.5 mr-3 bg-purple-500/10 p-1 rounded-full group-hover/item:bg-pink-500/20 transition-colors border border-purple-500/20"><i data-lucide="check" class="w-3 h-3 text-purple-400 group-hover/item:text-pink-400 transition-colors"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('') + `</ul></div>`;
-        }
-
-        const inCartItem = app.cart.find(i => i.id === item.id);
-        const inCart = !!inCartItem;
-        const currentQty = inCartItem ? inCartItem.quantity : 1;
-
-        let actionButtonHTML = '';
-        if (item.isHourly) {
-            const extraClasses = inCart ? '!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)] !bg-none' : '';
-            const finalBtnText = inCart ? `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado` : `<i data-lucide="shopping-cart" class="w-5 h-5 ${iconColor} group-hover:animate-pulse"></i> Añadir al Carrito`;
-            actionButtonHTML = `<div class="mt-auto w-full pt-3 relative z-10"><div class="flex items-center justify-between mb-3 bg-[#1E293B] border border-[#334155] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span id="qty-${item.id}" class="text-base font-bold text-white w-10 text-center">${currentQty}</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-xl flex items-center justify-center text-white transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="${btnClasses} ${extraClasses}">${finalBtnText}</button></div>`;
-        } else {
-            const btnIconText = isPackage ? 'calendar-plus' : 'shopping-cart';
-            const extraClasses = inCart ? '!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)] !bg-none' : '';
-            const finalBtnText = inCart ? `<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Plan Seleccionado` : `<i data-lucide="${btnIconText}" class="w-5 h-5 ${iconColor} group-hover:animate-pulse"></i> ${isPackage ? 'Reservar este plan' : 'Añadir al carrito'}`;
-            actionButtonHTML = `<div class="mt-auto w-full pt-4 relative z-10"><button data-action="add-to-cart" data-item-id="${item.id}" class="${btnClasses} ${extraClasses}">${finalBtnText}</button></div>`;
-        }
-        
-        let topSection = `<div class="flex items-center gap-4 mb-1 relative z-10"><div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.4)] border border-slate-700/50 bg-[#162032] relative group-hover:border-purple-500/50 transition-colors"><img src="${item.image}" alt="${item.name || item.title}" class="w-full h-full object-cover relative z-10" loading="lazy"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20"></div></div><div class="flex flex-col justify-center flex-1"><h3 class="${titleClasses}">${item.name || item.title}</h3><p class="text-pink-400 text-[11px] sm:text-xs font-bold mt-1.5 leading-snug drop-shadow-sm opacity-90 group-hover:opacity-100 transition-opacity line-clamp-2">${item.description || ''}</p></div></div>`;
-        
-        return `<div class="w-[85vw] max-w-[360px] md:w-full snap-center flex-shrink-0 h-full snap-container animate-slide-up" style="transform: translateZ(0);"><div class="${cardWrapperClasses}"><div class="absolute inset-0 overflow-hidden rounded-[2rem] z-0 pointer-events-none"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl transition-colors duration-500 group-hover:bg-purple-500/30"></div></div>${badgeHTML}${topSection}${servicesListHTML}${priceDisplayHTML}${actionButtonHTML}</div></div>`;
-    }
-
-    function renderSection(items, title, icon) { 
-        if(!isFirebaseLoaded) {
-            setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p class="font-bold text-sm tracking-widest uppercase text-slate-400">Cargando...</p></div>`);
-            return;
-        }
-        if(items.length === 0) {
-            setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="folder-open" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Próximamente más opciones.</p></div>`);
-            return;
-        }
-        setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 text-white font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex md:hidden items-center justify-center mb-5 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span><div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700"><div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div></div></div><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-5 hide-scrollbar -mx-4 px-4 pt-6 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch" style="-webkit-overflow-scrolling: touch;">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
-    }
-
-    function renderServices() { renderSection(services, 'Nuestros Servicios', 'gift'); }
-    function renderClowns() { renderSection(clownPackages, 'Planes de Fiestas Infantiles', 'smile'); }
-    function renderBubbles() { renderSection(bubblePackages, 'Shows de Burbujas', 'droplet'); }
-    function renderSanta() { renderSection(santaPackages, 'Especial Navideño', 'bell'); }
-
-    function renderGallery() {
-        if(!isFirebaseLoaded) {
-            setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p class="font-bold text-sm tracking-widest uppercase text-slate-400">Cargando Galería...</p></div>`);
-            return;
-        }
-        if(gallery.length === 0) {
-            setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía. Sube fotos desde el admin.</p></div>`);
-            return;
-        }
-        setContent(`
-            <div class="container mx-auto px-4 pt-28 pb-12">
-                <section class="mb-10 animate-slide-up">
-                    <h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-white font-nunito">Nuestra Galería</h2>
-                    <p class="text-center text-slate-400 max-w-2xl mx-auto mb-6 font-medium text-sm">Momentos llenos de alegría.</p>
-                    <div class="flex md:hidden items-center justify-center mb-6 opacity-80 w-full">
-                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span>
-                        <div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700">
-                            <div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div>
-                        </div>
-                    </div>
-                    <div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">
-                        ${gallery.map((item) => `
-                            <a href="${item.image}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-slate-700/50 rounded-[2rem] overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.05)] hover:shadow-[0_0_35px_rgba(139,92,246,0.3)] hover:border-purple-500/50 transition-all duration-500 relative">
-                                <img src="${item.image}" alt="${item.alt}" loading="lazy" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10">
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center">
-                                    <div class="bg-purple-600/80 p-3 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.6)]"><i data-lucide="zoom-in" class="text-white w-8 h-8"></i></div>
-                                </div>
-                            </a>`).join('')}
-                    </div>
-                </section>
-            </div>
-        `);
-    }
-
-    function renderReviews() {
-        if(customerReviews.length === 0) {
-            setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="star" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Aún no hay reseñas.</p></div>`);
-            return;
-        }
-        setContent(`
-            <div class="container mx-auto px-4 pt-28 pb-12">
-                <section class="mb-10">
-                    <h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito flex justify-center items-center gap-3">Reseñas de Clientes</h2>
-                    <div class="flex md:hidden items-center justify-center mb-6 opacity-80 w-full">
-                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span>
-                        <div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700">
-                            <div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div>
-                        </div>
-                    </div>
-                    <div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto">
-                        ${customerReviews.map((review, index) => `
-                            <div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up" style="transform: translateZ(0); animation-delay: ${index * 50}ms;">
-                                <div class="bg-[#0B1121] border border-slate-700/50 flex flex-col h-full rounded-[2rem] p-6 shadow-[0_0_15px_rgba(139,92,246,0.05)] relative overflow-hidden group hover:border-purple-500/30 transition-colors">
-                                    <div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${review.color || 'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none group-hover:opacity-20 transition-opacity"></div>
-                                    
-                                    <div class="flex items-center gap-4 mb-4 relative z-10">
-                                        <div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${review.color || 'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl shadow-md shrink-0">${review.initial}</div>
-                                        <div class="flex-1 min-w-0">
-                                            <div class="text-white font-bold text-base truncate">${review.name}</div>
-                                            <div class="text-[11px] text-slate-400 truncate flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3 h-3"></i>${review.location}</div>
-                                        </div>
-                                    </div>
-                                    <div class="text-slate-300 mb-5 flex-grow relative z-10">
-                                        <p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words">"${review.comment}"</p>
-                                    </div>
-                                    <div class="border-t border-slate-800/80 pt-4 flex justify-between items-center relative z-10">
-                                        <div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(review.rating)}</div>
-                                        <div class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 flex items-center bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20"><i data-lucide="check-circle" class="w-3 h-3 mr-1"></i>Verificado</div>
-                                    </div>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </section>
-            </div>
-        `);
-    }
-
-    function renderCalendar() {
-        const grid = document.getElementById('availability-calendar-grid'); if(!grid) return;
-        const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth();
-        const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate();
-
-        let html = '';
-        ['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'].forEach(d => { html += `<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">${d}</div>`; });
-        let adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
-        for(let i=0; i<adjustedFirstDay; i++) html += `<div></div>`;
-
-        const today = new Date(); today.setHours(0,0,0,0);
-
-        for(let d=1; d<=daysInMonth; d++) {
-            const currentDate = new Date(year, month, d);
-            const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-            let eventsThisDay = bookedEvents.filter(ev => ev.fecha === dateStr).length;
-            const isSelected = selectedCalendarDate === dateStr;
-            let dayClasses = "w-9 h-9 sm:w-10 sm:h-10 mx-auto rounded-full flex items-center justify-center font-bold text-[15px] transition-all duration-200 cursor-pointer ";
-            
-            if (currentDate < today) { html += `<div class="flex items-center justify-center"><div class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-600 font-medium">${d}</div></div>`; } 
-            else if (eventsThisDay >= 3) { dayClasses += "bg-rose-600 text-white cursor-not-allowed"; html += `<div class="flex items-center justify-center relative pointer-events-none"><div class="${dayClasses}">${d}</div></div>`; } 
-            else if (eventsThisDay >= 1) { dayClasses += isSelected ? "bg-amber-500 text-white ring-2 ring-amber-400 ring-offset-2 ring-offset-[#0F172A] scale-110" : "bg-amber-500 text-white hover:scale-110"; html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${dayClasses}">${d}</div></div>`; } 
-            else { dayClasses += isSelected ? "bg-emerald-600 text-white ring-2 ring-emerald-400 ring-offset-2 ring-offset-[#0F172A] scale-110" : "bg-emerald-600 text-white hover:scale-110"; html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${dayClasses}">${d}</div></div>`; }
-        }
-        grid.innerHTML = html;
-        const monthName = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentCalDate);
-        const calMonthYear = document.getElementById('cal-month-year'); if(calMonthYear) calMonthYear.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
-
-        const calendarSection = document.getElementById('calendar-section'); let bottomBox = document.getElementById('calendar-bottom-box');
-        if (!bottomBox) { bottomBox = document.createElement('div'); bottomBox.id = 'calendar-bottom-box'; document.getElementById('calendar-card-inner').appendChild(bottomBox); }
-
-        if (selectedCalendarDate) {
-            const dateObj = new Date(selectedCalendarDate + 'T00:00:00');
-            const formattedDate = dateObj.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            bottomBox.innerHTML = `<div class="mt-6 border border-emerald-500/30 bg-emerald-500/10 rounded-2xl p-4 text-left animate-slide-up shadow-lg"><div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-full border-2 border-emerald-500 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="check" class="w-5 h-5"></i></div><div><p class="text-white font-bold text-base">Fecha seleccionada</p><p class="text-slate-300 text-sm capitalize">${formattedDate}</p><p class="text-emerald-400 text-sm font-bold mt-0.5">Asegura tu cupo ahora 🎉</p></div></div><button data-action="confirm-date" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition-transform hover:scale-[1.02] flex justify-center items-center gap-2 shadow-[0_4px_15px_rgba(5,150,105,0.4)]"><i data-lucide="calendar-plus" class="w-5 h-5"></i> Reservar este día</button></div>`;
-        } else {
-            bottomBox.innerHTML = `<div class="flex justify-center gap-4 mt-6 pt-5 border-t border-slate-700/50 flex-wrap"><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-emerald-600"></div> Disponible</div><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div> Pocos cupos</div><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-rose-600"></div> Lleno</div></div>`;
-        }
-        lucide.createIcons({root: calendarSection});
-    }
-
-    function renderHome() {
-        let extrasContent = '';
-        if (!isFirebaseLoaded) {
-            extrasContent = `<div class="w-full flex justify-center py-10"><i data-lucide="loader-2" class="w-10 h-10 text-purple-500 animate-spin"></i></div>`;
-        } else {
-            let extrasHTML = '';
-            if (app.catalog && app.catalog.length > 0) {
-                const ofertas = app.catalog.filter(i => i.oferta || i.discountApplied);
-                if (ofertas.length > 0) { extrasHTML += ofertas.map(createDetailedCardHTML).join(''); }
-                else { extrasHTML += app.catalog.slice(0, 3).map(createDetailedCardHTML).join(''); }
-            }
-            if (extrasHTML) {
-                extrasContent = `<div class="flex md:hidden items-center justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 items-stretch px-2" style="-webkit-overflow-scrolling: touch;">${extrasHTML}</div>`;
-            }
-        }
-
-        let reviewsContent = '';
-        if (isFirebaseLoaded && customerReviews && customerReviews.length > 0) {
-            reviewsContent = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito flex justify-center items-center gap-3">Reseñas de Clientes <i data-lucide="star" class="w-8 h-8 text-yellow-400 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80 w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span><div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700"><div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div></div></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto" style="-webkit-overflow-scrolling: touch;">` + customerReviews.map((review, index) => `<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-[#0B1121] border border-slate-700/50 flex flex-col h-full rounded-[2rem] p-6 shadow-[0_0_15px_rgba(139,92,246,0.05)] relative overflow-hidden group hover:border-purple-500/30 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${review.color || 'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none group-hover:opacity-20 transition-opacity"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${review.color || 'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl shadow-md shrink-0">${review.initial}</div><div class="flex-1 min-w-0"><div class="text-white font-bold text-base truncate">${review.name}</div><div class="text-[11px] text-slate-400 truncate flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3 h-3"></i>${review.location}</div></div></div><div class="text-slate-300 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words" style="word-break: break-word;">"${review.comment}"</p></div><div class="border-t border-slate-800/80 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(review.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 flex items-center bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20"><i data-lucide="check-circle" class="w-3 h-3 mr-1"></i>Verificado</div></div></div></div>`).join('') + `</div></div>`;
-        }
-
-        setContent(`<div id="hero-section-identifier"><div class="bg-[#0F172A]"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-gradient-to-b from-[#0F172A]/60 via-[#0F172A]/80 to-[#0F172A] z-10 pointer-events-none"></div><div class="hero-content z-20 relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg badge-float"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-extrabold mb-4 font-poppins leading-[1.1] text-white drop-shadow-2xl">Fiestas infantiles inolvidables en <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 btn-animated-gradient">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-300 font-medium drop-shadow-md font-quicksand leading-relaxed">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/10 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/10 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-400 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/10 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-400 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-400 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] shadow-[0_8px_20px_rgba(219,39,119,0.4)] font-bold text-base"><i data-lucide="calendar-check" class="w-5 h-5 group-hover:animate-pulse"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="clowns" class="nav-action w-full bg-[#162032] border border-slate-600 hover:border-purple-500/50 hover:bg-[#1E293B] text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-md"><i data-lucide="eye" class="w-5 h-5"></i> Ver planes</button></div></div></section><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${extrasContent}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-3xl mx-auto px-2 sm:px-4"><div class="bg-[#0B1121] p-6 sm:p-8 rounded-[32px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] border border-slate-800 relative overflow-hidden" id="calendar-card-inner"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 rounded-xl border border-purple-500/30 bg-purple-500/10 flex items-center justify-center text-purple-400"><i data-lucide="calendar" class="w-5 h-5"></i></div><div class="text-left"><h2 class="text-2xl font-extrabold text-white font-poppins leading-none">Selecciona tu fecha</h2><p class="text-slate-400 text-sm mt-1">Elige un día disponible para tu fiesta</p></div></div><div class="bg-indigo-900/20 border border-indigo-500/20 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4"><i data-lucide="clock" class="w-5 h-5 text-indigo-400 mt-0.5 shrink-0"></i><p class="text-indigo-200 text-sm font-medium leading-tight">Selecciona una fecha disponible para reservar en segundos</p></div><div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-slate-900/50 py-2 rounded-xl border border-slate-800"><button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><h3 id="cal-month-year" class="text-lg font-bold text-white capitalize leading-none font-poppins">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div></div></div></section></div><div id="home-reviews-wrapper">${reviewsContent}</div></div>`);
-        renderCalendar(); 
-    }
-
-    function renderBooking() {
-        const subtotal = app.cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
-        const transportCost = calculateTransportCost(app.location);
-        
-        let discountVal = 0;
-        if(appliedCoupon && app.cart.length > 0) {
-            if(appliedCoupon.type === 'percent') discountVal = subtotal * (Number(appliedCoupon.discount)/100);
-            else discountVal = Number(appliedCoupon.discount);
-        }
-        
-        const finalTotal = subtotal - discountVal + transportCost;
-        
-        const cartSummary = app.cart.length === 0 
-            ? `<div class="text-center py-10 animate-slide-up"><div class="w-20 h-20 bg-[#162032] border border-purple-500/40 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 shadow-[0_0_40px_rgba(168,85,247,0.25)] relative badge-float"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/30 to-pink-500/10 rounded-[1.5rem]"></div><i data-lucide="shopping-cart" class="w-10 h-10 text-purple-400 drop-shadow-[0_0_15px_rgba(192,132,252,0.6)] relative z-10"></i></div><h3 class="text-2xl font-black text-white mb-2 font-nunito">Carrito Vacío</h3><p class="mb-8 text-slate-400 font-medium text-sm">¡Vamos a llenarlo de diversión!</p><div class="flex flex-col sm:flex-row justify-center gap-4 px-2"><button class="nav-action flex-1 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-600 btn-animated-gradient border border-purple-400/40 text-white font-extrabold py-3.5 rounded-[18px] transition-all duration-300 text-sm flex justify-center items-center gap-2 shadow-[0_0_20px_rgba(139,92,246,0.3)] hover:shadow-[0_0_30px_rgba(139,92,246,0.6)] hover:-translate-y-1" data-action="navigate-from-modal" data-target-section="clowns"><i data-lucide="smile" class="w-4 h-4"></i> Ver Planes</button><button class="nav-action flex-1 bg-[#162032] border border-slate-700 hover:border-pink-500/50 text-slate-300 hover:text-white font-extrabold py-3.5 rounded-[18px] transition-all duration-300 text-sm flex justify-center items-center gap-2 shadow-inner hover:shadow-[0_0_20px_rgba(236,72,153,0.2)] hover:-translate-y-1" data-action="navigate-from-modal" data-target-section="services"><i data-lucide="gift" class="w-4 h-4 text-pink-400"></i> Otros Servicios</button></div></div>` 
-            : app.cart.map(item => `<div class="flex flex-col bg-slate-800 p-3.5 rounded-xl shadow-sm mb-2.5 border border-slate-700"><div class="flex justify-between items-center"><span class="font-semibold text-white text-sm leading-tight pr-2">${item.name} <span class="text-slate-400 text-xs font-normal">x${item.quantity}</span></span><span class="font-extrabold text-purple-400 text-sm">$${(Number(item.price) * item.quantity).toFixed(2)}</span></div></div>`).join('');
-            
-        const locationOptionsHtml = locations.map(opt => `<option value="${opt.value}" ${app.location === opt.value ? 'selected' : ''}>${opt.label}</option>`).join('');
-        
-        setContent(`
-            <div class="container mx-auto px-4 max-w-5xl pt-28 pb-12">
-                <section class="mb-10 animate-slide-up">
-                    <h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 text-white font-nunito">Reserva tu Evento</h2>
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                        <div class="lg:col-span-5 order-2 lg:order-1">
-                            <div class="bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl sticky top-24">
-                                <h3 class="text-lg font-bold text-white mb-5 flex items-center gap-2"><i data-lucide="list-checks" class="w-5 h-5 text-purple-400"></i> Resumen:</h3>
-                                <div id="booking-cart-summary">${cartSummary}</div>
-                                ${app.cart.length > 0 ? `
-                                <div class="mt-5 pt-5 border-t border-slate-800 space-y-2 text-right">
-                                    <p class="text-sm text-slate-400 font-semibold">Subtotal: <span class="font-bold text-white">$${subtotal.toFixed(2)}</span></p>
-                                    ${discountVal > 0 ? `<p class="text-sm text-pink-400 font-bold">Descuento: <span class="">-$${discountVal.toFixed(2)}</span></p>`:''}
-                                    <p class="text-sm text-slate-400 font-semibold">Transporte: <span class="font-bold text-white">$${transportCost.toFixed(2)}</span></p>
-                                    <p class="text-2xl font-extrabold text-emerald-400 mt-2">Total: <span>$${Math.max(0, finalTotal).toFixed(2)}</span></p>
-                                </div>` : ''}
-                            </div>
-                        </div>
-                        <div class="lg:col-span-7 order-1 lg:order-2">
-                            ${app.cart.length > 0 ? `
-                            <form id="bookingForm" class="bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800">
-                                <div class="flex items-center justify-between mb-8 relative">
-                                    <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-800 z-0 rounded-full"></div>
-                                    <div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-emerald-500 z-0 transition-all duration-300 rounded-full" style="width: 0%;"></div>
-                                    ${createWizardStep(1, 'user', 'Contacto', '')}
-                                    ${createWizardStep(2, 'calendar', 'Evento', 'opacity-50')}
-                                    ${createWizardStep(3, 'map-pin', 'Lugar', 'opacity-50')}
-                                </div>
-                                <div class="space-y-5">
-                                    <div class="wizard-content active" id="step-1">
-                                        <h3 class="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-4">Tus Datos</h3>
-                                        <div class="space-y-5">${createInput('Nombre', 'name', 'text', 'placeholder="Tu nombre completo"')}${createInput('Email', 'email', 'email', 'placeholder="correo@ejemplo.com"')}${createInput('Teléfono', 'phone', 'tel', 'placeholder="+507 6000-0000"')}</div>
-                                    </div>
-                                    <div class="wizard-content" id="step-2">
-                                        <h3 class="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-4">Detalles de la Fiesta</h3>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">
-                                            <div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner"><option value="">Seleccione...</option><option value="Cumpleaños">🎉 Cumpleaños</option><option value="Bautizo">🕊️ Bautizo</option><option value="Comunión">✝️ Comunión</option><option value="Navidad">🎅 Navideña</option><option value="Escolar">🎒 Escolar</option><option value="Otro">⭐ Otro</option></select></div>
-                                            <div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">Niños Estimados</label><input type="number" name="guests" class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" min="1" placeholder="Ej: 25"></div>
-                                            <div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">Fecha *</label><input type="date" name="date" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" min="${new Date().toISOString().split('T')[0]}"></div>
-                                            <div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">Hora *</label><input type="time" name="time" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner"></div>
-                                            <div id="availability-warning" class="hidden col-span-1 md:col-span-2 bg-rose-500/20 text-rose-400 border border-rose-500/30 p-3 rounded-lg text-sm font-bold flex items-center gap-2 mt-2"><i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i> <span id="availability-text">Esta fecha y hora ya están ocupadas. Por favor, elige otro horario.</span></div>
-                                        </div>
-                                    </div>
-                                    <div class="wizard-content" id="step-3">
-                                        <h3 class="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-4">¿Dónde Celebramos?</h3>
-                                        <div class="space-y-5">
-                                            <div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">Ubicación (Zona) *</label><select name="location" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner">${locationOptionsHtml}</select></div>
-                                            <div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">Dirección Completa *</label><textarea name="address" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" rows="2" placeholder="Barriada, calle, número de casa/apto..."></textarea></div>
-                                            <div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase tracking-wider mb-1.5 block">Comentarios Especiales</label><textarea name="comments" class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" rows="2" placeholder="Temática, indicaciones de llegada..."></textarea></div>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-between pt-6 mt-6 border-t border-slate-800">
-                                        <button type="button" id="btn-prev" class="bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 font-bold py-3.5 px-6 rounded-full transition-colors hidden flex items-center"><i data-lucide="chevron-left" class="w-4 h-4 mr-1"></i>Atrás</button>
-                                        <button type="button" id="btn-next" class="bg-white text-slate-900 hover:bg-slate-200 ml-auto font-bold py-3.5 px-6 rounded-full transition-colors flex items-center">Siguiente<i data-lucide="chevron-right" class="w-4 h-4 ml-1"></i></button>
-                                        <button type="submit" id="btn-submit" class="bg-emerald-500 hover:bg-emerald-400 text-white hidden ml-auto shadow-md font-bold py-3.5 px-6 rounded-full transition-colors flex items-center"><i data-lucide="check-circle" class="w-5 h-5 mr-1"></i>Confirmar Reserva</button>
-                                    </div>
-                                </div>
-                            </form>
-                            ` : '<div class="h-full flex items-center justify-center bg-slate-900 rounded-[2rem] border border-slate-800 border-dashed p-8 text-center text-slate-500">Seleccione paquetes o servicios para habilitar el formulario de reserva.</div>'}
-                        </div>
-                    </div>
-                </section>
-            </div>
-        `);
-
-        if (app.cart.length > 0) {
-            const bookingForm = document.getElementById('bookingForm');
-            if (bookingForm) bookingForm.onsubmit = handleBookingSubmit;
-            
+        function validateAvailabilityLogic() {
             const dInput = document.querySelector('input[name="date"]'), tInput = document.querySelector('input[name="time"]');
-            if(dInput) dInput.addEventListener('change', validateAvailability);
-            if(tInput) tInput.addEventListener('change', validateAvailability);
-
-            const locationSelect = document.querySelector('select[name="location"]');
-            if (locationSelect) locationSelect.onchange = (e) => { app.location = e.target.value; renderBooking(); };
-            
-            if (bookingForm && Object.keys(bookingFormState).length > 0) { 
-                for (const key in bookingFormState) { 
-                    if (bookingForm.elements[key]) bookingForm.elements[key].value = bookingFormState[key]; 
-                } 
-            }
-
-            let currentStep = app.wizardStep;
-            const totalSteps = 3;
-
-            const updateWizardUI = () => {
-                app.wizardStep = currentStep;
-                document.querySelectorAll('.wizard-content').forEach((el, idx) => el.classList.toggle('active', idx + 1 === currentStep));
-                const progressBar = document.getElementById('wizard-progress-bar');
-                if(progressBar) progressBar.style.width = `${((currentStep - 1) / (totalSteps - 1)) * 100}%`;
-
-                document.querySelectorAll('.wizard-step').forEach((el, idx) => {
-                    const iconDiv = el.querySelector('.wizard-icon'), textSpan = el.querySelector('.wizard-text');
-                    if (idx + 1 <= currentStep) { 
-                        el.classList.remove('opacity-50'); 
-                        if(iconDiv) { iconDiv.classList.add('bg-purple-600', 'text-white', 'border-2', 'border-purple-400'); iconDiv.classList.remove('bg-slate-800', 'text-slate-500', 'border', 'border-slate-700'); }
-                        if(textSpan) { textSpan.classList.add('text-purple-400'); textSpan.classList.remove('text-slate-500'); }
-                    } else { 
-                        el.classList.add('opacity-50'); 
-                        if(iconDiv) { iconDiv.classList.remove('bg-purple-600', 'text-white', 'border-2', 'border-purple-400'); iconDiv.classList.add('bg-slate-800', 'text-slate-500', 'border', 'border-slate-700'); }
-                        if(textSpan) { textSpan.classList.remove('text-purple-400'); textSpan.classList.add('text-slate-500'); }
-                    }
-                });
-
-                const btnPrev = document.getElementById('btn-prev'), btnNext = document.getElementById('btn-next'), btnSubmit = document.getElementById('btn-submit');
-                if(btnPrev) currentStep === 1 ? btnPrev.classList.add('hidden') : btnPrev.classList.remove('hidden');
-                if (currentStep === totalSteps) { 
-                    if(btnNext) btnNext.classList.add('hidden'); if(btnSubmit) btnSubmit.classList.remove('hidden'); 
-                } else { 
-                    if(btnNext) btnNext.classList.remove('hidden'); if(btnSubmit) btnSubmit.classList.add('hidden'); 
-                }
-            };
-
-            updateWizardUI();
-
-            const btnNext = document.getElementById('btn-next');
-            if (btnNext) {
-                btnNext.onclick = () => {
-                    const inputs = document.getElementById(`step-${currentStep}`) ? document.getElementById(`step-${currentStep}`).querySelectorAll('input[required], select[required], textarea[required]') : [];
-                    let isValid = true;
-                    for(let input of inputs) { if (!input.checkValidity()) { input.reportValidity(); isValid = false; break; } }
-                    if (isValid && currentStep === 2) { 
-                        isValid = validateAvailability(); 
-                        if(!isValid) { showToast('Revisa las alertas en rojo antes de continuar', 'error'); return; } 
-                    }
-                    if (isValid) { 
-                        currentStep++; 
-                        const bForm = document.getElementById('bookingForm');
-                        if (bForm) bookingFormState = Object.fromEntries(new FormData(bForm).entries()); 
-                        updateWizardUI(); 
-                    }
-                };
-            }
-
-            const btnPrev = document.getElementById('btn-prev');
-            if (btnPrev) {
-                btnPrev.onclick = () => { 
-                    if (currentStep > 1) { 
-                        currentStep--; 
-                        const bForm = document.getElementById('bookingForm');
-                        if (bForm) bookingFormState = Object.fromEntries(new FormData(bForm).entries()); 
-                        updateWizardUI(); 
-                    } 
-                };
-            }
+            const warning = document.getElementById('availability-warning'), warningText = document.getElementById('availability-text');
+            if(!dInput || !warning) return true;
+            const dv = dInput.value, tv = tInput ? tInput.value : '';
+            if(!dv) return false;
+            const eod = bookedEvents.filter(ev => ev.fecha === dv);
+            if(eod.length >= 3){ warningText.textContent = 'Este día ya está lleno. Elige otra fecha.'; warning.classList.remove('hidden'); return false; }
+            if(tv && eod.some(ev => ev.hora === tv)){ warningText.textContent = 'Ya hay un evento a esa hora. Elige otra.'; warning.classList.remove('hidden'); return false; }
+            warning.classList.add('hidden'); return true;
         }
-    }
 
-    async function handleBookingSubmit(e) {
-        e.preventDefault();
-        if (app.cart.length === 0) return showToast('Selecciona al menos un servicio', 'error');
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        if(!submitBtn) return;
-        const originalBtnHTML = submitBtn.innerHTML;
-        submitBtn.disabled = true; submitBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-white inline-block align-middle mr-2"></div> Conectando...';
-
-        try {
-            const formData = new FormData(e.target);
-            const subtotal = app.cart.reduce((sum, item) => sum + (Number(item.price) * item.quantity), 0);
-            const transportCost = calculateTransportCost(app.location);
-            
-            let discountVal = 0;
-            if(appliedCoupon) {
-                if(appliedCoupon.type === 'percent') discountVal = subtotal * (Number(appliedCoupon.discount)/100);
-                else discountVal = Number(appliedCoupon.discount);
-            }
-
-            const locObj = locations.find(l => l.value === app.location);
-            const finalTotal = subtotal - discountVal + transportCost;
-
-            const dataToSave = {
-                id: `web-${Date.now()}`, 
-                cliente: formData.get('name') || '', 
-                email: formData.get('email') || '', 
-                telefono: formData.get('phone') || '',
-                tipoEvento: formData.get('eventType') || 'Cumpleaños', 
-                ninos: formData.get('guests') || '', 
-                fecha: formData.get('date') || '', 
-                hora: formData.get('time') || '',
-                ubicacion: locObj ? locObj.label.replace(/📍 |\(\+\$\d+\)/g, '').trim() : 'Panamá Centro', 
-                direccion: formData.get('address') || '', 
-                comentarios: formData.get('comments') || '',
-                servicio: app.cart.map(item => item.quantity > 1 ? `${item.name} (x${item.quantity})` : item.name).join(' + '),
-                serviciosSeleccionados: app.cart.map(item => ({ id: item.id, nombre: item.name, precioOriginal: item.price, precio: Number(item.price) * item.quantity, cantidad: item.quantity, descripcion: item.description || '' })),
-                transporte: transportCost.toString(), 
-                descuento: discountVal.toString(), 
-                gastos: '0', 
-                detalleGastos: '', 
-                total: finalTotal.toString(), 
-                abono: '0', 
-                estado: 'Pendiente', 
-                createdAt: new Date().toISOString(), 
-                deletedLocally: false, 
-                colisionAprobada: false, 
-                origen: 'Web Directa' 
-            };
-            
-            await setDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos', dataToSave.id), dataToSave);
-            showModal('infoModal'); 
-            const modalMessage = document.getElementById('modalMessage'); if(modalMessage) modalMessage.textContent = '¡Gracias por elegir Diverty Eventos! Hemos recibido tu solicitud. Te contactaremos por WhatsApp en breve para confirmarla.';
-            app.cart = []; appliedCoupon = null; bookingFormState = {}; app.wizardStep = 1; updateCartUI(); renderBooking();
-        } catch (error) { 
-            console.error(error); 
-            showToast('Hubo un problema enviando tu reserva.', 'error'); 
-        } finally { 
-            submitBtn.disabled = false; 
-            submitBtn.innerHTML = originalBtnHTML; 
-        }
-    }
-
-    async function initFirebaseAndData() {
-        try {
-            const fbApp = getApps().length === 0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
-            db = getFirestore(fbApp); auth = getAuth(fbApp);
-            
+        function refreshDynamicData() {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try { await signInWithCustomToken(auth, __initial_auth_token); } 
-                    catch (tokenErr) { await signInAnonymously(auth); }
-                } else { await signInAnonymously(auth); }
-            } catch (err) { console.warn("Fallback auth."); }
-
-            try {
-                const catalogoSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web'));
-                const catalogoDinamico = catalogoSnap.docs.map(doc => {
-                    const data = doc.data();
-                    return {
-                        id: doc.id, name: data.nombre, price: data.precio, originalPrice: data.precioOriginal || data.precio, discountApplied: data.oferta === true, description: data.descripcion, image: data.imagen,
-                        services: data.serviciosLista ? data.serviciosLista.split('\n').filter(s => s.trim() !== '') : [],
-                        isHourly: data.tipoCobro === 'hora' || data.categoria === 'servicios',
-                        isPerChild: data.tipoCobro === 'nino', categoria: data.categoria
-                    };
-                });
-
-                if (catalogoDinamico.length > 0) {
-                    app.catalog = catalogoDinamico;
-                    services = catalogoDinamico.filter(item => item.categoria === 'servicios');
-                    clownPackages = catalogoDinamico.filter(item => item.categoria === 'payasos');
-                    bubblePackages = catalogoDinamico.filter(item => item.categoria === 'burbujas');
-                    santaPackages = catalogoDinamico.filter(item => item.categoria === 'santa');
-                    allPurchasableItems = [...services, ...clownPackages, ...bubblePackages, ...santaPackages];
-                }
-            } catch(e) { console.warn("Catálogo dinámico no encontrado"); }
-
-            try {
-                const transSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web'));
-                if (!transSnap.empty) { locations = transSnap.docs.map(d => d.data()); }
-            } catch(e) { console.warn("Transporte no encontrado"); }
-
-            try {
-                const galSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web'));
-                if (!galSnap.empty) { gallery = galSnap.docs.map(d => ({ image: d.data().image, alt: 'Momento Diverty' })); } 
-                else { gallery = []; }
-            } catch(e) { console.warn("Galería no encontrada"); }
-
-            try {
-                const resSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web'));
-                if (!resSnap.empty) { customerReviews = resSnap.docs.map(d => d.data()); } 
-            } catch(e) { console.warn("Reseñas no encontradas"); }
-
-            try {
-                const coupSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web'));
-                activeCoupons = coupSnap.docs.map(d => d.data()).filter(c => c.active);
-            } catch(e) { console.warn("Cupones no encontrados"); }
-
-            try {
-                const confSnap = await getDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global'));
-                if (confSnap.exists()) {
-                    const conf = confSnap.data();
-                    if(conf.bannerActive && conf.bannerText) {
-                        const banner = document.getElementById('topAnnouncementBanner');
-                        if (banner) {
-                            document.getElementById('bannerTextSpan').textContent = conf.bannerText;
-                            banner.classList.remove('hidden');
-                            banner.classList.add('flex');
-                            document.documentElement.style.setProperty('--banner-offset', banner.offsetHeight + 'px');
+                if (app.activeSection === 'home') {
+                    const fw = document.getElementById('home-featured-wrapper');
+                    if (fw) {
+                        let eh = '';
+                        if (app.catalog && app.catalog.length > 0) {
+                            const of = app.catalog.filter(i => i.oferta || i.discountApplied);
+                            if (of.length > 0) eh += of.map(createDetailedCardHTML).join('');
+                            else eh += app.catalog.slice(0, 3).map(createDetailedCardHTML).join('');
                         }
-                    } else {
-                        const banner = document.getElementById('topAnnouncementBanner');
-                        if (banner) { banner.classList.add('hidden'); banner.classList.remove('flex'); }
-                        document.documentElement.style.setProperty('--banner-offset', '0px');
+                        if (eh) fw.innerHTML = `<div class="flex md:hidden items-center justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 px-2">${eh}</div>`;
+                        else fw.innerHTML = '';
                     }
+
+                    if (typeof renderCalendar === 'function') renderCalendar();
+
+                    const rw = document.getElementById('home-reviews-wrapper');
+                    if (rw && customerReviews && customerReviews.length > 0) {
+                        rw.innerHTML = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-400 font-bold uppercase px-3 py-1 rounded-full border border-slate-700">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-[#0B1121] border border-slate-700/50 flex flex-col h-full rounded-[2rem] p-6 shadow-md relative overflow-hidden group hover:border-purple-500/30 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-white font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-400 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-300 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-800/80 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
+                    } else if (rw) {
+                        rw.innerHTML = '';
+                    }
+                    if(typeof lucide !== 'undefined') lucide.createIcons();
+                } else {
+                    setActiveSection(app.activeSection);
                 }
-            } catch(e) { console.warn("Banner config no encontrada"); }
+            } catch(e) {
+                console.warn(e);
+            }
+        }
 
-            const eventsSnap = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos'));
-            bookedEvents = eventsSnap.docs.map(d => d.data()).filter(ev => ev.deletedLocally !== true && !['cancelado', 'rechazada', 'cot'].some(s => (ev.estado || '').toLowerCase().includes(s)));
-            
-        } catch(e) { console.warn("Error Firebase Master:", e); }
-    }
-
-    function setupEventListeners() {
-        if (window.location.hash) { history.replaceState(null, null, ' '); }
-        setTimeout(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, 50);
-        
-        document.body.addEventListener('click', (e) => {
-            const navLink = e.target.closest('.nav-action');
-            if (navLink) {
-                let target = navLink.dataset.targetSection;
-                if(!target && navLink.hash) target = navLink.hash.substring(1);
-                
-                if(target) {
+        // RENDER VIEWS
+        function renderSection(items, title, icon) { 
+            if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p class="font-bold text-sm tracking-widest uppercase text-slate-400">Cargando...</p></div>`); return; }
+            if(items.length===0){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="folder-open" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Próximamente más opciones.</p></div>`); return; }
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 text-white font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex md:hidden items-center justify-center mb-5 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza para ver más 👉</span><div class="w-12 h-1.5 bg-slate-800 rounded-full overflow-hidden relative border border-slate-700"><div class="w-4 h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full absolute top-0 left-0 animate-swipe"></div></div></div><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-5 hide-scrollbar -mx-4 px-4 pt-6 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch" style="-webkit-overflow-scrolling: touch;">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
+        }
+        function renderServices() { renderSection(services, 'Nuestros Servicios', 'gift'); }
+        function renderClowns() { renderSection(clownPackages, 'Planes Infantiles', 'smile'); }
+        function renderBubbles() { renderSection(bubblePackages, 'Shows de Burbujas', 'droplet'); }
+        function renderSanta() { renderSection(santaPackages, 'Especial Navideño', 'bell'); }
+        function renderGallery() {
+            if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p>Cargando Galería...</p></div>`); return; }
+            if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div>`); return; }
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-white font-nunito">Nuestra Galería</h2><p class="text-center text-slate-400 max-w-2xl mx-auto mb-6 font-medium text-sm">Momentos llenos de alegría.</p><div class="flex md:hidden items-center justify-center mb-6 opacity-80 w-full"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${i.image}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-slate-700/50 rounded-[2rem] overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.05)] hover:shadow-[0_0_35px_rgba(139,92,246,0.3)] hover:border-purple-500/50 transition-all duration-500 relative"><img src="${i.image}" loading="lazy" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"><div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center"><div class="bg-purple-600/80 p-3 rounded-full shadow-[0_0_20px_rgba(168,85,247,0.6)]"><i data-lucide="zoom-in" class="text-white w-8 h-8"></i></div></div></a>`).join('')}</div></section></div>`);
+        }
+        function renderCalendar() {
+            const grid = document.getElementById('availability-calendar-grid'); if(!grid) return;
+            const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate();
+            let html = '';
+            ['LU', 'MA', 'MI', 'JU', 'VI', 'SA', 'DO'].forEach(d => { html += `<div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">${d}</div>`; });
+            let adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
+            for(let i=0; i<adjustedFirstDay; i++) html += `<div></div>`;
+            const today = new Date(); today.setHours(0,0,0,0);
+            for(let d=1; d<=daysInMonth; d++) {
+                const currentDate = new Date(year, month, d);
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                let eventsThisDay = bookedEvents.filter(ev => ev.fecha === dateStr).length;
+                const isSelected = selectedCalendarDate === dateStr;
+                let c = "w-9 h-9 sm:w-10 sm:h-10 mx-auto rounded-full flex items-center justify-center font-bold text-[15px] transition-all duration-200 cursor-pointer ";
+                if(currentDate<today) { html += `<div class="flex items-center justify-center"><div class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center text-slate-600 font-medium">${d}</div></div>`; }
+                else if(eventsThisDay>=3){ html += `<div class="flex items-center justify-center relative pointer-events-none"><div class="${c} bg-rose-600 text-white cursor-not-allowed">${d}</div></div>`; }
+                else if(eventsThisDay>=1){ html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'bg-amber-500 text-white ring-2 ring-amber-400 ring-offset-2 ring-offset-[#0F172A] scale-110':'bg-amber-500 text-white hover:scale-110'}">${d}</div></div>`; }
+                else { html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'bg-emerald-600 text-white ring-2 ring-emerald-400 ring-offset-2 ring-offset-[#0F172A] scale-110':'bg-emerald-600 text-white hover:scale-110'}">${d}</div></div>`; }
+            }
+            grid.innerHTML = html;
+            const mn = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentCalDate);
+            const cmy = document.getElementById('cal-month-year'); if(cmy) cmy.textContent = mn.charAt(0).toUpperCase() + mn.slice(1);
+            let bBox = document.getElementById('calendar-bottom-box');
+            if(!bBox){ bBox = document.createElement('div'); bBox.id = 'calendar-bottom-box'; document.getElementById('calendar-card-inner').appendChild(bBox); }
+            if(selectedCalendarDate){
+                const ds = new Date(selectedCalendarDate+'T00:00:00').toLocaleDateString('es-ES', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+                bBox.innerHTML = `<div class="mt-6 border border-emerald-500/30 bg-emerald-500/10 rounded-2xl p-4 text-left animate-slide-up shadow-lg"><div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-full border-2 border-emerald-500 flex items-center justify-center text-emerald-400 shrink-0"><i data-lucide="check" class="w-5 h-5"></i></div><div><p class="text-white font-bold text-base">Fecha seleccionada</p><p class="text-slate-300 text-sm capitalize">${ds}</p></div></div><button data-action="confirm-date" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition-transform hover:scale-[1.02] flex justify-center items-center gap-2"><i data-lucide="calendar-plus" class="w-5 h-5"></i> Reservar este día</button></div>`;
+            } else {
+                bBox.innerHTML = `<div class="flex justify-center gap-4 mt-6 pt-5 border-t border-slate-700/50 flex-wrap"><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-emerald-600"></div> Disponible</div><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div> Pocos cupos</div><div class="flex items-center gap-1.5 text-[11px] font-bold text-slate-300 uppercase tracking-wider"><div class="w-2.5 h-2.5 rounded-full bg-rose-600"></div> Lleno</div></div>`;
+            }
+            if(typeof lucide !== 'undefined') lucide.createIcons({root: document.getElementById('calendar-section')});
+        }
+        function renderPortal() {
+            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-lg"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold text-white font-nunito tracking-tight">Portal del Cliente</h2><p class="text-slate-400 mt-2 font-medium text-sm">Consulta el estado de tu evento de forma rápida.</p></div><div class="bg-slate-900 p-6 sm:p-10 rounded-[2rem] shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] border border-slate-800"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-[#1E293B] border border-slate-700 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold text-white outline-none focus:border-indigo-400 transition-colors shadow-inner" required></div><button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_20px_rgba(79,70,229,0.3)] flex justify-center items-center gap-2 text-sm transition-transform hover:scale-[1.02]"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-slate-700 rounded-2xl bg-slate-800/30"><p class="text-slate-500 font-semibold">Ingresa tu número para ver tus reservas activas.</p></div></div></div></section></div>`);
+            const form = document.getElementById('portalSearchForm');
+            if(form){
+                form.onsubmit = (e) => {
                     e.preventDefault();
-                    document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('show'));
-                    setActiveSection(target);
+                    const sp = document.getElementById('searchPhone'); if(!sp) return;
+                    const cleanPhone = (p) => String(p||'').replace(/\D/g, '').replace(/^00507/, '').replace(/^507/, '');
+                    const pi = cleanPhone(sp.value);
+                    const rc = document.getElementById('portalResults'); if(!rc) return;
+                    if(pi.length<6){ rc.innerHTML=`<div class="text-center p-8 bg-amber-500/10 rounded-2xl border border-amber-500/20"><p class="text-amber-400 font-bold">Número inválido.</p></div>`; return; }
+                    const res = bookedEvents.filter(ev => { const ep=cleanPhone(ev.telefono); return ep && (ep===pi || ep.includes(pi) || pi.includes(ep)); });
+                    if(res.length===0) rc.innerHTML=`<div class="text-center p-8 bg-rose-500/10 rounded-2xl border border-rose-500/20"><p class="text-rose-400 font-bold">No encontramos reservas.</p></div>`;
+                    else rc.innerHTML = res.map(getPortalResultCard).join('');
+                    if(typeof lucide !== 'undefined') lucide.createIcons();
                 }
             }
-        });
-        
-        document.body.addEventListener('click', handleGlobalClick);
-
-        const mobileToggle = document.getElementById('mobileToggle'); if(mobileToggle) mobileToggle.onclick = () => toggleMobileMenu(true);
-        const closeMobile = document.getElementById('closeMobile'); if(closeMobile) closeMobile.onclick = () => toggleMobileMenu(false);
-        const mobileMenuOverlay = document.getElementById('mobileMenuOverlay'); if(mobileMenuOverlay) mobileMenuOverlay.onclick = () => toggleMobileMenu(false);
-        const viewCart = document.getElementById('viewCart'); if(viewCart) viewCart.onclick = () => showModal('cartModal');
-        
-        window.addEventListener('scroll', () => { 
-            const headerWrapper = document.getElementById('headerWrapper'); 
-            if(headerWrapper) window.scrollY > 50 ? headerWrapper.classList.add('scrolled') : headerWrapper.classList.remove('scrolled'); 
-        });
-        
-        document.addEventListener('change', e => {
-            if (e.target.matches('#cartLocation')) {
-                app.location = e.target.value; updateCartUI();
+        }
+        function renderBooking() {
+            const subtotal = app.cart.reduce((s, i) => s + (Number(i.price)*i.quantity), 0);
+            const tCost = calculateTransportCost(app.location);
+            let dVal = 0; if(appliedCoupon && app.cart.length>0){ dVal = appliedCoupon.type==='percent' ? subtotal*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount); }
+            const fTot = subtotal - dVal + tCost;
+            const cs = app.cart.length===0?`<div class="text-center py-10 animate-slide-up"><p class="mb-8 text-slate-400">Carrito Vacío</p></div>`:app.cart.map(i=>`<div class="flex flex-col bg-slate-800 p-3.5 rounded-xl shadow-sm mb-2.5 border border-slate-700"><div class="flex justify-between items-center"><span class="font-semibold text-white text-sm pr-2">${i.name} <span class="text-slate-400 text-xs font-normal">x${i.quantity}</span></span><span class="font-extrabold text-purple-400 text-sm">$${(Number(i.price)*i.quantity).toFixed(2)}</span></div></div>`).join('');
+            const lo = locations.map(o=>`<option value="${o.value}" ${app.location===o.value?'selected':''}>${o.label}</option>`).join('');
+            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 text-white font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="bg-slate-900 p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl sticky top-24"><h3 class="text-lg font-bold text-white mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-slate-800 space-y-2 text-right"><p class="text-sm text-slate-400 font-semibold">Subtotal: <span class="text-white">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-400 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm text-slate-400 font-semibold">Transporte: <span class="text-white">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-400 mt-2">Total: <span>$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" class="bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-xl border border-slate-800"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-800 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-emerald-500 z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-4">Tus Datos</h3><div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative"><div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños">🎉 Cumpleaños</option><option value="Bautizo">🕊️ Bautizo</option><option value="Escolar">🎒 Escolar</option><option value="Otro">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm" min="1"></div><div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase mb-1.5 block">Fecha *</label><input type="date" name="date" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm" min="${new Date().toISOString().split('T')[0]}"></div><div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase mb-1.5 block">Hora *</label><input type="time" name="time" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm"></div><div id="availability-warning" class="hidden col-span-1 md:col-span-2 bg-rose-500/20 text-rose-400 border border-rose-500/30 p-3 rounded-lg text-sm font-bold flex items-center gap-2 mt-2"><i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i> <span id="availability-text">Fecha/hora ocupadas.</span></div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold text-white mb-6 border-b border-slate-800 pb-4">Lugar</h3><div class="space-y-5"><div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase mb-1.5 block">Ubicación *</label><select name="location" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm">${lo}</select></div><div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase mb-1.5 block">Dirección *</label><textarea name="address" required class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div><div class="form-group"><label class="form-label font-bold text-slate-400 text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full bg-[#1E293B] border border-slate-700 text-white rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-slate-800"><button type="button" id="btn-prev" class="bg-slate-800 text-white py-3.5 px-6 rounded-full hidden">Atrás</button><button type="button" id="btn-next" class="bg-white text-slate-900 py-3.5 px-6 rounded-full ml-auto">Siguiente</button><button type="submit" id="btn-submit" class="bg-emerald-500 text-white py-3.5 px-6 rounded-full hidden ml-auto">Confirmar Reserva</button></div></div></form>`:'<div class="text-center text-slate-500">Seleccione paquetes para reservar.</div>'}</div></div></section></div>`);
+            
+            if(app.cart.length>0){
+                const bForm = document.getElementById('bookingForm');
+                if(bForm) bForm.onsubmit = handleBookingSubmit;
+                const dInp = document.querySelector('input[name="date"]'), tInp = document.querySelector('input[name="time"]'), locSel = document.querySelector('select[name="location"]');
+                if(dInp) dInp.addEventListener('change', validateAvailabilityLogic);
+                if(tInp) tInp.addEventListener('change', validateAvailabilityLogic);
+                if(locSel) locSel.onchange = e => { app.location=e.target.value; renderBooking(); };
+                if(bForm && Object.keys(bookingFormState).length>0){ for(let k in bookingFormState){ if(bForm.elements[k]) bForm.elements[k].value=bookingFormState[k]; } }
+                let cs = app.wizardStep;
+                const updUI = () => {
+                    app.wizardStep=cs;
+                    document.querySelectorAll('.wizard-content').forEach((el,i)=>el.classList.toggle('active',i+1===cs));
+                    const pb = document.getElementById('wizard-progress-bar'); if(pb) pb.style.width=`${((cs-1)/2)*100}%`;
+                    document.querySelectorAll('.wizard-step').forEach((el,i)=>{
+                        const ic=el.querySelector('.wizard-icon'), ts=el.querySelector('.wizard-text');
+                        if(i+1<=cs){ el.classList.remove('opacity-50'); if(ic)ic.classList.add('bg-purple-600','text-white','border-purple-400'); if(ts)ts.classList.add('text-purple-400'); }
+                        else { el.classList.add('opacity-50'); if(ic)ic.classList.remove('bg-purple-600','text-white','border-purple-400'); if(ts)ts.classList.remove('text-purple-400'); }
+                    });
+                    const bp=document.getElementById('btn-prev'), bn=document.getElementById('btn-next'), bs=document.getElementById('btn-submit');
+                    if(bp) cs===1?bp.classList.add('hidden'):bp.classList.remove('hidden');
+                    if(cs===3){ if(bn)bn.classList.add('hidden'); if(bs)bs.classList.remove('hidden'); } else { if(bn)bn.classList.remove('hidden'); if(bs)bs.classList.add('hidden'); }
+                };
+                updUI();
+                const bn=document.getElementById('btn-next'), bp=document.getElementById('btn-prev');
+                if(bn) bn.onclick=()=>{
+                    const inp = document.getElementById(`step-${cs}`)?.querySelectorAll('input[required],select[required],textarea[required]')||[];
+                    let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
+                    if(val&&cs===2){ val=validateAvailabilityLogic(); if(!val) showToast('Revisa las alertas','error'); }
+                    if(val){ cs++; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); updUI(); }
+                };
+                if(bp) bp.onclick=()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); updUI(); } };
             }
+        }
+        function renderHome() {
+            let ex = '';
+            if(!isFirebaseLoaded){ ex = `<div class="w-full flex justify-center py-10"><i data-lucide="loader-2" class="w-10 h-10 text-purple-500 animate-spin"></i></div>`; }
+            else {
+                let eh = '';
+                if(app.catalog && app.catalog.length>0){ const of=app.catalog.filter(i=>i.oferta||i.discountApplied); if(of.length>0) eh+=of.map(createDetailedCardHTML).join(''); else eh+=app.catalog.slice(0,3).map(createDetailedCardHTML).join(''); }
+                if(eh) ex=`<div class="flex md:hidden justify-center mb-3 opacity-80 animate-slide-up"><span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mr-3 border border-slate-700 bg-slate-800/50 px-3 py-1 rounded-full">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 px-2">${eh}</div>`;
+            }
+            let rc = '';
+            if(isFirebaseLoaded && customerReviews && customerReviews.length>0){
+                rc = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-white font-nunito">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-400 font-bold uppercase px-3 py-1 rounded-full border border-slate-700">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-[#0B1121] border border-slate-700/50 flex flex-col h-full rounded-[2rem] p-6 shadow-md relative overflow-hidden group hover:border-purple-500/30 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-700 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-white font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-400 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-300 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-800/80 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-lg border border-emerald-400/20"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
+            }
+            setContent(`<div id="hero-section-identifier"><div class="bg-[#0F172A]"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-gradient-to-b from-[#0F172A]/60 via-[#0F172A]/80 to-[#0F172A] z-10 pointer-events-none"></div><div class="hero-content z-20 relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-slate-900 px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg badge-float"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-extrabold mb-4 font-poppins leading-[1.1] text-white drop-shadow-2xl">Fiestas infantiles inolvidables en <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-500 btn-animated-gradient">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-300 font-medium drop-shadow-md font-quicksand leading-relaxed">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/10 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/10 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-400 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/10 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-400 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-400 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] shadow-[0_8px_20px_rgba(219,39,119,0.4)] font-bold text-base"><i data-lucide="calendar-check" class="w-5 h-5 group-hover:animate-pulse"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="clowns" class="nav-action w-full bg-[#162032] border border-slate-600 hover:border-purple-500/50 hover:bg-[#1E293B] text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-md"><i data-lucide="eye" class="w-5 h-5"></i> Ver planes</button></div></div></section><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-3xl mx-auto px-2 sm:px-4"><div class="bg-[#0B1121] p-6 sm:p-8 rounded-[32px] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.6)] border border-slate-800 relative overflow-hidden" id="calendar-card-inner"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 rounded-xl border border-purple-500/30 bg-purple-500/10 flex items-center justify-center text-purple-400"><i data-lucide="calendar" class="w-5 h-5"></i></div><div class="text-left"><h2 class="text-2xl font-extrabold text-white font-poppins leading-none">Selecciona tu fecha</h2><p class="text-slate-400 text-sm mt-1">Elige un día disponible para tu fiesta</p></div></div><div class="bg-indigo-900/20 border border-indigo-500/20 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4"><i data-lucide="clock" class="w-5 h-5 text-indigo-400 mt-0.5 shrink-0"></i><p class="text-indigo-200 text-sm font-medium leading-tight">Selecciona una fecha disponible para reservar en segundos</p></div><div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-slate-900/50 py-2 rounded-xl border border-slate-800"><button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><h3 id="cal-month-year" class="text-lg font-bold text-white capitalize leading-none font-poppins">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-white/10 text-slate-400 hover:text-white rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
+            if(typeof renderCalendar === 'function') renderCalendar(); 
+        }
+
+        function addToCart(item, qty=1) {
+            const e = app.cart.find(i=>i.id===item.id);
+            if(e) e.quantity+=qty; else app.cart.push({...item,quantity:qty});
+            updateCartUI(); showToast(`${item.name} añadido al carrito`, 'success');
+        }
+        function removeFromCart(id) { app.cart=app.cart.filter(i=>i.id!==id); if(app.cart.length===0) appliedCoupon=null; updateCartUI(); showToast('Plan eliminado', 'info'); }
+        function updateCartUI() {
+            const count = app.cart.reduce((s, i) => s + i.quantity, 0);
+            const sub = app.cart.reduce((s, i) => s + (Number(i.price)*i.quantity), 0);
+            const tc = calculateTransportCost(app.location);
+            let dv = 0; if(appliedCoupon && count>0) dv = appliedCoupon.type==='percent' ? sub*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount);
+            const ft = sub - dv + tc;
+
+            const ice = document.getElementById('itemCount'), tpe = document.getElementById('totalPrice'), cse = document.getElementById('cartSummary');
+            if(ice) ice.textContent = count;
+            if(tpe) tpe.textContent = `$${Math.max(0,ft).toFixed(2)}`;
+            if(cse){ if(count>0){ cse.classList.remove('hidden'); document.body.classList.add('has-cart'); } else { cse.classList.add('hidden'); document.body.classList.remove('has-cart'); } }
+            
+            const cie = document.getElementById('cartItems');
+            if(cie){
+                if(app.cart.length===0) cie.innerHTML=`<div class="text-center py-8"><p class="text-slate-400">Carrito Vacío</p></div>`;
+                else cie.innerHTML='<div class="space-y-2">'+app.cart.map(i=>`<div class="bg-slate-800 p-3 rounded-xl border border-slate-700 flex justify-between items-center"><div class="flex items-center gap-3 overflow-hidden"><img src="${i.image}" class="w-10 h-10 object-cover rounded-xl shrink-0"><div class="flex flex-col"><span class="font-bold text-white text-[13px] truncate">${i.name}</span><span class="text-slate-400 text-[10px]">Cant: ${i.quantity}</span></div></div><div class="flex items-center gap-2"><span class="font-bold text-pink-400 text-sm">$${(Number(i.price)*i.quantity).toFixed(2)}</span><button data-action="remove-from-cart" data-item-id="${i.id}" class="w-7 h-7 bg-slate-700/50 rounded-full flex items-center justify-center hover:bg-rose-500 text-slate-400 hover:text-white"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div></div>`).join('')+'</div>';
+            }
+
+            const cte = document.getElementById('cartTotal'), tce = document.getElementById('transportCost'), fte = document.getElementById('finalTotal'), dr = document.getElementById('discountRow'), dae = document.getElementById('discountAmount');
+            if(cte) cte.textContent = `$${sub.toFixed(2)}`; if(tce) tce.textContent = `$${tc.toFixed(2)}`;
+            if(dv>0 && dr){ dr.classList.remove('hidden'); if(dae) dae.textContent = `-$${dv.toFixed(2)}`; } else if(dr) dr.classList.add('hidden');
+            if(fte) fte.textContent = `$${Math.max(0,ft).toFixed(2)}`;
+            
+            document.querySelectorAll('button[data-action="add-to-cart"], button[data-action="add-hourly-to-cart"]').forEach(b => {
+                const id = b.dataset.itemId, ic = app.cart.find(i=>i.id===id);
+                if(!b.dataset.origHtml) b.dataset.origHtml = b.innerHTML;
+                if(ic){
+                    const qe = document.querySelector(`#qty-${id}`); const vq = qe ? parseInt(qe.textContent) : ic.quantity;
+                    if(vq!==ic.quantity && b.dataset.action==='add-hourly-to-cart'){ b.innerHTML=`<i data-lucide="refresh-cw" class="w-5 h-5 text-white"></i> Actualizar`; b.className="w-full text-white font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 text-[11px] sm:text-xs relative z-10 transition-all !bg-amber-500 !border-amber-400 !shadow-[0_0_25px_rgba(245,158,11,0.5)]"; }
+                    else { b.innerHTML=`<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`; b.className="w-full text-white font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 text-[11px] sm:text-xs relative z-10 transition-all !bg-emerald-600 !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.5)]"; }
+                    if(typeof lucide !== 'undefined') lucide.createIcons({root:b});
+                } else { b.innerHTML=b.dataset.origHtml; b.className="w-full bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(139,92,246,0.4)] border border-purple-400/50 hover:scale-[1.02] transition-all font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 uppercase text-[11px] sm:text-xs relative z-10"; if(typeof lucide !== 'undefined') lucide.createIcons({root:b}); }
+            });
+            populateLocationSelects(); const cle = document.getElementById('cartLocation'); if(cle) cle.value = app.location;
+        }
+
+        function handleGlobalClick(e) {
+            const target = e.target.closest('[data-action]');
+            if (e.target.closest('#prevMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() - 1); renderCalendar(); return; }
+            if (e.target.closest('#nextMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() + 1); renderCalendar(); return; }
+            if (e.target.closest('[data-action="apply-coupon"]')) {
+                e.preventDefault(); const ci = document.getElementById('couponCodeInput') ? document.getElementById('couponCodeInput').value.toUpperCase() : '';
+                if(!ci) return showToast("Escribe un cupón", "error");
+                const f = activeCoupons.find(c => c.code === ci);
+                if(f){ appliedCoupon=f; showToast(`¡Cupón ${f.code} aplicado!`, "success"); updateCartUI(); } 
+                else { showToast("Cupón inválido o expirado", "error"); appliedCoupon=null; updateCartUI(); }
+                return;
+            }
+            if (!target) return;
+            const { action, itemId, change, date, targetSection } = target.dataset;
+            switch (action) {
+                case 'select-date': playPopSound(); selectedCalendarDate = date; renderCalendar(); break;
+                case 'confirm-date': playPopSound(); setActiveSection('booking'); setTimeout(() => { const di = document.querySelector('input[name="date"]'); if(di&&selectedCalendarDate){ di.value=selectedCalendarDate; validateAvailability(); } const bf = document.getElementById('bookingForm'); if(bf) bf.scrollIntoView({behavior:'smooth', block:'center'}); showToast('Fecha seleccionada. ¡Asegura tu cupo!', 'success'); }, 50); break;
+                case 'add-to-cart': { playPopSound(); const it = allPurchasableItems.find(s=>s.id===itemId); if(it){ if(!app.cart.find(i=>i.id===itemId)) addToCart(it); showModal('cartModal'); } break; }
+                case 'remove-from-cart': playPopSound(); removeFromCart(itemId); break;
+                case 'add-hourly-to-cart': { playPopSound(); const sh = allPurchasableItems.find(s=>s.id===itemId); const qe = document.querySelector(`#qty-${itemId}`); const qh = qe?parseInt(qe.textContent):1; if(sh&&qh>0){ const ex=app.cart.find(i=>i.id===itemId); if(ex){ ex.quantity=qh; updateCartUI(); showToast(`Cantidad actualizada`, 'success'); } else addToCart(sh, qh); } break; }
+                case 'change-service-qty': { playPopSound(); const qe = document.querySelector(`#qty-${itemId}`); if(qe){ let cq=parseInt(qe.textContent); let nq=Math.max(1, cq+parseInt(change)); qe.textContent=nq; updateCartUI(); } break; }
+                case 'close-modal': { const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); if(targetSection){ if(app.activeSection!==targetSection) playPopSound(); setTimeout(()=>setActiveSection(targetSection), 50); } break; }
+                case 'navigate-from-modal': { playPopSound(); const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); if(targetSection) setTimeout(()=>setActiveSection(targetSection), 150); break; }
+            }
+        }
+
+        async function handleBookingSubmit(e) {
+            e.preventDefault();
+            if(app.cart.length===0) return showToast('Selecciona al menos un servicio', 'error');
+            const sBtn = e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
+            const obh = sBtn.innerHTML; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-white inline-block align-middle mr-2"></div> Conectando...';
+            try {
+                const fd = new FormData(e.target);
+                const sub = app.cart.reduce((s,i)=>s+(Number(i.price)*i.quantity),0);
+                const tc = calculateTransportCost(app.location);
+                let dv = 0; if(appliedCoupon) dv = appliedCoupon.type==='percent' ? sub*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount);
+                const ft = sub - dv + tc;
+                const lo = locations.find(l=>l.value===app.location);
+                const dataToSave = {
+                    id: `web-${Date.now()}`, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: fd.get('date')||'', hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${i.name} (x${i.quantity})`:i.name).join(' + '), serviciosSeleccionados: app.cart.map(i=>({ id:i.id, nombre:i.name, precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:i.description||'' })), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
+                };
+                await setDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos', dataToSave.id), dataToSave);
+                showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
+                app.cart=[]; appliedCoupon=null; bookingFormState={}; app.wizardStep=1; updateCartUI(); renderBooking();
+            } catch(err){ console.error(err); showToast('Hubo un problema enviando tu reserva.', 'error'); } 
+            finally{ sBtn.disabled=false; sBtn.innerHTML=obh; }
+        }
+
+        async function initFirebaseAndData() {
+            try {
+                const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
+                db = getFirestore(fbApp); auth = getAuth(fbApp);
+                try{ if(typeof __initial_auth_token !== 'undefined' && __initial_auth_token){ try{ await signInWithCustomToken(auth, __initial_auth_token); }catch(e){ await signInAnonymously(auth); } } else { await signInAnonymously(auth); } }catch(e){}
+                try {
+                    const cs = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web'));
+                    const cd = cs.docs.map(d => { const dt=d.data(); return { id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied:dt.oferta===true, description:dt.descripcion, image:dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria }; });
+                    if(cd.length>0){ app.catalog=cd; services=cd.filter(i=>i.categoria==='servicios'); clownPackages=cd.filter(i=>i.categoria==='payasos'); bubblePackages=cd.filter(i=>i.categoria==='burbujas'); santaPackages=cd.filter(i=>i.categoria==='santa'); allPurchasableItems=[...services,...clownPackages,...bubblePackages,...santaPackages]; }
+                } catch(e){}
+                try { const ts = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')); if(!ts.empty) locations = ts.docs.map(d=>d.data()); } catch(e){}
+                try { const gs = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); else gallery=[]; } catch(e){}
+                try { const rs = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){}
+                try { const cs = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web')); activeCoupons = cs.docs.map(d=>d.data()).filter(c=>c.active); } catch(e){}
+                try {
+                    const cfs = await getDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global'));
+                    if(cfs.exists()){ const cf=cfs.data(); const b=document.getElementById('topAnnouncementBanner'); if(cf.bannerActive && cf.bannerText){ if(b){ document.getElementById('bannerTextSpan').textContent=cf.bannerText; b.classList.remove('hidden'); b.classList.add('flex'); document.documentElement.style.setProperty('--banner-offset', b.offsetHeight+'px'); } } else if(b){ b.classList.add('hidden'); b.classList.remove('flex'); document.documentElement.style.setProperty('--banner-offset', '0px'); } }
+                } catch(e){}
+                const es = await getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos'));
+                bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(ev.estado||'').toLowerCase().includes(s)));
+            } catch(e){ console.error(e); }
+        }
+
+        function setupEventListeners() {
+            if (window.location.hash) { history.replaceState(null, null, ' '); }
+            setTimeout(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, 50);
+            document.body.addEventListener('click', (e) => { const nl = e.target.closest('.nav-action'); if(nl){ let t=nl.dataset.targetSection; if(!t&&nl.hash) t=nl.hash.substring(1); if(t){ e.preventDefault(); document.querySelectorAll('.modal-backdrop').forEach(m=>m.classList.remove('show')); setActiveSection(t); } } });
+            document.body.addEventListener('click', handleGlobalClick);
+            const mt = document.getElementById('mobileToggle'); if(mt) mt.onclick = () => toggleMobileMenu(true);
+            const cm = document.getElementById('closeMobile'); if(cm) cm.onclick = () => toggleMobileMenu(false);
+            const mmo = document.getElementById('mobileMenuOverlay'); if(mmo) mmo.onclick = () => toggleMobileMenu(false);
+            const vc = document.getElementById('viewCart'); if(vc) vc.onclick = () => showModal('cartModal');
+            window.addEventListener('scroll', () => { const hw = document.getElementById('headerWrapper'); if(hw) window.scrollY > 50 ? hw.classList.add('scrolled') : hw.classList.remove('scrolled'); });
+            document.addEventListener('change', e => { if (e.target.matches('#cartLocation')) { app.location = e.target.value; updateCartUI(); } });
+        }
+
+        // ARRANQUE FINAL SEGURO
+        setupEventListeners(); 
+        populateLocationSelects(); 
+        if(typeof lucide !== 'undefined') lucide.createIcons();
+        if(app.activeSection === 'home') renderHome(); else setActiveSection(app.activeSection);
+        document.body.classList.add('js-loaded');
+        const loader = document.getElementById('initial-loader'); if(loader) loader.style.display = 'none';
+
+        initFirebaseAndData().then(() => {
+            isFirebaseLoaded = true;
+            refreshDynamicData(); 
+            updateCartUI(); 
         });
-    }
-
-    // ARRANQUE SEGURO
-    setupEventListeners(); 
-    populateLocationSelects(); 
-    lucide.createIcons();
-
-    if (app.activeSection === 'home') renderHome();
-    else setActiveSection(app.activeSection);
-    
-    document.body.classList.add('js-loaded');
-    const loader = document.getElementById('initial-loader');
-    if (loader) loader.style.display = 'none';
-
-    initFirebaseAndData().then(() => {
-        isFirebaseLoaded = true;
-        refreshDynamicData(); 
-        updateCartUI(); 
-    });
 
     </script>
 </body>
