@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
-    <!-- Librería de compresión de imágenes en el navegador -->
+    <!-- Librería de compresión de imágenes -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.1/dist/browser-image-compression.js"></script>
 
     <style>
@@ -16,7 +16,7 @@
         .hide-scroll-bar::-webkit-scrollbar { display: none; }
         .hide-scroll-bar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .saas-input { width: 100%; background-color: #0F172A; border: 1px solid #1E293B; color: #F8FAFC; border-radius: 12px; padding: 12px; font-size: 0.9rem; transition: all 0.2s ease; outline: none; }
+        .saas-input { width: 100%; background-color: #0F172A; border: 1px solid #1E293B; color: #F8FAFC; border-radius: 12px; padding: 12px; font-size: 0.9rem; transition: all 0.2s ease; outline: none; box-sizing: border-box; }
         .saas-input:focus { border-color: #8B5CF6; background-color: #131C31; box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1); }
         .saas-label { display: block; font-size: 0.65rem; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
 
@@ -46,14 +46,13 @@
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999; width: 90%; max-width: 400px; pointer-events: none; }
         #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        .tab-btn.active { background: #1E293B; color: white; border-color: #334155; }
+        /* Estilos Sidebar/BottomNav Activos */
+        .nav-item.active { background: #1E293B; color: #fff; }
+        .nav-item.active i { color: #8B5CF6; }
         
-        .highlight-field { animation: highlightPulse 1.5s ease; }
-        @keyframes highlightPulse {
-            0% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.7); border-color: #8B5CF6; }
-            70% { box-shadow: 0 0 0 10px rgba(139, 92, 246, 0); border-color: #8B5CF6; }
-            100% { box-shadow: 0 0 0 0 rgba(139, 92, 246, 0); border-color: #1E293B; }
-        }
+        .nav-item-mobile.active { color: #8B5CF6; }
+        .nav-item-mobile.active div { transform: translateY(-4px); }
+        .nav-item-mobile.active span { opacity: 1; transform: translateY(0); }
 
         /* Modal Premium para confirmar borrado */
         .modal-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(5px); z-index: 2000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: all 0.3s ease; }
@@ -61,219 +60,370 @@
         .modal-content { transform: scale(0.95); transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .modal-backdrop.show .modal-content { transform: scale(1); }
 
-        /* Barra Sticky para guardar en el formulario */
-        .sticky-action-bar { position: sticky; bottom: 0; left: 0; right: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px); padding: 16px; border-top: 1px solid #1E293B; margin: 0 -16px -24px -16px; z-index: 40; display: flex; gap: 12px; }
+        .sticky-action-bar { position: sticky; bottom: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px); padding: 16px; border-top: 1px solid #1E293B; margin: 0 -16px -24px -16px; z-index: 40; display: flex; gap: 12px; }
     </style>
 </head>
-<body class="min-h-screen pb-20">
+<body class="flex h-screen overflow-hidden bg-[#020617] w-full">
 
-    <!-- HEADER SCROLLABLE TABS -->
-    <header class="sticky top-0 z-50 bg-[#020617]/95 backdrop-blur-lg border-b border-slate-800">
-        <div class="px-4 py-3 max-w-[800px] mx-auto flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0">
-                <i data-lucide="zap" class="w-4 h-4 text-white"></i>
+    <!-- SIDEBAR DESKTOP (Oculto en móvil) -->
+    <aside class="hidden md:flex flex-col w-64 border-r border-slate-800 bg-[#0B1120] z-20 shrink-0">
+        <div class="px-6 py-8 flex items-center gap-3 border-b border-slate-800/50">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0 shadow-lg shadow-purple-500/20">
+                <i data-lucide="zap" class="w-5 h-5 text-white"></i>
             </div>
-            <h1 class="text-sm font-black text-white tracking-tight">Diverty <span class="text-slate-500 font-medium">Master</span></h1>
+            <div>
+                <h1 class="text-base font-black text-white tracking-tight leading-none">Diverty <span class="text-slate-500 font-medium">Master</span></h1>
+                <p class="text-[10px] text-emerald-400 font-bold mt-1 uppercase tracking-widest"><i data-lucide="activity" class="w-3 h-3 inline mr-0.5"></i> Sistema Activo</p>
+            </div>
         </div>
-        <div class="overflow-x-auto hide-scroll-bar px-4 pb-3 flex gap-2 max-w-[800px] mx-auto" style="-webkit-overflow-scrolling: touch;">
-            <button data-tab="catalog" class="tab-btn active shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Catálogo</button>
-            <button data-tab="form" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Crear Paquete</button>
-            <button data-tab="transport" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Transporte</button>
-            <button data-tab="gallery" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Galería</button>
-            <button data-tab="coupons" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Cupones</button>
-            <button data-tab="settings" class="tab-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold text-slate-400 border border-transparent transition-all">Ajustes Web</button>
-        </div>
-    </header>
-
-    <main class="w-full max-w-[800px] mx-auto px-4 py-6 relative">
-        
-        <!-- 1. VISTA CATÁLOGO -->
-        <div id="view-catalog" class="view-section active">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h2 class="text-xl font-bold text-white mb-1">Catálogo Activo</h2>
-                    <p class="text-sm text-slate-400">Gestiona tus planes publicados.</p>
-                </div>
-                <button id="refreshBtn" class="p-2.5 bg-slate-800 text-slate-300 rounded-xl active:scale-95 shadow-sm border border-slate-700 hover:bg-slate-700 transition-colors">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto hide-scroll-bar">
+            <button data-tab="dashboard" class="nav-item tab-btn active w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
+                <i data-lucide="layout-dashboard" class="w-5 h-5 text-slate-500 transition-colors"></i> Resumen
+            </button>
+            <button data-tab="catalog" class="nav-item tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
+                <i data-lucide="package" class="w-5 h-5 text-slate-500 transition-colors"></i> Catálogo Activo
+            </button>
+            <button data-tab="form" class="nav-item tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
+                <i data-lucide="plus-circle" class="w-5 h-5 text-slate-500 transition-colors"></i> Crear Paquete
+            </button>
+            <button data-tab="transport" class="nav-item tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
+                <i data-lucide="map" class="w-5 h-5 text-slate-500 transition-colors"></i> Transporte
+            </button>
+            <button data-tab="gallery" class="nav-item tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
+                <i data-lucide="image" class="w-5 h-5 text-slate-500 transition-colors"></i> Galería Web
+            </button>
+            <button data-tab="coupons" class="nav-item tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
+                <i data-lucide="ticket" class="w-5 h-5 text-slate-500 transition-colors"></i> Cupones
+            </button>
+            <div class="pt-4 mt-4 border-t border-slate-800/50">
+                <button data-tab="settings" class="nav-item tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
+                    <i data-lucide="settings" class="w-5 h-5 text-slate-500 transition-colors"></i> Ajustes Web
                 </button>
             </div>
+        </nav>
+    </aside>
 
-            <!-- BUSCADOR -->
-            <div class="relative mb-4">
-                <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
-                <input type="text" id="searchInput" onkeyup="window.handleSearch(this.value)" class="saas-input pl-10" placeholder="Buscar por nombre...">
-            </div>
-
-            <!-- BARRA DE FILTROS DESLIZABLE -->
-            <div class="flex overflow-x-auto gap-2 mb-6 pb-2 hide-scroll-bar" style="-webkit-overflow-scrolling: touch;">
-                <button onclick="window.setFilterCategory(this, 'all')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-purple-600 text-white border border-purple-500 shadow-[0_0_10px_rgba(139,92,246,0.3)]">Todos</button>
-                <button onclick="window.setFilterCategory(this, 'destacados')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">En Inicio 🌟</button>
-                <button onclick="window.setFilterCategory(this, 'ofertas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Ofertas 🔥</button>
-                <button onclick="window.setFilterCategory(this, 'payasos')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Payasos 🤡</button>
-                <button onclick="window.setFilterCategory(this, 'burbujas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Burbujas 🫧</button>
-                <button onclick="window.setFilterCategory(this, 'santa')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Navidad 🎅</button>
-                <button onclick="window.setFilterCategory(this, 'servicios')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Servicios 🎁</button>
-            </div>
-
-            <div id="paquetesLista" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-8">
-                <!-- Loader Animado -->
-                <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-500">
-                    <i data-lucide="loader-2" class="animate-spin w-8 h-8 mb-4 text-purple-500"></i>
-                    <p class="font-medium text-sm">Sincronizando catálogo...</p>
+    <!-- ÁREA PRINCIPAL -->
+    <div class="flex-1 flex flex-col h-screen relative w-full overflow-hidden">
+        
+        <!-- HEADER MÓVIL -->
+        <header class="md:hidden sticky top-0 z-30 bg-[#0B1120]/95 backdrop-blur-md border-b border-slate-800 w-full">
+            <div class="px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shrink-0">
+                        <i data-lucide="zap" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <h1 class="text-sm font-black text-white tracking-tight">Diverty<span class="text-slate-500 font-medium">Master</span></h1>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <!-- 2. VISTA CREADOR DE PAQUETES -->
-        <div id="view-form" class="view-section relative min-h-[80vh]">
-            <h2 id="formMainTitle" class="text-xl font-bold text-white mb-4">Crear Paquete / Servicio</h2>
-            <form id="adminForm" class="space-y-4 pb-4">
-                <div class="bg-[#0B1120] p-4 rounded-xl border border-slate-800">
-                    <label class="saas-label">Nombre</label><input type="text" id="nombre" class="saas-input mb-3" placeholder="Ej: Show de Burbujas Mágico">
-                    <label class="saas-label">Categoría</label>
-                    <select id="categoria" class="saas-input mb-3 appearance-none"><option value="payasos">Payasos</option><option value="burbujas">Burbujas</option><option value="santa">Navidad</option><option value="servicios">Servicios Extras</option></select>
-                    <label class="saas-label">Descripción Corta</label><input type="text" id="descripcion" class="saas-input" placeholder="Ej: Ideal para espacios cerrados">
-                </div>
-                <div class="bg-[#0B1120] p-4 rounded-xl border border-slate-800">
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div><label class="saas-label">Precio ($)</label><input type="number" id="precio" class="saas-input" placeholder="0.00"></div>
-                        <div><label class="saas-label">Cobro por</label><select id="tipoCobro" class="saas-input appearance-none"><option value="paquete">Fijo</option><option value="hora">Por Hora</option><option value="nino">Por Niño</option></select></div>
+        <!-- CONTENEDOR DE VISTAS (Scrollable). Agregado overflow-x-hidden para evitar desbordes -->
+        <main class="flex-1 overflow-y-auto overflow-x-hidden pb-24 md:pb-6 relative w-full">
+            <div class="max-w-[800px] mx-auto px-4 py-6 md:py-8 w-full box-border">
+                
+                <!-- 0. VISTA DASHBOARD (RESUMEN) -->
+                <div id="view-dashboard" class="view-section active w-full">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-white mb-1">Hola, Equipo Diverty 👋</h2>
+                        <p class="text-sm text-slate-400">Este es el resumen de tu aplicación web hoy.</p>
                     </div>
-                    <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-700">
-                        <span class="text-sm font-bold text-white">Es Oferta 🔥</span>
-                        <div class="relative inline-block w-10 h-5"><input type="checkbox" id="oferta" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="oferta" class="toggle-label block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
-                    </div>
-                    <div id="precioOriginalContainer" class="hidden mt-3 mb-3"><label class="saas-label text-pink-400">Precio Tachado Anterior ($)</label><input type="number" id="precioOriginal" class="saas-input" placeholder="Ej: 150"></div>
-                    
-                    <div class="flex items-center justify-between bg-slate-900 p-3 rounded-xl border border-slate-700 mt-3">
-                        <div class="flex flex-col">
-                            <span class="text-sm font-bold text-yellow-400">Destacar en Inicio 🌟</span>
-                            <span class="text-[10px] text-slate-400">Marcar para mostrar en tu web principal</span>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <!-- Stat Card 1 -->
+                        <div class="bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 rounded-2xl p-4 relative overflow-hidden">
+                            <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center mb-3 text-purple-400"><i data-lucide="package" class="w-4 h-4"></i></div>
+                            <p class="text-3xl font-black text-white" id="stat-paquetes">0</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Paquetes</p>
                         </div>
-                        <div class="relative inline-block w-10 h-5"><input type="checkbox" id="destacado" class="toggle-checkbox-star absolute block w-5 h-5 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="destacado" class="toggle-label-star block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
-                    </div>
-                </div>
-                <div class="bg-[#0B1120] p-4 rounded-xl border border-slate-800">
-                    <label class="saas-label">Imagen de Portada</label>
-                    <div class="flex gap-2 mb-3">
-                        <input type="text" id="imagen" class="saas-input" placeholder="URL o subir ->">
-                        <div class="w-12 shrink-0 bg-purple-600 hover:bg-purple-500 transition-colors rounded-xl relative flex items-center justify-center cursor-pointer shadow-md">
-                            <input type="file" id="imageFileNative" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
-                            <i data-lucide="camera" class="w-4 h-4 text-white z-10"></i>
+                        <!-- Stat Card 2 -->
+                        <div class="bg-gradient-to-br from-pink-500/10 to-transparent border border-pink-500/20 rounded-2xl p-4 relative overflow-hidden">
+                            <div class="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center mb-3 text-pink-400"><i data-lucide="image" class="w-4 h-4"></i></div>
+                            <p class="text-3xl font-black text-white" id="stat-fotos">0</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Fotos Web</p>
+                        </div>
+                        <!-- Stat Card 3 -->
+                        <div class="bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-2xl p-4 relative overflow-hidden">
+                            <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center mb-3 text-emerald-400"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
+                            <p class="text-3xl font-black text-white" id="stat-zonas">0</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Zonas Transp.</p>
+                        </div>
+                        <!-- Stat Card 4 -->
+                        <div class="bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 rounded-2xl p-4 relative overflow-hidden">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mb-3 text-blue-400"><i data-lucide="ticket" class="w-4 h-4"></i></div>
+                            <p class="text-3xl font-black text-white" id="stat-cupones">0</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Cupones</p>
                         </div>
                     </div>
-                    <div id="uploadProgress" class="hidden text-[10px] uppercase tracking-widest text-purple-400 font-bold mb-3 flex items-center gap-2">
-                        <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Procesando imagen...
+
+                    <div class="bg-[#0B1120] border border-slate-800 rounded-2xl p-6 text-center shadow-lg w-full">
+                        <div class="w-16 h-16 bg-slate-900 rounded-full flex items-center justify-center mx-auto mb-4 border border-slate-800">
+                            <i data-lucide="rocket" class="w-8 h-8 text-yellow-500"></i>
+                        </div>
+                        <h3 class="text-white font-bold mb-2">Todo funcionando correctamente</h3>
+                        <p class="text-sm text-slate-400 max-w-sm mx-auto">Tus clientes pueden ver tu catálogo actualizado y tu página está optimizada en tiempo real.</p>
+                        <button onclick="document.querySelector('[data-tab=\'catalog\']').click()" class="mt-6 px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-sm transition-colors border border-slate-700">Ir al Catálogo</button>
                     </div>
-                    <div id="imagePreviewBox" class="hidden h-32 rounded-xl bg-slate-900 mb-3 overflow-hidden relative border border-slate-700"><img id="previewImg" class="w-full h-full object-cover"></div>
-                    
-                    <label class="saas-label mt-3">Servicios Incluidos (1 por línea)</label>
-                    <textarea id="serviciosLista" rows="5" class="saas-input leading-relaxed" placeholder="1 hora de show&#10;Pintacaritas&#10;Globoflexia"></textarea>
                 </div>
-            </form>
-            
-            <!-- STICKY ACTION BAR PARA GUARDAR -->
-            <div class="sticky-action-bar">
-                <button type="button" id="cancelEditBtn" onclick="window.cancelEditing()" class="hidden bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 px-4 rounded-xl border border-slate-700 transition-colors shrink-0">Cancelar</button>
-                <button type="button" id="submitBtn" class="btn-primary flex-1 shadow-[0_0_20px_rgba(139,92,246,0.3)] text-[15px]">Guardar Paquete</button>
-            </div>
-        </div>
 
-        <!-- 3. VISTA TRANSPORTE -->
-        <div id="view-transport" class="view-section">
-            <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6">
-                <h3 class="text-sm font-bold text-emerald-400 mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Añadir Zona de Transporte</h3>
-                <div class="grid grid-cols-2 gap-3 mb-3">
-                    <div><label class="saas-label">Nombre de Zona</label><input type="text" id="transName" class="saas-input" placeholder="Ej: Arraiján"></div>
-                    <div><label class="saas-label">Costo Extra ($)</label><input type="number" id="transCost" class="saas-input" placeholder="15"></div>
-                </div>
-                <button onclick="saveTransport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm mt-2 transition-colors">Agregar Zona</button>
-            </div>
-            <h3 class="text-white font-bold mb-3">Zonas Activas</h3>
-            <div id="transportList" class="space-y-2"></div>
-        </div>
+                <!-- 1. VISTA CATÁLOGO -->
+                <div id="view-catalog" class="view-section w-full">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white mb-1">Catálogo Activo</h2>
+                            <p class="text-sm text-slate-400">Gestiona tus planes publicados.</p>
+                        </div>
+                        <button id="refreshBtn" class="p-2.5 bg-slate-800 text-slate-300 rounded-xl active:scale-95 shadow-sm border border-slate-700 hover:bg-slate-700 transition-colors shrink-0">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
 
-        <!-- 4. VISTA GALERÍA -->
-        <div id="view-gallery" class="view-section">
-            <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6 text-center">
-                <h3 class="text-sm font-bold text-purple-400 mb-2">Subir Nueva Foto</h3>
-                <p class="text-xs text-slate-400 mb-4">Se comprimirá automáticamente y aparecerá en tu web.</p>
-                <div class="relative w-full h-32 border-2 border-dashed border-purple-500/50 rounded-2xl bg-purple-500/10 flex flex-col items-center justify-center hover:bg-purple-500/20 transition-colors cursor-pointer">
-                    <input type="file" id="galleryUploadInput" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
-                    <i data-lucide="upload-cloud" class="w-8 h-8 text-purple-400 mb-2 pointer-events-none"></i>
-                    <span id="galleryUploadText" class="text-xs font-bold text-purple-300 pointer-events-none">Toca para seleccionar foto</span>
-                </div>
-            </div>
-            <h3 class="text-white font-bold mb-3">Galería Web</h3>
-            <div id="galleryList" class="grid grid-cols-2 gap-3"></div>
-        </div>
+                    <div class="relative mb-4 w-full">
+                        <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
+                        <input type="text" id="searchInput" onkeyup="window.handleSearch(this.value)" class="saas-input pl-10 w-full" placeholder="Buscar paquete por nombre...">
+                    </div>
 
-        <!-- 5. VISTA CUPONES -->
-        <div id="view-coupons" class="view-section">
-            <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6">
-                <h3 class="text-sm font-bold text-pink-400 mb-4 flex items-center gap-2"><i data-lucide="ticket" class="w-4 h-4"></i> Crear Cupón de Descuento</h3>
-                <div class="mb-3"><label class="saas-label">Código (Mayúsculas)</label><input type="text" id="coupCode" class="saas-input uppercase" placeholder="EJ: FIESTA20"></div>
-                <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div><label class="saas-label">Tipo</label><select id="coupType" class="saas-input appearance-none"><option value="fixed">$ Monto Fijo</option><option value="percent">% Porcentaje</option></select></div>
-                    <div><label class="saas-label">Valor</label><input type="number" id="coupValue" class="saas-input" placeholder="10"></div>
-                </div>
-                <button onclick="saveCoupon()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3.5 rounded-xl text-sm transition-colors">Activar Cupón</button>
-            </div>
-            <h3 class="text-white font-bold mb-3">Cupones Activos</h3>
-            <div id="couponsList" class="space-y-2"></div>
-        </div>
+                    <div class="flex overflow-x-auto gap-2 mb-6 pb-2 hide-scroll-bar w-full" style="-webkit-overflow-scrolling: touch;">
+                        <button onclick="window.setFilterCategory(this, 'all')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-purple-600 text-white border border-purple-500 shadow-[0_0_10px_rgba(139,92,246,0.3)]">Todos</button>
+                        <button onclick="window.setFilterCategory(this, 'destacados')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">En Inicio 🌟</button>
+                        <button onclick="window.setFilterCategory(this, 'ofertas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Ofertas 🔥</button>
+                        <button onclick="window.setFilterCategory(this, 'payasos')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Payasos 🤡</button>
+                        <button onclick="window.setFilterCategory(this, 'burbujas')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Burbujas 🫧</button>
+                        <button onclick="window.setFilterCategory(this, 'santa')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Navidad 🎅</button>
+                        <button onclick="window.setFilterCategory(this, 'servicios')" class="filter-btn shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700">Servicios 🎁</button>
+                    </div>
 
-        <!-- 6. VISTA AJUSTES -->
-        <div id="view-settings" class="view-section">
-            
-            <!-- AJUSTE: BANNER -->
-            <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6">
-                <h3 class="text-sm font-bold text-cyan-400 mb-4 flex items-center gap-2"><i data-lucide="megaphone" class="w-4 h-4"></i> Banner Superior de Anuncios</h3>
-                <div class="flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-700 mb-4">
-                    <span class="text-sm font-bold text-white">Mostrar Banner en la Web</span>
-                    <div class="relative inline-block w-12 h-6"><input type="checkbox" id="bannerActive" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="bannerActive" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
+                    <!-- Contenedor grid estricto al 100% -->
+                    <div id="paquetesLista" class="grid grid-cols-1 md:grid-cols-2 gap-4 pb-8 w-full">
+                        <div class="col-span-full flex flex-col items-center justify-center py-20 text-slate-500">
+                            <i data-lucide="loader-2" class="animate-spin w-8 h-8 mb-4 text-purple-500"></i>
+                            <p class="font-medium text-sm">Sincronizando catálogo...</p>
+                        </div>
+                    </div>
                 </div>
-                <label class="saas-label">Mensaje del Banner</label>
-                <input type="text" id="bannerText" class="saas-input mb-2" placeholder="Ej: ¡Aprovecha 10% OFF este mes!">
-            </div>
 
-            <!-- AJUSTE: POP-UP PROMOCIONAL -->
-            <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6">
-                <h3 class="text-sm font-bold text-purple-400 mb-4 flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4"></i> Pop-up de Bienvenida Promocional</h3>
-                <p class="text-xs text-slate-400 mb-4">Aparecerá en el centro de la pantalla la primera vez que un cliente entre a tu web.</p>
-                
-                <div class="flex items-center justify-between bg-slate-900 p-4 rounded-xl border border-slate-700 mb-4">
-                    <span class="text-sm font-bold text-white">Activar Pop-up</span>
-                    <div class="relative inline-block w-12 h-6"><input type="checkbox" id="popupActive" class="toggle-checkbox-purple absolute block w-6 h-6 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="popupActive" class="toggle-label-purple block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
-                </div>
-                
-                <div class="space-y-4">
-                    <div><label class="saas-label">Título del Pop-up</label><input type="text" id="popupTitle" class="saas-input" placeholder="Ej: ¡Llegó el Black Friday!"></div>
-                    <div><label class="saas-label">Texto / Mensaje</label><textarea id="popupMessage" class="saas-input" rows="2" placeholder="Ej: Usa el código PROMOHOY y llévate 15% de descuento en tu reserva."></textarea></div>
-                    <div><label class="saas-label">Texto del Botón</label><input type="text" id="popupButton" class="saas-input" placeholder="Ej: Entendido"></div>
-                    <div>
-                        <label class="saas-label">Imagen (Opcional)</label>
-                        <div class="flex gap-2 mb-2">
-                            <input type="text" id="popupImage" class="saas-input" placeholder="Sube una foto promocional ->">
-                            <div class="w-12 shrink-0 bg-purple-600 hover:bg-purple-500 transition-colors rounded-xl relative flex items-center justify-center cursor-pointer shadow-md">
-                                <input type="file" id="popupImageNative" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
-                                <i data-lucide="camera" class="w-4 h-4 text-white z-10"></i>
+                <!-- 2. VISTA CREADOR DE PAQUETES -->
+                <div id="view-form" class="view-section relative min-h-[80vh] w-full">
+                    <h2 id="formMainTitle" class="text-xl font-bold text-white mb-4">Crear Paquete / Servicio</h2>
+                    <form id="adminForm" class="space-y-5 pb-4 w-full">
+                        
+                        <!-- Bloque 1: Info General -->
+                        <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 shadow-md w-full">
+                            <h3 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2"><i data-lucide="info" class="w-4 h-4 text-purple-400"></i> Información Básica</h3>
+                            <label class="saas-label">Nombre del Paquete</label>
+                            <input type="text" id="nombre" class="saas-input mb-4" placeholder="Ej: Show de Burbujas Mágico">
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="saas-label">Categoría</label>
+                                    <select id="categoria" class="saas-input appearance-none bg-slate-900 border-slate-700">
+                                        <option value="payasos">Payasos</option>
+                                        <option value="burbujas">Burbujas</option>
+                                        <option value="santa">Navidad</option>
+                                        <option value="servicios">Servicios Extras</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="saas-label">Orden Visual (1 = Primero)</label>
+                                    <input type="number" id="orden" class="saas-input" placeholder="Ej: 1">
+                                </div>
+                            </div>
+                            <label class="saas-label">Descripción Corta</label>
+                            <input type="text" id="descripcion" class="saas-input" placeholder="Ej: Ideal para espacios cerrados y cumpleaños infantiles">
+                        </div>
+                        
+                        <!-- Bloque 2: Precios -->
+                        <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 shadow-md w-full">
+                            <h3 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2"><i data-lucide="dollar-sign" class="w-4 h-4 text-emerald-400"></i> Precios y Promociones</h3>
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div><label class="saas-label">Precio ($)</label><input type="number" id="precio" class="saas-input text-emerald-400 font-bold" placeholder="0.00"></div>
+                                <div><label class="saas-label">Tipo de Cobro</label>
+                                    <select id="tipoCobro" class="saas-input appearance-none bg-slate-900 border-slate-700"><option value="paquete">Fijo / Por Paquete</option><option value="hora">Por Hora</option><option value="nino">Por Niño</option></select>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-3">
+                                <div><span class="text-sm font-bold text-white block">Es Oferta 🔥</span><span class="text-[10px] text-slate-400">Habilita precio anterior tachado</span></div>
+                                <div class="relative inline-block w-12 h-6 shrink-0"><input type="checkbox" id="oferta" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="oferta" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
+                            </div>
+                            <div id="precioOriginalContainer" class="hidden mb-4"><label class="saas-label text-pink-400">Precio Anterior (Tachado) ($)</label><input type="number" id="precioOriginal" class="saas-input bg-slate-900" placeholder="Ej: 150"></div>
+                            
+                            <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                                <div><span class="text-sm font-bold text-yellow-400 block">Destacar en Inicio 🌟</span><span class="text-[10px] text-slate-400">Lo mostrará en el carrusel principal</span></div>
+                                <div class="relative inline-block w-12 h-6 shrink-0"><input type="checkbox" id="destacado" class="toggle-checkbox-star absolute block w-6 h-6 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="destacado" class="toggle-label-star block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
                             </div>
                         </div>
-                        <div id="popupUploadProgress" class="hidden text-[10px] uppercase tracking-widest text-purple-400 font-bold flex items-center gap-2">
-                            <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Subiendo y comprimiendo...
+
+                        <!-- Bloque 3: Multimedia y Servicios Dinámicos -->
+                        <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 shadow-md w-full">
+                            <h3 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2"><i data-lucide="layers" class="w-4 h-4 text-blue-400"></i> Multimedia y Contenido</h3>
+                            
+                            <label class="saas-label">Imagen de Portada</label>
+                            <div class="flex gap-2 mb-3">
+                                <input type="text" id="imagen" class="saas-input bg-slate-900 text-xs" placeholder="URL o sube una imagen ->" readonly>
+                                <div class="w-12 h-12 shrink-0 bg-blue-600 hover:bg-blue-500 transition-colors rounded-xl relative flex items-center justify-center cursor-pointer shadow-lg shadow-blue-500/20">
+                                    <input type="file" id="imageFileNative" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
+                                    <i data-lucide="camera" class="w-5 h-5 text-white z-10"></i>
+                                </div>
+                            </div>
+                            <div id="uploadProgress" class="hidden text-[10px] uppercase tracking-widest text-blue-400 font-bold mb-3 flex items-center gap-2">
+                                <i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Procesando imagen...
+                            </div>
+                            <div id="imagePreviewBox" class="hidden h-40 rounded-xl bg-slate-900 mb-6 overflow-hidden relative border border-slate-700 shadow-inner"><img id="previewImg" class="w-full h-full object-cover"></div>
+                            
+                            <!-- Lista dinámica de servicios -->
+                            <div class="mt-4 pt-4 border-t border-slate-800 w-full">
+                                <label class="saas-label">Servicios Incluidos (Píldoras)</label>
+                                <div class="flex gap-2 mb-3">
+                                    <input type="text" id="nuevoServicioInput" class="saas-input flex-1 min-w-0" placeholder="Ej: 1 Hora de Show interactivo" onkeypress="if(event.key === 'Enter'){ event.preventDefault(); addDynamicService(); }">
+                                    <button type="button" onclick="addDynamicService()" class="px-4 shrink-0 bg-slate-800 text-white rounded-xl font-bold border border-slate-700 hover:bg-slate-700 transition-colors">+</button>
+                                </div>
+                                <div id="serviciosDynamicList" class="flex flex-col gap-2 empty:hidden w-full"></div>
+                                <p class="text-[10px] text-slate-500 mt-2 font-medium w-full">Agrega los items uno por uno. Esto se verá como una lista bonita en la web.</p>
+                                <textarea id="serviciosLista" class="hidden"></textarea>
+                            </div>
                         </div>
+                    </form>
+                    
+                    <!-- STICKY ACTION BAR -->
+                    <div class="sticky-action-bar rounded-t-2xl md:rounded-2xl md:static md:bg-transparent md:border-none md:p-0 md:m-0 md:mt-6 md:backdrop-blur-none w-full box-border">
+                        <button type="button" id="cancelEditBtn" onclick="window.cancelEditing()" class="hidden md:flex flex-1 min-w-0 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 px-4 rounded-xl border border-slate-700 transition-colors shrink-0 justify-center items-center">Cancelar Edición</button>
+                        <button type="button" id="submitBtn" class="btn-primary flex-[2] shadow-[0_0_20px_rgba(139,92,246,0.3)] text-[15px] min-w-0">Guardar Paquete</button>
                     </div>
                 </div>
+
+                <!-- 3. VISTA TRANSPORTE -->
+                <div id="view-transport" class="view-section w-full">
+                    <div class="bg-gradient-to-br from-[#0B1120] to-[#0F172A] p-5 rounded-2xl border border-emerald-500/20 shadow-lg mb-6 w-full">
+                        <h3 class="text-sm font-bold text-emerald-400 mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Añadir Zona de Transporte</h3>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div><label class="saas-label">Nombre de Zona</label><input type="text" id="transName" class="saas-input bg-slate-900" placeholder="Ej: Arraiján"></div>
+                            <div><label class="saas-label">Costo Extra ($)</label><input type="number" id="transCost" class="saas-input bg-slate-900" placeholder="Ej: 0 para gratis"></div>
+                        </div>
+                        <button onclick="saveTransport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm mt-2 transition-colors shadow-[0_4px_15px_rgba(16,185,129,0.3)]">Agregar Zona a la Web</button>
+                    </div>
+                    <h3 class="text-white font-bold mb-3 flex items-center gap-2"><i data-lucide="list" class="w-4 h-4 text-slate-500"></i> Zonas Activas</h3>
+                    <div id="transportList" class="space-y-2 w-full"></div>
+                </div>
+
+                <!-- 4. VISTA GALERÍA -->
+                <div id="view-gallery" class="view-section w-full">
+                    <div class="bg-[#0B1120] p-6 rounded-2xl border border-slate-800 shadow-md mb-6 text-center w-full">
+                        <div class="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto mb-3"><i data-lucide="camera" class="w-5 h-5 text-purple-400"></i></div>
+                        <h3 class="text-base font-bold text-white mb-1">Subir Foto a la Galería</h3>
+                        <p class="text-xs text-slate-400 mb-5 max-w-xs mx-auto">La imagen se optimizará automáticamente para que tu web cargue rápido.</p>
+                        
+                        <div class="relative w-full h-36 border-2 border-dashed border-purple-500/40 rounded-2xl bg-purple-500/5 flex flex-col items-center justify-center hover:bg-purple-500/10 hover:border-purple-500 transition-all cursor-pointer group">
+                            <input type="file" id="galleryUploadInput" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer w-full">
+                            <i data-lucide="upload-cloud" class="w-8 h-8 text-purple-400 mb-2 group-hover:scale-110 transition-transform pointer-events-none"></i>
+                            <span id="galleryUploadText" class="text-xs font-bold text-purple-300 pointer-events-none text-center px-4">Toca o arrastra una foto aquí</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between mb-4 w-full">
+                        <h3 class="text-white font-bold flex items-center gap-2"><i data-lucide="grid" class="w-4 h-4 text-slate-500"></i> Galería Web</h3>
+                        <span class="text-xs font-bold bg-slate-800 text-slate-300 px-2 py-1 rounded-md shrink-0" id="galleryCountBadge">0 fotos</span>
+                    </div>
+                    <div id="galleryList" class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 w-full"></div>
+                </div>
+
+                <!-- 5. VISTA CUPONES -->
+                <div id="view-coupons" class="view-section w-full">
+                    <div class="bg-gradient-to-br from-[#0B1120] to-[#0F172A] p-5 rounded-2xl border border-pink-500/20 shadow-lg mb-6 w-full">
+                        <h3 class="text-sm font-bold text-pink-400 mb-4 flex items-center gap-2"><i data-lucide="ticket" class="w-4 h-4"></i> Crear Cupón de Descuento</h3>
+                        <div class="mb-3 w-full"><label class="saas-label">Código (Automático a Mayúsculas)</label><input type="text" id="coupCode" class="saas-input bg-slate-900 uppercase font-bold text-pink-100 tracking-wider w-full" placeholder="EJ: FIESTA20"></div>
+                        <div class="grid grid-cols-2 gap-3 mb-5 w-full">
+                            <div><label class="saas-label">Tipo de Descuento</label><select id="coupType" class="saas-input bg-slate-900 appearance-none border-slate-700 w-full"><option value="fixed">$ Monto Fijo</option><option value="percent">% Porcentaje</option></select></div>
+                            <div><label class="saas-label">Valor Numérico</label><input type="number" id="coupValue" class="saas-input bg-slate-900 w-full" placeholder="10"></div>
+                        </div>
+                        <button onclick="saveCoupon()" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3.5 rounded-xl text-sm transition-colors shadow-[0_4px_15px_rgba(219,39,119,0.3)]">Generar y Activar Cupón</button>
+                    </div>
+                    <h3 class="text-white font-bold mb-3 flex items-center gap-2"><i data-lucide="tags" class="w-4 h-4 text-slate-500"></i> Cupones Activos</h3>
+                    <div id="couponsList" class="space-y-2 w-full"></div>
+                </div>
+
+                <!-- 6. VISTA AJUSTES -->
+                <div id="view-settings" class="view-section w-full">
+                    <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-5 shadow-md w-full">
+                        <h3 class="text-sm font-bold text-cyan-400 mb-4 flex items-center gap-2"><i data-lucide="megaphone" class="w-4 h-4"></i> Banner Superior (Top Bar)</h3>
+                        <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-4 w-full">
+                            <span class="text-sm font-bold text-white">Mostrar Banner en la Web</span>
+                            <div class="relative inline-block w-12 h-6 shrink-0"><input type="checkbox" id="bannerActive" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="bannerActive" class="toggle-label block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
+                        </div>
+                        <label class="saas-label">Mensaje del Banner</label>
+                        <input type="text" id="bannerText" class="saas-input bg-slate-900 w-full" placeholder="Ej: ¡Aprovecha 10% OFF este mes usando código MES10!">
+                    </div>
+
+                    <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-6 shadow-md w-full">
+                        <h3 class="text-sm font-bold text-purple-400 mb-2 flex items-center gap-2"><i data-lucide="gift" class="w-4 h-4"></i> Pop-up Promocional</h3>
+                        <p class="text-xs text-slate-400 mb-4 leading-relaxed">Este mensaje saltará en el centro de la pantalla la primera vez que un cliente nuevo entre a tu web. Ideal para recolectar leads o mostrar ofertas de temporada.</p>
+                        
+                        <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-4 w-full">
+                            <span class="text-sm font-bold text-white">Activar Pop-up Global</span>
+                            <div class="relative inline-block w-12 h-6 shrink-0"><input type="checkbox" id="popupActive" class="toggle-checkbox-purple absolute block w-6 h-6 rounded-full bg-slate-400 border-4 appearance-none cursor-pointer mt-0"/><label for="popupActive" class="toggle-label-purple block overflow-hidden h-6 rounded-full cursor-pointer"></label></div>
+                        </div>
+                        
+                        <div class="space-y-4 pt-2 border-t border-slate-800/50 w-full">
+                            <div><label class="saas-label">Título Principal</label><input type="text" id="popupTitle" class="saas-input bg-slate-900 font-bold w-full" placeholder="Ej: ¡Llegó el Black Friday!"></div>
+                            <div><label class="saas-label">Mensaje o Descripción</label><textarea id="popupMessage" class="saas-input bg-slate-900 leading-relaxed w-full" rows="3" placeholder="Ej: Usa el código PROMOHOY y llévate 15% de descuento en tu reserva."></textarea></div>
+                            <div><label class="saas-label">Texto del Botón de Cierre</label><input type="text" id="popupButton" class="saas-input bg-slate-900 w-full" placeholder="Ej: ¡Entendido, gracias!"></div>
+                            
+                            <div class="pt-2 w-full">
+                                <label class="saas-label">Imagen Destacada (Opcional)</label>
+                                <div class="flex gap-2 mb-2 w-full">
+                                    <input type="text" id="popupImage" class="saas-input bg-slate-900 text-xs w-full min-w-0" placeholder="URL generada ->" readonly>
+                                    <div class="w-12 shrink-0 bg-purple-600 hover:bg-purple-500 transition-colors rounded-xl relative flex items-center justify-center cursor-pointer shadow-md">
+                                        <input type="file" id="popupImageNative" accept="image/*" class="absolute inset-0 opacity-0 z-20 cursor-pointer">
+                                        <i data-lucide="camera" class="w-4 h-4 text-white z-10"></i>
+                                    </div>
+                                </div>
+                                <div id="popupUploadProgress" class="hidden text-[10px] uppercase tracking-widest text-purple-400 font-bold flex items-center gap-2">
+                                    <i data-lucide="loader-2" class="w-3 h-3 animate-spin shrink-0"></i> Procesando imagen...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl text-[15px] shadow-[0_4px_15px_rgba(8,145,178,0.3)] hover:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+                        <i data-lucide="save" class="w-5 h-5 shrink-0"></i> Guardar Todos los Ajustes Web
+                    </button>
+                </div>
             </div>
+        </main>
 
-            <!-- BOTÓN GUARDAR AJUSTES GLOBALES -->
-            <button onclick="saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl text-[15px] shadow-[0_4px_15px_rgba(8,145,178,0.3)] hover:scale-[0.98] transition-transform">Guardar Todos los Ajustes</button>
+        <!-- BOTTOM NAV MÓVIL (Solo se ve en móviles) -->
+        <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-[#0B1120]/95 backdrop-blur-lg border-t border-slate-800 z-50 px-2 pb-safe pt-2">
+            <div class="flex justify-between items-end pb-2">
+                <button data-tab="dashboard" class="nav-item-mobile tab-btn active flex-1 flex flex-col items-center justify-center gap-1 text-slate-500 transition-all">
+                    <div class="transition-transform duration-300"><i data-lucide="layout-dashboard" class="w-5 h-5"></i></div>
+                    <span class="text-[9px] font-bold opacity-0 absolute bottom-0 translate-y-2 transition-all duration-300 pointer-events-none">Inicio</span>
+                </button>
+                <button data-tab="catalog" class="nav-item-mobile tab-btn flex-1 flex flex-col items-center justify-center gap-1 text-slate-500 transition-all">
+                    <div class="transition-transform duration-300"><i data-lucide="package" class="w-5 h-5"></i></div>
+                    <span class="text-[9px] font-bold opacity-0 absolute bottom-0 translate-y-2 transition-all duration-300 pointer-events-none">Catálogo</span>
+                </button>
+                
+                <!-- Botón central grande (Crear) -->
+                <button data-tab="form" class="nav-item-mobile tab-btn relative -top-3 flex flex-col items-center justify-center px-2">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white shadow-[0_4px_15px_rgba(139,92,246,0.4)] border-4 border-[#020617] active:scale-95 transition-transform shrink-0">
+                        <i data-lucide="plus" class="w-6 h-6"></i>
+                    </div>
+                </button>
 
-        </div>
-
-    </main>
+                <button data-tab="gallery" class="nav-item-mobile tab-btn flex-1 flex flex-col items-center justify-center gap-1 text-slate-500 transition-all">
+                    <div class="transition-transform duration-300"><i data-lucide="image" class="w-5 h-5"></i></div>
+                    <span class="text-[9px] font-bold opacity-0 absolute bottom-0 translate-y-2 transition-all duration-300 pointer-events-none">Galería</span>
+                </button>
+                <button data-tab="settings" class="nav-item-mobile tab-btn flex-1 flex flex-col items-center justify-center gap-1 text-slate-500 transition-all">
+                    <div class="transition-transform duration-300"><i data-lucide="settings" class="w-5 h-5"></i></div>
+                    <span class="text-[9px] font-bold opacity-0 absolute bottom-0 translate-y-2 transition-all duration-300 pointer-events-none">Ajustes</span>
+                </button>
+            </div>
+            <!-- Opciones secundarias para móvil se mueven al sidebar en desktop -->
+            <div class="hidden">
+                <button data-tab="transport" class="tab-btn"></button>
+                <button data-tab="coupons" class="tab-btn"></button>
+            </div>
+        </nav>
+    </div>
 
     <!-- TOAST DE NOTIFICACIONES -->
     <div id="toast" class="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border">
@@ -290,9 +440,9 @@
             </div>
             <h3 id="confirmTitle" class="text-xl font-black text-white mb-2 relative z-10">¿Estás seguro?</h3>
             <p id="confirmMessage" class="text-sm text-slate-400 mb-6 relative z-10 font-medium leading-relaxed"></p>
-            <div class="flex gap-3 relative z-10">
-                <button onclick="window.closeConfirm()" class="flex-1 bg-slate-800 text-white font-bold py-3 rounded-xl border border-slate-700 hover:bg-slate-700 transition-colors text-sm">Cancelar</button>
-                <button id="confirmActionBtn" class="flex-1 bg-rose-600 text-white font-bold py-3 rounded-xl shadow-[0_0_15px_rgba(225,29,72,0.4)] hover:bg-rose-500 transition-colors text-sm">Sí, Borrar</button>
+            <div class="flex gap-3 relative z-10 w-full">
+                <button onclick="window.closeConfirm()" class="flex-1 min-w-0 bg-slate-800 text-white font-bold py-3 rounded-xl border border-slate-700 hover:bg-slate-700 transition-colors text-sm">Cancelar</button>
+                <button id="confirmActionBtn" class="flex-1 min-w-0 bg-rose-600 text-white font-bold py-3 rounded-xl shadow-[0_0_15px_rgba(225,29,72,0.4)] hover:bg-rose-500 transition-colors text-sm">Sí, Borrar</button>
             </div>
         </div>
     </div>
@@ -320,20 +470,73 @@
             catch (e) { return file; }
         }
 
-        // LÓGICA DE PESTAÑAS
+        // --- SISTEMA DE PESTAÑAS (Desktop Sidebar & Mobile Bottom Nav) ---
         const tabBtns = document.querySelectorAll('.tab-btn');
-        let currentTab = 'catalog';
+        let currentTab = 'dashboard';
 
         tabBtns.forEach(btn => btn.addEventListener('click', (e) => {
-            tabBtns.forEach(b => { b.classList.remove('active', 'bg-slate-800', 'text-white'); b.classList.add('text-slate-400', 'border-transparent'); });
-            e.target.classList.add('active', 'bg-slate-800', 'text-white');
-            e.target.classList.remove('text-slate-400', 'border-transparent');
+            const targetTab = e.currentTarget.dataset.tab;
             
+            // Limpiar estados activos
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active', 'bg-slate-800/50', 'text-white'));
+            document.querySelectorAll('.nav-item-mobile').forEach(b => b.classList.remove('active', 'text-purple-500'));
+            
+            // Activar botón clickeado (ambas versiones escritorio y móvil si existen)
+            document.querySelectorAll(`[data-tab="${targetTab}"]`).forEach(b => {
+                if(b.classList.contains('nav-item')) b.classList.add('active', 'bg-slate-800/50', 'text-white');
+                if(b.classList.contains('nav-item-mobile')) b.classList.add('active');
+            });
+            
+            // Mostrar vista
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.getElementById(`view-${e.target.dataset.tab}`).classList.add('active');
-            currentTab = e.target.dataset.tab;
+            document.getElementById(`view-${targetTab}`).classList.add('active');
+            currentTab = targetTab;
+            
+            // Hacer scroll top en móvil
+            document.querySelector('main').scrollTop = 0;
+            
             loadDataForTab(currentTab);
         }));
+
+        // --- GESTOR DINÁMICO DE SERVICIOS (PÍLDORAS) ---
+        let dynamicServicesArr = [];
+        
+        window.addDynamicService = function() {
+            const input = document.getElementById('nuevoServicioInput');
+            const val = input.value.trim();
+            if(val) {
+                dynamicServicesArr.push(val);
+                input.value = '';
+                renderDynamicServices();
+            }
+        };
+
+        window.removeDynamicService = function(index) {
+            dynamicServicesArr.splice(index, 1);
+            renderDynamicServices();
+        };
+
+        function renderDynamicServices() {
+            const container = document.getElementById('serviciosDynamicList');
+            const hiddenArea = document.getElementById('serviciosLista');
+            
+            container.innerHTML = '';
+            dynamicServicesArr.forEach((srv, index) => {
+                container.innerHTML += `
+                    <div class="flex items-center justify-between bg-slate-800 px-3 py-2 rounded-xl border border-slate-700 w-full">
+                        <span class="text-sm font-medium text-slate-200 flex items-center gap-2 min-w-0 truncate">
+                            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400 shrink-0"></i> 
+                            <span class="truncate">${srv}</span>
+                        </span>
+                        <button type="button" onclick="removeDynamicService(${index})" class="text-rose-400 hover:text-rose-300 p-1 shrink-0">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>`;
+            });
+            // Guardar al hidden textarea para compatibilidad con el resto del código
+            hiddenArea.value = dynamicServicesArr.join('\n');
+            lucide.createIcons();
+        }
 
         // MODAL DE CONFIRMACIÓN CUSTOM
         let confirmCallback = null;
@@ -378,11 +581,30 @@
 
         // CARGADORES DE DATOS
         async function loadDataForTab(tab) {
+            if(tab === 'dashboard') loadDashboardStats();
             if(tab === 'catalog') loadCatalog();
             if(tab === 'transport') window.loadTransport();
             if(tab === 'gallery') window.loadGallery();
             if(tab === 'coupons') window.loadCoupons();
             if(tab === 'settings') window.loadSettings();
+        }
+
+        // --- 0. DASHBOARD ---
+        async function loadDashboardStats() {
+            try {
+                // Paquetes
+                const pSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web'));
+                document.getElementById('stat-paquetes').textContent = pSnap.size;
+                // Zonas
+                const zSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'));
+                document.getElementById('stat-zonas').textContent = zSnap.size;
+                // Galería
+                const gSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'));
+                document.getElementById('stat-fotos').textContent = gSnap.size;
+                // Cupones
+                const cSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'cupones_web'));
+                document.getElementById('stat-cupones').textContent = cSnap.size;
+            } catch(e) { console.error("Error stats", e); }
         }
 
         // --- 1. CATÁLOGO / PAQUETES ---
@@ -399,55 +621,75 @@
                 
                 if (qSnap.empty) { 
                     container.innerHTML = `
-                        <div class="col-span-full flex flex-col items-center py-10 text-slate-500 bg-slate-900/50 rounded-xl border border-slate-800 border-dashed">
-                            <i data-lucide="package-open" class="w-8 h-8 mb-2 opacity-50"></i>
-                            <p class="text-sm font-bold">Catálogo vacío</p>
-                            <p class="text-xs">No hay paquetes publicados todavía.</p>
+                        <div class="col-span-full flex flex-col items-center py-16 text-slate-500 bg-slate-900/30 rounded-2xl border border-slate-800 border-dashed">
+                            <div class="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-3 text-slate-600"><i data-lucide="package-open" class="w-8 h-8"></i></div>
+                            <p class="text-base font-bold text-slate-300">Catálogo vacío</p>
+                            <p class="text-xs mt-1 text-center max-w-xs">Aún no hay paquetes. Ve a "Crear Paquete" para añadir el primero.</p>
                         </div>`; 
                     lucide.createIcons(); return; 
                 }
+
+                // Guardar en array y Ordenar
+                const docsArray = [];
+                qSnap.forEach(docSnap => docsArray.push({ id: docSnap.id, data: docSnap.data() }));
+
+                docsArray.sort((a, b) => {
+                    const ordenA = a.data.orden !== undefined && a.data.orden !== '' ? Number(a.data.orden) : 999;
+                    const ordenB = b.data.orden !== undefined && b.data.orden !== '' ? Number(b.data.orden) : 999;
+                    return ordenA - ordenB;
+                });
                 
-                qSnap.forEach(docSnap => {
-                    const data = docSnap.data(); paquetesLocales[docSnap.id] = data;
+                docsArray.forEach(item => {
+                    const docSnapId = item.id;
+                    const data = item.data; 
+                    paquetesLocales[docSnapId] = data;
                     
-                    // Diseño Premium de Tarjeta con Etiquetas
                     let tagHtml = '';
                     if(data.tipoCobro === 'hora') {
-                        tagHtml = `<span class="text-[9px] font-bold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30">POR HORA</span>`;
+                        tagHtml = `<span class="text-[9px] font-bold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded border border-blue-500/30 shrink-0">POR HORA</span>`;
                     } else if(data.tipoCobro === 'nino') {
-                        tagHtml = `<span class="text-[9px] font-bold bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded border border-orange-500/30">POR NIÑO</span>`;
+                        tagHtml = `<span class="text-[9px] font-bold bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded border border-orange-500/30 shrink-0">POR NIÑO</span>`;
                     } else {
-                        tagHtml = `<span class="text-[9px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30">FIJO</span>`;
+                        tagHtml = `<span class="text-[9px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30 shrink-0">FIJO</span>`;
                     }
 
+                    const ordenBadge = (data.orden !== undefined && data.orden !== 999 && data.orden !== '') 
+                        ? `<span class="text-[9px] text-slate-300 font-bold bg-slate-800 px-1.5 py-0.5 rounded border border-slate-600 shadow-sm shrink-0 whitespace-nowrap">#${data.orden}</span>` 
+                        : '';
+
+                    // SE AGREGÓ w-full, box-border y clases de min-w-0 estrictas. Se movieron los badges ARRIBA del nombre para evitar colapso
                     container.innerHTML += `
-                        <div class="flex flex-col p-4 bg-[#0F172A] border border-slate-700/50 rounded-2xl shadow-lg relative overflow-hidden group transition-all package-card-item" data-nombre="${(data.nombre||'').toLowerCase()}" data-categoria="${data.categoria}" data-oferta="${data.oferta}" data-destacado="${data.destacado || false}">
-                            <div class="flex gap-3 items-start relative z-10">
-                                <img src="${data.imagen || ''}" class="w-16 h-16 rounded-xl object-cover shrink-0 bg-slate-800 shadow-md">
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-start justify-between mb-1">
-                                        <h3 class="text-white font-bold text-[13px] leading-tight pr-2 truncate">${data.nombre}</h3>
-                                        ${data.destacado ? '<span class="text-[9px] text-yellow-400 font-bold bg-yellow-500/10 px-1.5 py-0.5 rounded border border-yellow-500/20 shrink-0 shadow-sm">⭐ INICIO</span>' : ''}
+                        <div class="flex flex-col p-4 bg-[#0F172A] border border-slate-800 hover:border-slate-600 rounded-2xl shadow-lg relative overflow-hidden group transition-all package-card-item w-full box-border" data-nombre="${(data.nombre||'').toLowerCase()}" data-categoria="${data.categoria}" data-oferta="${data.oferta}" data-destacado="${data.destacado || false}">
+                            <div class="flex gap-3 sm:gap-4 items-start w-full max-w-full">
+                                <img src="${data.imagen || ''}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover shrink-0 bg-slate-800 shadow-md">
+                                <div class="flex-1 min-w-0 overflow-hidden flex flex-col">
+                                    <div class="flex flex-wrap items-center gap-1.5 mb-1.5">
+                                        ${ordenBadge}
+                                        ${data.destacado ? '<span class="text-[9px] text-yellow-900 font-bold bg-yellow-400 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap shrink-0">⭐ INICIO</span>' : ''}
                                     </div>
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <p class="text-pink-400 font-black text-sm">$${data.precio}</p>
+                                    <h3 class="text-white font-bold text-sm leading-tight w-full whitespace-normal line-clamp-2 break-words" title="${data.nombre}">${data.nombre}</h3>
+                                    <div class="flex flex-wrap items-center gap-2 mt-1.5 mb-1">
+                                        <p class="text-emerald-400 font-black text-base">$${data.precio}</p>
                                         ${tagHtml}
                                     </div>
-                                    <span class="text-[9px] text-slate-500 uppercase tracking-widest font-bold">${data.categoria}</span>
+                                    <span class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1 truncate w-full inline-block">${data.categoria}</span>
                                 </div>
                             </div>
-                            <div class="flex gap-2 mt-4 pt-3 border-t border-slate-800/80 relative z-10">
-                                <button onclick="editPackage('${docSnap.id}')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2 rounded-lg transition-colors border border-slate-700"><i data-lucide="edit-3" class="w-3.5 h-3.5 inline mr-1"></i> Editar</button>
-                                <button onclick="deletePackage('${docSnap.id}')" class="w-10 h-10 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-lg flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            <div class="flex gap-2 mt-4 pt-4 border-t border-slate-800/80 w-full max-w-full">
+                                <button onclick="editPackage('${docSnapId}')" class="flex-1 min-w-0 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 rounded-xl transition-colors border border-slate-700 flex justify-center items-center gap-2">
+                                    <i data-lucide="edit-3" class="w-3.5 h-3.5 shrink-0"></i> <span class="truncate">Editar</span>
+                                </button>
+                                <button onclick="deletePackage('${docSnapId}')" class="w-11 h-11 shrink-0 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-xl flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all">
+                                    <i data-lucide="trash-2" class="w-4 h-4 shrink-0"></i>
+                                </button>
                             </div>
                         </div>`;
                 });
                 lucide.createIcons();
-                window.applyCatalogFilters(); // Aplica filtros al recargar
+                window.applyCatalogFilters();
             } catch (e) { showToast("Error cargando catálogo", "error"); }
         }
 
-        // Lógica Combinada de Filtro y Búsqueda
         window.applyCatalogFilters = function() {
             const cards = document.querySelectorAll('.package-card-item');
             let count = 0;
@@ -473,8 +715,8 @@
                 if (!emptyMsg) {
                     emptyMsg = document.createElement('div');
                     emptyMsg.id = 'emptyFilterMsg';
-                    emptyMsg.className = 'col-span-full py-12 text-center text-slate-500';
-                    emptyMsg.innerHTML = '<i data-lucide="filter-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i><p class="font-bold text-sm text-slate-400">No se encontraron resultados.</p>';
+                    emptyMsg.className = 'col-span-full py-12 text-center text-slate-500 w-full';
+                    emptyMsg.innerHTML = '<i data-lucide="filter-x" class="w-12 h-12 mx-auto mb-3 opacity-30 text-slate-600"></i><p class="font-bold text-sm text-slate-400">No hay paquetes que coincidan.</p>';
                     document.getElementById('paquetesLista').appendChild(emptyMsg);
                     lucide.createIcons();
                 }
@@ -507,7 +749,7 @@
                 document.getElementById('tipoCobro').value = 'hora'; 
                 document.getElementById('tipoCobro').classList.add('highlight-field');
                 setTimeout(() => document.getElementById('tipoCobro').classList.remove('highlight-field'), 1500);
-                showToast("Sugerencia: Cobro Por Hora", "info");
+                showToast("Sugerencia: Cobro Por Hora para servicios", "info");
             } else {
                 document.getElementById('tipoCobro').value = 'paquete';
             }
@@ -518,15 +760,33 @@
         document.getElementById('imageFileNative').addEventListener('change', async (e) => uploadToCloudinary(e.target.files[0], document.getElementById('imagen'), document.getElementById('imagePreviewBox'), document.getElementById('previewImg'), document.getElementById('uploadProgress')));
 
         document.getElementById('submitBtn').addEventListener('click', async (e) => {
-            const nombre = document.getElementById('nombre').value; const precio = Number(document.getElementById('precio').value);
-            const oferta = document.getElementById('oferta').checked; const destacado = document.getElementById('destacado').checked;
+            const nombre = document.getElementById('nombre').value; 
+            const precio = Number(document.getElementById('precio').value);
+            const oferta = document.getElementById('oferta').checked; 
+            const destacado = document.getElementById('destacado').checked;
             const img = document.getElementById('imagen').value;
-            if(!nombre || !precio || !img) return showToast("Llena nombre, precio e imagen", "error");
             
-            const dataToSave = { nombre, categoria: document.getElementById('categoria').value, precio, tipoCobro: document.getElementById('tipoCobro').value, oferta, destacado, precioOriginal: oferta ? Number(document.getElementById('precioOriginal').value) : null, descripcion: document.getElementById('descripcion').value, imagen: img, serviciosLista: document.getElementById('serviciosLista').value };
+            const ordenInput = document.getElementById('orden').value;
+            const orden = ordenInput === '' ? 999 : Number(ordenInput);
+
+            if(!nombre || !precio || !img) return showToast("Falta nombre, precio o imagen", "error");
+            
+            const dataToSave = { 
+                nombre, 
+                categoria: document.getElementById('categoria').value, 
+                precio, 
+                tipoCobro: document.getElementById('tipoCobro').value, 
+                oferta, 
+                destacado, 
+                orden, 
+                precioOriginal: oferta ? Number(document.getElementById('precioOriginal').value) : null, 
+                descripcion: document.getElementById('descripcion').value, 
+                imagen: img, 
+                serviciosLista: document.getElementById('serviciosLista').value 
+            };
             
             const btn = e.target; const oHtml = btn.innerHTML;
-            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>'; btn.disabled = true;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto shrink-0"></i>'; btn.disabled = true;
 
             try {
                 if (editingId) { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', editingId), dataToSave); showToast("Paquete Actualizado"); } 
@@ -543,10 +803,10 @@
             document.getElementById('nombre').value = d.nombre; 
             document.getElementById('precio').value = d.precio; 
             document.getElementById('categoria').value = d.categoria; 
+            document.getElementById('orden').value = (d.orden !== undefined && d.orden !== 999) ? d.orden : ''; 
             document.getElementById('tipoCobro').value = d.tipoCobro; 
             document.getElementById('descripcion').value = d.descripcion; 
             document.getElementById('imagen').value = d.imagen; 
-            document.getElementById('serviciosLista').value = d.serviciosLista; 
             document.getElementById('oferta').checked = d.oferta || false; 
             document.getElementById('destacado').checked = d.destacado || false; 
             document.getElementById('precioOriginalContainer').classList.toggle('hidden', !d.oferta); 
@@ -554,9 +814,15 @@
             document.getElementById('imagePreviewBox').classList.remove('hidden'); 
             document.getElementById('previewImg').src = d.imagen; 
             
+            // Cargar servicios dinámicos
+            document.getElementById('serviciosLista').value = d.serviciosLista || '';
+            dynamicServicesArr = d.serviciosLista ? d.serviciosLista.split('\n').filter(s => s.trim() !== '') : [];
+            renderDynamicServices();
+            
             document.getElementById('cancelEditBtn').classList.remove('hidden');
+            
+            // Clic en tab de form (busca la de mobile o desktop, la primera vale)
             document.querySelector('[data-tab="form"]').click(); 
-            window.scrollTo(0,0); 
         };
 
         window.cancelEditing = () => {
@@ -566,13 +832,18 @@
             document.getElementById('imagePreviewBox').classList.add('hidden');
             document.getElementById('precioOriginalContainer').classList.add('hidden');
             document.getElementById('cancelEditBtn').classList.add('hidden');
+            
+            // Limpiar dynamic services
+            dynamicServicesArr = [];
+            renderDynamicServices();
+
             document.querySelector('[data-tab="catalog"]').click();
         }
 
         window.deletePackage = async id => { 
             window.showConfirm("Eliminar Paquete", "¿Seguro que quieres borrar este paquete? Esta acción no se puede deshacer.", async () => {
                 await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', id)); 
-                loadCatalog(); 
+                loadCatalog(); loadDashboardStats();
                 showToast("Paquete eliminado", "success");
             });
         };
@@ -582,27 +853,68 @@
             const container = document.getElementById('transportList');
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'));
             container.innerHTML = '';
+            
+            if(qSnap.empty) {
+                container.innerHTML = `
+                    <div class="p-6 text-center bg-slate-900/50 rounded-xl border border-dashed border-slate-700 w-full">
+                        <i data-lucide="map" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+                        <p class="text-slate-400 text-sm font-medium">Aún no has configurado zonas.</p>
+                    </div>`;
+            }
+            
             qSnap.forEach(d => {
                 const data = d.data();
-                container.innerHTML += `<div class="flex justify-between items-center bg-[#0F172A] p-4 rounded-xl border border-slate-700/50 shadow-sm"><div class="flex flex-col"><span class="text-white font-bold text-sm">${data.label}</span><span class="text-emerald-400 font-black text-xs mt-0.5">+$${data.cost}</span></div><button onclick="deleteDocGen('transporte_web', '${d.id}', window.loadTransport)" class="text-rose-500 p-2 hover:bg-rose-500/10 rounded-lg transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+                const cleanLabel = data.label.split(' (')[0];
+                const costHtml = data.cost === 0 
+                    ? `<span class="text-emerald-400 font-bold text-xs bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 mt-1 inline-block shrink-0">GRATIS</span>`
+                    : `<span class="text-emerald-400 font-black text-sm mt-1 inline-block shrink-0">+$${data.cost}</span>`;
+                
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-[#0F172A] p-4 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors shadow-sm group w-full">
+                        <div class="flex flex-col min-w-0">
+                            <span class="text-white font-bold text-base leading-none truncate">${cleanLabel}</span>
+                            <div>${costHtml}</div>
+                        </div>
+                        <button onclick="deleteDocGen('transporte_web', '${d.id}', window.loadTransport)" class="text-slate-500 hover:text-rose-500 p-2 hover:bg-rose-500/10 rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                    </div>`;
             });
-            if(qSnap.empty) container.innerHTML = '<p class="text-slate-500 text-xs">Añade tu primera zona.</p>';
             lucide.createIcons();
         }
         window.saveTransport = async () => {
-            const label = document.getElementById('transName').value; const cost = Number(document.getElementById('transCost').value);
-            if(!label || !cost) return showToast("Llena zona y costo", "error");
-            await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'), { label: `${label} (+$${cost})`, cost, value: label.toLowerCase().replace(/ /g,'-') });
-            document.getElementById('transName').value = ''; document.getElementById('transCost').value = ''; showToast("Zona Guardada"); window.loadTransport();
+            const label = document.getElementById('transName').value; 
+            const costInput = document.getElementById('transCost').value;
+            
+            if(!label || costInput === '') return showToast("Escribe zona y costo", "error");
+            
+            const cost = Number(costInput);
+            const labelText = cost === 0 ? `${label} (Gratis)` : `${label} (+$${cost})`;
+            
+            await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'), { 
+                label: labelText, cost: cost, value: label.toLowerCase().replace(/ /g,'-') 
+            });
+            
+            document.getElementById('transName').value = ''; 
+            document.getElementById('transCost').value = ''; 
+            showToast("Zona Guardada", "success"); 
+            window.loadTransport(); loadDashboardStats();
         };
 
         // --- 4. GALERÍA ---
         window.loadGallery = async function loadGallery() {
             const container = document.getElementById('galleryList');
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'));
+            document.getElementById('galleryCountBadge').textContent = `${qSnap.size} fotos`;
             container.innerHTML = '';
+            
+            if(qSnap.empty) {
+                container.innerHTML = `
+                    <div class="col-span-full p-8 text-center bg-slate-900/50 rounded-xl border border-dashed border-slate-700 w-full">
+                        <p class="text-slate-400 text-sm">No hay fotos en tu galería.</p>
+                    </div>`;
+            }
+
             qSnap.forEach(d => {
-                container.innerHTML += `<div class="relative rounded-2xl overflow-hidden h-32 border border-slate-700 group shadow-lg"><img src="${d.data().image}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><button onclick="deleteDocGen('galeria_web', '${d.id}', window.loadGallery)" class="bg-rose-600 p-2.5 rounded-xl text-white shadow-lg transform scale-90 group-hover:scale-100 transition-all"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div></div>`;
+                container.innerHTML += `<div class="relative rounded-xl overflow-hidden h-32 md:h-40 border border-slate-700 group shadow-lg w-full"><img src="${d.data().image}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2"><button onclick="deleteDocGen('galeria_web', '${d.id}', window.loadGallery)" class="self-end bg-rose-600/90 backdrop-blur p-2 rounded-lg text-white shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all hover:bg-rose-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`;
             });
             lucide.createIcons();
         }
@@ -612,7 +924,7 @@
             const textElement = document.getElementById('galleryUploadText');
             const icon = document.querySelector('#view-gallery .lucide-upload-cloud');
             
-            textElement.textContent = "Comprimiendo..."; icon.classList.add('animate-bounce');
+            textElement.textContent = "Optimizando foto..."; icon.classList.add('animate-bounce');
             const compressedFile = await compressImage(file);
             
             textElement.textContent = "Subiendo a la nube...";
@@ -622,10 +934,14 @@
             
             try {
                 const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); const data = await res.json();
-                if(data.secure_url) { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url, createdAt: new Date().toISOString() }); showToast("Foto publicada en galería", "success"); window.loadGallery(); }
+                if(data.secure_url) { 
+                    await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url, createdAt: new Date().toISOString() }); 
+                    showToast("Foto publicada", "success"); 
+                    window.loadGallery(); loadDashboardStats();
+                }
             } catch(e) { showToast("Error al subir", "error"); }
             
-            textElement.textContent = "Toca para seleccionar foto"; icon.classList.remove('animate-bounce');
+            textElement.textContent = "Toca o arrastra una foto aquí"; icon.classList.remove('animate-bounce');
             e.target.value = '';
         });
 
@@ -634,17 +950,26 @@
             const container = document.getElementById('couponsList');
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'cupones_web'));
             container.innerHTML = '';
+            
+            if(qSnap.empty) {
+                container.innerHTML = `
+                    <div class="p-6 text-center bg-slate-900/50 rounded-xl border border-dashed border-slate-700 w-full">
+                        <i data-lucide="ticket" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+                        <p class="text-slate-400 text-sm font-medium">Crea cupones para atraer clientes.</p>
+                    </div>`;
+            }
+
             qSnap.forEach(d => {
                 const data = d.data();
-                container.innerHTML += `<div class="flex justify-between items-center bg-[#0F172A] p-4 rounded-xl border border-pink-500/30 shadow-md"><div class="flex flex-col"><span class="text-pink-400 font-black tracking-widest text-lg">${data.code}</span><span class="text-slate-400 font-bold text-xs mt-0.5">Descuento: ${data.type==='percent'? data.discount+'%': '$'+data.discount}</span></div><button onclick="deleteDocGen('cupones_web', '${d.id}', window.loadCoupons)" class="text-rose-500 p-2 hover:bg-rose-500/10 rounded-lg transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div>`;
+                container.innerHTML += `<div class="flex justify-between items-center bg-gradient-to-r from-[#0F172A] to-[#131C31] p-4 rounded-xl border border-pink-500/20 shadow-md group w-full"><div class="flex flex-col min-w-0"><span class="text-pink-400 font-black tracking-widest text-lg truncate">${data.code}</span><span class="text-slate-300 font-medium text-xs mt-0.5 bg-slate-800 px-2 py-0.5 rounded w-max">Descuento de ${data.type==='percent'? data.discount+'%': '$'+data.discount}</span></div><button onclick="deleteDocGen('cupones_web', '${d.id}', window.loadCoupons)" class="text-slate-500 hover:text-rose-500 p-2 hover:bg-rose-500/10 rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>`;
             });
             lucide.createIcons();
         }
         window.saveCoupon = async () => {
             const code = document.getElementById('coupCode').value.toUpperCase(), type = document.getElementById('coupType').value, discount = Number(document.getElementById('coupValue').value);
-            if(!code || !discount) return showToast("Datos incompletos", "error");
+            if(!code || !discount) return showToast("Falta código o valor", "error");
             await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'cupones_web', code), { code, type, discount, active: true });
-            document.getElementById('coupCode').value = ''; document.getElementById('coupValue').value = ''; showToast("Cupón Activado", "success"); window.loadCoupons();
+            document.getElementById('coupCode').value = ''; document.getElementById('coupValue').value = ''; showToast("Cupón Activado", "success"); window.loadCoupons(); loadDashboardStats();
         };
 
         // --- 6. AJUSTES WEB ---
@@ -663,8 +988,8 @@
         }
         
         window.saveSettings = async () => {
-            const btn = document.querySelector('#view-settings button'); const oText = btn.textContent;
-            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto"></i>';
+            const btn = document.querySelector('#view-settings button'); const oText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto shrink-0"></i>';
             await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { 
                 bannerActive: document.getElementById('bannerActive').checked, 
                 bannerText: document.getElementById('bannerText').value,
@@ -674,18 +999,19 @@
                 popupButton: document.getElementById('popupButton').value,
                 popupImage: document.getElementById('popupImage').value
             }, {merge: true});
-            btn.textContent = oText;
+            btn.innerHTML = oText;
             showToast("Ajustes Web Guardados", "success");
+            lucide.createIcons();
         };
 
-        // Subida Pop-up con Compresión
+        // Subida Pop-up
         document.getElementById('popupImageNative').addEventListener('change', async (e) => uploadToCloudinary(e.target.files[0], document.getElementById('popupImage'), null, null, document.getElementById('popupUploadProgress')));
 
-        // UTILS GLOBALES DE SUBIDA Y BORRADO
+        // UTILS GLOBALES
         window.deleteDocGen = async (col, id, callback) => { 
-            window.showConfirm("Eliminar Elemento", "¿Seguro que quieres borrar esto? Se quitará de tu web al instante.", async () => {
+            window.showConfirm("Borrar Elemento", "¿Seguro que quieres borrar esto de tu web?", async () => {
                 await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id)); 
-                showToast("Eliminado con éxito", "success"); 
+                showToast("Eliminado", "success"); 
                 callback(); 
             });
         };
@@ -698,7 +1024,6 @@
             const compressedFile = await compressImage(file);
             
             if(img) img.src = URL.createObjectURL(compressedFile);
-            showToast("Subiendo a la nube...", "info");
             
             const formData = new FormData(); 
             formData.append('file', compressedFile); 
@@ -706,11 +1031,15 @@
             try { 
                 const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); 
                 const data = await res.json(); 
-                if(data.secure_url) { inputUrl.value = data.secure_url; showToast("Imagen lista", "success"); } 
+                if(data.secure_url) { inputUrl.value = data.secure_url; showToast("Imagen subida", "success"); } 
             } catch(e) { showToast("Error al subir", "error"); } finally { if(prog) prog.classList.add('hidden'); }
         }
 
-        document.getElementById('refreshBtn').addEventListener('click', () => loadDataForTab(currentTab));
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            loadDataForTab(currentTab);
+            showToast("Actualizado", "info");
+        });
+        
         lucide.createIcons();
 
         // INICIALIZACIÓN
@@ -722,9 +1051,9 @@
                 } else {
                     await signInAnonymously(auth);
                 }
-                loadDataForTab(currentTab);
+                loadDataForTab(currentTab); // Carga la pestaña actual (Dashboard por defecto)
             } catch (error) {
-                showToast("Fallo al conectar con la base de datos.", "error");
+                showToast("Fallo de conexión.", "error");
             }
         }
         init();
