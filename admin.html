@@ -106,7 +106,7 @@
     <!-- ÁREA PRINCIPAL -->
     <div class="flex-1 flex flex-col h-screen relative w-full overflow-hidden">
         
-        <!-- HEADER MÓVIL -->
+        <!-- HEADER MÓVIL CON BOTONES DE ACCESO RÁPIDO -->
         <header class="md:hidden sticky top-0 z-30 bg-[#0B1120]/95 backdrop-blur-md border-b border-slate-800 w-full">
             <div class="px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center gap-2">
@@ -115,10 +115,19 @@
                     </div>
                     <h1 class="text-sm font-black text-white tracking-tight">Diverty<span class="text-slate-500 font-medium">Master</span></h1>
                 </div>
+                <!-- NUEVOS BOTONES DE ACCESO PARA MÓVIL (Transporte y Cupones) -->
+                <div class="flex items-center gap-1">
+                    <button data-tab="transport" class="tab-btn p-2 text-slate-400 hover:text-emerald-400 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors" title="Transporte">
+                        <i data-lucide="map" class="w-5 h-5"></i>
+                    </button>
+                    <button data-tab="coupons" class="tab-btn p-2 text-slate-400 hover:text-pink-400 rounded-lg bg-slate-800/50 hover:bg-slate-800 transition-colors" title="Cupones">
+                        <i data-lucide="ticket" class="w-5 h-5"></i>
+                    </button>
+                </div>
             </div>
         </header>
 
-        <!-- CONTENEDOR DE VISTAS (Scrollable). Agregado overflow-x-hidden para evitar desbordes -->
+        <!-- CONTENEDOR DE VISTAS (Scrollable) -->
         <main class="flex-1 overflow-y-auto overflow-x-hidden pb-24 md:pb-6 relative w-full">
             <div class="max-w-[800px] mx-auto px-4 py-6 md:py-8 w-full box-border">
                 
@@ -131,25 +140,25 @@
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                         <!-- Stat Card 1 -->
-                        <div class="bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 rounded-2xl p-4 relative overflow-hidden">
+                        <div onclick="document.querySelector('[data-tab=\'catalog\']').click()" class="cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 rounded-2xl p-4 relative overflow-hidden">
                             <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center mb-3 text-purple-400"><i data-lucide="package" class="w-4 h-4"></i></div>
                             <p class="text-3xl font-black text-white" id="stat-paquetes">0</p>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Paquetes</p>
                         </div>
                         <!-- Stat Card 2 -->
-                        <div class="bg-gradient-to-br from-pink-500/10 to-transparent border border-pink-500/20 rounded-2xl p-4 relative overflow-hidden">
+                        <div onclick="document.querySelector('[data-tab=\'gallery\']').click()" class="cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform bg-gradient-to-br from-pink-500/10 to-transparent border border-pink-500/20 rounded-2xl p-4 relative overflow-hidden">
                             <div class="w-8 h-8 rounded-full bg-pink-500/20 flex items-center justify-center mb-3 text-pink-400"><i data-lucide="image" class="w-4 h-4"></i></div>
                             <p class="text-3xl font-black text-white" id="stat-fotos">0</p>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Fotos Web</p>
                         </div>
                         <!-- Stat Card 3 -->
-                        <div class="bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-2xl p-4 relative overflow-hidden">
+                        <div onclick="document.querySelector('[data-tab=\'transport\']').click()" class="cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-2xl p-4 relative overflow-hidden">
                             <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center mb-3 text-emerald-400"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
                             <p class="text-3xl font-black text-white" id="stat-zonas">0</p>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Zonas Transp.</p>
                         </div>
                         <!-- Stat Card 4 -->
-                        <div class="bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 rounded-2xl p-4 relative overflow-hidden">
+                        <div onclick="document.querySelector('[data-tab=\'coupons\']').click()" class="cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 rounded-2xl p-4 relative overflow-hidden">
                             <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mb-3 text-blue-400"><i data-lucide="ticket" class="w-4 h-4"></i></div>
                             <p class="text-3xl font-black text-white" id="stat-cupones">0</p>
                             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-1">Cupones</p>
@@ -162,7 +171,6 @@
                         </div>
                         <h3 class="text-white font-bold mb-2">Todo funcionando correctamente</h3>
                         <p class="text-sm text-slate-400 max-w-sm mx-auto">Tus clientes pueden ver tu catálogo actualizado y tu página está optimizada en tiempo real.</p>
-                        <button onclick="document.querySelector('[data-tab=\'catalog\']').click()" class="mt-6 px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-sm transition-colors border border-slate-700">Ir al Catálogo</button>
                     </div>
                 </div>
 
@@ -286,7 +294,7 @@
                     
                     <!-- STICKY ACTION BAR -->
                     <div class="sticky-action-bar rounded-t-2xl md:rounded-2xl md:static md:bg-transparent md:border-none md:p-0 md:m-0 md:mt-6 md:backdrop-blur-none w-full box-border">
-                        <button type="button" id="cancelEditBtn" onclick="window.cancelEditing()" class="hidden md:flex flex-1 min-w-0 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 px-4 rounded-xl border border-slate-700 transition-colors shrink-0 justify-center items-center">Cancelar Edición</button>
+                        <button type="button" id="cancelEditBtn" onclick="window.cancelEditing()" class="hidden flex-1 min-w-0 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 px-4 rounded-xl border border-slate-700 transition-colors shrink-0 justify-center items-center">Cancelar Edición</button>
                         <button type="button" id="submitBtn" class="btn-primary flex-[2] shadow-[0_0_20px_rgba(139,92,246,0.3)] text-[15px] min-w-0">Guardar Paquete</button>
                     </div>
                 </div>
@@ -294,12 +302,15 @@
                 <!-- 3. VISTA TRANSPORTE -->
                 <div id="view-transport" class="view-section w-full">
                     <div class="bg-gradient-to-br from-[#0B1120] to-[#0F172A] p-5 rounded-2xl border border-emerald-500/20 shadow-lg mb-6 w-full">
-                        <h3 class="text-sm font-bold text-emerald-400 mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Añadir Zona de Transporte</h3>
+                        <h3 id="transportFormTitle" class="text-sm font-bold text-emerald-400 mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Añadir Zona de Transporte</h3>
                         <div class="grid grid-cols-2 gap-3 mb-3">
                             <div><label class="saas-label">Nombre de Zona</label><input type="text" id="transName" class="saas-input bg-slate-900" placeholder="Ej: Arraiján"></div>
                             <div><label class="saas-label">Costo Extra ($)</label><input type="number" id="transCost" class="saas-input bg-slate-900" placeholder="Ej: 0 para gratis"></div>
                         </div>
-                        <button onclick="saveTransport()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm mt-2 transition-colors shadow-[0_4px_15px_rgba(16,185,129,0.3)]">Agregar Zona a la Web</button>
+                        <div class="flex gap-2 mt-3 w-full">
+                            <button type="button" id="cancelTransportEditBtn" onclick="window.cancelTransportEdit()" class="hidden flex-1 min-w-0 bg-slate-800 hover:bg-slate-700 text-white font-bold py-3.5 rounded-xl border border-slate-700 transition-colors text-sm">Cancelar</button>
+                            <button type="button" id="saveTransportBtn" onclick="window.saveTransport()" class="flex-[2] w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl text-sm transition-colors shadow-[0_4px_15px_rgba(16,185,129,0.3)]">Agregar Zona a la Web</button>
+                        </div>
                     </div>
                     <h3 class="text-white font-bold mb-3 flex items-center gap-2"><i data-lucide="list" class="w-4 h-4 text-slate-500"></i> Zonas Activas</h3>
                     <div id="transportList" class="space-y-2 w-full"></div>
@@ -417,7 +428,7 @@
                     <span class="text-[9px] font-bold opacity-0 absolute bottom-0 translate-y-2 transition-all duration-300 pointer-events-none">Ajustes</span>
                 </button>
             </div>
-            <!-- Opciones secundarias para móvil se mueven al sidebar en desktop -->
+            <!-- Ocultos en el menú de abajo, ahora accesibles arriba en el Header o desde el Dashboard -->
             <div class="hidden">
                 <button data-tab="transport" class="tab-btn"></button>
                 <button data-tab="coupons" class="tab-btn"></button>
@@ -820,6 +831,7 @@
             renderDynamicServices();
             
             document.getElementById('cancelEditBtn').classList.remove('hidden');
+            document.getElementById('cancelEditBtn').classList.add('flex');
             
             // Clic en tab de form (busca la de mobile o desktop, la primera vale)
             document.querySelector('[data-tab="form"]').click(); 
@@ -832,6 +844,7 @@
             document.getElementById('imagePreviewBox').classList.add('hidden');
             document.getElementById('precioOriginalContainer').classList.add('hidden');
             document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('cancelEditBtn').classList.remove('flex');
             
             // Limpiar dynamic services
             dynamicServicesArr = [];
@@ -848,7 +861,9 @@
             });
         };
 
-        // --- 3. TRANSPORTE ---
+        // --- 3. TRANSPORTE (AHORA CON EDICIÓN MEJORADA) ---
+        let editingTransportId = null;
+
         window.loadTransport = async function loadTransport() {
             const container = document.getElementById('transportList');
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'));
@@ -869,17 +884,54 @@
                     ? `<span class="text-emerald-400 font-bold text-xs bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 mt-1 inline-block shrink-0">GRATIS</span>`
                     : `<span class="text-emerald-400 font-black text-sm mt-1 inline-block shrink-0">+$${data.cost}</span>`;
                 
+                // Se removieron las clases que lo hacían invisible hasta el hover
+                // Ahora los botones tienen fondo y son siempre visibles en móvil y PC
                 container.innerHTML += `
-                    <div class="flex justify-between items-center bg-[#0F172A] p-4 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors shadow-sm group w-full">
+                    <div class="flex justify-between items-center bg-[#0F172A] p-4 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors shadow-sm w-full">
                         <div class="flex flex-col min-w-0">
                             <span class="text-white font-bold text-base leading-none truncate">${cleanLabel}</span>
                             <div>${costHtml}</div>
                         </div>
-                        <button onclick="deleteDocGen('transporte_web', '${d.id}', window.loadTransport)" class="text-slate-500 hover:text-rose-500 p-2 hover:bg-rose-500/10 rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        <div class="flex gap-2 shrink-0">
+                            <button onclick="window.editTransport('${d.id}', '${cleanLabel.replace(/'/g, "\\'")}', ${data.cost})" class="bg-slate-800 text-slate-300 hover:text-emerald-400 p-2.5 rounded-lg border border-slate-700 hover:border-emerald-500/50 transition-all"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="deleteDocGen('transporte_web', '${d.id}', window.loadTransport)" class="bg-slate-800 text-slate-300 hover:text-rose-400 p-2.5 rounded-lg border border-slate-700 hover:border-rose-500/50 transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
                     </div>`;
             });
             lucide.createIcons();
         }
+
+        window.editTransport = (id, name, cost) => {
+            editingTransportId = id;
+            document.getElementById('transName').value = name;
+            document.getElementById('transCost').value = cost;
+            
+            document.getElementById('transportFormTitle').innerHTML = '<i data-lucide="edit-3" class="w-4 h-4"></i> Editando Zona de Transporte';
+            document.getElementById('saveTransportBtn').textContent = 'Guardar Cambios';
+            
+            const cancelBtn = document.getElementById('cancelTransportEditBtn');
+            cancelBtn.classList.remove('hidden');
+            cancelBtn.classList.add('block');
+            
+            lucide.createIcons();
+            document.getElementById('view-transport').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.cancelTransportEdit = () => {
+            editingTransportId = null;
+            document.getElementById('transName').value = '';
+            document.getElementById('transCost').value = '';
+            
+            document.getElementById('transportFormTitle').innerHTML = '<i data-lucide="map-pin" class="w-4 h-4"></i> Añadir Zona de Transporte';
+            document.getElementById('saveTransportBtn').textContent = 'Agregar Zona a la Web';
+            
+            const cancelBtn = document.getElementById('cancelTransportEditBtn');
+            cancelBtn.classList.add('hidden');
+            cancelBtn.classList.remove('block');
+            
+            lucide.createIcons();
+        };
+
         window.saveTransport = async () => {
             const label = document.getElementById('transName').value; 
             const costInput = document.getElementById('transCost').value;
@@ -888,15 +940,32 @@
             
             const cost = Number(costInput);
             const labelText = cost === 0 ? `${label} (Gratis)` : `${label} (+$${cost})`;
-            
-            await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'), { 
+            const dataToSave = { 
                 label: labelText, cost: cost, value: label.toLowerCase().replace(/ /g,'-') 
-            });
+            };
             
-            document.getElementById('transName').value = ''; 
-            document.getElementById('transCost').value = ''; 
-            showToast("Zona Guardada", "success"); 
-            window.loadTransport(); loadDashboardStats();
+            const btn = document.getElementById('saveTransportBtn');
+            const originalText = btn.textContent;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin mx-auto shrink-0"></i>';
+            btn.disabled = true;
+
+            try {
+                if (editingTransportId) {
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web', editingTransportId), dataToSave);
+                    showToast("Zona Actualizada", "success");
+                } else {
+                    await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'), dataToSave);
+                    showToast("Zona Guardada", "success"); 
+                }
+                window.cancelTransportEdit();
+                window.loadTransport(); 
+                loadDashboardStats();
+            } catch (e) {
+                showToast("Error al guardar zona", "error");
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
         };
 
         // --- 4. GALERÍA ---
@@ -961,7 +1030,7 @@
 
             qSnap.forEach(d => {
                 const data = d.data();
-                container.innerHTML += `<div class="flex justify-between items-center bg-gradient-to-r from-[#0F172A] to-[#131C31] p-4 rounded-xl border border-pink-500/20 shadow-md group w-full"><div class="flex flex-col min-w-0"><span class="text-pink-400 font-black tracking-widest text-lg truncate">${data.code}</span><span class="text-slate-300 font-medium text-xs mt-0.5 bg-slate-800 px-2 py-0.5 rounded w-max">Descuento de ${data.type==='percent'? data.discount+'%': '$'+data.discount}</span></div><button onclick="deleteDocGen('cupones_web', '${d.id}', window.loadCoupons)" class="text-slate-500 hover:text-rose-500 p-2 hover:bg-rose-500/10 rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div>`;
+                container.innerHTML += `<div class="flex justify-between items-center bg-gradient-to-r from-[#0F172A] to-[#131C31] p-4 rounded-xl border border-pink-500/20 shadow-md group w-full"><div class="flex flex-col min-w-0"><span class="text-pink-400 font-black tracking-widest text-lg truncate">${data.code}</span><span class="text-slate-300 font-medium text-xs mt-0.5 bg-slate-800 px-2 py-0.5 rounded w-max">Descuento de ${data.type==='percent'? data.discount+'%': '$'+data.discount}</span></div><button onclick="deleteDocGen('cupones_web', '${d.id}', window.loadCoupons)" class="text-slate-500 hover:text-rose-500 p-2 hover:bg-rose-500/10 rounded-xl transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 shrink-0"><i data-lucide="trash-2" class="w-5 h-5"></i></button></div></div>`;
             });
             lucide.createIcons();
         }
