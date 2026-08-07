@@ -64,11 +64,11 @@
 
         .sticky-action-bar { position: sticky; bottom: 0; background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(10px); padding: 16px; border-top: 1px solid #1E293B; margin: 0 -16px -24px -16px; z-index: 40; display: flex; gap: 12px; }
         
-        /* Drag and Drop Helpers */
-        .sortable-ghost { opacity: 0.4; }
-        .sortable-drag { cursor: grabbing !important; }
-        .cursor-move { cursor: grab; }
-        .cursor-move:active { cursor: grabbing; }
+        /* Drag and Drop Helpers (Mejorados) */
+        .sortable-ghost { opacity: 0.3; background: rgba(30, 41, 59, 0.7) !important; border: 2px dashed #8B5CF6 !important; border-radius: 1rem; }
+        .sortable-drag { cursor: grabbing !important; opacity: 1 !important; transform: scale(1.02); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5) !important; z-index: 9999 !important; }
+        .drag-handle, .drag-handle-cat { touch-action: none; cursor: grab; }
+        .drag-handle:active, .drag-handle-cat:active { cursor: grabbing; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-[#020617] w-full">
@@ -208,7 +208,7 @@
                     
                     <div class="bg-indigo-500/10 p-3.5 rounded-xl border border-indigo-500/20 text-sm text-indigo-300 mb-6 flex items-start gap-3 w-full shadow-sm">
                         <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5"></i>
-                        <p><strong>Arrastra</strong> los catálogos para ordenar cómo se mostrarán en la página web pública. Los cambios se guardan automáticamente.</p>
+                        <p>Usa el icono <strong><i data-lucide="grip-vertical" class="w-3 h-3 inline-block"></i></strong> de la izquierda para arrastrar y ordenar los catálogos en la página web pública.</p>
                     </div>
 
                     <div id="categoriesList" class="flex flex-col gap-3 w-full pb-8">
@@ -245,7 +245,7 @@
                     
                     <div id="sortInstructions" class="hidden bg-purple-500/10 border border-purple-500/20 p-3 rounded-xl mb-4 flex items-start sm:items-center gap-3 w-full shadow-sm">
                         <i data-lucide="move" class="w-5 h-5 shrink-0 text-purple-400 mt-0.5 sm:mt-0"></i>
-                        <p class="text-purple-300 text-xs sm:text-sm">Arrastra los paquetes para ordenarlos dentro de este catálogo. El nuevo orden se reflejará en la web automáticamente.</p>
+                        <p class="text-purple-300 text-xs sm:text-sm">Mueve los paquetes usando el <strong>icono gris de puntos</strong> arriba a la derecha del paquete para reordenarlos.</p>
                     </div>
 
                     <!-- Contenedor grid estricto al 100% -->
@@ -257,6 +257,7 @@
                     </div>
                 </div>
 
+                <!-- ... (Las demás vistas se mantienen igual) ... -->
                 <!-- 2. VISTA CREADOR DE PAQUETES -->
                 <div id="view-form" class="view-section relative min-h-[80vh] w-full">
                     <h2 id="formMainTitle" class="text-xl font-bold text-white mb-4">Crear Paquete / Servicio</h2>
@@ -271,7 +272,6 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="saas-label">Catálogo / Categoría</label>
-                                    <!-- Select llenado dinámicamente -->
                                     <select id="categoria" class="saas-input appearance-none bg-slate-900 border-slate-700"></select>
                                 </div>
                                 <div>
@@ -711,7 +711,7 @@
                 window.categoriasLocales = [];
                 qSnap.forEach(d => window.categoriasLocales.push({id: d.id, ...d.data()}));
                 
-                // Generar por defecto si está vacío (Mantiene compatibilidad con db actual)
+                // Generar por defecto si está vacío
                 if (window.categoriasLocales.length === 0) {
                     const defaults = [
                         { id: 'payasos', nombre: 'Payasos', icono: 'smile', color: '#f43f5e', orden: 1, visible: true },
@@ -754,10 +754,15 @@
                     : `<span class="text-[10px] font-bold bg-slate-700/50 text-slate-400 px-2 py-0.5 rounded border border-slate-600">Oculto</span>`;
 
                 container.innerHTML += `
-                    <div class="category-item flex justify-between items-center bg-[#0F172A] p-4 rounded-xl border border-slate-700 shadow-sm hover:border-indigo-500/50 transition-colors cursor-move relative overflow-hidden group w-full box-border" data-id="${cat.id}">
+                    <div class="category-item flex justify-between items-center bg-[#0F172A] p-3 md:p-4 rounded-xl border border-slate-700 shadow-sm hover:border-indigo-500/50 transition-colors relative overflow-hidden group w-full box-border" data-id="${cat.id}">
                         <div class="absolute left-0 top-0 bottom-0 w-1 bg-slate-700 group-hover:bg-indigo-500 transition-colors"></div>
-                        <div class="flex items-center gap-3 md:gap-4 pl-2 flex-1 min-w-0">
-                            <i data-lucide="grip-vertical" class="w-4 h-4 text-slate-600 shrink-0 hidden sm:block"></i>
+                        <div class="flex items-center gap-2 md:gap-4 pl-2 flex-1 min-w-0">
+                            
+                            <!-- DRAG HANDLE ESPECÍFICO -->
+                            <div class="drag-handle-cat p-1.5 md:p-2 -ml-2 text-slate-500 hover:text-white hover:bg-slate-800 rounded-lg shrink-0 transition-colors bg-transparent border border-transparent">
+                                <i data-lucide="grip-vertical" class="w-5 h-5 pointer-events-none"></i>
+                            </div>
+
                             <div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 shadow-inner" style="background-color: ${cat.color || '#4f46e5'};">
                                 ${iconHtml}
                             </div>
@@ -784,7 +789,15 @@
 
             if (window.categorySortable) { window.categorySortable.destroy(); }
             window.categorySortable = new Sortable(container, {
-                animation: 150, ghostClass: 'sortable-ghost', dragClass: 'sortable-drag', handle: '.category-item',
+                animation: 250, 
+                ghostClass: 'sortable-ghost', 
+                dragClass: 'sortable-drag', 
+                draggable: '.category-item',
+                handle: '.drag-handle-cat', // SOLO arrastrar agarrando el botón de puntos
+                forceFallback: true,        // Soluciona tirones y problemas en iOS/Android
+                scroll: true,               // Habilita el autoscroll al arrastrar
+                scrollSensitivity: 70,      
+                scrollSpeed: 15,
                 onEnd: async function() {
                     const items = container.querySelectorAll('.category-item');
                     let updates = [];
@@ -993,21 +1006,24 @@
                     } else {
                         tagHtml = `<span class="text-[9px] font-bold bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/30 shrink-0">FIJO</span>`;
                     }
-
-                    const badgeClass = (data.orden !== undefined && data.orden !== 999 && data.orden !== '') ? '' : 'hidden';
-                    const ordenBadge = `<span class="order-badge text-[9px] text-slate-300 font-bold bg-slate-800 px-1.5 py-0.5 rounded border border-slate-600 shadow-sm shrink-0 whitespace-nowrap ${badgeClass}">#${data.orden||''}</span>`;
                     
                     // Buscar nombre de la categoría
                     const catObj = window.categoriasLocales.find(c => c.id === data.categoria);
                     const catNombre = catObj ? catObj.nombre : data.categoria;
 
                     container.innerHTML += `
-                        <div class="flex flex-col p-4 bg-[#0F172A] border border-slate-800 hover:border-slate-500 rounded-2xl shadow-lg relative overflow-hidden group transition-all package-card-item w-full box-border cursor-move" data-id="${docSnapId}" data-nombre="${(data.nombre||'').toLowerCase()}" data-categoria="${data.categoria}" data-oferta="${data.oferta}" data-destacado="${data.destacado || false}">
-                            <div class="flex gap-3 sm:gap-4 items-start w-full max-w-full pointer-events-none">
+                        <div class="flex flex-col p-4 bg-[#0F172A] border border-slate-800 hover:border-slate-500 rounded-2xl shadow-lg relative overflow-hidden group transition-all package-card-item w-full box-border" data-id="${docSnapId}" data-nombre="${(data.nombre||'').toLowerCase()}" data-categoria="${data.categoria}" data-oferta="${data.oferta}" data-destacado="${data.destacado || false}">
+                            
+                            <!-- DRAG HANDLE ESPECÍFICO (Se muestra en applyCatalogFilters cuando corresponde) -->
+                            <div class="drag-handle absolute top-3 right-3 w-8 h-8 bg-slate-800/80 border border-slate-700 rounded-md items-center justify-center z-10 text-slate-400 hover:text-white hover:bg-slate-700 shadow-md backdrop-blur-sm active:scale-95 transition-all touch-none" style="display: none;">
+                                <i data-lucide="grip-horizontal" class="w-4 h-4 pointer-events-none"></i>
+                            </div>
+
+                            <div class="flex gap-3 sm:gap-4 items-start w-full max-w-full pointer-events-none pr-8">
                                 <img src="${data.imagen || ''}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover shrink-0 bg-slate-800 shadow-md">
                                 <div class="flex-1 min-w-0 overflow-hidden flex flex-col">
                                     <div class="flex flex-wrap items-center gap-1.5 mb-1.5">
-                                        ${ordenBadge}
+                                        <span class="order-badge text-[9px] text-slate-300 font-bold bg-slate-800 px-1.5 py-0.5 rounded border border-slate-600 shadow-sm shrink-0 whitespace-nowrap hidden">#${data.orden||''}</span>
                                         ${data.destacado ? '<span class="text-[9px] text-yellow-900 font-bold bg-yellow-400 px-1.5 py-0.5 rounded shadow-sm whitespace-nowrap shrink-0">⭐ INICIO</span>' : ''}
                                     </div>
                                     <h3 class="text-white font-bold text-sm leading-tight w-full whitespace-normal line-clamp-2 break-words" title="${data.nombre}">${data.nombre}</h3>
@@ -1034,9 +1050,17 @@
                 // Inicializar Drag & Drop para paquetes
                 if (window.packageSortable) window.packageSortable.destroy();
                 window.packageSortable = new Sortable(container, {
-                    animation: 150, 
+                    animation: 250, 
                     disabled: ['all', 'destacados', 'ofertas'].includes(window.activeCategoryFilter),
-                    ghostClass: 'sortable-ghost', dragClass: 'sortable-drag', filter: '#emptyFilterMsg', draggable: '.package-card-item',
+                    ghostClass: 'sortable-ghost', 
+                    dragClass: 'sortable-drag', 
+                    filter: '#emptyFilterMsg', 
+                    draggable: '.package-card-item',
+                    handle: '.drag-handle', // SOLO permite arrastrar desde el botón de la esquina
+                    forceFallback: true,    // Impide cruces con el comportamiento táctil del navegador
+                    scroll: true,           // Habilita auto scroll
+                    scrollSensitivity: 70,  
+                    scrollSpeed: 15,
                     onEnd: async function () {
                         const items = container.querySelectorAll('.package-card-item');
                         const visibleItems = Array.from(items).filter(item => item.style.display !== 'none');
@@ -1072,6 +1096,7 @@
 
         window.applyCatalogFilters = function() {
             const cards = document.querySelectorAll('.package-card-item');
+            const showDragHandles = !['all', 'destacados', 'ofertas'].includes(window.activeCategoryFilter);
             let count = 0;
             
             cards.forEach(card => {
@@ -1086,7 +1111,21 @@
                     showBySearch = card.dataset.nombre.includes(window.searchQuery);
                 }
 
-                if (showByCat && showBySearch) { card.style.display = 'flex'; count++; } 
+                if (showByCat && showBySearch) { 
+                    card.style.display = 'flex'; 
+                    count++; 
+                    
+                    // Mostrar/Ocultar Handle
+                    const handle = card.querySelector('.drag-handle');
+                    if (handle) handle.style.display = showDragHandles ? 'flex' : 'none';
+                    
+                    // Mostrar/Ocultar Badge Numérico
+                    const orderBadge = card.querySelector('.order-badge');
+                    if (orderBadge) {
+                        if (showDragHandles) orderBadge.classList.remove('hidden');
+                        else orderBadge.classList.add('hidden');
+                    }
+                } 
                 else { card.style.display = 'none'; }
             });
 
@@ -1374,3 +1413,4 @@
     </script>
 </body>
 </html>
+
