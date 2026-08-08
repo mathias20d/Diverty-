@@ -98,6 +98,11 @@
         #topAnnouncementBanner { background: linear-gradient(90deg, #db2777, #7c3aed); position: relative; width: 100%; z-index: 60; padding: 6px 16px; font-weight: 800; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.05em; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
         video.bg-video-optimized { transform: translateZ(0); will-change: transform; backface-visibility: hidden; perspective: 1000; }
         
+        /* Prefers-reduced-motion compatible */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+        }
+
         @media (max-width: 768px) {
             .backdrop-blur-md, .backdrop-blur-sm, #headerWrapper.scrolled #mainHeader { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: rgba(255, 255, 255, 0.98) !important; }
             .btn-animated-gradient { animation: none !important; background-size: 100% 100% !important; }
@@ -111,14 +116,16 @@
 
     <!-- HEADER Y BANNER -->
     <div id="headerWrapper" class="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none transition-all duration-300">
+        <!-- SECCIÓN DEL BANNER SUPERIOR CONECTADO A FIRESTORE -->
         <div id="topAnnouncementBanner" style="display: none;" class="justify-center items-center shadow-md pointer-events-auto">
             <i data-lucide="megaphone" class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2"></i> <span id="bannerTextSpan">¡Promoción especial activa!</span>
         </div>
+        
         <header id="mainHeader" class="w-full px-4 transition-all duration-200 pointer-events-auto">
             <div class="container mx-auto flex justify-between items-center">
                 <button data-action="close-modal" data-target-section="home" class="flex items-center logo-container nav-action" aria-label="Inicio">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 p-[2px] mr-3 shadow-sm">
-                        <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border border-slate-200" loading="eager">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 p-[2px] mr-3 shadow-sm dynamic-logo-container">
+                        <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border border-slate-200" loading="eager" id="mainHeaderLogo">
                     </div>
                     <div class="flex flex-col drop-shadow-sm">
                         <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-nunito leading-none">Diverty</span>
@@ -241,21 +248,6 @@
             </div>
         </div>
     </div>
-
-    <!-- POP-UP PROMOCIONAL -->
-    <div id="promoModal" class="modal-backdrop z-[1200]" style="display: none;" onclick="if(event.target.id === 'promoModal') window.closePromoModal()">
-        <div class="modal-content bg-white border border-slate-200 text-slate-900 rounded-[32px] shadow-[0_0_50px_rgba(0,0,0,0.2)] overflow-hidden max-w-[320px] w-[90%] mx-auto relative flex flex-col transform scale-95 transition-transform duration-500">
-            <button onclick="window.closePromoModal()" class="absolute top-3 right-3 bg-white/80 backdrop-blur-md p-2 rounded-full text-slate-600 hover:text-slate-900 z-30 transition-all border border-slate-200"><i data-lucide="x" class="w-4 h-4"></i></button>
-            <div id="promoImgBox" class="w-full h-44 bg-slate-100 relative hidden">
-                <img id="promoImg" src="" class="w-full h-full object-cover">
-            </div>
-            <div class="p-8 text-center relative z-10 flex flex-col items-center">
-                <h3 id="promoTitle" class="text-2xl font-black mb-3">Oferta Especial</h3>
-                <p id="promoMessage" class="text-slate-600 text-sm mb-6">Aprovecha nuestra promoción por tiempo limitado.</p>
-                <button onclick="window.closePromoModal()" class="w-full bg-pink-600 text-white font-extrabold py-3.5 rounded-[18px]">Entendido</button>
-            </div>
-        </div>
-    </div>
     
     <div id="toast"></div>
 
@@ -265,15 +257,6 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-
-        // ==========================================
-        // 0. DEFINICIÓN DEL POPUP
-        // ==========================================
-        window.closePromoModal = function() {
-            const pm = document.getElementById('promoModal');
-            if (pm) { pm.classList.remove('show'); setTimeout(() => { pm.style.display = 'none'; }, 350); }
-            sessionStorage.setItem('promo_popup_seen', 'true');
-        };
 
         const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
         const CRM_APP_ID = "diverty-oficial"; 
@@ -287,7 +270,6 @@
             { id: 3, name: "Ana R.", rating: 5, comment: "El pintacaritas fue un éxito. Diseños hermosos y mucha amabilidad.", color: "from-purple-500 to-indigo-500", initial: "A", location: "La Chorrera" } 
         ];
         
-        // DATOS DE RESPALDO (Fallback) para evitar que la app quede congelada si hay fallo de red.
         const fallbackCategories = [
             { id: 'servicios', nombre: 'Servicios Extras', icono: 'gift', orden: 1, activo: true },
             { id: 'payasos', nombre: 'Planes y Payasos', icono: 'smile', orden: 2, activo: true },
@@ -307,19 +289,39 @@
         
         let isFirebaseLoaded = false;
         let appliedCoupon = null;
-        const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [] };
+        
+        const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [], theme: null, campaigns: [] };
 
         // ==========================================
-        // 1. FUNCIONES UTILITARIAS Y GLOBALES
+        // 1. FUNCIONES UTILITARIAS Y NORMALIZADORES (ANTI-UNDEFINED)
         // ==========================================
         
-        // FUNCIÓN TIMEOUT: Evita el bloqueo del entorno si la red es lenta
         async function fetchWithTimeout(promise, ms) {
             return Promise.race([
                 promise,
                 new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout de red al conectar")), ms))
             ]);
         }
+
+        const cleanStr = (val) => {
+            if (val === undefined || val === null || val === 'undefined' || val === 'null' || val === '') return '';
+            return String(val).trim();
+        };
+
+        const normalizeDate = (val) => {
+            if (!val) return null;
+            let d;
+            if (typeof val === 'string') return val.split('T')[0]; 
+            if (val.toDate) d = val.toDate();
+            else if (val.seconds) d = new Date(val.seconds * 1000);
+            else if (val instanceof Date) d = val;
+            else return null;
+            
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
 
         function setContent(html) { 
             const mc = document.getElementById('mainContent'); 
@@ -378,25 +380,119 @@
         }
 
         // ==========================================
+        // TEMA Y TEMPORADAS (DINÁMICO CSS INYECTADO)
+        // ==========================================
+        function applyThemeColors(themeData) {
+            if (!themeData) return;
+            console.log("🎨 APLICANDO TEMA AL HTML:", themeData);
+            
+            const style = document.getElementById('theme-dynamic-styles') || document.createElement('style');
+            style.id = 'theme-dynamic-styles';
+            
+            // Forzar validez del color y asegurar que lleve '#'
+            const fixHex = (h) => (h && !h.startsWith('#') && /^[0-9A-Fa-f]{3,6}$/.test(h)) ? '#' + h : h;
+            
+            const pColor = fixHex(cleanStr(themeData.colorPrimario || themeData.colorPrimary || themeData.primaryColor || (themeData.colores && themeData.colores.primary))) || '#7C3AED';
+            const sColor = fixHex(cleanStr(themeData.colorSecundario || themeData.colorSecondary || themeData.secondaryColor || (themeData.colores && themeData.colores.secondary))) || '#E11D48';
+            const bColor = fixHex(cleanStr(themeData.colorFondo || themeData.colorBackground || themeData.backgroundColor || (themeData.colores && themeData.colores.background))) || '#F1F5F9';
+            
+            let css = `:root {
+                --color-primary: ${pColor};
+                --color-secondary: ${sColor};
+                --color-background: ${bColor};
+                --gradient-rainbow: linear-gradient(90deg, ${sColor}, ${pColor}, #06b6d4, #f59e0b);
+            }
+            
+            .text-purple-500, .text-purple-600, .text-indigo-600 { color: var(--color-primary) !important; }
+            .bg-purple-500, .bg-purple-600, .bg-indigo-600 { background-color: var(--color-primary) !important; }
+            .bg-purple-100 { background-color: color-mix(in srgb, var(--color-primary) 15%, transparent) !important; }
+            .border-purple-200 { border-color: color-mix(in srgb, var(--color-primary) 30%, transparent) !important; }
+            .border-purple-300 { border-color: color-mix(in srgb, var(--color-primary) 40%, transparent) !important; }
+            .border-purple-400 { border-color: color-mix(in srgb, var(--color-primary) 50%, transparent) !important; }
+            .border-purple-500 { border-color: color-mix(in srgb, var(--color-primary) 60%, transparent) !important; }
+            
+            .text-pink-500, .text-pink-600 { color: var(--color-secondary) !important; }
+            .bg-pink-500, .bg-pink-600 { background-color: var(--color-secondary) !important; }
+            .bg-pink-100 { background-color: color-mix(in srgb, var(--color-secondary) 15%, transparent) !important; }
+            .border-pink-200 { border-color: color-mix(in srgb, var(--color-secondary) 30%, transparent) !important; }
+            .border-pink-300 { border-color: color-mix(in srgb, var(--color-secondary) 40%, transparent) !important; }
+            .border-pink-400 { border-color: color-mix(in srgb, var(--color-secondary) 50%, transparent) !important; }
+            
+            .from-purple-500, .from-purple-600, .from-indigo-600 { --tw-gradient-from: var(--color-primary) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(255,255,255,0)) !important; }
+            .to-purple-500, .to-purple-600, .to-pink-600 { --tw-gradient-to: var(--color-secondary) !important; }
+            .from-pink-500, .from-pink-600 { --tw-gradient-from: var(--color-secondary) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(255,255,255,0)) !important; }
+            
+            body { background-color: var(--color-background) !important; }
+            `;
+
+            if (themeData.animaciones === false || cleanStr(themeData.animacionesActivas).toLowerCase() === 'false') {
+                 css += `*, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }`;
+            }
+
+            style.innerHTML = css;
+            document.head.appendChild(style);
+
+            const logoStr = cleanStr(themeData.logoUrl || themeData.imagenLogo || themeData.logo);
+            if (logoStr) {
+                const headLogo = document.getElementById('mainHeaderLogo');
+                if(headLogo) headLogo.src = logoStr;
+            }
+            
+            document.querySelectorAll('.theme-decoration').forEach(el => el.remove());
+            
+            const decorType = cleanStr(themeData.tipo || themeData.nombre || themeData.id).toLowerCase();
+            const isHoliday = decorType.includes('halloween') || decorType.includes('miedo') || decorType.includes('navidad') || decorType.includes('verano');
+            
+            let showDecorations = false;
+            if (themeData.decoracionesActivas === true || cleanStr(themeData.decoracionesActivas).toLowerCase() === 'true' || themeData.decoraciones === true || cleanStr(themeData.mostrarDecoraciones).toLowerCase() === 'true') {
+                showDecorations = true;
+            } else if (themeData.decoracionesActivas === undefined && isHoliday) {
+                showDecorations = true; 
+            }
+
+            if (showDecorations) {
+                let symbols = [];
+                if (decorType.includes('halloween') || decorType.includes('miedo')) symbols = ['🎃', '👻', '🦇', '🕷️'];
+                else if (decorType.includes('navidad') || decorType.includes('christmas')) symbols = ['🎄', '❄️', '🎁', '⛄'];
+                else if (decorType.includes('verano') || decorType.includes('summer')) symbols = ['☀️', '🌴', '🌊', '😎'];
+                
+                if (symbols.length > 0) {
+                    const container = document.createElement('div');
+                    container.className = 'fixed inset-0 pointer-events-none z-[90] overflow-hidden theme-decoration';
+                    container.setAttribute('aria-hidden', 'true');
+                    
+                    for(let i=0; i<6; i++) {
+                        const el = document.createElement('div');
+                        el.className = 'absolute opacity-20 badge-float';
+                        el.style.left = `${Math.random() * 100}%`;
+                        el.style.top = `${Math.random() * 100}%`;
+                        el.style.fontSize = `${Math.random() * 1.5 + 1.5}rem`;
+                        el.style.animationDelay = `${Math.random() * 5}s`;
+                        el.style.animationDuration = `${Math.random() * 3 + 3}s`;
+                        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                        container.appendChild(el);
+                    }
+                    document.body.prepend(container);
+                }
+            }
+        }
+
+        // ==========================================
         // 2. GENERADOR DE MENÚS Y RUTAS DINÁMICAS
         // ==========================================
 
         function buildDynamicNav() {
-            // Desktop Nav
             const dNav = document.getElementById('desktopNav');
             if (dNav) {
                 let dHtml = `<button id="navHome" data-target-section="home" class="nav-link nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 text-yellow-500"></i>Inicio</button>`;
                 dynamicCategories.forEach(c => {
-                    if (c.activo !== false) {
-                        dHtml += `<button id="navCat_${c.id}" data-target-section="cat_${c.id}" class="nav-link nav-action font-bold !text-slate-800 hover:!text-purple-600"><i data-lucide="${c.icono || 'star'}" class="w-4 h-4 mr-2 text-purple-500"></i>${c.nombre}</button>`;
-                    }
+                    if (c.activo !== false) dHtml += `<button id="navCat_${c.id}" data-target-section="cat_${c.id}" class="nav-link nav-action font-bold !text-slate-800 hover:!text-purple-600"><i data-lucide="${c.icono || 'star'}" class="w-4 h-4 mr-2 text-purple-500"></i>${c.nombre}</button>`;
                 });
                 dHtml += `<button id="navGallery" data-target-section="gallery" class="nav-link !text-slate-800 hover:!text-purple-600 nav-action"><i data-lucide="image" class="w-4 h-4 mr-2 text-emerald-500"></i>Galería</button>
                           <button id="navBooking" data-target-section="booking" class="bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient nav-action text-white shadow-md ml-2 py-2 px-4 rounded-full flex items-center font-bold text-sm"><i data-lucide="calendar-check" class="w-4 h-4 mr-1.5"></i>Reservar</button>`;
                 dNav.innerHTML = dHtml;
             }
 
-            // Mobile Nav
             const mNav = document.getElementById('mobileNavLinks');
             if (mNav) {
                 let mHtml = `
@@ -425,14 +521,11 @@
                 mNav.innerHTML = mHtml;
             }
 
-            // Footer Links
             const fNav = document.getElementById('footerNavLinks');
             if (fNav) {
                 let fHtml = `<a href="#home" data-target-section="home" class="nav-action hover:text-purple-600 transition-colors">Inicio</a>`;
                 dynamicCategories.forEach(c => {
-                    if (c.activo !== false) {
-                         fHtml += `<a href="#cat_${c.id}" data-target-section="cat_${c.id}" class="nav-action hover:text-purple-600 transition-colors">${c.nombre}</a>`;
-                    }
+                    if (c.activo !== false) fHtml += `<a href="#cat_${c.id}" data-target-section="cat_${c.id}" class="nav-action hover:text-purple-600 transition-colors">${c.nombre}</a>`;
                 });
                 fHtml += `
                     <a href="#gallery" data-target-section="gallery" class="nav-action hover:text-purple-600 transition-colors">Galería</a>
@@ -443,22 +536,16 @@
             }
 
             if(typeof lucide !== 'undefined') lucide.createIcons();
-            
-            // Refrescar la navegación para la sección actual
             setActiveSection(app.activeSection);
         }
 
         function setActiveSection(sectionId) {
             if (!sectionId) sectionId = 'home';
-            
-            if (sectionId === 'booking' && !sessionStorage.getItem('bookingNoticeShown')) { 
-                sessionStorage.setItem('bookingNoticeShown', 'true'); 
-            }
+            if (sectionId === 'booking' && !sessionStorage.getItem('bookingNoticeShown')) { sessionStorage.setItem('bookingNoticeShown', 'true'); }
             
             app.activeSection = sectionId;
             document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => link.classList.remove('active'));
             
-            // Destacar botón activo dinámico
             const desktopLink = document.querySelector(`[data-target-section="${sectionId}"].nav-link`);
             if (desktopLink) desktopLink.classList.add('active');
             
@@ -469,16 +556,13 @@
             else if (sectionId === 'gallery') renderGallery();
             else if (sectionId === 'booking') renderBooking();
             else if (sectionId === 'portal') renderPortal();
-            else if (sectionId.startsWith('cat_')) {
-                const catId = sectionId.replace('cat_', '');
-                renderCategory(catId);
-            }
+            else if (sectionId.startsWith('cat_')) { const catId = sectionId.replace('cat_', ''); renderCategory(catId); }
             
             window.scrollTo(0, 0);
         }
 
         // ==========================================
-        // 3. GENERADORES DE HTML Y UI
+        // 3. GENERADORES DE HTML Y UI (COMPLETAMENTE PROTEGIDOS DE UNDEFINED)
         // ==========================================
 
         function createInput(label, name, type, extra='') { return `<div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase tracking-wider mb-1.5 block">${label} *</label><input type="${type}" name="${name}" required class="w-full bg-white border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" ${extra}></div>`; }
@@ -492,8 +576,86 @@
             return `<div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-lg transition-all animate-slide-up"><div class="p-6 border-b border-slate-200"><div class="flex justify-between items-start mb-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${color} shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-80"></div> ${ev.estado}</span></div><h4 class="text-2xl font-black text-slate-900 mb-1 capitalize">${ev.cliente}</h4><p class="text-sm text-slate-500 flex items-center gap-1.5 font-semibold mb-4"><i data-lucide="calendar-days" class="w-4 h-4 text-purple-500"></i> ${ev.fecha?String(ev.fecha).split('-').reverse().join('/'):'Por definir'} a las ${ev.hora}</p><div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3"><div class="bg-purple-100 p-2 rounded-lg text-purple-600 mt-0.5"><i data-lucide="gift" class="w-5 h-5"></i></div><div><p class="text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1">Paquete / Servicio</p><p class="text-sm font-bold text-slate-900 leading-snug">${ev.servicio||'Servicio no especificado'}</p></div></div></div><div class="bg-slate-50 p-6 flex flex-col gap-3"><div class="flex justify-between items-center text-sm font-semibold text-slate-500"><span>Costo Total</span><span class="text-slate-900">$${tot.toFixed(2)}</span></div><div class="flex justify-between items-center text-sm font-semibold text-emerald-600"><span>Abono Realizado</span><span>$${abo.toFixed(2)}</span></div><div class="w-full h-px bg-slate-200 my-1"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Saldo Pendiente</span><span class="text-2xl font-black ${saldo>0?'text-pink-600':'text-emerald-500'}">$${saldo.toFixed(2)}</span></div>${saldo===0?`<div class="mt-2 text-center bg-emerald-100 text-emerald-600 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 border border-emerald-200"><i data-lucide="check-circle" class="w-4 h-4"></i> Totalmente Pagado</div>`:''}</div></div>`;
         }
 
+        function getCampaignsHTML() {
+            if(!app.campaigns || app.campaigns.length === 0) return '';
+            
+            const destacada = app.campaigns.find(c => c.destacada === true || cleanStr(c.destacada).toLowerCase() === 'true');
+            const regulares = app.campaigns.filter(c => c !== destacada);
+            
+            let html = '<div class="container mx-auto px-4 w-full mb-10 flex flex-col gap-6 animate-slide-up">';
+            
+            if (destacada) {
+                // Extracción segura usando cleanStr para evitar "undefined"
+                const titulo = cleanStr(destacada.titulo || destacada.nombre) || 'Oferta Especial';
+                const sub = cleanStr(destacada.subtitulo || destacada.tag) || 'Campaña Destacada';
+                const desc = cleanStr(destacada.descripcion || destacada.texto);
+                const img = cleanStr(destacada.imagen || destacada.imagenUrl || destacada.foto);
+                const pPromo = cleanStr(destacada.precioPromocional || destacada.precioPromo || destacada.precio) || '0';
+                const pAnt = cleanStr(destacada.precioAnterior || destacada.precioNormal);
+                const btnTxt = cleanStr(destacada.textoBoton || destacada.boton) || 'Aprovechar Oferta';
+                const tId = cleanStr(destacada.itemId || destacada.servicioId || destacada.paqueteId);
+                const actStr = cleanStr(destacada.accion).toLowerCase();
+                
+                html += `
+                <div class="bg-gradient-to-r from-purple-600 to-pink-500 rounded-[2rem] p-1 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.15)] relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-white/20 blur-3xl rounded-full group-hover:bg-white/30 transition-colors pointer-events-none"></div>
+                    <div class="bg-white rounded-[1.8rem] flex flex-col md:flex-row overflow-hidden relative z-10 h-full">
+                        ${img ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative"><img src="${img}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:hidden"></div></div>` : ''}
+                        <div class="p-6 sm:p-8 md:p-10 flex flex-col justify-center flex-1 relative">
+                            <div class="inline-flex items-center gap-1.5 bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max mb-4 border border-pink-200 relative z-10">
+                                <i data-lucide="star" class="w-3 h-3 fill-pink-500"></i> ${sub}
+                            </div>
+                            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mb-3 font-nunito leading-tight relative z-10">${titulo}</h2>
+                            ${desc ? `<p class="text-slate-600 text-sm sm:text-base font-medium mb-6 relative z-10">${desc}</p>` : ''}
+                            <div class="flex flex-wrap items-end gap-3 mb-6 relative z-10">
+                                <span class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 leading-none">$${pPromo}</span>
+                                ${pAnt ? `<span class="text-base sm:text-lg font-bold text-slate-400 line-through leading-none mb-1">$${pAnt}</span>` : ''}
+                            </div>
+                            <button data-action="${actStr === 'carrito' ? 'add-to-cart' : 'navigate-from-modal'}" data-item-id="${tId}" data-target-section="${cleanStr(destacada.targetSection) || 'booking'}" class="w-full sm:w-max bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-[0_8px_20px_rgba(219,39,119,0.3)] hover:scale-[1.02] transition-transform text-center flex items-center justify-center gap-2 relative z-10">
+                                ${btnTxt} <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+
+            if (regulares.length > 0) {
+                html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">`;
+                regulares.forEach(camp => {
+                    const titulo = cleanStr(camp.titulo || camp.nombre) || 'Campaña';
+                    const sub = cleanStr(camp.subtitulo || camp.tag);
+                    const desc = cleanStr(camp.descripcion || camp.texto);
+                    const img = cleanStr(camp.imagen || camp.imagenUrl || camp.foto);
+                    const pPromo = cleanStr(camp.precioPromocional || camp.precioPromo || camp.precio) || '0';
+                    const pAnt = cleanStr(camp.precioAnterior || camp.precioNormal);
+                    const btnTxt = cleanStr(camp.textoBoton || camp.boton) || 'Ver Promoción';
+                    const tId = cleanStr(camp.itemId || camp.servicioId || camp.paqueteId);
+                    const actStr = cleanStr(camp.accion).toLowerCase();
+
+                    html += `
+                    <div class="bg-white border border-slate-200 rounded-[2rem] p-5 shadow-sm hover:shadow-lg hover:border-purple-300 transition-all flex flex-col h-full group relative overflow-hidden">
+                        ${img ? `<div class="w-full h-48 rounded-[1.25rem] overflow-hidden mb-4 relative z-10"><img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>` : ''}
+                        ${sub ? `<span class="text-[10px] font-black uppercase tracking-widest text-purple-500 mb-2 block relative z-10">${sub}</span>` : ''}
+                        <h3 class="text-xl font-extrabold text-slate-900 mb-2 font-nunito leading-tight relative z-10">${titulo}</h3>
+                        ${desc ? `<p class="text-slate-600 text-xs font-medium mb-5 flex-1 relative z-10">${desc}</p>` : ''}
+                        <div class="flex items-center gap-3 mb-5 mt-auto relative z-10">
+                            <span class="text-2xl font-black text-slate-900">$${pPromo}</span>
+                            ${pAnt ? `<span class="text-sm font-bold text-slate-400 line-through">$${pAnt}</span>` : ''}
+                        </div>
+                        <button data-action="${actStr === 'carrito' ? 'add-to-cart' : 'navigate-from-modal'}" data-item-id="${tId}" data-target-section="${cleanStr(camp.targetSection) || 'booking'}" class="w-full bg-slate-100 hover:bg-purple-50 text-purple-700 font-extrabold py-3 px-4 rounded-xl border border-slate-200 hover:border-purple-300 transition-colors text-xs text-center relative z-10">
+                            ${btnTxt}
+                        </button>
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
         function createDetailedCardHTML(item) {
-            const isPkg = !item.isHourly; // Si no cobra por hora, lo asumimos como paquete general
+            const isPkg = !item.isHourly; 
             let b='', cw='bg-white border border-purple-200 rounded-[2rem] p-5 flex flex-col relative transition-all duration-500 h-full group group-hover-playful shadow-[0_0_25px_rgba(139,92,246,0.05)] hover:shadow-[0_0_45px_rgba(139,92,246,0.15)] hover:border-purple-300 hover:-translate-y-2';
             let btn='w-full bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white shadow-[0_0_20px_rgba(139,92,246,0.3)] border border-purple-400/50 hover:scale-[1.02] transition-all duration-300 font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]';
             let tc='text-xl sm:text-2xl font-extrabold leading-tight font-poppins transition-all duration-300 text-slate-800 drop-shadow-[0_2px_10px_rgba(139,92,246,0.1)]', pc='text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 drop-shadow-[0_0_15px_rgba(219,39,119,0.2)]';
@@ -518,7 +680,7 @@
                 ab=`<div class="mt-auto w-full pt-4 relative z-10"><button data-action="add-to-cart" data-item-id="${item.id}" class="${btn} ${ic?'!bg-emerald-600 !text-white !border-emerald-500 !shadow-[0_0_25px_rgba(16,185,129,0.3)] !bg-none':''}">${ic?`<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Plan Seleccionado`:`<i data-lucide="${isPkg?'calendar-plus':'shopping-cart'}" class="w-5 h-5 text-white group-hover:animate-pulse"></i> ${isPkg?'Reservar este plan':'Añadir al carrito'}`}</button></div>`;
             }
             
-            let ts=`<div class="flex items-center gap-4 mb-1 relative z-10"><div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.1)] border border-slate-200 bg-slate-50 relative group-hover:border-purple-300 transition-colors"><img src="${item.image}" alt="${item.name||item.title}" class="w-full h-full object-cover relative z-10" loading="lazy"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20"></div></div><div class="flex flex-col justify-center flex-1"><h3 class="${tc}">${item.name||item.title}</h3><p class="text-pink-500 text-[11px] sm:text-xs font-bold mt-1.5 leading-snug drop-shadow-sm opacity-90 group-hover:opacity-100 transition-opacity line-clamp-2">${item.description||''}</p></div></div>`;
+            let ts=`<div class="flex items-center gap-4 mb-1 relative z-10"><div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[1.25rem] overflow-hidden shadow-[0_8px_20px_rgba(0,0,0,0.1)] border border-slate-200 bg-slate-50 relative group-hover:border-purple-300 transition-colors"><img src="${cleanStr(item.image)}" alt="${cleanStr(item.name||item.title)}" class="w-full h-full object-cover relative z-10" loading="lazy"><div class="absolute inset-0 bg-gradient-to-tr from-purple-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20"></div></div><div class="flex flex-col justify-center flex-1"><h3 class="${tc}">${cleanStr(item.name||item.title)}</h3><p class="text-pink-500 text-[11px] sm:text-xs font-bold mt-1.5 leading-snug drop-shadow-sm opacity-90 group-hover:opacity-100 transition-opacity line-clamp-2">${cleanStr(item.description||'')}</p></div></div>`;
             
             return `<div class="w-[85vw] max-w-[360px] md:w-full snap-center flex-shrink-0 h-full snap-container animate-slide-up" style="transform: translateZ(0);"><div class="${cw}"><div class="absolute inset-0 overflow-hidden rounded-[2rem] z-0 pointer-events-none"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-100 rounded-full blur-3xl transition-colors duration-500 group-hover:bg-purple-200/50"></div></div>${b}${ts}${sl}${pd}${ab}</div></div>`;
         }
@@ -548,22 +710,27 @@
                 rc = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-slate-900 font-nunito">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-500 font-bold uppercase px-3 py-1 rounded-full border border-slate-200 bg-white shadow-sm">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-white border border-slate-200 flex flex-col h-full rounded-[2rem] p-6 shadow-sm relative overflow-hidden group hover:border-purple-300 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-200 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-slate-900 font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-500 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-600 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-200 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-100 px-2 py-1 rounded-lg border border-emerald-200"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
             }
             
-            // Determinar a donde va el botón "Explorar Planes" del Hero
+            // Lógica para Hero Background (Video normal vs Imagen del Tema Activo)
+            const bgStr = app.theme ? cleanStr(app.theme.fondoUrl || app.theme.imagenFondo || app.theme.fondo || app.theme.imagen) : null;
+            let heroBgHtml = `<video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video>`;
+            if (bgStr) {
+                heroBgHtml = `<img src="${bgStr}" class="absolute inset-0 w-full h-full object-cover z-0 bg-image-optimized" alt="Theme Background">`;
+            }
+
             const firstCatTarget = dynamicCategories.length > 0 ? `cat_${dynamicCategories[0].id}` : 'home';
             
-            setContent(`<div id="hero-section-identifier"><div class="bg-slate-100"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-gradient-to-b from-[#0F172A]/50 via-[#0F172A]/70 to-[#0F172A] z-10 pointer-events-none"></div><div class="hero-content z-20 relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg badge-float"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-extrabold mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 btn-animated-gradient">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] shadow-[0_8px_20px_rgba(219,39,119,0.4)] font-bold text-base"><i data-lucide="calendar-check" class="w-5 h-5 group-hover:animate-pulse"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="${firstCatTarget}" class="nav-action w-full bg-white text-slate-900 border border-transparent hover:bg-slate-100 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-lg"><i data-lucide="eye" class="w-5 h-5 text-purple-600"></i> Explorar Catálogo</button></div></div></section><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-3xl mx-auto px-2 sm:px-4"><div class="bg-white p-6 sm:p-8 rounded-[32px] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-200 relative overflow-hidden" id="calendar-card-inner"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-100 rounded-full blur-3xl pointer-events-none"></div><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 rounded-xl border border-purple-200 bg-purple-50 flex items-center justify-center text-purple-600"><i data-lucide="calendar" class="w-5 h-5"></i></div><div class="text-left"><h2 class="text-2xl font-extrabold text-slate-900 font-poppins leading-none">Selecciona tu fecha</h2><p class="text-slate-500 text-sm mt-1">Elige un día disponible para tu fiesta</p></div></div><div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4"><i data-lucide="clock" class="w-5 h-5 text-indigo-500 mt-0.5 shrink-0"></i><p class="text-indigo-800 text-sm font-medium leading-tight">Selecciona una fecha disponible para reservar en segundos</p></div><div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-slate-50 py-2 rounded-xl border border-slate-200"><button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><h3 id="cal-month-year" class="text-lg font-bold text-slate-900 capitalize leading-none font-poppins">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
+            setContent(`<div id="hero-section-identifier"><div class="bg-slate-100"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden">${heroBgHtml}<div class="absolute inset-0 bg-gradient-to-b from-[#0F172A]/50 via-[#0F172A]/70 to-[#0F172A] z-10 pointer-events-none"></div><div class="hero-content z-20 relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg badge-float"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-extrabold mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 btn-animated-gradient">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] shadow-[0_8px_20px_rgba(219,39,119,0.4)] font-bold text-base"><i data-lucide="calendar-check" class="w-5 h-5 group-hover:animate-pulse"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="${firstCatTarget}" class="nav-action w-full bg-white text-slate-900 border border-transparent hover:bg-slate-100 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-lg"><i data-lucide="eye" class="w-5 h-5 text-purple-600"></i> Explorar Catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-4"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-3xl mx-auto px-2 sm:px-4"><div class="bg-white p-6 sm:p-8 rounded-[32px] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-200 relative overflow-hidden" id="calendar-card-inner"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-100 rounded-full blur-3xl pointer-events-none"></div><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 rounded-xl border border-purple-200 bg-purple-50 flex items-center justify-center text-purple-600"><i data-lucide="calendar" class="w-5 h-5"></i></div><div class="text-left"><h2 class="text-2xl font-extrabold text-slate-900 font-poppins leading-none">Selecciona tu fecha</h2><p class="text-slate-500 text-sm mt-1">Elige un día disponible para tu fiesta</p></div></div><div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4"><i data-lucide="clock" class="w-5 h-5 text-indigo-500 mt-0.5 shrink-0"></i><p class="text-indigo-800 text-sm font-medium leading-tight">Selecciona una fecha disponible para reservar en segundos</p></div><div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-slate-50 py-2 rounded-xl border border-slate-200"><button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><h3 id="cal-month-year" class="text-lg font-bold text-slate-900 capitalize leading-none font-poppins">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
+            
+            const campWrapper = document.getElementById('home-campaigns-wrapper');
+            if (campWrapper && isFirebaseLoaded) campWrapper.innerHTML = getCampaignsHTML();
+
             if(typeof renderCalendar === 'function') renderCalendar(); 
         }
 
-        // Función dinámica genérica para cualquier categoría
         function renderCategory(catId) {
             const cat = dynamicCategories.find(c => c.id === catId);
-            if (!cat) return; // Si no existe (URL inválida) no hace nada.
-            
-            // Filtrar y ordenar los ítems de esta categoría
-            const items = app.catalog.filter(i => i.categoria === catId)
-                                     .sort((a,b) => (a.orden || 0) - (b.orden || 0));
-                                     
+            if (!cat) return;
+            const items = app.catalog.filter(i => i.categoria === catId).sort((a,b) => (a.orden || 0) - (b.orden || 0));
             renderSection(items, cat.nombre, cat.icono || 'star');
         }
 
@@ -576,7 +743,7 @@
         function renderGallery() {
             if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p>Cargando Galería...</p></div>`); return; }
             if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-slate-900 font-nunito">Nuestra Galería</h2><div class="text-center text-slate-500 animate-slide-up"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
-            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-slate-900 font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${i.image}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-slate-200 rounded-[2rem] overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.05)] hover:shadow-[0_0_35px_rgba(139,92,246,0.15)] hover:border-purple-300 transition-all duration-500 relative"><img src="${i.image}" loading="lazy" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-slate-900 font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-slate-200 rounded-[2rem] overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.05)] hover:shadow-[0_0_35px_rgba(139,92,246,0.15)] hover:border-purple-300 transition-all duration-500 relative"><img src="${cleanStr(i.image)}" loading="lazy" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
         }
 
         function renderCalendar() {
@@ -647,7 +814,6 @@
                 dateText = `Has separado tentativamente el <b>${formattedDate}</b>.`;
             }
 
-            // Lógica para el Banner de Bienvenida
             let welcomeBanner = '';
             const savedData = localStorage.getItem('datosClienteDiverty');
             if (savedData) {
@@ -669,7 +835,6 @@
                 </div>` : 
                 `<div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Fecha *</label><input type="date" name="date" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm" min="${new Date().toISOString().split('T')[0]}"></div>`;
 
-            // Botones de exploración dinámicos cuando el carrito está vacío
             let exploreButtons = '';
             if (dynamicCategories.length > 0) {
                 const firstCat = dynamicCategories[0];
@@ -736,7 +901,7 @@
             const e = app.cart.find(i=>i.id===item.id);
             if(e) e.quantity+=qty; else app.cart.push({...item,quantity:qty});
             updateCartUI(); 
-            showToast(`${item.name} añadido al carrito`, 'success');
+            showToast(`${cleanStr(item.name) || 'Servicio'} añadido al carrito`, 'success');
             setTimeout(() => showModal('cartModal'), 250); 
         }
 
@@ -762,7 +927,7 @@
                 const cie = document.getElementById('cartItems');
                 if(cie){
                     if(app.cart.length===0) cie.innerHTML=`<div class="text-center py-8"><p class="text-slate-500">Carrito Vacío</p></div>`;
-                    else cie.innerHTML='<div class="space-y-2">'+app.cart.map(i=>`<div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center"><div class="flex items-center gap-3 overflow-hidden"><img src="${i.image}" class="w-10 h-10 object-cover rounded-xl shrink-0"><div class="flex flex-col"><span class="font-bold text-slate-900 text-[13px] truncate">${i.name}</span><span class="text-slate-500 text-[10px]">Cant: ${i.quantity}</span></div></div><div class="flex items-center gap-2"><span class="font-bold text-pink-500 text-sm">$${(Number(i.price)*i.quantity).toFixed(2)}</span><button data-action="remove-from-cart" data-item-id="${i.id}" class="w-7 h-7 bg-slate-200 rounded-full flex items-center justify-center hover:bg-rose-100 text-slate-500 hover:text-rose-600 transition-colors"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div></div>`).join('')+'</div>';
+                    else cie.innerHTML='<div class="space-y-2">'+app.cart.map(i=>`<div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex justify-between items-center"><div class="flex items-center gap-3 overflow-hidden"><img src="${cleanStr(i.image)}" class="w-10 h-10 object-cover rounded-xl shrink-0"><div class="flex flex-col"><span class="font-bold text-slate-900 text-[13px] truncate">${cleanStr(i.name)}</span><span class="text-slate-500 text-[10px]">Cant: ${i.quantity}</span></div></div><div class="flex items-center gap-2"><span class="font-bold text-pink-500 text-sm">$${(Number(i.price)*i.quantity).toFixed(2)}</span><button data-action="remove-from-cart" data-item-id="${i.id}" class="w-7 h-7 bg-slate-200 rounded-full flex items-center justify-center hover:bg-rose-100 text-slate-500 hover:text-rose-600 transition-colors"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div></div>`).join('')+'</div>';
                 }
 
                 const cte = document.getElementById('cartTotal'), tce = document.getElementById('transportCost'), fte = document.getElementById('finalTotal'), dr = document.getElementById('discountRow'), dae = document.getElementById('discountAmount');
@@ -835,7 +1000,9 @@
                     if(it){ 
                         if(!app.cart.find(i=>i.id===itemId)) addToCart(it); 
                         else showModal('cartModal');
-                    } 
+                    } else {
+                        showModal('cartModal');
+                    }
                     break; 
                 }
                 case 'remove-from-cart': removeFromCart(itemId); break;
@@ -867,18 +1034,14 @@
                     const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); 
                     toggleMobileMenu(false);
                     if(targetSection && !navLink) {
-                        if(app.activeSection !== targetSection) {
-                            setActiveSection(targetSection);
-                        }
+                        if(app.activeSection !== targetSection) setActiveSection(targetSection);
                     }
                     break; 
                 }
                 case 'navigate-from-modal': { 
                     const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); 
                     if(targetSection && !navLink) {
-                        if(app.activeSection !== targetSection) {
-                            setActiveSection(targetSection);
-                        }
+                        if(app.activeSection !== targetSection) setActiveSection(targetSection);
                     }
                     break; 
                 }
@@ -898,10 +1061,9 @@
                 const ft = sub - dv + tc;
                 const lo = locations.find(l=>l.value===app.location);
                 const dataToSave = {
-                    id: `web-${Date.now()}`, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: fd.get('date')||'', hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${i.name} (x${i.quantity})`:i.name).join(' + '), serviciosSeleccionados: app.cart.map(i=>({ id:i.id, nombre:i.name, precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:i.description||'' })), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
+                    id: `web-${Date.now()}`, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: fd.get('date')||'', hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>({ id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:cleanStr(i.description)||'' })), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
                 };
                 
-                // Fetch with timeout on writing
                 await fetchWithTimeout(setDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos', dataToSave.id), dataToSave), 6000);
                 
                 localStorage.setItem('datosClienteDiverty', JSON.stringify({
@@ -917,35 +1079,13 @@
         }
 
         // ==========================================
-        // 6. INICIALIZACIÓN Y CONFIGURACIÓN FIREBASE CON PROTECCIÓN Y LÓGICA DINÁMICA
+        // 6. INICIALIZACIÓN Y CONFIGURACIÓN FIREBASE
         // ==========================================
 
         function refreshDynamicData() {
             try {
                 if (app.activeSection === 'home') {
-                    const fw = document.getElementById('home-featured-wrapper');
-                    if (fw) {
-                        let eh = '';
-                        if (app.catalog && app.catalog.length > 0) {
-                            const destacados = app.catalog.filter(i => i.destacado === true || String(i.destacado).toLowerCase() === 'true');
-                            if (destacados.length > 0) {
-                                eh += destacados.map(createDetailedCardHTML).join('');
-                                fw.innerHTML = `<div class="flex md:hidden items-center justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mr-3 border border-slate-200 bg-white px-3 py-1 rounded-full shadow-sm">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 px-2">${eh}</div>`;
-                                setupSliders(); 
-                            } else {
-                                fw.innerHTML = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="sparkles" class="w-10 h-10 mx-auto mb-3 text-purple-300"></i><p class="text-slate-500 text-sm font-bold">Nuevos paquetes espectaculares próximamente.</p></div>`;
-                            }
-                        } else { fw.innerHTML = ''; }
-                    }
-
-                    if (typeof renderCalendar === 'function') renderCalendar();
-
-                    const rw = document.getElementById('home-reviews-wrapper');
-                    if (rw && customerReviews && customerReviews.length > 0) {
-                        rw.innerHTML = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-slate-900 font-nunito">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-500 font-bold uppercase px-3 py-1 rounded-full border border-slate-200 bg-white shadow-sm">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-white border border-slate-200 flex flex-col h-full rounded-[2rem] p-6 shadow-sm relative overflow-hidden group hover:border-purple-300 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-200 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-slate-900 font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-500 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-600 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-200 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-100 px-2 py-1 rounded-lg border border-emerald-200"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
-                        setupSliders();
-                    } else if (rw) { rw.innerHTML = ''; }
-                    if(typeof lucide !== 'undefined') lucide.createIcons();
+                    renderHome(); 
                 } else {
                     setActiveSection(app.activeSection);
                 }
@@ -966,48 +1106,151 @@
                     })(), 4000); 
                 } catch(e) { console.warn("Timeout de Autorización: ", e); }
 
-                // NUEVO: 1. Cargar Categorías Dinámicas (Catálogos)
+                const todayStr = normalizeDate(new Date());
+
+                // 1. CARGAR TEMAS ROBUSTAMENTE (Prueba en dos colecciones)
+                try {
+                    let themes = [];
+                    try {
+                        const themeSnap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'temas_web')), 4000);
+                        themes = themeSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                    } catch(e) {}
+                    
+                    if (themes.length === 0) {
+                        try {
+                            const themeSnap2 = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'temas')), 4000);
+                            themes = themeSnap2.docs.map(d => ({id: d.id, ...d.data()}));
+                        } catch(e) {}
+                    }
+
+                    if (themes.length > 0) {
+                        const isActive = (t) => t.activo === true || cleanStr(t.estado).toLowerCase().includes('activ') || cleanStr(t.status).toLowerCase().includes('activ');
+                        const isManual = (t) => cleanStr(t.modo).toLowerCase().includes('manual');
+                        const isAuto = (t) => cleanStr(t.modo).toLowerCase().includes('auto');
+
+                        let selectedTheme = themes.find(t => isManual(t) && isActive(t)); 
+                        
+                        if (!selectedTheme) { 
+                            selectedTheme = themes.find(t => {
+                                if (!isActive(t)) return false;
+                                if (!isAuto(t) && !t.fechaInicio && !t.inicio) return false; 
+                                
+                                const fInicio = normalizeDate(t.fechaInicio || t.inicio);
+                                const fFin = normalizeDate(t.fechaFin || t.fin);
+                                if (fInicio && fInicio > todayStr) return false;
+                                if (fFin && fFin < todayStr) return false;
+                                return true;
+                            });
+                        }
+                        
+                        if (!selectedTheme) { 
+                            selectedTheme = themes.find(t => isActive(t) && (t.esPredeterminado === true || cleanStr(t.tipo).toLowerCase().includes('predeter') || cleanStr(t.modo).toLowerCase().includes('predeter')));
+                        }
+
+                        if (!selectedTheme) {
+                            selectedTheme = themes.find(t => isActive(t)) || themes[0];
+                        }
+                        
+                        if (selectedTheme) {
+                            app.theme = selectedTheme;
+                            applyThemeColors(app.theme); 
+                        }
+                    }
+                } catch (e) { console.warn("Fallo cargando Temas", e); }
+
+                // 2. CARGAR CAMPAÑAS ACTIVAS ROBUSTAMENTE
+                try {
+                    let camps = [];
+                    try {
+                        const campSnap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), 4000);
+                        camps = campSnap.docs.map(d => ({id: d.id, ...d.data()}));
+                    } catch(e) {}
+                    
+                    if (camps.length === 0) {
+                        try {
+                            const campSnap2 = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas')), 4000);
+                            camps = campSnap2.docs.map(d => ({id: d.id, ...d.data()}));
+                        } catch(e) {}
+                    }
+
+                    app.campaigns = camps.filter(c => {
+                        const act = c.activa === true || cleanStr(c.estado).toLowerCase().includes('activ') || cleanStr(c.status).toLowerCase().includes('activ');
+                        if (!act) return false;
+                        const cInicio = normalizeDate(c.fechaInicio || c.inicio);
+                        const cFin = normalizeDate(c.fechaFin || c.fin);
+                        if (cInicio && cInicio > todayStr) return false;
+                        if (cFin && cFin < todayStr) return false;
+                        return true;
+                    }).sort((a, b) => {
+                        const aDest = (a.destacada === true || cleanStr(a.destacada).toLowerCase() === 'true');
+                        const bDest = (b.destacada === true || cleanStr(b.destacada).toLowerCase() === 'true');
+                        if (aDest && !bDest) return -1;
+                        if (!aDest && bDest) return 1;
+                        return (a.orden || 0) - (b.orden || 0);
+                    });
+                } catch (e) { console.warn("Fallo cargando Campañas", e); }
+
+                // 3. CARGAR CATÁLOGOS DINÁMICOS
                 try {
                     const catSnap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'categorias_web')), 4000);
                     if (!catSnap.empty) {
                         dynamicCategories = catSnap.docs.map(d => ({id: d.id, ...d.data()}))
-                            .filter(c => c.activo !== false) // Muestra activo por defecto a menos que se oculte explícitamente
-                            .sort((a, b) => (a.orden || 0) - (b.orden || 0)); // Ordenar catálogos
-                    } else {
-                        dynamicCategories = fallbackCategories;
-                    }
-                } catch(e) { 
-                    console.warn("Fallo en lectura de Categorías: ", e); 
-                    dynamicCategories = fallbackCategories;
-                }
+                            .filter(c => c.activo !== false)
+                            .sort((a, b) => (a.orden || 0) - (b.orden || 0));
+                    } else { dynamicCategories = fallbackCategories; }
+                } catch(e) { dynamicCategories = fallbackCategories; }
 
-                // NUEVO: 2. Cargar Catálogo (Items)
+                // 4. CARGAR SERVICIOS Y EXTRAS
                 try {
                     const cs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web')), 4000);
                     const cd = cs.docs.map(d => { 
                         const dt=d.data(); 
                         return { 
-                            id:d.id, name:dt.nombre, price:dt.precio, 
-                            originalPrice:dt.precioOriginal||dt.precio, 
-                            discountApplied:dt.oferta===true, 
-                            destacado:dt.destacado===true, 
-                            description:dt.descripcion, image:dt.imagen, 
-                            services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], 
-                            isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', 
-                            isPerChild:dt.tipoCobro==='nino', 
-                            categoria:dt.categoria,
-                            orden: dt.orden // Incluir orden del item
+                            id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, 
+                            discountApplied:dt.oferta===true, destacado:dt.destacado===true, description:dt.descripcion, 
+                            image:dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], 
+                            isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', 
+                            categoria:dt.categoria, orden: dt.orden
                         }; 
                     });
-                    
                     if(cd.length>0){ 
-                        // Ordenar servicios dentro de cada catálogo
                         cd.sort((a,b) => (a.orden || 0) - (b.orden || 0));
                         app.catalog = cd;
                         allPurchasableItems = [...app.catalog]; 
                     }
                 } catch(e) { console.warn("Fallo en lectura de Catálogo: ", e); }
 
+                // 5. CARGAR AJUSTES WEB (BANNER)
+                try {
+                    let ajustes = null;
+                    try {
+                        const ajSnap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'ajustes_web')), 3000);
+                        if (!ajSnap.empty) ajustes = ajSnap.docs[0].data();
+                    } catch(e){}
+
+                    if (!ajustes) {
+                        try {
+                            const ajSnap2 = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'ajustes')), 3000);
+                            if (!ajSnap2.empty) ajustes = ajSnap2.docs[0].data();
+                        } catch(e){}
+                    }
+
+                    if (ajustes) {
+                        const bannerEl = document.getElementById('topAnnouncementBanner');
+                        const bannerTextEl = document.getElementById('bannerTextSpan');
+                        const mostrar = ajustes.mostrarBanner === true || String(ajustes.mostrarBanner).toLowerCase() === 'true' || ajustes.mostrar === true;
+
+                        if (mostrar && bannerEl && bannerTextEl) {
+                            bannerTextEl.textContent = cleanStr(ajustes.mensajeBanner || ajustes.mensaje || ajustes.texto) || '¡Promoción especial activa!';
+                            bannerEl.style.display = 'flex';
+                            document.documentElement.style.setProperty('--banner-offset', bannerEl.offsetHeight + 'px');
+                        } else if (bannerEl) {
+                            bannerEl.style.display = 'none';
+                        }
+                    }
+                } catch(e) { console.warn("Fallo cargando Ajustes", e); }
+
+                // OTRAS COLECCIONES
                 try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), 3000); if(!ts.empty) locations = ts.docs.map(d=>d.data()); } catch(e){}
                 try { const gs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')), 3000); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); else gallery=[]; } catch(e){}
                 try { const rs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')), 3000); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){}
@@ -1015,7 +1258,7 @@
                 
                 try {
                     const es = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos')), 4000);
-                    bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(ev.estado||'').toLowerCase().includes(s)));
+                    bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(cleanStr(ev.estado)).toLowerCase().includes(s)));
                 } catch(e) {}
             } catch(e){ console.error("Fallo general de red en entorno.", e); }
 
@@ -1024,7 +1267,6 @@
                 allPurchasableItems = [...fallbackCatalog];
             }
             
-            // Reconstruir la navegación según los catálogos cargados dinámica y ordenadamente
             buildDynamicNav();
         }
 
@@ -1076,4 +1318,3 @@
     </script>
 </body>
 </html>
-
