@@ -304,7 +304,6 @@
                                 <div><label class="saas-label">Tipo de Cobro</label><select id="tipoCobro" class="saas-input bg-slate-900 border-slate-700"><option value="paquete">Fijo</option><option value="hora">Por Hora</option><option value="nino">Por Niño</option></select></div>
                             </div>
                             
-                            <!-- CORRECCIÓN DE TOGGLES PARA QUE FUNCIONEN CORRECTAMENTE EN HTML -->
                             <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-3">
                                 <span class="text-sm font-bold text-white">Es Oferta 🔥</span>
                                 <div class="relative inline-block w-10 h-5 shrink-0">
@@ -409,7 +408,6 @@
                     <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-5 w-full">
                         <h3 class="text-sm font-bold text-cyan-400 mb-4 flex items-center gap-2"><i data-lucide="megaphone" class="w-4 h-4"></i> Banner Superior</h3>
                         
-                        <!-- CORRECCIÓN DE TOGGLE PARA AJUSTES -->
                         <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-4">
                             <span class="text-sm font-bold text-white">Mostrar Banner</span>
                             <div class="relative inline-block w-10 h-5 shrink-0">
@@ -472,7 +470,7 @@
         </div>
     </div>
 
-    <!-- MODAL CATEGORÍA ACTUALIZADO -->
+    <!-- MODAL CATEGORÍA -->
     <div id="categoryModal" class="modal-backdrop">
         <div class="modal-content bg-[#0F172A] border border-slate-700 rounded-3xl shadow-2xl p-6 w-full max-w-sm mx-4 text-left">
             <h3 class="text-lg font-bold text-white mb-4" id="catModalTitle">Catálogo</h3>
@@ -537,7 +535,7 @@
         </div>
     </div>
 
-    <!-- MODAL CAMPAÑAS -->
+    <!-- MODAL CAMPAÑAS (Arreglado el Guardado de Datos) -->
     <div id="campaignModal" class="modal-backdrop">
         <div class="modal-content bg-[#0F172A] border border-slate-700 rounded-3xl shadow-2xl w-full max-w-2xl mx-4 flex flex-col max-h-[90vh]">
             <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
@@ -653,7 +651,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000); 
         }
 
-        // CONFIRM MODAL (Agregado para que funcione en toda la app)
+        // CONFIRM MODAL
         window.showConfirm = function(title, message, onConfirm) {
             document.getElementById('confirmTitle').textContent = title;
             document.getElementById('confirmMessage').textContent = message;
@@ -734,7 +732,11 @@
             hiddenArea.value = dynamicServicesArr.join('\n');
             lucide.createIcons();
 
-            if (window.serviceSortable) window.serviceSortable.destroy();
+            // FIX: Limpiar correctamente la instancia de Sortable para evitar el congelamiento
+            if (window.serviceSortable) {
+                window.serviceSortable.destroy();
+                window.serviceSortable = null;
+            }
             if (dynamicServicesArr.length > 0) {
                 window.serviceSortable = new Sortable(container, {
                     animation: 150, handle: '.drag-handle-service', ghostClass: 'sortable-ghost', forceFallback: true,
@@ -747,7 +749,7 @@
             }
         };
 
-        // --- 7. CATEGORÍAS (CRUD COMPLETO AÑADIDO) ---
+        // --- 7. CATEGORÍAS ---
         let editingCategoryId = null;
 
         window.openCategoryModal = function(id = null) {
@@ -811,7 +813,6 @@
                 }
                 window.categoriasLocales.sort((a,b) => (a.orden || 999) - (b.orden || 999));
                 
-                // Llenar selects y filtros
                 const sel = document.getElementById('categoria'); 
                 if(sel) {
                     sel.innerHTML = ''; 
@@ -819,7 +820,6 @@
                 }
                 window.renderCategoryFilters(); 
                 
-                // Llenar vista de gestión de categorías (con botones añadidos)
                 const cc = document.getElementById('categoriesList'); 
                 if(cc) {
                     cc.innerHTML = ''; 
@@ -848,7 +848,7 @@
             } catch(e){}
         }
 
-        // --- 1. CATÁLOGO / PAQUETES (CON VISUALIZACIÓN DE DESCUENTO MEJORADA) ---
+        // --- 1. CATÁLOGO / PAQUETES ---
         window.categoriasLocales = [];
         let paquetesLocales = {};
         window.activeCategoryFilter = 'all';
@@ -932,7 +932,6 @@
                     const ordenBadge = `<span class="order-badge text-[9px] text-slate-300 font-bold bg-slate-800 px-1.5 py-0.5 rounded border border-slate-600 shadow-sm shrink-0 whitespace-nowrap ${badgeClass}">#${data.orden||''}</span>`;
                     const catObj = window.categoriasLocales.find(c => c.id === data.categoria); const catNombre = catObj ? catObj.nombre : data.categoria;
 
-                    // AÑADIDO: Lógica visual para la "Oferta"
                     const ofertaBadge = data.oferta ? `<span class="text-[9px] font-bold bg-pink-500/20 text-pink-400 px-2 py-0.5 rounded border border-pink-500/30 shrink-0">OFERTA 🔥</span>` : '';
                     const prevPriceHtml = (data.oferta && data.precioOriginal) ? `<span class="text-[11px] text-slate-500 line-through font-medium mr-1.5">$${data.precioOriginal}</span>` : '';
 
@@ -992,7 +991,6 @@
             } catch (e) { showToast("Error cargando catálogo", "error"); }
         }
 
-        // GUARDADO DE PAQUETES Y EDICION
         document.getElementById('oferta').addEventListener('change', e => document.getElementById('precioOriginalContainer').classList.toggle('hidden', !e.target.checked));
         document.getElementById('imageFileNative').addEventListener('change', async (e) => uploadToCloudinary(e.target.files[0], document.getElementById('imagen'), document.getElementById('imagePreviewBox'), document.getElementById('previewImg')));
 
@@ -1146,7 +1144,7 @@
 
         window.deleteDocGen = async (col, id, cb) => { window.showConfirm("Eliminar", "¿Estás seguro?", async () => { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id)); showToast("Eliminado", "success"); cb(); loadDashboardStats(); }); }
 
-        // --- SISTEMAS DE TEMAS Y CAMPAÑAS ---
+        // --- SISTEMAS DE TEMAS Y CAMPAÑAS (FIXED) ---
         window.campanasLocales = []; let editingCampaignId = null;
         window.globalThemeConfig = { modo: 'automatico', temaManualActivo: 'normal' };
         window.temasLocales = [];
@@ -1203,7 +1201,7 @@
         window.editTheme = function(id) { editingThemeId = id; const thm = window.temasLocales.find(t => t.id === id); if(!thm) return; document.getElementById('thmName').value = thm.nombre; document.getElementById('thmStart').value = thm.fechaInicio || ''; document.getElementById('thmEnd').value = thm.fechaFin || ''; ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t=>{document.getElementById(`thmCol${t}`).value=thm[`color${t}`]||'#000';document.getElementById(`thmCol${t}Picker`).value=thm[`color${t}`]||'#000';}); document.getElementById('themeModal').classList.add('show'); };
         window.saveTheme = async function() { const data={nombre:document.getElementById('thmName').value,fechaInicio:document.getElementById('thmStart').value,fechaFin:document.getElementById('thmEnd').value}; ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t=>data[`color${t}`]=document.getElementById(`thmCol${t}`).value); if(editingThemeId) await updateDoc(doc(db,'artifacts',APP_ID,'public','data','temas_web',editingThemeId),data); else {data.isDefault=false;data.activo=false;await setDoc(doc(db,'artifacts',APP_ID,'public','data','temas_web','tema_'+Date.now()),data);} window.closeThemeModal(); await window.loadThemes(); };
 
-        // CAMPAÑAS
+        // CAMPAÑAS - SE CORRIGIÓ LA FALTA DE DATOS GUARDADOS
         document.getElementById('campImgNative').addEventListener('change', e => uploadToCloudinary(e.target.files[0], document.getElementById('campImg'), document.getElementById('campImgPreviewBox'), document.getElementById('campImgPreview')));
         window.loadCampaigns = async function() {
             try {
@@ -1221,6 +1219,7 @@
                 renderCampaignsView();
             } catch(e) {}
         }
+        
         function renderCampaignsView() {
             const container = document.getElementById('campaignsList'); container.innerHTML = '';
             window.campanasLocales.forEach(camp => {
@@ -1250,26 +1249,119 @@
                 await batch.commit(); window.loadCampaigns();
             }});
         }
+        
         window.openCampaignModal = function() {
-            editingCampaignId = null; document.getElementById('campName').value = ''; document.getElementById('campActive').checked = true; document.getElementById('campFeatured').checked = false;
-            const sel = document.getElementById('campTheme'); sel.innerHTML = '<option value="">(Sin tema específico)</option>'; window.temasLocales.forEach(t => sel.innerHTML += `<option value="${t.id}">${t.nombre}</option>`);
+            editingCampaignId = null; 
+            document.getElementById('campName').value = ''; 
+            document.getElementById('campActive').checked = true; 
+            document.getElementById('campFeatured').checked = false;
+            document.getElementById('campDesc').value = '';
+            document.getElementById('campAuto').checked = true;
+            document.getElementById('campStart').value = '';
+            document.getElementById('campEnd').value = '';
+            document.getElementById('campTitle').value = '';
+            document.getElementById('campSubtitle').value = '';
+            document.getElementById('campPrice').value = '';
+            document.getElementById('campPrevPrice').value = '';
+            document.getElementById('campBtnText').value = '';
+            document.getElementById('campBtnAction').value = '';
+            document.getElementById('campImg').value = '';
+            document.getElementById('campImgPreviewBox').classList.add('hidden');
+            
+            const sel = document.getElementById('campTheme'); 
+            sel.innerHTML = '<option value="">(Sin tema específico)</option>'; 
+            window.temasLocales.forEach(t => sel.innerHTML += `<option value="${t.id}">${t.nombre}</option>`);
             document.getElementById('campaignModal').classList.add('show');
         };
+        
         window.closeCampaignModal = () => document.getElementById('campaignModal').classList.remove('show');
+        
         window.editCampaign = function(id) {
             editingCampaignId = id; const c = window.campanasLocales.find(x => x.id === id); if(!c) return;
-            document.getElementById('campName').value = c.name; document.getElementById('campActive').checked = c.active; document.getElementById('campFeatured').checked = c.featured;
-            document.getElementById('campStart').value = c.startDate || ''; document.getElementById('campEnd').value = c.endDate || '';
-            const sel = document.getElementById('campTheme'); sel.innerHTML = '<option value="">(Sin tema específico)</option>'; window.temasLocales.forEach(t => sel.innerHTML += `<option value="${t.id}">${t.nombre}</option>`); sel.value = c.themeId || '';
+            
+            document.getElementById('campName').value = c.name || ''; 
+            document.getElementById('campActive').checked = c.active || false; 
+            document.getElementById('campFeatured').checked = c.featured || false;
+            document.getElementById('campDesc').value = c.description || '';
+            document.getElementById('campAuto').checked = c.autoActivation !== false;
+            document.getElementById('campStart').value = c.startDate || ''; 
+            document.getElementById('campEnd').value = c.endDate || '';
+            document.getElementById('campTitle').value = c.promoTitle || '';
+            document.getElementById('campSubtitle').value = c.promoSubtitle || '';
+            document.getElementById('campPrice').value = c.promoPrice || '';
+            document.getElementById('campPrevPrice').value = c.promoPrevPrice || '';
+            document.getElementById('campBtnText').value = c.btnText || '';
+            document.getElementById('campBtnAction').value = c.btnAction || '';
+            document.getElementById('campImg').value = c.image || '';
+            
+            if(c.image) {
+                document.getElementById('campImgPreviewBox').classList.remove('hidden');
+                document.getElementById('campImgPreview').src = c.image;
+            } else {
+                document.getElementById('campImgPreviewBox').classList.add('hidden');
+            }
+
+            const sel = document.getElementById('campTheme'); 
+            sel.innerHTML = '<option value="">(Sin tema específico)</option>'; 
+            window.temasLocales.forEach(t => sel.innerHTML += `<option value="${t.id}">${t.nombre}</option>`); 
+            sel.value = c.themeId || '';
             document.getElementById('campaignModal').classList.add('show');
         };
+
         window.saveCampaign = async function() {
-            const data = { name: document.getElementById('campName').value, active: document.getElementById('campActive').checked, featured: document.getElementById('campFeatured').checked, startDate: document.getElementById('campStart').value, endDate: document.getElementById('campEnd').value, themeId: document.getElementById('campTheme').value };
-            const batch = writeBatch(db);
-            if(data.featured) window.campanasLocales.forEach(c => { if(c.id !== editingCampaignId && c.featured) batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', c.id), { featured: false }); });
-            if(editingCampaignId) batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', editingCampaignId), data);
-            else { const id = 'camp_' + Date.now(); data.order = window.campanasLocales.length + 1; batch.set(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', id), data); }
-            await batch.commit(); window.closeCampaignModal(); window.loadCampaigns();
+            // FIX: Se incluyeron TODOS los datos que faltaban por guardarse.
+            const data = { 
+                name: document.getElementById('campName').value, 
+                active: document.getElementById('campActive').checked, 
+                featured: document.getElementById('campFeatured').checked, 
+                startDate: document.getElementById('campStart').value, 
+                endDate: document.getElementById('campEnd').value, 
+                themeId: document.getElementById('campTheme').value,
+                description: document.getElementById('campDesc').value,
+                autoActivation: document.getElementById('campAuto').checked,
+                promoTitle: document.getElementById('campTitle').value,
+                promoSubtitle: document.getElementById('campSubtitle').value,
+                promoPrice: Number(document.getElementById('campPrice').value) || null,
+                promoPrevPrice: Number(document.getElementById('campPrevPrice').value) || null,
+                btnText: document.getElementById('campBtnText').value,
+                btnAction: document.getElementById('campBtnAction').value,
+                image: document.getElementById('campImg').value
+            };
+            
+            const btn = document.getElementById('saveCampBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Guardando...';
+            btn.disabled = true;
+
+            try {
+                const batch = writeBatch(db);
+                if(data.featured) {
+                    window.campanasLocales.forEach(c => { 
+                        if(c.id !== editingCampaignId && c.featured) {
+                            batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', c.id), { featured: false }); 
+                        }
+                    });
+                }
+                
+                if(editingCampaignId) {
+                    batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', editingCampaignId), data);
+                } else { 
+                    const id = 'camp_' + Date.now(); 
+                    data.order = window.campanasLocales.length + 1; 
+                    batch.set(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', id), data); 
+                }
+                
+                await batch.commit(); 
+                showToast("Campaña guardada exitosamente", "success");
+                window.closeCampaignModal(); 
+                window.loadCampaigns();
+            } catch(e) {
+                showToast("Error guardando campaña", "error");
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                lucide.createIcons();
+            }
         };
         window.toggleCampaignStatus = async function(id, status) { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', id), { active: status }); window.loadCampaigns(); }
 
