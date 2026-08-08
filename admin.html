@@ -242,11 +242,6 @@
                         </button>
                     </div>
 
-                    <div id="themeConflictAlert" class="hidden bg-rose-500/10 border border-rose-500/30 p-4 rounded-xl mb-6 shadow-sm">
-                        <h4 class="text-rose-400 font-bold flex items-center gap-2 text-sm"><i data-lucide="alert-triangle" class="w-4 h-4"></i> Conflicto de Fechas Detectado</h4>
-                        <p id="themeConflictText" class="text-rose-300/90 text-xs mt-1.5 leading-relaxed"></p>
-                    </div>
-
                     <div id="themesList" class="flex flex-col gap-4 w-full pb-8"></div>
                 </div>
 
@@ -271,7 +266,7 @@
                             <h2 class="text-xl font-bold text-white mb-1">Paquetes Activos</h2>
                             <p class="text-sm text-slate-400">Gestiona los planes de tu catálogo.</p>
                         </div>
-                        <button id="refreshBtn" class="p-2.5 bg-slate-800 text-slate-300 rounded-xl border border-slate-700 hover:bg-slate-700"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
+                        <button id="refreshBtn" onclick="window.loadCatalog()" class="p-2.5 bg-slate-800 text-slate-300 rounded-xl border border-slate-700 hover:bg-slate-700"><i data-lucide="refresh-cw" class="w-4 h-4"></i></button>
                     </div>
                     <div class="relative mb-4 w-full">
                         <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500"></i>
@@ -308,14 +303,23 @@
                                 <div><label class="saas-label">Precio ($)</label><input type="number" id="precio" class="saas-input text-emerald-400 font-bold" placeholder="0.00"></div>
                                 <div><label class="saas-label">Tipo de Cobro</label><select id="tipoCobro" class="saas-input bg-slate-900 border-slate-700"><option value="paquete">Fijo</option><option value="hora">Por Hora</option><option value="nino">Por Niño</option></select></div>
                             </div>
+                            
+                            <!-- CORRECCIÓN DE TOGGLES PARA QUE FUNCIONEN CORRECTAMENTE EN HTML -->
                             <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-3">
                                 <span class="text-sm font-bold text-white">Es Oferta 🔥</span>
-                                <input type="checkbox" id="oferta" class="toggle-checkbox w-6 h-6 rounded-full bg-slate-400"/>
+                                <div class="relative inline-block w-10 h-5 shrink-0">
+                                    <input type="checkbox" id="oferta" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0"/>
+                                    <label for="oferta" class="toggle-label block overflow-hidden h-5 rounded-full cursor-pointer"></label>
+                                </div>
                             </div>
-                            <div id="precioOriginalContainer" class="hidden mb-4"><label class="saas-label text-pink-400">Precio Anterior ($)</label><input type="number" id="precioOriginal" class="saas-input bg-slate-900"></div>
+                            <div id="precioOriginalContainer" class="hidden mb-4"><label class="saas-label text-pink-400">Precio Anterior Tachado ($)</label><input type="number" id="precioOriginal" class="saas-input bg-slate-900" placeholder="Ej: 150"></div>
+                            
                             <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800">
                                 <span class="text-sm font-bold text-yellow-400">Destacar en Inicio 🌟</span>
-                                <input type="checkbox" id="destacado" class="toggle-checkbox-star w-6 h-6 rounded-full bg-slate-400"/>
+                                <div class="relative inline-block w-10 h-5 shrink-0">
+                                    <input type="checkbox" id="destacado" class="toggle-checkbox-star absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0"/>
+                                    <label for="destacado" class="toggle-label-star block overflow-hidden h-5 rounded-full cursor-pointer"></label>
+                                </div>
                             </div>
                         </div>
                         <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 shadow-md w-full">
@@ -404,9 +408,14 @@
                 <div id="view-settings" class="view-section w-full">
                     <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-5 w-full">
                         <h3 class="text-sm font-bold text-cyan-400 mb-4 flex items-center gap-2"><i data-lucide="megaphone" class="w-4 h-4"></i> Banner Superior</h3>
+                        
+                        <!-- CORRECCIÓN DE TOGGLE PARA AJUSTES -->
                         <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-4">
                             <span class="text-sm font-bold text-white">Mostrar Banner</span>
-                            <input type="checkbox" id="bannerActive" class="toggle-checkbox w-6 h-6 rounded-full bg-slate-400"/>
+                            <div class="relative inline-block w-10 h-5 shrink-0">
+                                <input type="checkbox" id="bannerActive" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0"/>
+                                <label for="bannerActive" class="toggle-label block overflow-hidden h-5 rounded-full cursor-pointer"></label>
+                            </div>
                         </div>
                         <label class="saas-label">Mensaje</label>
                         <input type="text" id="bannerText" class="saas-input bg-slate-900 w-full" placeholder="Texto superior...">
@@ -463,12 +472,15 @@
         </div>
     </div>
 
-    <!-- MODAL CATEGORÍA -->
+    <!-- MODAL CATEGORÍA ACTUALIZADO -->
     <div id="categoryModal" class="modal-backdrop">
         <div class="modal-content bg-[#0F172A] border border-slate-700 rounded-3xl shadow-2xl p-6 w-full max-w-sm mx-4 text-left">
-            <h3 class="text-lg font-bold text-white mb-4">Nuevo Catálogo</h3>
-            <input type="text" id="catName" class="saas-input bg-slate-900 mb-4" placeholder="Nombre...">
-            <div class="flex gap-3"><button onclick="window.closeCategoryModal()" class="flex-1 bg-slate-800 py-3 rounded-xl text-white">Cancelar</button><button onclick="window.saveCategory()" class="flex-1 bg-indigo-600 py-3 rounded-xl text-white">Guardar</button></div>
+            <h3 class="text-lg font-bold text-white mb-4" id="catModalTitle">Catálogo</h3>
+            <input type="text" id="catName" class="saas-input bg-slate-900 mb-4" placeholder="Nombre de la categoría...">
+            <div class="flex gap-3">
+                <button onclick="window.closeCategoryModal()" class="flex-1 bg-slate-800 py-3 rounded-xl text-white font-bold">Cancelar</button>
+                <button onclick="window.saveCategory()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-white font-bold">Guardar</button>
+            </div>
         </div>
     </div>
 
@@ -511,7 +523,10 @@
                     </div>
                     <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800">
                         <div><span class="text-sm font-bold text-white block">Animaciones CSS</span></div>
-                        <input type="checkbox" id="thmAnimations" class="toggle-checkbox w-6 h-6 rounded-full bg-slate-400" checked/>
+                        <div class="relative inline-block w-10 h-5 shrink-0">
+                            <input type="checkbox" id="thmAnimations" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0" checked/>
+                            <label for="thmAnimations" class="toggle-label block overflow-hidden h-5 rounded-full cursor-pointer"></label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -638,6 +653,19 @@
             setTimeout(() => toast.classList.remove('show'), 3000); 
         }
 
+        // CONFIRM MODAL (Agregado para que funcione en toda la app)
+        window.showConfirm = function(title, message, onConfirm) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmModal').classList.add('show');
+            const btn = document.getElementById('confirmActionBtn');
+            btn.onclick = () => {
+                onConfirm();
+                document.getElementById('confirmModal').classList.remove('show');
+            };
+        };
+        window.closeConfirm = () => document.getElementById('confirmModal').classList.remove('show');
+
         async function loadDataForTab(tab) {
             if(tab === 'dashboard') loadDashboardStats();
             if(tab === 'themes') window.loadThemes();
@@ -669,7 +697,7 @@
             } catch(e) {}
         }
 
-        // --- FUNCIONALIDAD DE SERVICIOS DINÁMICOS (CON REORDENAMIENTO) ---
+        // --- FUNCIONALIDAD DE SERVICIOS DINÁMICOS ---
         let dynamicServicesArr = [];
         window.addDynamicService = function() {
             const input = document.getElementById('nuevoServicioInput');
@@ -706,33 +734,70 @@
             hiddenArea.value = dynamicServicesArr.join('\n');
             lucide.createIcons();
 
-            // Inicializar Drag and Drop para Servicios dentro del paquete
             if (window.serviceSortable) window.serviceSortable.destroy();
             if (dynamicServicesArr.length > 0) {
                 window.serviceSortable = new Sortable(container, {
-                    animation: 150,
-                    handle: '.drag-handle-service',
-                    ghostClass: 'sortable-ghost',
-                    forceFallback: true,
+                    animation: 150, handle: '.drag-handle-service', ghostClass: 'sortable-ghost', forceFallback: true,
                     onEnd: function () {
                         const items = container.querySelectorAll('.service-item');
-                        let newArr = [];
-                        items.forEach(item => {
-                            newArr.push(item.querySelector('.service-text').textContent);
-                        });
-                        dynamicServicesArr = newArr;
-                        window.renderDynamicServices(); // Re-render para actualizar índices de borrado
+                        let newArr = []; items.forEach(item => newArr.push(item.querySelector('.service-text').textContent));
+                        dynamicServicesArr = newArr; window.renderDynamicServices(); 
                     }
                 });
             }
         };
 
-        // --- 1. CATÁLOGO / PAQUETES (COMPLETO) ---
-        window.categoriasLocales = [];
-        let paquetesLocales = {};
-        window.activeCategoryFilter = 'all';
-        window.searchQuery = '';
-        let editingId = null;
+        // --- 7. CATEGORÍAS (CRUD COMPLETO AÑADIDO) ---
+        let editingCategoryId = null;
+
+        window.openCategoryModal = function(id = null) {
+            editingCategoryId = id;
+            if(id) {
+                const cat = window.categoriasLocales.find(c => c.id === id);
+                document.getElementById('catName').value = cat ? cat.nombre : '';
+                document.getElementById('catModalTitle').textContent = "Editar Catálogo";
+            } else {
+                document.getElementById('catName').value = '';
+                document.getElementById('catModalTitle').textContent = "Nuevo Catálogo";
+            }
+            document.getElementById('categoryModal').classList.add('show');
+        };
+
+        window.closeCategoryModal = () => { 
+            document.getElementById('categoryModal').classList.remove('show'); 
+            editingCategoryId = null;
+        };
+        
+        window.saveCategory = async () => {
+            const nombre = document.getElementById('catName').value.trim();
+            if(!nombre) return showToast("Escribe un nombre para el catálogo", "error");
+
+            try {
+                if (editingCategoryId) {
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', editingCategoryId), { nombre });
+                    showToast("Catálogo actualizado", "success");
+                } else {
+                    const newId = nombre.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                    const orden = window.categoriasLocales.length + 1;
+                    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', newId), {
+                        id: newId, nombre, orden, visible: true
+                    });
+                    showToast("Catálogo creado exitosamente", "success");
+                }
+                window.closeCategoryModal();
+                await window.loadCategories();
+                loadDashboardStats();
+            } catch(e) { showToast("Error guardando catálogo", "error"); }
+        };
+
+        window.deleteCategory = async (id) => {
+            window.showConfirm("Eliminar Catálogo", "Ten cuidado, los paquetes que pertenecían a este catálogo pueden quedar sin asignación visible. ¿Deseas continuar?", async () => {
+                await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', id));
+                showToast("Catálogo eliminado", "success");
+                await window.loadCategories();
+                loadDashboardStats();
+            });
+        };
 
         window.loadCategories = async function() {
             try {
@@ -754,12 +819,22 @@
                 }
                 window.renderCategoryFilters(); 
                 
-                // Llenar vista de gestión de categorías
+                // Llenar vista de gestión de categorías (con botones añadidos)
                 const cc = document.getElementById('categoriesList'); 
                 if(cc) {
                     cc.innerHTML = ''; 
                     window.categoriasLocales.forEach(c => {
-                        cc.innerHTML += `<div class="category-item flex justify-between items-center bg-[#0F172A] p-3 md:p-4 rounded-xl border border-slate-700 shadow-sm relative w-full" data-id="${c.id}"><div class="flex items-center gap-2 pl-2 flex-1"><div class="drag-handle-cat p-1.5 cursor-grab"><i data-lucide="grip-vertical" class="w-5 h-5 text-slate-500"></i></div><div class="flex-1"><h4 class="text-white font-bold text-sm">${c.nombre}</h4></div></div></div>`;
+                        cc.innerHTML += `
+                        <div class="category-item flex justify-between items-center bg-[#0F172A] p-3 md:p-4 rounded-xl border border-slate-700 shadow-sm relative w-full" data-id="${c.id}">
+                            <div class="flex items-center gap-2 pl-2 flex-1">
+                                <div class="drag-handle-cat p-1.5 cursor-grab -ml-2 text-slate-500 hover:text-white transition-colors"><i data-lucide="grip-vertical" class="w-5 h-5"></i></div>
+                                <div class="flex-1"><h4 class="text-white font-bold text-sm">${c.nombre}</h4></div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="window.openCategoryModal('${c.id}')" class="text-slate-400 hover:text-white p-2 bg-slate-800 rounded-lg transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                <button onclick="window.deleteCategory('${c.id}')" class="text-rose-400 hover:text-white p-2 bg-slate-800 hover:bg-rose-600/20 rounded-lg transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>`;
                     });
                     lucide.createIcons();
                     if (window.categorySortable) window.categorySortable.destroy();
@@ -772,6 +847,13 @@
                 }
             } catch(e){}
         }
+
+        // --- 1. CATÁLOGO / PAQUETES (CON VISUALIZACIÓN DE DESCUENTO MEJORADA) ---
+        window.categoriasLocales = [];
+        let paquetesLocales = {};
+        window.activeCategoryFilter = 'all';
+        window.searchQuery = '';
+        let editingId = null;
 
         window.renderCategoryFilters = function() {
             const container = document.getElementById('catalogFilterContainer'); if(!container) return;
@@ -850,19 +932,28 @@
                     const ordenBadge = `<span class="order-badge text-[9px] text-slate-300 font-bold bg-slate-800 px-1.5 py-0.5 rounded border border-slate-600 shadow-sm shrink-0 whitespace-nowrap ${badgeClass}">#${data.orden||''}</span>`;
                     const catObj = window.categoriasLocales.find(c => c.id === data.categoria); const catNombre = catObj ? catObj.nombre : data.categoria;
 
+                    // AÑADIDO: Lógica visual para la "Oferta"
+                    const ofertaBadge = data.oferta ? `<span class="text-[9px] font-bold bg-pink-500/20 text-pink-400 px-2 py-0.5 rounded border border-pink-500/30 shrink-0">OFERTA 🔥</span>` : '';
+                    const prevPriceHtml = (data.oferta && data.precioOriginal) ? `<span class="text-[11px] text-slate-500 line-through font-medium mr-1.5">$${data.precioOriginal}</span>` : '';
+
                     container.innerHTML += `
-                        <div class="package-card-item flex flex-col p-4 bg-[#0F172A] border border-slate-800 hover:border-slate-500 rounded-2xl shadow-lg relative w-full box-border" data-id="${item.id}" data-nombre="${(data.nombre||'').toLowerCase()}" data-categoria="${data.categoria}" data-oferta="${data.oferta}" data-destacado="${data.destacado || false}">
+                        <div class="package-card-item flex flex-col p-4 bg-[#0F172A] border border-slate-800 hover:border-slate-500 rounded-2xl shadow-lg relative w-full box-border ${data.oferta ? 'border-pink-500/30 bg-gradient-to-br from-[#0F172A] to-pink-900/10' : ''}" data-id="${item.id}" data-nombre="${(data.nombre||'').toLowerCase()}" data-categoria="${data.categoria}" data-oferta="${data.oferta}" data-destacado="${data.destacado || false}">
                             
                             <div class="drag-handle absolute top-3 right-3 w-8 h-8 bg-slate-800/80 border border-slate-700 rounded-md items-center justify-center z-10 text-slate-400 hover:text-white shadow-sm" style="display: none;">
                                 <i data-lucide="grip-horizontal" class="w-4 h-4 pointer-events-none"></i>
                             </div>
 
                             <div class="flex gap-3 sm:gap-4 items-start w-full pr-8">
-                                <img src="${data.imagen || ''}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover bg-slate-800 shadow-sm shrink-0">
+                                <img src="${data.imagen || ''}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover bg-slate-800 shadow-sm shrink-0 border ${data.oferta ? 'border-pink-500/30' : 'border-transparent'}">
                                 <div class="flex-1 min-w-0">
-                                    <div class="flex flex-wrap items-center gap-1.5 mb-1.5">${ordenBadge}${data.destacado ? '<span class="text-[9px] text-yellow-900 font-bold bg-yellow-400 px-1.5 py-0.5 rounded">⭐ INICIO</span>' : ''}</div>
+                                    <div class="flex flex-wrap items-center gap-1.5 mb-1.5">${ordenBadge}${ofertaBadge}${data.destacado ? '<span class="text-[9px] text-yellow-900 font-bold bg-yellow-400 px-1.5 py-0.5 rounded">⭐ INICIO</span>' : ''}</div>
                                     <h3 class="text-white font-bold text-sm leading-tight truncate" title="${data.nombre}">${data.nombre}</h3>
-                                    <div class="flex flex-wrap items-center gap-2 mt-1.5 mb-1"><p class="text-emerald-400 font-black text-base">$${data.precio}</p>${tagHtml}</div>
+                                    
+                                    <div class="flex flex-wrap items-baseline mt-1.5 mb-1">
+                                        ${prevPriceHtml}
+                                        <p class="${data.oferta ? 'text-pink-400' : 'text-emerald-400'} font-black text-base">$${data.precio}</p>
+                                        <div class="ml-2">${tagHtml}</div>
+                                    </div>
                                     <span class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1 block truncate">${catNombre}</span>
                                 </div>
                             </div>
@@ -1006,7 +1097,7 @@
             } catch (e) {}
         };
 
-        // --- GALERÍA, CUPONES, SETTINGS, TEMAS, CAMPAÑAS (Restantes intactos de iteraciones previas) ---
+        // --- GALERÍA, CUPONES, SETTINGS, TEMAS, CAMPAÑAS ---
         window.loadGallery = async function() {
             const container = document.getElementById('galleryList'); if(!container) return;
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'));
@@ -1037,12 +1128,25 @@
             document.getElementById('coupCode').value = ''; document.getElementById('coupValue').value = ''; showToast("Cupón creado", "success"); window.loadCoupons(); loadDashboardStats();
         }
 
-        window.loadSettings = async function() { const docSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global')); if(docSnap.exists()) { const d = docSnap.data(); document.getElementById('bannerActive').checked = d.bannerActive || false; document.getElementById('bannerText').value = d.bannerText || ''; } }
-        window.saveSettings = async () => { await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive: document.getElementById('bannerActive').checked, bannerText: document.getElementById('bannerText').value }, {merge: true}); showToast("Ajustes Guardados", "success"); };
+        window.loadSettings = async function() { 
+            const docSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global')); 
+            if(docSnap.exists()) { 
+                const d = docSnap.data(); 
+                document.getElementById('bannerActive').checked = d.bannerActive || false; 
+                document.getElementById('bannerText').value = d.bannerText || ''; 
+            } 
+        }
+        window.saveSettings = async () => { 
+            await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { 
+                bannerActive: document.getElementById('bannerActive').checked, 
+                bannerText: document.getElementById('bannerText').value 
+            }, {merge: true}); 
+            showToast("Ajustes Guardados", "success"); 
+        };
 
         window.deleteDocGen = async (col, id, cb) => { window.showConfirm("Eliminar", "¿Estás seguro?", async () => { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id)); showToast("Eliminado", "success"); cb(); loadDashboardStats(); }); }
 
-        // --- SISTEMAS DE TEMAS Y CAMPAÑAS DE ITERS PREVIAS ---
+        // --- SISTEMAS DE TEMAS Y CAMPAÑAS ---
         window.campanasLocales = []; let editingCampaignId = null;
         window.globalThemeConfig = { modo: 'automatico', temaManualActivo: 'normal' };
         window.temasLocales = [];
@@ -1171,8 +1275,7 @@
 
         // Util general subida imagen
         async function uploadToCloudinary(file, inputUrl, box, img) { if(!file)return;const compressed=await compressImage(file);if(img)img.src=URL.createObjectURL(compressed);if(box)box.classList.remove('hidden');const formData=new FormData();formData.append('file',compressed);formData.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);try{const res=await fetch(CLOUDINARY_URL,{method:'POST',body:formData});const data=await res.json();if(data.secure_url){inputUrl.value=data.secure_url;showToast("Imagen subida","success");}}catch(e){showToast("Error","error");} }
-        window.openCategoryModal=()=>{document.getElementById('categoryModal').classList.add('show');};window.closeCategoryModal=()=>{document.getElementById('categoryModal').classList.remove('show');};window.saveCategory=async()=>{window.closeCategoryModal();};
-
+        
         // INICIALIZACIÓN GLOBAL
         async function init() {
             try {
@@ -1184,3 +1287,4 @@
     </script>
 </body>
 </html>
+
