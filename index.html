@@ -118,7 +118,7 @@
             <div class="container mx-auto flex justify-between items-center">
                 <button data-action="close-modal" data-target-section="home" class="flex items-center logo-container nav-action" aria-label="Inicio">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 p-[2px] mr-3 shadow-sm">
-                        <img src="https://images.weserv.nl/?url=divertyeventos.online/android-chrome-512x512.png&w=100&output=webp" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border border-slate-200" loading="eager">
+                        <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border border-slate-200" loading="eager">
                     </div>
                     <div class="flex flex-col drop-shadow-sm">
                         <span class="text-2xl sm:text-3xl font-extrabold text-slate-900 font-nunito leading-none">Diverty</span>
@@ -295,8 +295,8 @@
         ];
         
         const fallbackCatalog = [
-            { id: 'clown_diverty', name: 'Plan Diverty Básico', price: 120, originalPrice: 150, discountApplied: true, destacado: true, description: '2 Horas de animación con payasito para la mejor diversión de tus niños.', image: 'https://images.weserv.nl/?url=divertyeventos.online/android-chrome-512x512.png&w=400', services: ['Animación', 'Juegos interactivos', 'Pintacaritas'], isHourly: false, isPerChild: false, categoria: 'payasos', orden: 1 },
-            { id: 'bubble_show', name: 'Show Mágico de Burbujas', price: 80, originalPrice: 100, discountApplied: false, destacado: true, description: 'Espectáculo mágico y asombroso de burbujas gigantes para fotos.', image: 'https://images.weserv.nl/?url=divertyeventos.online/android-chrome-512x512.png&w=400', services: ['Show 45 min', 'Burbujas Gigantes', 'Interacción con el niño'], isHourly: false, isPerChild: false, categoria: 'burbujas', orden: 2 }
+            { id: 'clown_diverty', name: 'Plan Diverty Básico', price: 120, originalPrice: 150, discountApplied: true, destacado: true, description: '2 Horas de animación con payasito para la mejor diversión de tus niños.', image: './android-chrome-512x512.png', services: ['Animación', 'Juegos interactivos', 'Pintacaritas'], isHourly: false, isPerChild: false, categoria: 'payasos', orden: 1 },
+            { id: 'bubble_show', name: 'Show Mágico de Burbujas', price: 80, originalPrice: 100, discountApplied: false, destacado: true, description: 'Espectáculo mágico y asombroso de burbujas gigantes para fotos.', image: './android-chrome-512x512.png', services: ['Show 45 min', 'Burbujas Gigantes', 'Interacción con el niño'], isHourly: false, isPerChild: false, categoria: 'burbujas', orden: 2 }
         ];
 
         let db, auth; 
@@ -1076,5 +1076,4 @@
     </script>
 </body>
 </html>
-
 
