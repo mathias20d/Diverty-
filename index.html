@@ -98,11 +98,10 @@
         #topAnnouncementBanner { background: linear-gradient(90deg, #db2777, #7c3aed); position: relative; width: 100%; z-index: 60; padding: 6px 16px; font-weight: 800; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.05em; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
         video.bg-video-optimized { transform: translateZ(0); will-change: transform; backface-visibility: hidden; perspective: 1000; }
         
-        /* CSS DINÁMICO PARA FONDOS OSCUROS (100% EFECTIVO) */
+        /* CSS DINÁMICO PARA FONDOS OSCUROS */
         body.dark-bg-theme .dynamic-title { color: #FFFFFF !important; }
         body.dark-bg-theme .dynamic-subtitle { color: #CBD5E1 !important; }
 
-        /* Prefers-reduced-motion compatible */
         @media (prefers-reduced-motion: reduce) {
             *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
         }
@@ -120,9 +119,9 @@
 
     <!-- HEADER Y BANNER -->
     <div id="headerWrapper" class="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none transition-all duration-300">
-        <!-- SECCIÓN DEL BANNER SUPERIOR CONECTADO A FIRESTORE -->
+        <!-- SECCIÓN DEL BANNER SUPERIOR -->
         <div id="topAnnouncementBanner" style="display: none;" class="justify-center items-center shadow-md pointer-events-auto">
-            <i data-lucide="megaphone" class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2"></i> <span id="bannerTextSpan">¡Promoción especial activa!</span>
+            <i data-lucide="megaphone" class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2"></i> <span id="bannerTextSpan"></span>
         </div>
         
         <header id="mainHeader" class="w-full px-4 transition-all duration-200 pointer-events-auto">
@@ -137,7 +136,6 @@
                     </div>
                 </button>
                 <nav id="desktopNav" class="hidden lg:flex items-center space-x-1 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-slate-200/50 shadow-sm text-slate-700">
-                    <!-- Elementos dinámicos se insertarán aquí -->
                     <button data-target-section="home" class="nav-link nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 text-yellow-500"></i>Inicio</button>
                     <div class="w-4 h-4 mx-2 animate-spin rounded-full border-2 border-purple-500 border-t-transparent opacity-50"></div>
                 </nav>
@@ -174,7 +172,6 @@
         </div>
         <div class="flex-1 px-2 py-6 relative z-10 flex flex-col h-full">
             <div id="mobileNavLinks" class="space-y-2 flex-1">
-                <!-- Elementos dinámicos se insertarán aquí -->
                 <div class="text-center py-10 opacity-50"><i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto text-purple-500"></i></div>
             </div>
             <div class="mt-8 px-2 pb-6 pt-4 border-t border-slate-200">
@@ -297,55 +294,25 @@
         const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [], theme: null, campaigns: [] };
 
         // ==========================================
-        // 1. FUNCIONES UTILITARIAS Y NORMALIZADORES 
+        // 1. FUNCIONES UTILITARIAS
         // ==========================================
         
-        async function fetchWithTimeout(promise, ms) {
-            return Promise.race([
-                promise,
-                new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout de red al conectar")), ms))
-            ]);
-        }
+        const fetchWithTimeout = async (promise, ms) => {
+            let timer;
+            const timeoutPromise = new Promise((_, reject) => {
+                timer = setTimeout(() => reject(new Error("Timeout de conexión (" + ms + "ms)")), ms);
+            });
+            try {
+                const result = await Promise.race([promise, timeoutPromise]);
+                return result;
+            } finally {
+                clearTimeout(timer);
+            }
+        };
 
         const cleanStr = (val) => {
             if (val === undefined || val === null || val === 'undefined' || val === 'null' || val === '') return '';
             return String(val).trim();
-        };
-
-        // NORMALIZADOR DE FECHAS MEJORADO (Evita errores si el admin guarda como "25/12/2026")
-        const normalizeDate = (val) => {
-            if (!val) return null;
-            let d;
-            
-            if (typeof val === 'string') {
-                const s = val.split('T')[0].trim();
-                // Si ya viene en YYYY-MM-DD
-                if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-                
-                // Si viene como DD/MM/YYYY o DD-MM-YYYY (Muy común en paneles hispanos)
-                const parts = s.split(/[\/\-]/);
-                if (parts.length === 3) {
-                    if (parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-                    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-                }
-                d = new Date(val);
-            } else if (val.toDate) {
-                d = val.toDate();
-            } else if (val.seconds) {
-                d = new Date(val.seconds * 1000);
-            } else if (val instanceof Date) {
-                d = val;
-            } else {
-                return null;
-            }
-            
-            if (d && !isNaN(d.getTime())) {
-                const year = d.getFullYear();
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            }
-            return null;
         };
 
         function setContent(html) { 
@@ -361,24 +328,16 @@
             const sliders = document.querySelectorAll('.overflow-x-auto:not(.slider-ready)');
             sliders.forEach(slider => {
                 slider.classList.add('slider-ready');
-                let isDown = false;
-                let startX;
-                let scrollLeft;
+                let isDown = false, startX, scrollLeft;
                 slider.addEventListener('mousedown', (e) => {
-                    isDown = true;
-                    slider.classList.add('cursor-grab');
-                    startX = e.pageX - slider.offsetLeft;
-                    scrollLeft = slider.scrollLeft;
+                    isDown = true; slider.classList.add('cursor-grab');
+                    startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft;
                 });
                 slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('cursor-grab', 'cursor-grabbing'); });
                 slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('cursor-grabbing'); });
                 slider.addEventListener('mousemove', (e) => {
-                    if (!isDown) return;
-                    e.preventDefault();
-                    slider.classList.add('cursor-grabbing');
-                    const x = e.pageX - slider.offsetLeft;
-                    const walk = (x - startX) * 2; 
-                    slider.scrollLeft = scrollLeft - walk;
+                    if (!isDown) return; e.preventDefault(); slider.classList.add('cursor-grabbing');
+                    const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk;
                 });
             });
         }
@@ -404,60 +363,31 @@
             if(show){ o.style.opacity='1'; o.style.visibility='visible'; m.classList.add('open'); } else { o.style.opacity='0'; o.style.visibility='hidden'; m.classList.remove('open'); } 
         }
 
-        // ==========================================
-        // DETECCIÓN A PRUEBA DE BALAS DE FONDO OSCURO
-        // ==========================================
         function checkIsDark(colorStr) {
             if (!colorStr) return false;
             try {
-                const d = document.createElement('div');
-                d.style.backgroundColor = colorStr;
-                d.style.display = 'none';
-                document.body.appendChild(d);
-                const rgb = window.getComputedStyle(d).backgroundColor;
-                document.body.removeChild(d);
-                
+                const d = document.createElement('div'); d.style.backgroundColor = colorStr; d.style.display = 'none';
+                document.body.appendChild(d); const rgb = window.getComputedStyle(d).backgroundColor; document.body.removeChild(d);
                 const match = rgb.match(/\d+/g);
                 if (match && match.length >= 3) {
-                    const r = parseInt(match[0]);
-                    const g = parseInt(match[1]);
-                    const b = parseInt(match[2]);
-                    const luminance = (r * 299 + g * 587 + b * 114) / 1000;
-                    return luminance < 128;
+                    const r = parseInt(match[0]), g = parseInt(match[1]), b = parseInt(match[2]);
+                    return ((r * 299 + g * 587 + b * 114) / 1000) < 128;
                 }
             } catch(e) {}
             return false;
         }
 
-        // ==========================================
-        // TEMA Y TEMPORADAS (DINÁMICO CSS INYECTADO)
-        // ==========================================
         function applyThemeColors(themeData) {
             if (!themeData) return;
-            
-            const style = document.getElementById('theme-dynamic-styles') || document.createElement('style');
-            style.id = 'theme-dynamic-styles';
-            
+            const style = document.getElementById('theme-dynamic-styles') || document.createElement('style'); style.id = 'theme-dynamic-styles';
             const fixHex = (h) => (h && !h.startsWith('#') && /^[0-9A-Fa-f]{3,6}$/.test(h)) ? '#' + h : h;
-            
             const pColor = fixHex(cleanStr(themeData.colorPrimario || themeData.colorPrimary || themeData.primaryColor || (themeData.colores && themeData.colores.primary))) || '#7C3AED';
             const sColor = fixHex(cleanStr(themeData.colorSecundario || themeData.colorSecondary || themeData.secondaryColor || (themeData.colores && themeData.colores.secondary))) || '#E11D48';
             const bColor = fixHex(cleanStr(themeData.colorFondo || themeData.colorBackground || themeData.backgroundColor || (themeData.colores && themeData.colores.background))) || '#F1F5F9';
             
-            const isDarkBg = checkIsDark(bColor);
-            if (isDarkBg) {
-                document.body.classList.add('dark-bg-theme');
-            } else {
-                document.body.classList.remove('dark-bg-theme');
-            }
+            checkIsDark(bColor) ? document.body.classList.add('dark-bg-theme') : document.body.classList.remove('dark-bg-theme');
 
-            let css = `:root {
-                --color-primary: ${pColor};
-                --color-secondary: ${sColor};
-                --color-background: ${bColor};
-                --gradient-rainbow: linear-gradient(90deg, ${sColor}, ${pColor}, #06b6d4, #f59e0b);
-            }
-            
+            let css = `:root { --color-primary: ${pColor}; --color-secondary: ${sColor}; --color-background: ${bColor}; --gradient-rainbow: linear-gradient(90deg, ${sColor}, ${pColor}, #06b6d4, #f59e0b); }
             .text-purple-500, .text-purple-600, .text-indigo-600 { color: var(--color-primary) !important; }
             .bg-purple-500, .bg-purple-600, .bg-indigo-600 { background-color: var(--color-primary) !important; }
             .bg-purple-100 { background-color: color-mix(in srgb, var(--color-primary) 15%, transparent) !important; }
@@ -465,45 +395,33 @@
             .border-purple-300 { border-color: color-mix(in srgb, var(--color-primary) 40%, transparent) !important; }
             .border-purple-400 { border-color: color-mix(in srgb, var(--color-primary) 50%, transparent) !important; }
             .border-purple-500 { border-color: color-mix(in srgb, var(--color-primary) 60%, transparent) !important; }
-            
             .text-pink-500, .text-pink-600 { color: var(--color-secondary) !important; }
             .bg-pink-500, .bg-pink-600 { background-color: var(--color-secondary) !important; }
             .bg-pink-100 { background-color: color-mix(in srgb, var(--color-secondary) 15%, transparent) !important; }
             .border-pink-200 { border-color: color-mix(in srgb, var(--color-secondary) 30%, transparent) !important; }
             .border-pink-300 { border-color: color-mix(in srgb, var(--color-secondary) 40%, transparent) !important; }
             .border-pink-400 { border-color: color-mix(in srgb, var(--color-secondary) 50%, transparent) !important; }
-            
             .from-purple-500, .from-purple-600, .from-indigo-600 { --tw-gradient-from: var(--color-primary) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(255,255,255,0)) !important; }
             .to-purple-500, .to-purple-600, .to-pink-600 { --tw-gradient-to: var(--color-secondary) !important; }
             .from-pink-500, .from-pink-600 { --tw-gradient-from: var(--color-secondary) !important; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(255,255,255,0)) !important; }
-            
-            body { background-color: var(--color-background) !important; }
-            `;
+            body { background-color: var(--color-background) !important; }`;
 
             if (themeData.animaciones === false || cleanStr(themeData.animacionesActivas).toLowerCase() === 'false') {
                  css += `*, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }`;
             }
-
-            style.innerHTML = css;
-            document.head.appendChild(style);
+            style.innerHTML = css; document.head.appendChild(style);
 
             const logoStr = cleanStr(themeData.logoUrl || themeData.imagenLogo || themeData.logo);
-            if (logoStr) {
-                const headLogo = document.getElementById('mainHeaderLogo');
-                if(headLogo) headLogo.src = logoStr;
-            }
-            
+            if (logoStr) { const headLogo = document.getElementById('mainHeaderLogo'); if(headLogo) headLogo.src = logoStr; }
             document.querySelectorAll('.theme-decoration').forEach(el => el.remove());
             
             const decorType = cleanStr(themeData.tipo || themeData.nombre || themeData.id).toLowerCase();
             const isHoliday = decorType.includes('halloween') || decorType.includes('miedo') || decorType.includes('navidad') || decorType.includes('verano');
             
             let showDecorations = false;
-            if (themeData.decoracionesActivas === true || cleanStr(themeData.decoracionesActivas).toLowerCase() === 'true' || themeData.decoraciones === true || cleanStr(themeData.mostrarDecoraciones).toLowerCase() === 'true') {
+            if (themeData.decoracionesActivas === true || themeData.decoraciones === true || themeData.mostrarDecoraciones === true) {
                 showDecorations = true;
-            } else if (themeData.decoracionesActivas === undefined && isHoliday) {
-                showDecorations = true; 
-            }
+            } else if (themeData.decoracionesActivas === undefined && isHoliday) { showDecorations = true; }
 
             if (showDecorations) {
                 let symbols = [];
@@ -512,20 +430,11 @@
                 else if (decorType.includes('verano') || decorType.includes('summer')) symbols = ['☀️', '🌴', '🌊', '😎'];
                 
                 if (symbols.length > 0) {
-                    const container = document.createElement('div');
-                    container.className = 'fixed inset-0 pointer-events-none z-[90] overflow-hidden theme-decoration';
-                    container.setAttribute('aria-hidden', 'true');
-                    
+                    const container = document.createElement('div'); container.className = 'fixed inset-0 pointer-events-none z-[90] overflow-hidden theme-decoration'; container.setAttribute('aria-hidden', 'true');
                     for(let i=0; i<6; i++) {
-                        const el = document.createElement('div');
-                        el.className = 'absolute opacity-20 badge-float';
-                        el.style.left = `${Math.random() * 100}%`;
-                        el.style.top = `${Math.random() * 100}%`;
-                        el.style.fontSize = `${Math.random() * 1.5 + 1.5}rem`;
-                        el.style.animationDelay = `${Math.random() * 5}s`;
-                        el.style.animationDuration = `${Math.random() * 3 + 3}s`;
-                        el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-                        container.appendChild(el);
+                        const el = document.createElement('div'); el.className = 'absolute opacity-20 badge-float';
+                        el.style.left = `${Math.random() * 100}%`; el.style.top = `${Math.random() * 100}%`; el.style.fontSize = `${Math.random() * 1.5 + 1.5}rem`; el.style.animationDelay = `${Math.random() * 5}s`; el.style.animationDuration = `${Math.random() * 3 + 3}s`;
+                        el.textContent = symbols[Math.floor(Math.random() * symbols.length)]; container.appendChild(el);
                     }
                     document.body.prepend(container);
                 }
@@ -589,7 +498,6 @@
                 `;
                 fNav.innerHTML = fHtml;
             }
-
             if(typeof lucide !== 'undefined') lucide.createIcons();
             setActiveSection(app.activeSection);
         }
@@ -612,7 +520,6 @@
             else if (sectionId === 'booking') renderBooking();
             else if (sectionId === 'portal') renderPortal();
             else if (sectionId.startsWith('cat_')) { const catId = sectionId.replace('cat_', ''); renderCategory(catId); }
-            
             window.scrollTo(0, 0);
         }
 
@@ -632,48 +539,56 @@
         }
 
         // ==========================================
-        // RENDER DE CAMPAÑAS (A PRUEBA DE ERRORES)
+        // RENDER DE CAMPAÑAS 
         // ==========================================
         function getCampaignsHTML() {
             if(!app.campaigns || app.campaigns.length === 0) return '';
             
-            const destacada = app.campaigns.find(c => c.destacada === true || cleanStr(c.destacada).toLowerCase() === 'true');
+            const destacada = app.campaigns.find(c => c.destacada === true);
             const regulares = app.campaigns.filter(c => c !== destacada);
             
             let html = '<div class="container mx-auto px-4 w-full mb-10 flex flex-col gap-6 animate-slide-up">';
             
             if (destacada) {
-                const titulo = cleanStr(destacada.titulo || destacada.nombre) || 'Oferta Especial';
-                const sub = cleanStr(destacada.subtitulo || destacada.tag) || 'Campaña Destacada';
-                const desc = cleanStr(destacada.descripcion || destacada.texto);
-                const img = cleanStr(destacada.imagen || destacada.imagenUrl || destacada.foto || destacada.url || destacada.image);
-                const pPromo = cleanStr(destacada.precioPromocional || destacada.precioPromo || destacada.precio) || '0';
-                const pAnt = cleanStr(destacada.precioAnterior || destacada.precioNormal);
-                const btnTxt = cleanStr(destacada.textoBoton || destacada.boton) || 'Aprovechar Oferta';
-                const tId = cleanStr(destacada.itemId || destacada.servicioId || destacada.paqueteId);
-                const targetSec = cleanStr(destacada.targetSection) || 'booking';
+                const titulo = cleanStr(destacada.titulo);
+                const sub = cleanStr(destacada.subtitulo);
+                const desc = cleanStr(destacada.descripcion);
+                const img = cleanStr(destacada.imagen);
+                const pPromo = cleanStr(destacada.precio);
+                const pAnt = cleanStr(destacada.precioOriginal);
+                const btnTxt = cleanStr(destacada.botonTexto) || 'Aprovechar Oferta';
+                const tId = cleanStr(destacada.id); 
                 
-                // Mapeo seguro de acciones
+                // Mapeo Inteligente de acciones
                 let actionBtn = 'navigate-from-modal';
-                const rawAccion = cleanStr(destacada.accion).toLowerCase();
-                if (rawAccion === 'carrito' || rawAccion === 'add-to-cart' || rawAccion === 'comprar') actionBtn = 'add-to-cart';
+                let targetSec = 'booking';
+                let itemDataId = tId;
+                
+                if (destacada.accion) {
+                    const mappedCatalogItem = allPurchasableItems.find(i => i.id === destacada.accion);
+                    if (mappedCatalogItem) {
+                        actionBtn = 'add-to-cart';
+                        itemDataId = mappedCatalogItem.id;
+                    }
+                }
 
                 html += `
                 <div class="bg-gradient-to-r from-purple-600 to-pink-500 rounded-[2rem] p-1 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.15)] relative overflow-hidden group">
                     <div class="absolute inset-0 bg-white/20 blur-3xl rounded-full group-hover:bg-white/30 transition-colors pointer-events-none"></div>
                     <div class="bg-white rounded-[1.8rem] flex flex-col md:flex-row overflow-hidden relative z-10 h-full">
-                        ${img && img !== 'undefined' ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative"><img src="${img}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:hidden"></div></div>` : ''}
+                        ${img ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative"><img src="${img}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:hidden"></div></div>` : ''}
                         <div class="p-6 sm:p-8 md:p-10 flex flex-col justify-center flex-1 relative">
-                            <div class="inline-flex items-center gap-1.5 bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max mb-4 border border-pink-200 relative z-10">
-                                <i data-lucide="star" class="w-3 h-3 fill-pink-500"></i> ${sub}
-                            </div>
+                            ${sub ? `<div class="inline-flex items-center gap-1.5 bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max mb-4 border border-pink-200 relative z-10"><i data-lucide="star" class="w-3 h-3 fill-pink-500"></i> ${sub}</div>` : ''}
                             <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mb-3 font-nunito leading-tight relative z-10">${titulo}</h2>
                             ${desc ? `<p class="text-slate-600 text-sm sm:text-base font-medium mb-6 relative z-10">${desc}</p>` : ''}
+                            
+                            ${(pPromo || pAnt) ? `
                             <div class="flex flex-wrap items-end gap-3 mb-6 relative z-10">
-                                <span class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 leading-none">$${pPromo}</span>
-                                ${pAnt ? `<span class="text-base sm:text-lg font-bold text-slate-400 line-through leading-none mb-1">$${pAnt}</span>` : ''}
-                            </div>
-                            <button data-action="${actionBtn}" data-item-id="${tId}" data-target-section="${targetSec}" class="w-full sm:w-max bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-[0_8px_20px_rgba(219,39,119,0.3)] hover:scale-[1.02] transition-transform text-center flex items-center justify-center gap-2 relative z-10">
+                                ${pPromo ? `<span class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 leading-none">$${Number(pPromo).toFixed(2)}</span>` : ''}
+                                ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="text-base sm:text-lg font-bold text-slate-400 line-through leading-none mb-1">$${Number(pAnt).toFixed(2)}</span>` : ''}
+                            </div>` : ''}
+                            
+                            <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" class="w-full sm:w-max bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-[0_8px_20px_rgba(219,39,119,0.3)] hover:scale-[1.02] transition-transform text-center flex items-center justify-center gap-2 relative z-10">
                                 ${btnTxt} <i data-lucide="arrow-right" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -684,32 +599,41 @@
             if (regulares.length > 0) {
                 html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">`;
                 regulares.forEach(camp => {
-                    const titulo = cleanStr(camp.titulo || camp.nombre) || 'Campaña';
-                    const sub = cleanStr(camp.subtitulo || camp.tag);
-                    const desc = cleanStr(camp.descripcion || camp.texto);
-                    const img = cleanStr(camp.imagen || camp.imagenUrl || camp.foto || camp.url || camp.image);
-                    const pPromo = cleanStr(camp.precioPromocional || camp.precioPromo || camp.precio) || '0';
-                    const pAnt = cleanStr(camp.precioAnterior || camp.precioNormal);
-                    const btnTxt = cleanStr(camp.textoBoton || camp.boton) || 'Ver Promoción';
-                    const tId = cleanStr(camp.itemId || camp.servicioId || camp.paqueteId);
-                    const targetSec = cleanStr(camp.targetSection) || 'booking';
-
-                    // Mapeo seguro de acciones
+                    const titulo = cleanStr(camp.titulo);
+                    const sub = cleanStr(camp.subtitulo);
+                    const desc = cleanStr(camp.descripcion);
+                    const img = cleanStr(camp.imagen);
+                    const pPromo = cleanStr(camp.precio);
+                    const pAnt = cleanStr(camp.precioOriginal);
+                    const btnTxt = cleanStr(camp.botonTexto) || 'Ver Promoción';
+                    const tId = cleanStr(camp.id);
+                    
                     let actionBtn = 'navigate-from-modal';
-                    const rawAccion = cleanStr(camp.accion).toLowerCase();
-                    if (rawAccion === 'carrito' || rawAccion === 'add-to-cart' || rawAccion === 'comprar') actionBtn = 'add-to-cart';
+                    let targetSec = 'booking';
+                    let itemDataId = tId;
+                    
+                    if (camp.accion) {
+                        const mappedCatalogItem = allPurchasableItems.find(i => i.id === camp.accion);
+                        if (mappedCatalogItem) {
+                            actionBtn = 'add-to-cart';
+                            itemDataId = mappedCatalogItem.id;
+                        }
+                    }
 
                     html += `
                     <div class="bg-white border border-slate-200 rounded-[2rem] p-5 shadow-sm hover:shadow-lg hover:border-purple-300 transition-all flex flex-col h-full group relative overflow-hidden">
-                        ${img && img !== 'undefined' ? `<div class="w-full h-48 rounded-[1.25rem] overflow-hidden mb-4 relative z-10"><img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>` : ''}
+                        ${img ? `<div class="w-full h-48 rounded-[1.25rem] overflow-hidden mb-4 relative z-10"><img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>` : ''}
                         ${sub ? `<span class="text-[10px] font-black uppercase tracking-widest text-purple-500 mb-2 block relative z-10">${sub}</span>` : ''}
                         <h3 class="text-xl font-extrabold text-slate-900 mb-2 font-nunito leading-tight relative z-10">${titulo}</h3>
                         ${desc ? `<p class="text-slate-600 text-xs font-medium mb-5 flex-1 relative z-10">${desc}</p>` : ''}
+                        
+                        ${(pPromo || pAnt) ? `
                         <div class="flex items-center gap-3 mb-5 mt-auto relative z-10">
-                            <span class="text-2xl font-black text-slate-900">$${pPromo}</span>
-                            ${pAnt ? `<span class="text-sm font-bold text-slate-400 line-through">$${pAnt}</span>` : ''}
-                        </div>
-                        <button data-action="${actionBtn}" data-item-id="${tId}" data-target-section="${targetSec}" class="w-full bg-slate-100 hover:bg-purple-50 text-purple-700 font-extrabold py-3 px-4 rounded-xl border border-slate-200 hover:border-purple-300 transition-colors text-xs text-center relative z-10">
+                            ${pPromo ? `<span class="text-2xl font-black text-slate-900">$${Number(pPromo).toFixed(2)}</span>` : ''}
+                            ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="text-sm font-bold text-slate-400 line-through">$${Number(pAnt).toFixed(2)}</span>` : ''}
+                        </div>` : '<div class="mb-5 mt-auto"></div>'}
+                        
+                        <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" class="w-full bg-slate-100 hover:bg-purple-50 text-purple-700 font-extrabold py-3 px-4 rounded-xl border border-slate-200 hover:border-purple-300 transition-colors text-xs text-center relative z-10">
                             ${btnTxt}
                         </button>
                     </div>`;
@@ -763,7 +687,7 @@
             } else {
                 let eh = '';
                 if(app.catalog && app.catalog.length>0){ 
-                    const destacados = app.catalog.filter(i => i.destacado === true || String(i.destacado).toLowerCase() === 'true'); 
+                    const destacados = app.catalog.filter(i => i.destacado === true); 
                     if(destacados.length > 0) {
                         eh += destacados.map(createDetailedCardHTML).join(''); 
                         ex = `<div class="flex md:hidden justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mr-3 border border-slate-200 bg-white px-3 py-1 rounded-full shadow-sm">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 px-2">${eh}</div>`;
@@ -1015,9 +939,6 @@
             });
         }
 
-        // ==========================================
-        // MANEJADOR DE CLICS OPTIMIZADO
-        // ==========================================
         function handleGlobalClick(e) {
             if (e.target.closest('#prevMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() - 1); renderCalendar(); return; }
             if (e.target.closest('#nextMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() + 1); renderCalendar(); return; }
@@ -1029,10 +950,7 @@
                     e.preventDefault();
                     document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('show'));
                     toggleMobileMenu(false);
-
-                    if(app.activeSection !== targetSec) {
-                        setActiveSection(targetSec);
-                    }
+                    if(app.activeSection !== targetSec) setActiveSection(targetSec);
                 }
             }
 
@@ -1051,7 +969,6 @@
                     break;
                 }
                 case 'select-date': selectedCalendarDate = date; renderCalendar(); break;
-                
                 case 'confirm-date':
                     setActiveSection('booking');
                     requestAnimationFrame(() => {
@@ -1060,32 +977,19 @@
                         showToast('¡Fecha guardada! Ahora elige un paquete.', 'success');
                     });
                     break;
-                
                 case 'add-to-cart': { 
                     const it = allPurchasableItems.find(s=>s.id===itemId); 
-                    if(it){ 
-                        if(!app.cart.find(i=>i.id===itemId)) addToCart(it); 
-                        else showModal('cartModal');
-                    } else {
-                        showModal('cartModal');
-                    }
+                    if(it){ if(!app.cart.find(i=>i.id===itemId)) addToCart(it); else showModal('cartModal'); } 
+                    else { showModal('cartModal'); }
                     break; 
                 }
                 case 'remove-from-cart': removeFromCart(itemId); break;
-                
                 case 'empty-cart': {
-                    if(app.cart.length > 0) {
-                        app.cart = [];
-                        appliedCoupon = null;
-                        updateCartUI();
-                        showToast('Carrito vaciado', 'info');
-                    }
+                    if(app.cart.length > 0) { app.cart = []; appliedCoupon = null; updateCartUI(); showToast('Carrito vaciado', 'info'); }
                     break;
                 }
-
                 case 'add-hourly-to-cart': { 
-                    const sh = allPurchasableItems.find(s=>s.id===itemId); 
-                    const qe = document.querySelector(`#qty-${itemId}`); 
+                    const sh = allPurchasableItems.find(s=>s.id===itemId); const qe = document.querySelector(`#qty-${itemId}`); 
                     const qh = qe?parseInt(qe.textContent):1; 
                     if(sh&&qh>0){ 
                         const ex=app.cart.find(i=>i.id===itemId); 
@@ -1095,20 +999,15 @@
                     break; 
                 }
                 case 'change-service-qty': { const qe = document.querySelector(`#qty-${itemId}`); if(qe){ let cq=parseInt(qe.textContent); let nq=Math.max(1, cq+parseInt(change)); qe.textContent=nq; updateCartUI(); } break; }
-                
                 case 'close-modal': { 
                     const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); 
                     toggleMobileMenu(false);
-                    if(targetSection && !navLink) {
-                        if(app.activeSection !== targetSection) setActiveSection(targetSection);
-                    }
+                    if(targetSection && !navLink) { if(app.activeSection !== targetSection) setActiveSection(targetSection); }
                     break; 
                 }
                 case 'navigate-from-modal': { 
                     const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); 
-                    if(targetSection && !navLink) {
-                        if(app.activeSection !== targetSection) setActiveSection(targetSection);
-                    }
+                    if(targetSection && !navLink) { if(app.activeSection !== targetSection) setActiveSection(targetSection); }
                     break; 
                 }
             }
@@ -1132,11 +1031,7 @@
                 
                 await fetchWithTimeout(setDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos', dataToSave.id), dataToSave), 6000);
                 
-                localStorage.setItem('datosClienteDiverty', JSON.stringify({
-                    nombre: fd.get('name') || '',
-                    email: fd.get('email') || '',
-                    telefono: fd.get('phone') || ''
-                }));
+                localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: fd.get('name') || '', email: fd.get('email') || '', telefono: fd.get('phone') || '' }));
 
                 showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
                 app.cart=[]; appliedCoupon=null; bookingFormState={}; app.wizardStep=1; updateCartUI(); renderBooking();
@@ -1145,228 +1040,175 @@
         }
 
         // ==========================================
-        // 6. INICIALIZACIÓN Y CONFIGURACIÓN FIREBASE
+        // 6. INICIALIZACIÓN DE FIREBASE (RENDER PROGRESIVO Y PARALELO)
         // ==========================================
 
         function refreshDynamicData() {
             try {
-                if (app.activeSection === 'home') {
-                    renderHome(); 
-                } else {
-                    setActiveSection(app.activeSection);
-                }
+                if (app.activeSection === 'home') renderHome(); 
+                else setActiveSection(app.activeSection);
             } catch(e) { console.warn(e); }
         }
 
         async function initFirebaseAndData() {
-            try {
-                const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
-                db = getFirestore(fbApp); auth = getAuth(fbApp);
-                
-                try { 
-                    await fetchWithTimeout((async () => {
-                        if(typeof __initial_auth_token !== 'undefined' && __initial_auth_token){ 
-                            try{ await signInWithCustomToken(auth, __initial_auth_token); }
-                            catch(e){ await signInAnonymously(auth); } 
-                        } else { await signInAnonymously(auth); }
-                    })(), 4000); 
-                } catch(e) { console.warn("Timeout de Autorización: ", e); }
+            console.log("[FIREBASE] Inicio");
+            const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
+            db = getFirestore(fbApp); auth = getAuth(fbApp);
+            
+            try { 
+                await fetchWithTimeout((async () => {
+                    if(typeof __initial_auth_token !== 'undefined' && __initial_auth_token){ 
+                        try{ await signInWithCustomToken(auth, __initial_auth_token); }
+                        catch(e){ await signInAnonymously(auth); } 
+                    } else { await signInAnonymously(auth); }
+                })(), 2500); 
+                console.log("[FIREBASE] Auth OK");
+            } catch(e) { console.log("[FIREBASE] Auth timeout/fallo. Ejecutando lecturas públicas..."); }
 
-                const todayStr = normalizeDate(new Date());
+            // 1. Funciones de Carga Independientes (No bloquean el resto de la ejecución)
 
-                // 1. CARGAR TEMAS 
+            const loadBanner = async () => {
+                console.log("[BANNER] Consultando config_web/global...");
                 try {
-                    let themes = [];
-                    try {
-                        const themeSnap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'temas_web')), 4000);
-                        themes = themeSnap.docs.map(d => ({id: d.id, ...d.data()}));
-                    } catch(e) {}
+                    const docRef = doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global');
+                    const docSnap = await fetchWithTimeout(getDoc(docRef), 2000);
+                    const bannerEl = document.getElementById('topAnnouncementBanner');
+                    const bannerTextEl = document.getElementById('bannerTextSpan');
                     
-                    if (themes.length === 0) {
-                        try {
-                            const themeSnap2 = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'temas')), 4000);
-                            themes = themeSnap2.docs.map(d => ({id: d.id, ...d.data()}));
-                        } catch(e) {}
-                    }
-
-                    if (themes.length > 0) {
-                        const isActive = (t) => t.activo === true || cleanStr(t.estado).toLowerCase().includes('activ') || cleanStr(t.status).toLowerCase().includes('activ');
-                        const isManual = (t) => cleanStr(t.modo).toLowerCase().includes('manual');
-                        const isAuto = (t) => cleanStr(t.modo).toLowerCase().includes('auto');
-
-                        let selectedTheme = themes.find(t => isManual(t) && isActive(t)); 
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        console.log(`[BANNER] bannerActive: ${data.bannerActive}`);
+                        console.log(`[BANNER] bannerText: ${data.bannerText}`);
                         
-                        if (!selectedTheme) { 
-                            selectedTheme = themes.find(t => {
-                                if (!isActive(t)) return false;
-                                if (!isAuto(t) && !t.fechaInicio && !t.inicio) return false; 
-                                
-                                const fInicio = normalizeDate(t.fechaInicio || t.inicio);
-                                const fFin = normalizeDate(t.fechaFin || t.fin);
-                                if (fInicio && fInicio > todayStr) return false;
-                                if (fFin && fFin < todayStr) return false;
-                                return true;
-                            });
-                        }
-                        
-                        if (!selectedTheme) { 
-                            selectedTheme = themes.find(t => isActive(t) && (t.esPredeterminado === true || cleanStr(t.tipo).toLowerCase().includes('predeter') || cleanStr(t.modo).toLowerCase().includes('predeter')));
-                        }
-
-                        if (!selectedTheme) {
-                            selectedTheme = themes.find(t => isActive(t)) || themes[0];
-                        }
-                        
-                        if (selectedTheme) {
-                            app.theme = selectedTheme;
-                            applyThemeColors(app.theme); 
-                        }
-                    }
-                } catch (e) { console.warn("Fallo cargando Temas", e); }
-
-                // 2. CARGAR CAMPAÑAS ACTIVAS (CON RED DE SEGURIDAD Y DIAGNÓSTICO)
-                try {
-                    let camps = [];
-                    console.log("%c[DIAGNÓSTICO] Buscando campañas en Firestore...", "color: #0ea5e9; font-weight: bold;");
-                    
-                    try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){}
-                    if(camps.length===0){ try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){} }
-                    if(camps.length===0){ try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'promociones_web')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){} }
-                    if(camps.length===0){ try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'promociones')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){} }
-                    if(camps.length===0){ try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'ofertas_web')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){} }
-
-                    console.log(`%c[DIAGNÓSTICO] Total campañas crudas encontradas: ${camps.length}`, "color: #8b5cf6; font-weight: bold;");
-                    if (camps.length > 0) { console.log("[DIAGNÓSTICO] Datos crudos:", camps); }
-                    else { console.warn("[DIAGNÓSTICO] ALERTA: No se encontró NINGUNA campaña en la base de datos."); }
-
-                    app.campaigns = camps.filter(c => {
-                        const titulo = cleanStr(c.titulo || c.nombre || c.id);
-                        
-                        const esActiva = c.activa === true || c.activo === true ||
-                                         cleanStr(c.activa).toLowerCase() === 'true' || 
-                                         cleanStr(c.activo).toLowerCase() === 'true' || 
-                                         cleanStr(c.estado).toLowerCase().includes('activ') || 
-                                         cleanStr(c.status).toLowerCase().includes('activ');
-                        
-                        console.log(`--- Campaña: ${titulo} ---`);
-                        console.log(`Estado (activa): ${esActiva ? 'SÍ' : 'NO'}`);
-                        
-                        if (!esActiva) {
-                            console.log(`Mostrar: NO (Está desactivada)`);
-                            return false;
-                        }
-
-                        const cInicio = normalizeDate(c.fechaInicio || c.inicio);
-                        const cFin = normalizeDate(c.fechaFin || c.fin || c.vencimiento);
-                        
-                        console.log(`Fecha inicio (Normalizada): ${cInicio || 'No configurada'}`);
-                        console.log(`Fecha fin (Normalizada): ${cFin || 'No configurada'}`);
-                        console.log(`Hoy (Normalizada): ${todayStr}`);
-
-                        if (cInicio && cInicio > todayStr) {
-                            console.log(`Mostrar: NO (Campaña futura, aún no empieza)`);
-                            return false;
-                        }
-                        if (cFin && cFin < todayStr) {
-                            console.log(`Mostrar: NO (Campaña vencida)`);
-                            return false;
-                        }
-                        
-                        console.log(`Mostrar: SÍ (Cumple todos los requisitos)`);
-                        return true;
-                    }).sort((a, b) => {
-                        const aDest = (a.destacada === true || cleanStr(a.destacada).toLowerCase() === 'true');
-                        const bDest = (b.destacada === true || cleanStr(b.destacada).toLowerCase() === 'true');
-                        if (aDest && !bDest) return -1;
-                        if (!aDest && bDest) return 1;
-                        return (a.orden || 0) - (b.orden || 0);
-                    });
-                } catch (e) { 
-                    console.error("[DIAGNÓSTICO] Fallo general al leer campañas:", e); 
-                }
-
-                // 3. CARGAR CATÁLOGOS DINÁMICOS
-                try {
-                    const catSnap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'categorias_web')), 4000);
-                    if (!catSnap.empty) {
-                        dynamicCategories = catSnap.docs.map(d => ({id: d.id, ...d.data()}))
-                            .filter(c => c.activo !== false)
-                            .sort((a, b) => (a.orden || 0) - (b.orden || 0));
-                    } else { dynamicCategories = fallbackCategories; }
-                } catch(e) { dynamicCategories = fallbackCategories; }
-
-                // 4. CARGAR SERVICIOS Y EXTRAS
-                try {
-                    const cs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web')), 4000);
-                    const cd = cs.docs.map(d => { 
-                        const dt=d.data(); 
-                        return { 
-                            id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, 
-                            discountApplied:dt.oferta===true, destacado:dt.destacado===true, description:dt.descripcion, 
-                            image:dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], 
-                            isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', 
-                            categoria:dt.categoria, orden: dt.orden
-                        }; 
-                    });
-                    if(cd.length>0){ 
-                        cd.sort((a,b) => (a.orden || 0) - (b.orden || 0));
-                        app.catalog = cd;
-                        allPurchasableItems = [...app.catalog]; 
-                    }
-                } catch(e) { console.warn("Fallo en lectura de Catálogo: ", e); }
-
-                // 5. CARGAR AJUSTES WEB (BANNER)
-                try {
-                    let ajustes = null;
-                    try {
-                        const ajSnap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'ajustes_web')), 3000);
-                        if (!ajSnap.empty) ajustes = ajSnap.docs[0].data();
-                    } catch(e){}
-
-                    if (!ajustes) {
-                        try {
-                            const ajSnap2 = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'ajustes')), 3000);
-                            if (!ajSnap2.empty) ajustes = ajSnap2.docs[0].data();
-                        } catch(e){}
-                    }
-
-                    if (!ajustes) {
-                        ajustes = { mostrarBanner: true, mensajeBanner: "¡Reserva hoy y obtén descuentos especiales!" };
-                    }
-
-                    if (ajustes) {
-                        const bannerEl = document.getElementById('topAnnouncementBanner');
-                        const bannerTextEl = document.getElementById('bannerTextSpan');
-                        const mostrar = ajustes.mostrarBanner === true || String(ajustes.mostrarBanner).toLowerCase() === 'true' || ajustes.mostrar === true || String(ajustes.mostrar).toLowerCase() === 'true';
-
-                        if (mostrar && bannerEl && bannerTextEl) {
-                            bannerTextEl.textContent = cleanStr(ajustes.mensajeBanner || ajustes.mensaje || ajustes.texto) || '¡Reserva hoy y obtén descuentos especiales!';
+                        if (data.bannerActive === true && data.bannerText && cleanStr(data.bannerText) !== '') {
+                            bannerTextEl.textContent = cleanStr(data.bannerText);
                             bannerEl.style.display = 'flex'; 
                             document.documentElement.style.setProperty('--banner-offset', bannerEl.offsetHeight + 'px');
-                        } else if (bannerEl) {
+                        } else {
                             bannerEl.style.display = 'none';
                         }
+                    } else {
+                        console.log("[BANNER] Documento no existe. (Ruta: artifacts/diverty-oficial/public/data/config_web/global)");
+                        if (bannerEl) bannerEl.style.display = 'none';
                     }
-                } catch(e) { console.warn("Fallo cargando Ajustes", e); }
+                } catch(e) {
+                    console.log("[BANNER] ERROR:", e);
+                }
+            };
 
-                // OTRAS COLECCIONES
-                try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), 3000); if(!ts.empty) locations = ts.docs.map(d=>d.data()); } catch(e){}
-                try { const gs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')), 3000); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); else gallery=[]; } catch(e){}
-                try { const rs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')), 3000); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){}
-                try { const cs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web')), 3000); activeCoupons = cs.docs.map(d=>d.data()).filter(c=>c.active); } catch(e){}
-                
+            const loadCampaigns = async () => {
+                console.log("[CAMPAÑAS] Consultando campanas_web...");
                 try {
-                    const es = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos')), 4000);
-                    bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(cleanStr(ev.estado)).toLowerCase().includes(s)));
-                } catch(e) {}
-            } catch(e){ console.error("Fallo general de red en entorno.", e); }
+                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), 2000);
+                    console.log(`[CAMPAÑAS] Documentos encontrados: ${snap.docs.length}`);
+                    
+                    const today = new Date();
+                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    
+                    app.campaigns = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => {
+                        if (c.activo !== true) return false;
+                        
+                        const fIni = c.fechaInicio ? cleanStr(c.fechaInicio) : null;
+                        const fFin = c.fechaFin ? cleanStr(c.fechaFin) : null;
+                        
+                        // Comparación lexicográfica correcta sobre YYYY-MM-DD
+                        if (fIni && todayStr < fIni) return false;
+                        if (fFin && todayStr > fFin) return false;
+                        
+                        return true;
+                    }).sort((a, b) => {
+                        const aDest = a.destacada === true;
+                        const bDest = b.destacada === true;
+                        if (aDest && !bDest) return -1;
+                        if (!aDest && bDest) return 1;
+                        return (Number(a.orden) || 0) - (Number(b.orden) || 0);
+                    });
+                    
+                    console.log(`[CAMPAÑAS] Campañas activas: ${app.campaigns.length}`);
+                } catch(e) {
+                    console.log("[CAMPAÑAS] ERROR:", e);
+                }
+            };
 
-            if (app.catalog.length === 0) {
-                app.catalog = fallbackCatalog;
-                allPurchasableItems = [...fallbackCatalog];
-            }
+            const loadCategories = async () => {
+                try {
+                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'categorias_web')), 2000);
+                    if(!snap.empty) { dynamicCategories = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => c.activo !== false).sort((a, b) => (a.orden || 0) - (b.orden || 0)); } 
+                    else { dynamicCategories = fallbackCategories; }
+                    console.log("[FIREBASE] Categorías OK");
+                } catch(e) { console.log("[FIREBASE] ERROR en categorías:", e); dynamicCategories = fallbackCategories; }
+            };
+
+            const loadCatalog = async () => {
+                try {
+                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web')), 2000);
+                    if(!snap.empty) {
+                        const cd = snap.docs.map(d => { 
+                            const dt=d.data(); 
+                            return { 
+                                id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, 
+                                discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, 
+                                image:dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], 
+                                isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria, orden: dt.orden
+                            }; 
+                        });
+                        if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
+                    }
+                    console.log("[FIREBASE] Catálogo OK");
+                } catch(e) { console.log("[FIREBASE] ERROR en catálogo:", e); }
+            };
+
+            const loadTheme = async () => {
+                try {
+                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'temas_web')), 2000);
+                    if (!snap.empty) {
+                        const themes = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                        let sel = themes.find(t => cleanStr(t.modo).toLowerCase().includes('manual') && (t.activo===true || t.estado==='Activo')); 
+                        if (!sel) sel = themes.find(t => {
+                            if (t.activo!==true && t.estado!=='Activo') return false;
+                            if (!cleanStr(t.modo).toLowerCase().includes('auto') && !t.fechaInicio) return false; 
+                            const fIni = normalizeDate(t.fechaInicio); const fFin = normalizeDate(t.fechaFin);
+                            const todayStr = normalizeDate(new Date());
+                            if (fIni && fIni > todayStr) return false; if (fFin && fFin < todayStr) return false; return true;
+                        });
+                        if (!sel) sel = themes.find(t => (t.activo===true || t.estado==='Activo') && t.esPredeterminado === true);
+                        if (!sel) sel = themes.find(t => t.activo===true || t.estado==='Activo') || themes[0];
+                        if (sel) { app.theme = sel; applyThemeColors(app.theme); }
+                    }
+                } catch(e) { console.log("[FIREBASE] ERROR en temas:", e); }
+            };
+
+            // 2. Disparar Cargas Críticas y Renderizar de inmediato para no congelar la pantalla
+
+            await Promise.allSettled([ loadCategories(), loadCatalog() ]);
             
+            if (app.catalog.length === 0) { app.catalog = fallbackCatalog; allPurchasableItems = [...fallbackCatalog]; }
             buildDynamicNav();
+            refreshDynamicData(); // <-- AQUÍ YA SE MUESTRA LA PÁGINA (Render Progresivo)
+
+            // 3. Disparar el resto de Cargas (Independientes, si fallan no pasa nada grave)
+
+            await Promise.allSettled([
+                loadTheme(),
+                loadBanner(),
+                loadCampaigns(),
+                (async () => { try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), 2000); if(!ts.empty) locations = ts.docs.map(d=>d.data()); } catch(e){} })(),
+                (async () => { try { const gs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')), 2000); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); } catch(e){} })(),
+                (async () => { try { const rs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')), 2000); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){} })(),
+                (async () => { try { const cs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web')), 2000); activeCoupons = cs.docs.map(d=>d.data()).filter(c=>c.active===true||c.activo===true); } catch(e){} })(),
+                (async () => { try { const es = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos')), 2000); bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(cleanStr(ev.estado)).toLowerCase().includes(s))); } catch(e){} })()
+            ]);
+
+            // Re-renderizamos campañas si estamos en la vista de Home
+            if (app.activeSection === 'home') {
+                const cW = document.getElementById('home-campaigns-wrapper'); 
+                if (cW) cW.innerHTML = getCampaignsHTML();
+            }
+
+            console.log("[FIREBASE] INDEX listo");
+            isFirebaseLoaded = true;
+            refreshDynamicData(); 
+            updateCartUI(); 
         }
 
         // ==========================================
@@ -1407,11 +1249,7 @@
         const loader = document.getElementById('initial-loader'); if(loader) loader.style.display = 'none';
 
         setTimeout(() => {
-            initFirebaseAndData().then(() => {
-                isFirebaseLoaded = true;
-                refreshDynamicData(); 
-                updateCartUI(); 
-            });
+            initFirebaseAndData();
         }, 50);
 
     </script>
