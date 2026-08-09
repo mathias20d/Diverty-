@@ -309,17 +309,6 @@
             { id: 3, name: "Ana R.", rating: 5, comment: "El pintacaritas fue un éxito. Diseños hermosos y mucha amabilidad.", color: "from-purple-500 to-indigo-500", initial: "A", location: "La Chorrera" } 
         ];
         
-        const fallbackCategories = [
-            { id: 'servicios', nombre: 'Servicios Extras', icono: 'gift', orden: 1, activo: true },
-            { id: 'payasos', nombre: 'Planes y Payasos', icono: 'smile', orden: 2, activo: true },
-            { id: 'burbujas', nombre: 'Shows de Burbujas', icono: 'droplet', orden: 3, activo: true }
-        ];
-        
-        const fallbackCatalog = [
-            { id: 'clown_diverty', name: 'Plan Diverty Básico', price: 120, originalPrice: 150, discountApplied: true, destacado: true, description: '2 Horas de animación con payasito para la mejor diversión de tus niños.', image: './android-chrome-512x512.png', services: ['Animación', 'Juegos interactivos', 'Pintacaritas'], isHourly: false, isPerChild: false, categoria: 'payasos', orden: 1 },
-            { id: 'bubble_show', name: 'Show Mágico de Burbujas', price: 80, originalPrice: 100, discountApplied: false, destacado: true, description: 'Espectáculo mágico y asombroso de burbujas gigantes para fotos.', image: './android-chrome-512x512.png', services: ['Show 45 min', 'Burbujas Gigantes', 'Interacción con el niño'], isHourly: false, isPerChild: false, categoria: 'burbujas', orden: 2 }
-        ];
-
         let db, auth; 
         let bookedEvents = []; 
         let currentCalDate = new Date(); 
@@ -328,13 +317,14 @@
         
         let isFirebaseLoaded = false;
         let appliedCoupon = null;
+        let catalogLoaded = false;
         
         const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [], theme: null, campaigns: [] };
 
         const fetchWithTimeout = async (promise, ms) => {
             let timer;
             const timeoutPromise = new Promise((_, reject) => {
-                timer = setTimeout(() => reject(new Error("Timeout de conexión (" + ms + "ms)")), ms);
+                timer = setTimeout(() => reject(new Error("Timeout de conexión")), ms);
             });
             try { return await Promise.race([promise, timeoutPromise]); } finally { clearTimeout(timer); }
         };
@@ -737,8 +727,8 @@
 
         function renderHome() {
             let ex = '';
-            if(!isFirebaseLoaded){ 
-                ex = `<div class="w-full flex justify-center py-10"><i data-lucide="loader-2" class="w-10 h-10 season-text-primary animate-spin"></i></div>`; 
+            if(!isFirebaseLoaded || (app.catalog && app.catalog.length === 0 && !catalogLoaded)){ 
+                ex = `<div class="w-full flex flex-col items-center justify-center py-12"><i data-lucide="loader-2" class="w-10 h-10 season-text-primary animate-spin mb-4"></i><p class="text-sm font-bold season-text-muted tracking-widest uppercase">Cargando catálogo...</p></div>`; 
             } else {
                 let eh = '';
                 if(app.catalog && app.catalog.length>0){ 
@@ -749,6 +739,8 @@
                     } else {
                         ex = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="sparkles" class="w-10 h-10 mx-auto mb-3 opacity-50 season-text-primary"></i><p class="text-sm font-bold season-text-muted">Nuevos paquetes espectaculares próximamente.</p></div>`;
                     }
+                } else {
+                    ex = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="folder-open" class="w-10 h-10 mx-auto mb-3 opacity-50 season-text-primary"></i><p class="text-sm font-bold season-text-muted">No hay paquetes disponibles en este momento.</p></div>`;
                 }
             }
             let rc = '';
@@ -758,8 +750,8 @@
             
             const firstCatTarget = dynamicCategories.length > 0 ? `cat_${dynamicCategories[0].id}` : 'home';
             
-            // EL VIDEO HERO CLOUDINARY INTEGRADO Y OPTIMIZADO PARA MODO CLARO
-            setContent(`<div id="hero-section-identifier"><div class="relative"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video id="hero-video" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-black/50 z-[2] pointer-events-none"></div><div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--s-bg-color)] to-transparent z-[2] pointer-events-none"></div><div class="hero-content z-[3] relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-black mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="season-gradient-text drop-shadow-md">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full season-btn rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] font-bold text-base shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="${firstCatTarget}" class="nav-action w-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-md"><i data-lucide="eye" class="w-5 h-5"></i> Explorar Catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-6"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-3xl mx-auto px-2 sm:px-4"><div class="glass-panel p-6 sm:p-8 shadow-sm relative overflow-hidden" id="calendar-card-inner"><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 rounded-xl border border-[var(--s-primary)] bg-black/5 flex items-center justify-center season-text-primary"><i data-lucide="calendar" class="w-5 h-5"></i></div><div class="text-left"><h2 class="text-2xl font-extrabold season-text-title font-poppins leading-none">Selecciona tu fecha</h2><p class="season-text-muted text-sm mt-1">Elige un día disponible para tu fiesta</p></div></div><div class="border border-[var(--s-glass-border)] bg-black/5 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4"><i data-lucide="clock" class="w-5 h-5 mt-0.5 shrink-0 season-text-primary"></i><p class="text-sm font-medium leading-tight season-text-muted">Selecciona una fecha disponible para reservar en segundos</p></div><div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-black/5 py-2 rounded-xl border border-[var(--s-glass-border)]"><button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-black/10 season-text-muted rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><h3 id="cal-month-year" class="text-lg font-bold season-text-title capitalize leading-none font-poppins">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-black/10 season-text-muted rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
+            // EL VIDEO HERO CLOUDINARY INTEGRADO Y OPTIMIZADO PARA MODO CLARO & iOS NATIVO
+            setContent(`<div id="hero-section-identifier"><div class="relative"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video id="hero-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-black/50 z-[2] pointer-events-none"></div><div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--s-bg-color)] to-transparent z-[2] pointer-events-none"></div><div class="hero-content z-[3] relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-black mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="season-gradient-text drop-shadow-md">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full season-btn rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] font-bold text-base shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="${firstCatTarget}" class="nav-action w-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-md"><i data-lucide="eye" class="w-5 h-5"></i> Explorar Catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-6"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-3xl mx-auto px-2 sm:px-4"><div class="glass-panel p-6 sm:p-8 shadow-sm relative overflow-hidden" id="calendar-card-inner"><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 rounded-xl border border-[var(--s-primary)] bg-black/5 flex items-center justify-center season-text-primary"><i data-lucide="calendar" class="w-5 h-5"></i></div><div class="text-left"><h2 class="text-2xl font-extrabold season-text-title font-poppins leading-none">Selecciona tu fecha</h2><p class="season-text-muted text-sm mt-1">Elige un día disponible para tu fiesta</p></div></div><div class="border border-[var(--s-glass-border)] bg-black/5 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4"><i data-lucide="clock" class="w-5 h-5 mt-0.5 shrink-0 season-text-primary"></i><p class="text-sm font-medium leading-tight season-text-muted">Selecciona una fecha disponible para reservar en segundos</p></div><div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-black/5 py-2 rounded-xl border border-[var(--s-glass-border)]"><button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-black/10 season-text-muted rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><h3 id="cal-month-year" class="text-lg font-bold season-text-title capitalize leading-none font-poppins">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-black/10 season-text-muted rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
             
             const campWrapper = document.getElementById('home-campaigns-wrapper');
             if (campWrapper && isFirebaseLoaded) {
@@ -769,10 +761,12 @@
 
             const heroVideo = document.getElementById('hero-video');
             if (heroVideo) {
-                heroVideo.load();
+                // Forzar silenciamiento para iOS
+                heroVideo.muted = true;
+                heroVideo.defaultMuted = true;
                 const playPromise = heroVideo.play();
                 if (playPromise !== undefined) {
-                    playPromise.catch(error => { console.log("Autoplay móvil prevenido:", error); });
+                    playPromise.catch(error => { console.log("Autoplay prevenido por navegador", error); });
                 }
             }
 
@@ -1140,7 +1134,7 @@
         }
 
         // ==========================================
-        // 6. INICIALIZACIÓN DE FIREBASE
+        // 6. INICIALIZACIÓN DE FIREBASE (OPTIMIZADO iOS)
         // ==========================================
 
         function refreshDynamicData() {
@@ -1154,15 +1148,23 @@
             const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
             db = getFirestore(fbApp); auth = getAuth(fbApp);
             
+            // ELIMINADO EL TIMEOUT DE AUTENTICACIÓN
+            // Es vital que el iPhone complete este paso antes de pedir datos.
             try { 
-                await fetchWithTimeout((async () => {
-                    if(typeof __initial_auth_token !== 'undefined' && __initial_auth_token){ try{ await signInWithCustomToken(auth, __initial_auth_token); } catch(e){ await signInAnonymously(auth); } } else { await signInAnonymously(auth); }
-                })(), 2500); 
-            } catch(e) {}
+                if(typeof __initial_auth_token !== 'undefined' && __initial_auth_token){ 
+                    try { await signInWithCustomToken(auth, __initial_auth_token); } 
+                    catch(e){ await signInAnonymously(auth); } 
+                } else { 
+                    await signInAnonymously(auth); 
+                }
+            } catch(e) { console.error("Error Auth:", e); }
+
+            // Aumentamos el tiempo de espera a 15 segundos para conexiones 3G/4G
+            const T_OUT = 15000;
 
             const loadBanner = async () => {
                 try {
-                    const docSnap = await fetchWithTimeout(getDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global')), 2000);
+                    const docSnap = await fetchWithTimeout(getDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global')), T_OUT);
                     const bannerEl = document.getElementById('topAnnouncementBanner');
                     if (docSnap.exists() && docSnap.data().bannerActive === true && docSnap.data().bannerText) {
                         document.getElementById('bannerTextSpan').textContent = cleanStr(docSnap.data().bannerText);
@@ -1173,7 +1175,7 @@
 
             const loadCampaigns = async () => {
                 try {
-                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), 2000);
+                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), T_OUT);
                     const todayStr = new Date().toISOString().split('T')[0];
                     app.campaigns = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => {
                         if (c.activo !== true) return false;
@@ -1186,27 +1188,33 @@
 
             const loadCategories = async () => {
                 try {
-                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'categorias_web')), 2000);
-                    dynamicCategories = !snap.empty ? snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => c.activo !== false).sort((a, b) => (a.orden || 0) - (b.orden || 0)) : fallbackCategories;
-                } catch(e) { dynamicCategories = fallbackCategories; }
+                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'categorias_web')), T_OUT);
+                    dynamicCategories = !snap.empty ? snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => c.activo !== false).sort((a, b) => (a.orden || 0) - (b.orden || 0)) : [];
+                } catch(e) { dynamicCategories = []; }
             };
 
             const loadCatalog = async () => {
                 try {
-                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web')), 2000);
+                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web')), T_OUT);
                     if(!snap.empty) {
                         const cd = snap.docs.map(d => { 
                             const dt=d.data(); 
                             return { id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria, orden: dt.orden }; 
                         });
                         if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
+                        catalogLoaded = true;
+                    } else {
+                        app.catalog = [];
+                        catalogLoaded = true;
                     }
-                } catch(e) {}
+                } catch(e) {
+                    catalogLoaded = true;
+                }
             };
 
             const loadTheme = async () => {
                 try {
-                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'temas_web')), 2000);
+                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'temas_web')), T_OUT);
                     if (!snap.empty) {
                         const themes = snap.docs.map(d => ({id: d.id, ...d.data()}));
                         let sel = themes.find(t => cleanStr(t.modo).toLowerCase().includes('manual') && (t.activo===true || t.estado==='Activo')); 
@@ -1217,26 +1225,35 @@
                 } catch(e) {}
             };
 
-            // 1. CARGA INICIAL BÁSICA
-            await Promise.allSettled([ loadCategories(), loadCatalog() ]);
-            if (app.catalog.length === 0) { app.catalog = fallbackCatalog; allPurchasableItems = [...fallbackCatalog]; }
-            buildDynamicNav();
-
-            // 2. CARGA SECUNDARIA
-            await Promise.allSettled([
-                loadTheme(), loadBanner(), loadCampaigns(),
-                (async () => { try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), 2000); if(!ts.empty) locations = ts.docs.map(d=>d.data()); } catch(e){} })(),
-                (async () => { try { const gs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')), 2000); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); } catch(e){} })(),
-                (async () => { try { const rs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')), 2000); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){} })(),
-                (async () => { try { const cs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web')), 2000); activeCoupons = cs.docs.map(d=>d.data()).filter(c=>c.active===true||c.activo===true); } catch(e){} })(),
-                (async () => { try { const es = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos')), 2000); bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(cleanStr(ev.estado)).toLowerCase().includes(s))); } catch(e){} })()
+            // FASE 1: DATOS CRÍTICOS Y RÁPIDOS
+            await Promise.allSettled([ 
+                loadCategories(), 
+                loadCatalog(), 
+                loadTheme(), 
+                loadBanner(), 
+                loadCampaigns() 
             ]);
 
+            buildDynamicNav();
             isFirebaseLoaded = true;
-            
-            // 3. RENDERIZADO FINAL Y ÚNICO
-            refreshDynamicData(); 
+            refreshDynamicData(); // Dibuja la página con las campañas garantizadas
             updateCartUI(); 
+
+            // FASE 2: DATOS SECUNDARIOS (EN SEGUNDO PLANO)
+            Promise.allSettled([
+                (async () => { try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), T_OUT); if(!ts.empty) locations = ts.docs.map(d=>d.data()); } catch(e){} })(),
+                (async () => { try { const gs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')), T_OUT); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); } catch(e){} })(),
+                (async () => { try { const rs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')), T_OUT); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){} })(),
+                (async () => { try { const cs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web')), T_OUT); activeCoupons = cs.docs.map(d=>d.data()).filter(c=>c.active===true||c.activo===true); } catch(e){} })(),
+                (async () => { try { const es = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos')), T_OUT); bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(cleanStr(ev.estado)).toLowerCase().includes(s))); } catch(e){} })()
+            ]).then(() => {
+                if (app.activeSection === 'home') {
+                    const hw = document.getElementById('home-reviews-wrapper');
+                    if(hw && customerReviews.length > 0) renderHome();
+                } else if (app.activeSection === 'booking') {
+                    renderBooking();
+                }
+            });
         }
 
         // ==========================================
