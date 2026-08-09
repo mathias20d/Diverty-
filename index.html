@@ -112,6 +112,7 @@
         .season-gradient-text { background: var(--s-btn-grad); -webkit-background-clip: text; color: transparent; }
         
         .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 1050; display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .modal-backdrop.show { opacity: 1; visibility: visible; }
         .modal-content { background: var(--s-bg-color); color: var(--s-text-title); border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); width: 100%; max-width: 28rem; max-height: 100%; display: flex; flex-direction: column; transform: scale(.95) translateY(10px); transition: transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--s-glass-border); overflow: hidden; }
         .modal-backdrop.show .modal-content { transform: scale(1) translateY(0); }
         
@@ -1148,8 +1149,6 @@
             const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
             db = getFirestore(fbApp); auth = getAuth(fbApp);
             
-            // ELIMINADO EL TIMEOUT DE AUTENTICACIÓN
-            // Es vital que el iPhone complete este paso antes de pedir datos.
             try { 
                 if(typeof __initial_auth_token !== 'undefined' && __initial_auth_token){ 
                     try { await signInWithCustomToken(auth, __initial_auth_token); } 
@@ -1159,7 +1158,6 @@
                 }
             } catch(e) { console.error("Error Auth:", e); }
 
-            // Aumentamos el tiempo de espera a 15 segundos para conexiones 3G/4G
             const T_OUT = 15000;
 
             const loadBanner = async () => {
@@ -1225,7 +1223,6 @@
                 } catch(e) {}
             };
 
-            // FASE 1: DATOS CRÍTICOS Y RÁPIDOS
             await Promise.allSettled([ 
                 loadCategories(), 
                 loadCatalog(), 
@@ -1236,10 +1233,9 @@
 
             buildDynamicNav();
             isFirebaseLoaded = true;
-            refreshDynamicData(); // Dibuja la página con las campañas garantizadas
+            refreshDynamicData();
             updateCartUI(); 
 
-            // FASE 2: DATOS SECUNDARIOS (EN SEGUNDO PLANO)
             Promise.allSettled([
                 (async () => { try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), T_OUT); if(!ts.empty) locations = ts.docs.map(d=>d.data()); } catch(e){} })(),
                 (async () => { try { const gs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')), T_OUT); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); } catch(e){} })(),
@@ -1298,5 +1294,4 @@
     </script>
 </body>
 </html>
-
 
