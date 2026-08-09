@@ -454,7 +454,7 @@
     </div>
 
     <!-- TOAST & MODALS -->
-    <div id="toast" class="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border">
+    <div id="toast" class="flex items-center gap-3 px-4 py-3 rounded-2xl shadow-2xl border z-[9999]">
         <div id="toastIconBg" class="w-8 h-8 rounded-full flex items-center justify-center shrink-0"></div>
         <p id="toastMessage" class="text-xs font-bold text-white pr-2"></p>
     </div>
@@ -535,60 +535,113 @@
         </div>
     </div>
 
-    <!-- MODAL CAMPAÑAS (NUEVO SISTEMA INDEPENDIENTE) -->
+    <!-- MODAL CAMPAÑAS NUEVO Y MEJORADO -->
     <div id="campaignModal" class="modal-backdrop">
-        <div class="modal-content bg-[#0F172A] border border-slate-700 rounded-3xl shadow-2xl w-full max-w-2xl mx-4 flex flex-col max-h-[90vh]">
-            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+        <div class="modal-content bg-[#0F172A] border border-slate-700 rounded-3xl shadow-2xl w-full max-w-5xl mx-4 flex flex-col max-h-[95vh]">
+            <div class="p-5 border-b border-slate-800 flex justify-between items-center bg-slate-900/50 shrink-0">
                 <h3 id="campModalTitle" class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="megaphone" class="w-5 h-5 text-rose-400"></i> Formulario de Campaña</h3>
                 <button onclick="window.closeCampaignModal()" class="text-slate-500 hover:text-white p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto space-y-5">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="saas-label">Título *</label><input type="text" id="campTitulo" class="saas-input bg-slate-900 font-bold" placeholder="Ej: ¡Gran Promoción!"></div>
-                    <div><label class="saas-label">Subtítulo</label><input type="text" id="campSubtitulo" class="saas-input bg-slate-900" placeholder="Ej: Válido por tiempo limitado"></div>
-                </div>
-                <div><label class="saas-label">Descripción</label><input type="text" id="campDescripcion" class="saas-input bg-slate-900" placeholder="Detalles u observaciones de la campaña..."></div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                        <span class="text-xs font-bold text-emerald-400 block">Activa</span>
-                        <div class="relative inline-block w-10 h-5 shrink-0"><input type="checkbox" id="campActivo" class="toggle-checkbox-emerald absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0" checked/><label for="campActivo" class="toggle-label-emerald block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
-                    </div>
-                    <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                        <span class="text-xs font-bold text-yellow-400 block">Destacada ⭐</span>
-                        <div class="relative inline-block w-10 h-5 shrink-0"><input type="checkbox" id="campDestacada" class="toggle-checkbox-star absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0"/><label for="campDestacada" class="toggle-label-star block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
-                    </div>
-                    <div><label class="saas-label mt-1">Orden (Prioridad)</label><input type="number" id="campOrden" class="saas-input bg-slate-900" placeholder="Ej: 1"></div>
-                </div>
+            
+            <div class="p-6 overflow-y-auto flex-1">
+                <div class="flex flex-col lg:flex-row gap-8 items-start">
+                    
+                    <!-- Lado Izquierdo: Formulario -->
+                    <div class="flex-1 space-y-5 w-full">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div><label class="saas-label">Título *</label><input type="text" id="campTitulo" class="saas-input bg-slate-900 font-bold" placeholder="Ej: ¡Gran Promoción!"></div>
+                            <div><label class="saas-label">Subtítulo</label><input type="text" id="campSubtitulo" class="saas-input bg-slate-900" placeholder="Ej: Válido por tiempo limitado"></div>
+                        </div>
+                        <div><label class="saas-label">Descripción</label><input type="text" id="campDescripcion" class="saas-input bg-slate-900" placeholder="Detalles u observaciones de la campaña..."></div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                                <span class="text-xs font-bold text-emerald-400 block">Activa</span>
+                                <div class="relative inline-block w-10 h-5 shrink-0"><input type="checkbox" id="campActivo" class="toggle-checkbox-emerald absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0" checked/><label for="campActivo" class="toggle-label-emerald block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
+                            </div>
+                            <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+                                <span class="text-xs font-bold text-yellow-400 block">Destacada ⭐</span>
+                                <div class="relative inline-block w-10 h-5 shrink-0"><input type="checkbox" id="campDestacada" class="toggle-checkbox-star absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0"/><label for="campDestacada" class="toggle-label-star block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
+                            </div>
+                            <div><label class="saas-label mt-1">Orden (Prioridad)</label><input type="number" id="campOrden" class="saas-input bg-slate-900" placeholder="Ej: 1"></div>
+                        </div>
 
-                <div class="grid grid-cols-2 gap-4 border-t border-b border-slate-800 py-4">
-                    <div><label class="saas-label">Fecha Inicio *</label><input type="date" id="campFechaInicio" class="saas-input bg-slate-900 text-slate-300"></div>
-                    <div><label class="saas-label">Fecha Fin *</label><input type="date" id="campFechaFin" class="saas-input bg-slate-900 text-slate-300"></div>
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="saas-label">Precio Promo ($)</label><input type="number" id="campPrecio" class="saas-input bg-slate-900 text-emerald-400 font-bold" placeholder="Opcional"></div>
-                    <div><label class="saas-label">Precio Anterior ($)</label><input type="number" id="campPrecioOriginal" class="saas-input bg-slate-900 text-slate-500 line-through" placeholder="Opcional"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="saas-label">Texto del Botón</label><input type="text" id="campBotonTexto" class="saas-input bg-slate-900" placeholder="Ej: Ver Oferta"></div>
-                    <div><label class="saas-label">Acción del Botón (URL)</label><input type="text" id="campAccion" class="saas-input bg-slate-900" placeholder="#reserva"></div>
-                </div>
-                <div>
-                    <label class="saas-label">Imagen de la Campaña *</label>
-                    <div class="flex gap-2 mb-3">
-                        <input type="text" id="campImagen" class="saas-input bg-slate-900 text-xs" placeholder="URL o sube una imagen ->" readonly>
-                        <div class="w-12 h-12 shrink-0 bg-rose-600 rounded-xl relative flex items-center justify-center cursor-pointer">
-                            <input type="file" id="campImgNative" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
-                            <i data-lucide="camera" class="w-5 h-5 text-white"></i>
+                        <div class="grid grid-cols-2 gap-4 border-t border-b border-slate-800 py-4">
+                            <div><label class="saas-label">Fecha Inicio *</label><input type="date" id="campFechaInicio" class="saas-input bg-slate-900 text-slate-300"></div>
+                            <div><label class="saas-label">Fecha Fin *</label><input type="date" id="campFechaFin" class="saas-input bg-slate-900 text-slate-300"></div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="saas-label text-emerald-400">Precio Promo ($)</label><input type="number" id="campPrecio" class="saas-input bg-slate-900 text-emerald-400 font-bold" placeholder="Opcional"></div>
+                            <div><label class="saas-label">Precio Anterior ($)</label><input type="number" id="campPrecioOriginal" class="saas-input bg-slate-900 text-slate-500 line-through" placeholder="Opcional"></div>
+                        </div>
+
+                        <div>
+                            <label class="saas-label">Lo que incluye (Un elemento por línea)</label>
+                            <textarea id="campIncluye" rows="4" class="saas-input bg-slate-900 text-sm leading-relaxed" placeholder="Ej:&#10;Máquina de snacks&#10;Operador&#10;Insumos..."></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="saas-label">Texto del Botón</label><input type="text" id="campBotonTexto" class="saas-input bg-slate-900" placeholder="Ej: Ver Oferta"></div>
+                            <div><label class="saas-label">Acción del Botón (URL)</label><input type="text" id="campAccion" class="saas-input bg-slate-900" placeholder="#reserva"></div>
+                        </div>
+
+                        <div class="pb-4">
+                            <label class="saas-label text-rose-400">Imagen de la Campaña *</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="campImagen" class="saas-input bg-slate-900 text-xs text-slate-400" placeholder="URL obligatoria (sube una imagen ->)" readonly>
+                                <div class="w-12 h-12 shrink-0 bg-rose-600 hover:bg-rose-500 transition-colors rounded-xl relative flex items-center justify-center cursor-pointer shadow-lg shadow-rose-500/20">
+                                    <input type="file" id="campImgNative" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                                    <i data-lucide="upload-cloud" class="w-5 h-5 text-white"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div id="campImgPreviewBox" class="hidden h-32 rounded-xl bg-slate-900 overflow-hidden relative border border-slate-700 shadow-inner"><img id="campImgPreview" class="w-full h-full object-cover"></div>
+
+                    <!-- Lado Derecho: Vista Previa en Vivo -->
+                    <div class="w-full lg:w-[320px] shrink-0 sticky top-0">
+                        <h4 class="text-xs font-black text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+                            <i data-lucide="eye" class="w-4 h-4"></i> Vista Previa en Vivo
+                        </h4>
+                        
+                        <!-- Tarjeta Visual (Simulación Frontend) -->
+                        <div class="rounded-2xl overflow-hidden bg-slate-800 border border-slate-700 shadow-2xl relative">
+                            <!-- Contenedor Imagen Vista Previa -->
+                            <div class="h-44 w-full bg-slate-900 relative">
+                                <img id="lp-img" src="" class="w-full h-full object-cover hidden">
+                                <div id="lp-no-img" class="absolute inset-0 flex flex-col items-center justify-center text-slate-600">
+                                    <i data-lucide="image" class="w-8 h-8 mb-2"></i>
+                                    <span class="text-[10px] font-bold">Sin Imagen</span>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 md:p-5">
+                                <h3 id="lp-title" class="text-lg font-black text-white leading-tight">Título</h3>
+                                <p id="lp-subtitle" class="text-[11px] text-rose-400 font-bold mt-1 uppercase tracking-wide">Subtítulo</p>
+                                <p id="lp-desc" class="text-xs text-slate-300 mt-2 line-clamp-2 leading-relaxed">Descripción...</p>
+
+                                <div id="lp-includes-container" class="mt-4 bg-slate-900/80 p-3 rounded-xl border border-slate-700/50 hidden">
+                                    <p class="text-[9px] font-bold text-slate-400 mb-1.5 uppercase tracking-widest">Incluye:</p>
+                                    <ul id="lp-includes" class="text-xs text-slate-200 space-y-1.5"></ul>
+                                </div>
+
+                                <div class="mt-5 flex items-end justify-between border-t border-slate-700 pt-4">
+                                    <div class="flex flex-col">
+                                        <span id="lp-prev-price" class="text-[10px] text-slate-500 line-through hidden font-bold">Antes $0</span>
+                                        <span id="lp-price" class="text-xl font-black text-emerald-400 leading-none"></span>
+                                    </div>
+                                    <button id="lp-btn" class="bg-gradient-to-r from-rose-600 to-pink-600 text-white text-[10px] uppercase tracking-wider font-black py-2 px-4 rounded-xl shadow-lg shadow-rose-500/30">Botón</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-            <div class="p-6 border-t border-slate-800 flex gap-3 bg-slate-900 shrink-0">
-                <button onclick="window.closeCampaignModal()" class="flex-1 bg-slate-800 py-3.5 rounded-xl text-white font-bold text-sm">Cancelar</button>
-                <button onclick="window.saveCampaign()" id="saveCampBtn" class="flex-1 bg-rose-600 hover:bg-rose-500 py-3.5 rounded-xl text-white font-bold text-sm transition-colors shadow-lg">Guardar Campaña</button>
+            
+            <div class="p-6 border-t border-slate-800 flex gap-3 bg-[#0B1120] shrink-0">
+                <button onclick="window.closeCampaignModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 py-3.5 rounded-xl text-white font-bold text-sm transition-colors">Cancelar</button>
+                <button onclick="window.saveCampaign()" id="saveCampBtn" class="flex-[2] bg-rose-600 hover:bg-rose-500 py-3.5 rounded-xl text-white font-bold text-sm transition-colors shadow-lg shadow-rose-500/20">Guardar Campaña</button>
             </div>
         </div>
     </div>
@@ -640,9 +693,9 @@
         window.showToast = function(message, type = 'success') {
             const toast = document.getElementById('toast'), iconBg = document.getElementById('toastIconBg');
             document.getElementById('toastMessage').textContent = message;
-            if (type === 'success') { toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-emerald-500/50'; iconBg.className = 'w-8 h-8 rounded-full flex items-center justify-center bg-emerald-500/20'; iconBg.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>'; } 
-            else if(type === 'error') { toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-rose-500/50'; iconBg.className = 'w-8 h-8 rounded-full flex items-center justify-center bg-rose-500/20'; iconBg.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4 text-rose-400"></i>'; }
-            else { toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-blue-500/50'; iconBg.className = 'w-8 h-8 rounded-full flex items-center justify-center bg-blue-500/20'; iconBg.innerHTML = '<i data-lucide="info" class="w-4 h-4 text-blue-400"></i>'; }
+            if (type === 'success') { toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-emerald-500/50 z-[9999]'; iconBg.className = 'w-8 h-8 rounded-full flex items-center justify-center bg-emerald-500/20'; iconBg.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-emerald-400"></i>'; } 
+            else if(type === 'error') { toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-rose-500/50 z-[9999]'; iconBg.className = 'w-8 h-8 rounded-full flex items-center justify-center bg-rose-500/20'; iconBg.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4 text-rose-400"></i>'; }
+            else { toast.className = 'flex items-center gap-3 px-4 py-3 rounded-2xl shadow-xl border bg-[#0F172A] border-blue-500/50 z-[9999]'; iconBg.className = 'w-8 h-8 rounded-full flex items-center justify-center bg-blue-500/20'; iconBg.innerHTML = '<i data-lucide="info" class="w-4 h-4 text-blue-400"></i>'; }
             lucide.createIcons(); toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000); 
         }
@@ -987,7 +1040,9 @@
         }
 
         document.getElementById('oferta').addEventListener('change', e => document.getElementById('precioOriginalContainer').classList.toggle('hidden', !e.target.checked));
-        document.getElementById('imageFileNative').addEventListener('change', async (e) => uploadToCloudinary(e.target.files[0], document.getElementById('imagen'), document.getElementById('imagePreviewBox'), document.getElementById('previewImg')));
+        
+        // El FileInput general (usado en Paquetes)
+        document.getElementById('imageFileNative').addEventListener('change', async (e) => window.uploadToCloudinaryGeneral(e.target.files[0], document.getElementById('imagen'), document.getElementById('imagePreviewBox'), document.getElementById('previewImg')));
 
         document.getElementById('submitBtn').addEventListener('click', async (e) => {
             const nombre = document.getElementById('nombre').value; const precio = Number(document.getElementById('precio').value);
@@ -1131,45 +1186,23 @@
                     document.getElementById('bannerActive').checked = d.bannerActive || false; 
                     document.getElementById('bannerText').value = d.bannerText || ''; 
                 }
-            } catch(e) {
-                console.error("Error al cargar Ajustes Globales", e);
-            } 
+            } catch(e) { console.error("Error al cargar Ajustes", e); } 
         }
         
         window.saveSettings = async () => { 
             try {
                 const bannerActive = document.getElementById('bannerActive').checked;
                 const bannerText = document.getElementById('bannerText').value;
-                
-                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { 
-                    bannerActive, 
-                    bannerText 
-                }, {merge: true}); 
-
-                // Leer para confirmar (Según lo solicitado)
-                const verifySnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'));
-                if(verifySnap.exists()){
-                    const verifyData = verifySnap.data();
-                    console.log("[BANNER ADMIN] Guardado correctamente");
-                    console.log(`[BANNER ADMIN] bannerActive: ${verifyData.bannerActive}`);
-                    console.log(`[BANNER ADMIN] bannerText: ${verifyData.bannerText}`);
-                }
-
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive, bannerText }, {merge: true}); 
                 showToast("Ajustes Guardados", "success"); 
-            } catch(error) {
-                console.error("[BANNER ADMIN] ERROR:", error);
-                showToast("Error guardando ajustes", "error");
-            }
+            } catch(error) { showToast("Error guardando ajustes", "error"); }
         };
-
 
         // --- SISTEMAS DE TEMAS ---
         window.globalThemeConfig = { modo: 'automatico', temaManualActivo: 'normal' };
         window.temasLocales = [];
         let editingThemeId = null; 
         
-        function formatDisplayDate(dateStr) { if (!dateStr) return ''; const [y, m, d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
-
         window.loadThemes = async function(silent = false) {
             try {
                 const confSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'tema_global'));
@@ -1183,7 +1216,7 @@
                     window.temasLocales.push({id: 'tema_normal', ...defaultTheme});
                 }
                 if(!silent) await evaluateAndApplyThemes();
-            } catch(e) { console.error(e) }
+            } catch(e) {}
         }
         
         async function evaluateAndApplyThemes() {
@@ -1228,17 +1261,10 @@
         window.openThemeModal = function() { 
             editingThemeId = null; 
             document.getElementById('themeModalTitle').innerHTML = '<i data-lucide="palette" class="w-5 h-5 text-amber-400"></i> Nuevo Tema';
-            document.getElementById('thmName').value = '';
-            document.getElementById('thmDesc').value = '';
-            document.getElementById('thmStart').value = '';
-            document.getElementById('thmEnd').value = '';
-            document.getElementById('thmGradient').value = '';
-            document.getElementById('thmDecorations').value = 'none';
-            document.getElementById('thmAnimations').checked = true;
+            document.getElementById('thmName').value = ''; document.getElementById('thmDesc').value = ''; document.getElementById('thmStart').value = ''; document.getElementById('thmEnd').value = ''; document.getElementById('thmGradient').value = ''; document.getElementById('thmDecorations').value = 'none'; document.getElementById('thmAnimations').checked = true;
             const defaultColors = { Primary: '#8B5CF6', Secondary: '#EC4899', Button: '#8B5CF6', Text: '#1E293B', Bg: '#FFFFFF', Card: '#F8FAFC' };
             ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => { document.getElementById(`thmCol${t}`).value = defaultColors[t]; document.getElementById(`thmCol${t}Picker`).value = defaultColors[t]; });
-            lucide.createIcons();
-            document.getElementById('themeModal').classList.add('show'); 
+            lucide.createIcons(); document.getElementById('themeModal').classList.add('show'); 
         };
         window.closeThemeModal = () => document.getElementById('themeModal').classList.remove('show');
         
@@ -1264,11 +1290,55 @@
             } catch(e) { showToast("Error al guardar el tema", "error"); } finally { btn.innerHTML = originalText; btn.disabled = false; lucide.createIcons(); }
         };
 
-        // --- SISTEMA REAL DE CAMPAÑAS NUEVO ---
+        // ==========================================
+        // SISTEMA DE CAMPAÑAS (NUEVO Y MEJORADO)
+        // ==========================================
         window.campanasLocales = []; 
         let editingCampaignId = null;
 
-        document.getElementById('campImgNative').addEventListener('change', e => uploadToCloudinary(e.target.files[0], document.getElementById('campImagen'), document.getElementById('campImgPreviewBox'), document.getElementById('campImgPreview')));
+        // Subida de imagen específica de Campañas con Live Preview
+        document.getElementById('campImgNative').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Mostrar estado visual mientras carga
+            const inputUrl = document.getElementById('campImagen');
+            inputUrl.value = 'Subiendo imagen...';
+            
+            // Previsualización instantánea local
+            const compressed = await compressImage(file);
+            const localUrl = URL.createObjectURL(compressed);
+            
+            const lpImg = document.getElementById('lp-img');
+            const lpNoImg = document.getElementById('lp-no-img');
+            if (lpImg && lpNoImg) {
+                lpImg.src = localUrl;
+                lpImg.classList.remove('hidden');
+                lpNoImg.classList.add('hidden');
+            }
+
+            // Enviar a Cloudinary
+            const formData = new FormData();
+            formData.append('file', compressed);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            
+            try {
+                const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData});
+                const data = await res.json();
+                
+                if (data.secure_url) {
+                    inputUrl.value = data.secure_url;
+                    showToast("Imagen subida correctamente", "success");
+                    window.updateCampaignLivePreview();
+                } else {
+                    inputUrl.value = '';
+                    showToast("Error al subir la imagen", "error");
+                }
+            } catch(error) {
+                inputUrl.value = '';
+                showToast("Error al subir la imagen", "error");
+            }
+        });
         
         window.loadCampaigns = async function() {
             try {
@@ -1283,46 +1353,86 @@
         }
         
         function renderCampaignsView() {
-            const container = document.getElementById('campaignsList'); container.innerHTML = '';
+            const container = document.getElementById('campaignsList'); 
+            container.innerHTML = '';
+            
+            if (window.campanasLocales.length === 0) {
+                container.innerHTML = `<div class="p-8 text-center text-slate-500 bg-[#0F172A] rounded-2xl border border-slate-800">No hay campañas creadas aún.</div>`;
+                return;
+            }
+
             window.campanasLocales.forEach(camp => {
                 let tags = '';
                 if(camp.destacada) tags += `<span class="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-[9px] font-black shrink-0">⭐ DESTACADA</span>`;
                 if(camp.activo) tags += `<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[9px] font-black shrink-0">🟢 ACTIVA</span>`; 
                 else tags += `<span class="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[9px] font-bold">⚪ INACTIVA</span>`;
 
+                // Procesar visualización de precios puros
+                const precioNum = camp.precio;
+                const precioOrigNum = camp.precioOriginal;
+                const hasPromo = precioOrigNum && precioOrigNum > (precioNum || 0);
+
+                const prevPriceHtml = hasPromo ? `<span class="text-xs text-slate-500 line-through mr-2">Antes $${precioOrigNum}</span>` : '';
+                const currentPriceHtml = precioNum !== null && precioNum !== undefined ? `<span class="text-lg font-black text-emerald-400">$${precioNum}</span>` : '<span class="text-sm font-bold text-slate-500">Sin precio</span>';
+
+                // Procesar lo que incluye
+                const incluyeCountHtml = camp.incluye && camp.incluye.length > 0
+                    ? `<span class="text-[10px] font-bold text-emerald-400 block mt-1"><i data-lucide="check-circle-2" class="w-3 h-3 inline"></i> ${camp.incluye.length} elementos incluidos</span>`
+                    : `<span class="text-[10px] font-bold text-slate-500 block mt-1">Sin información de lo que incluye</span>`;
+
+                // Procesar imagen
+                const imgHtml = camp.imagen 
+                    ? `<img src="${camp.imagen}" class="w-20 h-20 rounded-xl object-cover bg-slate-800 shrink-0 border border-slate-700 shadow-sm" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                       <div class="hidden w-20 h-20 rounded-xl bg-slate-800 items-center justify-center shrink-0 border border-slate-700"><i data-lucide="image-off" class="w-6 h-6 text-slate-600"></i></div>`
+                    : `<div class="w-20 h-20 rounded-xl bg-slate-800 flex items-center justify-center shrink-0 border border-slate-700"><i data-lucide="image" class="w-6 h-6 text-slate-600"></i></div>`;
+
                 container.innerHTML += `
                     <div class="campaign-item flex flex-col p-4 bg-[#0F172A] border ${camp.activo ? 'border-rose-500/30 shadow-[0_0_15px_rgba(225,29,72,0.1)]' : 'border-slate-700'} rounded-2xl relative w-full group" data-id="${camp.id}">
                         <div class="drag-handle-camp absolute top-3 right-3 w-8 h-8 bg-slate-800/80 border border-slate-700 rounded-md flex items-center justify-center z-10 text-slate-400 hover:text-white cursor-grab"><i data-lucide="grip-horizontal" class="w-4 h-4 pointer-events-none"></i></div>
                         
                         <div class="flex gap-4 items-start w-full pr-10">
-                            ${camp.imagen ? `<img src="${camp.imagen}" class="w-16 h-16 rounded-xl object-cover bg-slate-800 shrink-0">` : `<div class="w-16 h-16 rounded-xl bg-slate-800 flex items-center justify-center"><i data-lucide="image" class="w-6 h-6 text-slate-600"></i></div>`}
+                            ${imgHtml}
                             <div class="flex-1 min-w-0">
                                 <div class="flex flex-wrap gap-2 mb-1.5">${tags}</div>
                                 <h3 class="text-white font-bold text-sm truncate">${camp.titulo}</h3>
-                                <p class="text-[10px] font-bold text-slate-500 mt-1 uppercase">
+                                
+                                <div class="flex items-baseline mt-1 mb-1">
+                                    ${prevPriceHtml}
+                                    ${currentPriceHtml}
+                                </div>
+                                ${incluyeCountHtml}
+                                
+                                <p class="text-[10px] font-bold text-slate-500 mt-2 uppercase">
                                     FECHAS: <span class="text-slate-300">${camp.fechaInicio || 'N/A'} al ${camp.fechaFin || 'N/A'}</span> • ORDEN: ${camp.orden || '-'}
                                 </p>
                             </div>
                         </div>
 
                         <div class="flex gap-2 mt-4 pt-3 border-t border-slate-800">
-                            ${camp.activo ? `<button onclick="window.toggleCampaignStatus('${camp.id}', false)" class="flex-1 bg-slate-800 text-slate-300 hover:text-white text-xs font-bold py-2 rounded-xl">Desactivar</button>` : `<button onclick="window.toggleCampaignStatus('${camp.id}', true)" class="flex-1 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white text-xs font-bold py-2 rounded-xl border border-rose-500/20">Activar</button>`}
-                            <button onclick="window.editCampaign('${camp.id}')" class="px-3 bg-slate-800 text-slate-300 hover:text-white rounded-xl" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                            <button onclick="window.duplicateCampaign('${camp.id}')" class="px-3 bg-slate-800 text-slate-300 hover:text-white rounded-xl" title="Duplicar"><i data-lucide="copy" class="w-4 h-4"></i></button>
-                            <button onclick="window.deleteDocGen('campanas_web', '${camp.id}', window.loadCampaigns)" class="px-3 bg-slate-800 text-rose-400 hover:text-rose-300 hover:bg-rose-900/20 rounded-xl" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                            ${camp.activo ? `<button onclick="window.toggleCampaignStatus('${camp.id}', false)" class="flex-1 bg-slate-800 text-slate-300 hover:text-white text-xs font-bold py-2.5 rounded-xl transition-colors">Desactivar</button>` : `<button onclick="window.toggleCampaignStatus('${camp.id}', true)" class="flex-1 bg-rose-600/10 text-rose-400 hover:bg-rose-600 hover:text-white text-xs font-bold py-2.5 rounded-xl border border-rose-500/20 transition-colors">Activar</button>`}
+                            <button onclick="window.editCampaign('${camp.id}')" class="px-3 bg-slate-800 text-slate-300 hover:text-white rounded-xl transition-colors" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="window.duplicateCampaign('${camp.id}')" class="px-3 bg-slate-800 text-slate-300 hover:text-white rounded-xl transition-colors" title="Duplicar"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                            <button onclick="window.deleteDocGen('campanas_web', '${camp.id}', window.loadCampaigns)" class="px-3 bg-slate-800 text-rose-400 hover:text-rose-300 hover:bg-rose-900/20 rounded-xl transition-colors" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>`;
             });
             lucide.createIcons();
 
             if(window.campaignSortable) window.campaignSortable.destroy();
-            window.campaignSortable = new Sortable(container, { animation: 250, handle: '.drag-handle-camp', forceFallback: true, onEnd: async function() {
-                const items = container.querySelectorAll('.campaign-item'); let updates = [];
-                items.forEach((item, index) => { updates.push({id: item.dataset.id, orden: index + 1}); });
-                const batch = writeBatch(db); 
-                updates.forEach(u => batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', u.id), { orden: u.orden }));
-                await batch.commit(); window.loadCampaigns();
-            }});
+            window.campaignSortable = new Sortable(container, { 
+                animation: 250, 
+                handle: '.drag-handle-camp', 
+                forceFallback: true, 
+                onEnd: async function() {
+                    const items = container.querySelectorAll('.campaign-item'); 
+                    let updates = [];
+                    items.forEach((item, index) => { updates.push({id: item.dataset.id, orden: index + 1}); });
+                    const batch = writeBatch(db); 
+                    updates.forEach(u => batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', u.id), { orden: u.orden }));
+                    await batch.commit(); 
+                    window.loadCampaigns();
+                }
+            });
         }
         
         window.openCampaignModal = function() {
@@ -1338,13 +1448,14 @@
             document.getElementById('campFechaFin').value = '';
             document.getElementById('campPrecio').value = '';
             document.getElementById('campPrecioOriginal').value = '';
+            document.getElementById('campIncluye').value = '';
             document.getElementById('campBotonTexto').value = '';
             document.getElementById('campAccion').value = '';
             document.getElementById('campImagen').value = '';
-            document.getElementById('campImgPreviewBox').classList.add('hidden');
             
             document.getElementById('campaignModal').classList.add('show');
             lucide.createIcons();
+            window.updateCampaignLivePreview();
         };
         
         window.closeCampaignModal = () => document.getElementById('campaignModal').classList.remove('show');
@@ -1358,26 +1469,26 @@
             document.getElementById('campTitulo').value = c.titulo || ''; 
             document.getElementById('campSubtitulo').value = c.subtitulo || ''; 
             document.getElementById('campDescripcion').value = c.descripcion || '';
-            document.getElementById('campActivo').checked = c.activo || false; 
+            document.getElementById('campActivo').checked = c.activo !== false; // true por defecto
             document.getElementById('campDestacada').checked = c.destacada || false;
             document.getElementById('campOrden').value = c.orden || '';
             document.getElementById('campFechaInicio').value = c.fechaInicio || ''; 
             document.getElementById('campFechaFin').value = c.fechaFin || '';
-            document.getElementById('campPrecio').value = c.precio || '';
-            document.getElementById('campPrecioOriginal').value = c.precioOriginal || '';
+            
+            // Cargar precios como números puros si existen
+            document.getElementById('campPrecio').value = c.precio !== null && c.precio !== undefined ? c.precio : '';
+            document.getElementById('campPrecioOriginal').value = c.precioOriginal !== null && c.precioOriginal !== undefined ? c.precioOriginal : '';
+            
+            // Cargar lo que incluye
+            document.getElementById('campIncluye').value = (c.incluye && Array.isArray(c.incluye)) ? c.incluye.join('\n') : '';
+            
             document.getElementById('campBotonTexto').value = c.botonTexto || '';
             document.getElementById('campAccion').value = c.accion || '';
             document.getElementById('campImagen').value = c.imagen || '';
             
-            if(c.imagen) {
-                document.getElementById('campImgPreviewBox').classList.remove('hidden');
-                document.getElementById('campImgPreview').src = c.imagen;
-            } else {
-                document.getElementById('campImgPreviewBox').classList.add('hidden');
-            }
-
             document.getElementById('campaignModal').classList.add('show');
             lucide.createIcons();
+            window.updateCampaignLivePreview();
         };
 
         window.duplicateCampaign = function(id) {
@@ -1394,21 +1505,18 @@
             document.getElementById('campOrden').value = window.campanasLocales.length + 1;
             document.getElementById('campFechaInicio').value = camp.fechaInicio || '';
             document.getElementById('campFechaFin').value = camp.fechaFin || '';
-            document.getElementById('campPrecio').value = camp.precio || '';
-            document.getElementById('campPrecioOriginal').value = camp.precioOriginal || '';
+            
+            document.getElementById('campPrecio').value = camp.precio !== null && camp.precio !== undefined ? camp.precio : '';
+            document.getElementById('campPrecioOriginal').value = camp.precioOriginal !== null && camp.precioOriginal !== undefined ? camp.precioOriginal : '';
+            document.getElementById('campIncluye').value = (camp.incluye && Array.isArray(camp.incluye)) ? camp.incluye.join('\n') : '';
+
             document.getElementById('campBotonTexto').value = camp.botonTexto || '';
             document.getElementById('campAccion').value = camp.accion || '';
             document.getElementById('campImagen').value = camp.imagen || '';
 
-            if (camp.imagen) {
-                document.getElementById('campImgPreviewBox').classList.remove('hidden');
-                document.getElementById('campImgPreview').src = camp.imagen;
-            } else {
-                document.getElementById('campImgPreviewBox').classList.add('hidden');
-            }
-
             document.getElementById('campaignModal').classList.add('show');
             lucide.createIcons();
+            window.updateCampaignLivePreview();
         }
 
         window.saveCampaign = async function() {
@@ -1417,21 +1525,35 @@
             const fechaInicio = document.getElementById('campFechaInicio').value;
             const fechaFin = document.getElementById('campFechaFin').value;
 
-            // Validación de campos obligatorios solicitada
+            // Validaciones Estrictas
             if (!titulo || !imagen || !fechaInicio || !fechaFin) {
                 return showToast("Título, Imagen, Fecha Inicio y Fecha Fin son obligatorios", "error");
             }
-            if (new Date(fechaFin) < new Date(fechaInicio)) {
+            if (fechaFin < fechaInicio) {
                 return showToast("La Fecha Final no puede ser anterior a la Inicial", "error");
             }
+            if (!imagen.startsWith('http')) {
+                return showToast("URL de imagen no válida. Sube una imagen correctamente.", "error");
+            }
+
+            // Procesar precios a null si están vacíos
+            const pVal = document.getElementById('campPrecio').value;
+            const poVal = document.getElementById('campPrecioOriginal').value;
+            const precio = pVal === '' ? null : Number(pVal);
+            const precioOriginal = poVal === '' ? null : Number(poVal);
+
+            // Procesar lo que incluye a Array limpio
+            const incluyeText = document.getElementById('campIncluye').value;
+            const incluye = incluyeText.split('\n').map(s => s.trim()).filter(s => s !== '');
 
             const data = { 
                 titulo: titulo,
                 subtitulo: document.getElementById('campSubtitulo').value.trim(),
                 descripcion: document.getElementById('campDescripcion').value.trim(),
                 imagen: imagen,
-                precio: Number(document.getElementById('campPrecio').value) || null,
-                precioOriginal: Number(document.getElementById('campPrecioOriginal').value) || null,
+                precio: precio,
+                precioOriginal: precioOriginal,
+                incluye: incluye,
                 botonTexto: document.getElementById('campBotonTexto').value.trim(),
                 accion: document.getElementById('campAccion').value.trim(),
                 activo: document.getElementById('campActivo').checked,
@@ -1444,7 +1566,7 @@
             
             const btn = document.getElementById('saveCampBtn');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Guardando...';
+            btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin mx-auto"></i>';
             btn.disabled = true;
 
             try {
@@ -1472,14 +1594,108 @@
                 lucide.createIcons();
             }
         };
-        
-        window.toggleCampaignStatus = async function(id, status) { 
-            await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', id), { activo: status }); 
-            window.loadCampaigns(); 
-        }
 
-        // Util general subida imagen
-        async function uploadToCloudinary(file, inputUrl, box, img) { if(!file)return;const compressed=await compressImage(file);if(img)img.src=URL.createObjectURL(compressed);if(box)box.classList.remove('hidden');const formData=new FormData();formData.append('file',compressed);formData.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);try{const res=await fetch(CLOUDINARY_URL,{method:'POST',body:formData});const data=await res.json();if(data.secure_url){inputUrl.value=data.secure_url;showToast("Imagen subida","success");}}catch(e){showToast("Error","error");} }
+        // Lógica de Live Preview (Actualiza la tarjeta visual en el modal)
+        window.updateCampaignLivePreview = function() {
+            const title = document.getElementById('campTitulo').value || 'Título de la Campaña';
+            const sub = document.getElementById('campSubtitulo').value || '';
+            const desc = document.getElementById('campDescripcion').value || 'Ingresa una descripción para visualizarla aquí...';
+            const imgUrl = document.getElementById('campImagen').value;
+            const btnText = document.getElementById('campBotonTexto').value || 'Ver Oferta';
+            
+            const pVal = document.getElementById('campPrecio').value;
+            const poVal = document.getElementById('campPrecioOriginal').value;
+            const precio = pVal === '' ? null : Number(pVal);
+            const precioOrig = poVal === '' ? null : Number(poVal);
+            
+            const incText = document.getElementById('campIncluye').value;
+            const incArray = incText.split('\n').map(s => s.trim()).filter(s => s !== '');
+
+            // Actualizar Textos
+            document.getElementById('lp-title').textContent = title;
+            document.getElementById('lp-subtitle').textContent = sub;
+            document.getElementById('lp-subtitle').style.display = sub ? 'block' : 'none';
+            document.getElementById('lp-desc').textContent = desc;
+            document.getElementById('lp-btn').textContent = btnText;
+
+            // Actualizar Imagen
+            const lpImg = document.getElementById('lp-img');
+            const lpNoImg = document.getElementById('lp-no-img');
+            // Nota: Si imgUrl empieza con http, la cargamos. Si está vacía pero el src ya tiene blob por el evento 'change', se mantiene.
+            if(imgUrl && imgUrl.startsWith('http')) { 
+                lpImg.src = imgUrl; 
+                lpImg.classList.remove('hidden'); 
+                lpNoImg.classList.add('hidden'); 
+            } else if (!lpImg.src || lpImg.src === window.location.href) {
+                lpImg.classList.add('hidden');
+                lpNoImg.classList.remove('hidden');
+            }
+
+            // Actualizar Precios
+            const elPrevPrice = document.getElementById('lp-prev-price');
+            if (precioOrig && precioOrig > (precio || 0)) {
+                elPrevPrice.textContent = `Antes $${precioOrig}`;
+                elPrevPrice.classList.remove('hidden');
+                elPrevPrice.classList.add('block');
+            } else {
+                elPrevPrice.classList.add('hidden');
+                elPrevPrice.classList.remove('block');
+            }
+
+            const elPrice = document.getElementById('lp-price');
+            if (precio !== null) {
+                elPrice.textContent = `$${precio}`;
+            } else {
+                elPrice.textContent = '';
+            }
+
+            // Actualizar Lista "Incluye"
+            const containerIncludes = document.getElementById('lp-includes-container');
+            const ulIncludes = document.getElementById('lp-includes');
+            ulIncludes.innerHTML = '';
+            if (incArray.length > 0) {
+                incArray.forEach(item => {
+                    ulIncludes.innerHTML += `<li class="flex items-start gap-1.5"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 mt-0.5 shrink-0"></i> <span>${item}</span></li>`;
+                });
+                containerIncludes.classList.remove('hidden');
+                containerIncludes.classList.add('block');
+                lucide.createIcons();
+            } else {
+                containerIncludes.classList.add('hidden');
+                containerIncludes.classList.remove('block');
+            }
+        };
+
+        // Asignar listeners de preview a los inputs del modal de campañas
+        const campInputs = ['campTitulo', 'campSubtitulo', 'campDescripcion', 'campPrecio', 'campPrecioOriginal', 'campIncluye', 'campBotonTexto'];
+        campInputs.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.addEventListener('input', window.updateCampaignLivePreview);
+                el.addEventListener('change', window.updateCampaignLivePreview);
+            }
+        });
+
+        // Util general de subida (mantenido para Paquetes / Galeria donde se usaba originalmente)
+        window.uploadToCloudinaryGeneral = async function(file, inputUrl, box, img) { 
+            if(!file)return;
+            const compressed=await compressImage(file);
+            if(img)img.src=URL.createObjectURL(compressed);
+            if(box)box.classList.remove('hidden');
+            const formData=new FormData();
+            formData.append('file',compressed);
+            formData.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
+            try{
+                const res=await fetch(CLOUDINARY_URL,{method:'POST',body:formData});
+                const data=await res.json();
+                if(data.secure_url){
+                    inputUrl.value=data.secure_url;
+                    showToast("Imagen subida","success");
+                }
+            }catch(e){
+                showToast("Error subiendo imagen general","error");
+            } 
+        };
         
         // EVENTOS DOM GLOBALES
         function initEvents() {
@@ -1506,3 +1722,4 @@
     </script>
 </body>
 </html>
+
