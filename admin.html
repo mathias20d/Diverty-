@@ -195,16 +195,16 @@
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h2 class="text-xl font-bold text-white mb-1">📢 Campañas Promocionales</h2>
-                            <p class="text-sm text-slate-400">Crea ofertas y asócialas a tus temporadas.</p>
+                            <p class="text-sm text-slate-400">Crea ofertas y gestiónalas para tu sitio web.</p>
                         </div>
                         <button onclick="window.openCampaignModal()" class="bg-rose-600 hover:bg-rose-500 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shadow-lg shadow-rose-500/20 flex items-center gap-2 shrink-0">
-                            <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Crear Campaña</span>
+                            <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Nueva Campaña</span>
                         </button>
                     </div>
 
                     <div class="bg-rose-500/10 p-3.5 rounded-xl border border-rose-500/20 text-sm text-rose-300 mb-6 flex items-start gap-3 w-full shadow-sm">
                         <i data-lucide="info" class="w-5 h-5 shrink-0 mt-0.5"></i>
-                        <p>Arrastra usando el icono <strong><i data-lucide="grip-vertical" class="w-3 h-3 inline-block"></i></strong> para reordenar la prioridad. Solo puede haber una campaña <strong>Destacada ⭐</strong> a la vez.</p>
+                        <p>Arrastra usando el icono <strong><i data-lucide="grip-vertical" class="w-3 h-3 inline-block"></i></strong> para reordenar la prioridad (Orden). Puedes tener varias campañas <strong>Destacadas ⭐</strong> al mismo tiempo.</p>
                     </div>
 
                     <div id="campaignsList" class="flex flex-col gap-4 w-full pb-8">
@@ -419,7 +419,7 @@
                         <input type="text" id="bannerText" class="saas-input bg-slate-900 w-full" placeholder="Texto superior...">
                     </div>
                     <button onclick="window.saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2">
-                        <i data-lucide="save" class="w-5 h-5"></i> Guardar Ajustes Web
+                        <i data-lucide="save" class="w-5 h-5"></i> Guardar Todos los Ajustes Web
                     </button>
                 </div>
             </div>
@@ -535,53 +535,49 @@
         </div>
     </div>
 
-    <!-- MODAL CAMPAÑAS (Arreglado el Guardado de Datos) -->
+    <!-- MODAL CAMPAÑAS (NUEVO SISTEMA INDEPENDIENTE) -->
     <div id="campaignModal" class="modal-backdrop">
         <div class="modal-content bg-[#0F172A] border border-slate-700 rounded-3xl shadow-2xl w-full max-w-2xl mx-4 flex flex-col max-h-[90vh]">
             <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
-                <h3 id="campModalTitle" class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="megaphone" class="w-5 h-5 text-rose-400"></i> Campaña</h3>
+                <h3 id="campModalTitle" class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="megaphone" class="w-5 h-5 text-rose-400"></i> Formulario de Campaña</h3>
                 <button onclick="window.closeCampaignModal()" class="text-slate-500 hover:text-white p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6 overflow-y-auto space-y-5">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="saas-label">Nombre de la Campaña</label><input type="text" id="campName" class="saas-input bg-slate-900" placeholder="Ej: Especial Navidad"></div>
-                    <div><label class="saas-label">Tema Visual Asociado</label><select id="campTheme" class="saas-input bg-slate-900 border-slate-700 appearance-none"></select></div>
+                    <div><label class="saas-label">Título *</label><input type="text" id="campTitulo" class="saas-input bg-slate-900 font-bold" placeholder="Ej: ¡Gran Promoción!"></div>
+                    <div><label class="saas-label">Subtítulo</label><input type="text" id="campSubtitulo" class="saas-input bg-slate-900" placeholder="Ej: Válido por tiempo limitado"></div>
                 </div>
-                <div><label class="saas-label">Descripción Interna</label><input type="text" id="campDesc" class="saas-input bg-slate-900" placeholder="Notas sobre la campaña..."></div>
+                <div><label class="saas-label">Descripción</label><input type="text" id="campDescripcion" class="saas-input bg-slate-900" placeholder="Detalles u observaciones de la campaña..."></div>
+                
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-800">
                         <span class="text-xs font-bold text-emerald-400 block">Activa</span>
-                        <div class="relative inline-block w-10 h-5 shrink-0"><input type="checkbox" id="campActive" class="toggle-checkbox-emerald absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0" checked/><label for="campActive" class="toggle-label-emerald block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
+                        <div class="relative inline-block w-10 h-5 shrink-0"><input type="checkbox" id="campActivo" class="toggle-checkbox-emerald absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0" checked/><label for="campActivo" class="toggle-label-emerald block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
                     </div>
                     <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-800">
                         <span class="text-xs font-bold text-yellow-400 block">Destacada ⭐</span>
-                        <div class="relative inline-block w-10 h-5 shrink-0"><input type="checkbox" id="campFeatured" class="toggle-checkbox-star absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0"/><label for="campFeatured" class="toggle-label-star block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
+                        <div class="relative inline-block w-10 h-5 shrink-0"><input type="checkbox" id="campDestacada" class="toggle-checkbox-star absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0"/><label for="campDestacada" class="toggle-label-star block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
                     </div>
-                    <div class="flex items-center justify-between bg-slate-900/50 p-3 rounded-xl border border-slate-800">
-                        <span class="text-xs font-bold text-blue-400 block">Auto Activación</span>
-                        <div class="relative inline-block w-10 h-5 shrink-0"><input type="checkbox" id="campAuto" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-slate-400 border-4 cursor-pointer mt-0" checked/><label for="campAuto" class="toggle-label block overflow-hidden h-5 rounded-full cursor-pointer"></label></div>
-                    </div>
+                    <div><label class="saas-label mt-1">Orden (Prioridad)</label><input type="number" id="campOrden" class="saas-input bg-slate-900" placeholder="Ej: 1"></div>
                 </div>
+
                 <div class="grid grid-cols-2 gap-4 border-t border-b border-slate-800 py-4">
-                    <div><label class="saas-label">Fecha Inicio</label><input type="date" id="campStart" class="saas-input bg-slate-900 text-slate-300"></div>
-                    <div><label class="saas-label">Fecha Fin</label><input type="date" id="campEnd" class="saas-input bg-slate-900 text-slate-300"></div>
+                    <div><label class="saas-label">Fecha Inicio *</label><input type="date" id="campFechaInicio" class="saas-input bg-slate-900 text-slate-300"></div>
+                    <div><label class="saas-label">Fecha Fin *</label><input type="date" id="campFechaFin" class="saas-input bg-slate-900 text-slate-300"></div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="saas-label">Título Promocional</label><input type="text" id="campTitle" class="saas-input bg-slate-900 font-bold" placeholder="Ej: ¡Ahorra 20% en combos!"></div>
-                    <div><label class="saas-label">Subtítulo / Desc</label><input type="text" id="campSubtitle" class="saas-input bg-slate-900" placeholder="Ej: Válido solo este fin de semana."></div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="saas-label">Precio Promo ($)</label><input type="number" id="campPrecio" class="saas-input bg-slate-900 text-emerald-400 font-bold" placeholder="Opcional"></div>
+                    <div><label class="saas-label">Precio Anterior ($)</label><input type="number" id="campPrecioOriginal" class="saas-input bg-slate-900 text-slate-500 line-through" placeholder="Opcional"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="saas-label">Precio Promo ($)</label><input type="number" id="campPrice" class="saas-input bg-slate-900 text-emerald-400 font-bold" placeholder="Opcional"></div>
-                    <div><label class="saas-label">Precio Anterior ($)</label><input type="number" id="campPrevPrice" class="saas-input bg-slate-900 text-slate-500 line-through" placeholder="Opcional"></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label class="saas-label">Texto Botón</label><input type="text" id="campBtnText" class="saas-input bg-slate-900" placeholder="Ej: Reservar Ahora"></div>
-                    <div><label class="saas-label">Acción Botón (URL)</label><input type="text" id="campBtnAction" class="saas-input bg-slate-900" placeholder="#reserva"></div>
+                    <div><label class="saas-label">Texto del Botón</label><input type="text" id="campBotonTexto" class="saas-input bg-slate-900" placeholder="Ej: Ver Oferta"></div>
+                    <div><label class="saas-label">Acción del Botón (URL)</label><input type="text" id="campAccion" class="saas-input bg-slate-900" placeholder="#reserva"></div>
                 </div>
                 <div>
-                    <label class="saas-label">Imagen Principal de la Campaña</label>
+                    <label class="saas-label">Imagen de la Campaña *</label>
                     <div class="flex gap-2 mb-3">
-                        <input type="text" id="campImg" class="saas-input bg-slate-900 text-xs" placeholder="URL o sube una imagen ->" readonly>
+                        <input type="text" id="campImagen" class="saas-input bg-slate-900 text-xs" placeholder="URL o sube una imagen ->" readonly>
                         <div class="w-12 h-12 shrink-0 bg-rose-600 rounded-xl relative flex items-center justify-center cursor-pointer">
                             <input type="file" id="campImgNative" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
                             <i data-lucide="camera" class="w-5 h-5 text-white"></i>
@@ -732,7 +728,6 @@
             hiddenArea.value = dynamicServicesArr.join('\n');
             lucide.createIcons();
 
-            // FIX: Limpiar correctamente la instancia de Sortable para evitar el congelamiento
             if (window.serviceSortable) {
                 window.serviceSortable.destroy();
                 window.serviceSortable = null;
@@ -1050,7 +1045,6 @@
             });
         };
 
-
         // --- TRANSPORTE ---
         let editingTransportId = null;
         window.loadTransport = async function() {
@@ -1095,7 +1089,7 @@
             } catch (e) {}
         };
 
-        // --- GALERÍA, CUPONES, SETTINGS, TEMAS, CAMPAÑAS ---
+        // --- GALERÍA Y CUPONES ---
         window.loadGallery = async function() {
             const container = document.getElementById('galleryList'); if(!container) return;
             const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'));
@@ -1125,29 +1119,54 @@
             if(!code || !discount) return; await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'cupones_web', code), { code, type: document.getElementById('coupType').value, discount });
             document.getElementById('coupCode').value = ''; document.getElementById('coupValue').value = ''; showToast("Cupón creado", "success"); window.loadCoupons(); loadDashboardStats();
         }
-
-        window.loadSettings = async function() { 
-            const docSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global')); 
-            if(docSnap.exists()) { 
-                const d = docSnap.data(); 
-                document.getElementById('bannerActive').checked = d.bannerActive || false; 
-                document.getElementById('bannerText').value = d.bannerText || ''; 
-            } 
-        }
-        window.saveSettings = async () => { 
-            await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { 
-                bannerActive: document.getElementById('bannerActive').checked, 
-                bannerText: document.getElementById('bannerText').value 
-            }, {merge: true}); 
-            showToast("Ajustes Guardados", "success"); 
-        };
-
+        
         window.deleteDocGen = async (col, id, cb) => { window.showConfirm("Eliminar", "¿Estás seguro?", async () => { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id)); showToast("Eliminado", "success"); cb(); loadDashboardStats(); }); }
 
-        // --- SISTEMAS DE TEMAS Y CAMPAÑAS (FIXED) ---
-        window.campanasLocales = []; let editingCampaignId = null;
+        // --- SISTEMAS DE BANNER SUPERIOR (AJUSTES) ---
+        window.loadSettings = async function() { 
+            try {
+                const docSnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global')); 
+                if(docSnap.exists()) { 
+                    const d = docSnap.data(); 
+                    document.getElementById('bannerActive').checked = d.bannerActive || false; 
+                    document.getElementById('bannerText').value = d.bannerText || ''; 
+                }
+            } catch(e) {
+                console.error("Error al cargar Ajustes Globales", e);
+            } 
+        }
+        
+        window.saveSettings = async () => { 
+            try {
+                const bannerActive = document.getElementById('bannerActive').checked;
+                const bannerText = document.getElementById('bannerText').value;
+                
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { 
+                    bannerActive, 
+                    bannerText 
+                }, {merge: true}); 
+
+                // Leer para confirmar (Según lo solicitado)
+                const verifySnap = await getDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'));
+                if(verifySnap.exists()){
+                    const verifyData = verifySnap.data();
+                    console.log("[BANNER ADMIN] Guardado correctamente");
+                    console.log(`[BANNER ADMIN] bannerActive: ${verifyData.bannerActive}`);
+                    console.log(`[BANNER ADMIN] bannerText: ${verifyData.bannerText}`);
+                }
+
+                showToast("Ajustes Guardados", "success"); 
+            } catch(error) {
+                console.error("[BANNER ADMIN] ERROR:", error);
+                showToast("Error guardando ajustes", "error");
+            }
+        };
+
+
+        // --- SISTEMAS DE TEMAS ---
         window.globalThemeConfig = { modo: 'automatico', temaManualActivo: 'normal' };
         window.temasLocales = [];
+        let editingThemeId = null; 
         
         function formatDisplayDate(dateStr) { if (!dateStr) return ''; const [y, m, d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
 
@@ -1157,9 +1176,16 @@
                 if (confSnap.exists()) window.globalThemeConfig = { ...window.globalThemeConfig, ...confSnap.data() };
                 const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web'));
                 window.temasLocales = []; qSnap.forEach(d => window.temasLocales.push({id: d.id, ...d.data()}));
+                
+                if (window.temasLocales.length === 0) {
+                    const defaultTheme = { nombre: "Tema Normal", descripcion: "Diseño por defecto", colorPrimary: "#8B5CF6", colorSecondary: "#EC4899", colorButton: "#8B5CF6", colorText: "#1E293B", colorBg: "#FFFFFF", colorCard: "#F8FAFC", isDefault: true, activo: true };
+                    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web', 'tema_normal'), defaultTheme);
+                    window.temasLocales.push({id: 'tema_normal', ...defaultTheme});
+                }
                 if(!silent) await evaluateAndApplyThemes();
-            } catch(e) {}
+            } catch(e) { console.error(e) }
         }
+        
         async function evaluateAndApplyThemes() {
             const today = new Date().toISOString().split('T')[0];
             let winnerId = null; let defaultId = window.temasLocales.find(t => t.isDefault)?.id || (window.temasLocales[0]?.id);
@@ -1176,6 +1202,7 @@
             }
             renderThemesView(winnerId);
         }
+        
         function renderThemesView(activeId) {
             const container = document.getElementById('themesList'); if(!container)return; container.innerHTML = '';
             if(document.getElementById('currentActiveThemeName')) document.getElementById('currentActiveThemeName').textContent = window.temasLocales.find(t => t.id === activeId)?.nombre || 'Ninguno';
@@ -1193,139 +1220,226 @@
                 container.innerHTML += `<div class="p-4 rounded-2xl border ${bgClass} w-full"><div class="flex justify-between items-start mb-3"><div class="flex-1"><h3 class="text-base font-bold text-white mb-1">${thm.nombre}</h3>${tags}</div><div class="flex gap-2">${!thm.isDefault ? `<button onclick="window.setDefaultTheme('${thm.id}')" class="px-2 py-1 bg-slate-800 text-[10px] font-bold text-slate-400 rounded-lg">Default</button>` : ''}<button onclick="window.editTheme('${thm.id}')" class="p-1.5 bg-slate-800 text-slate-300 rounded-lg"><i data-lucide="edit-3" class="w-4 h-4"></i></button></div></div><div class="flex gap-2 w-full mt-2">${btnHtml}</div></div>`;
             }); lucide.createIcons();
         }
+        
         window.toggleThemeMode = async function() { window.globalThemeConfig.modo = window.globalThemeConfig.modo === 'manual' ? 'automatico' : 'manual'; await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'tema_global'), window.globalThemeConfig, {merge: true}); await evaluateAndApplyThemes(); }
         window.setManualTheme = async function(id) { window.globalThemeConfig.modo = 'manual'; window.globalThemeConfig.temaManualActivo = id; await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'tema_global'), window.globalThemeConfig, {merge: true}); await evaluateAndApplyThemes(); }
         window.setDefaultTheme = async function(id) { const batch = writeBatch(db); window.temasLocales.forEach(t => { t.isDefault = (t.id === id); batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web', t.id), { isDefault: t.isDefault }); }); await batch.commit(); await evaluateAndApplyThemes(); }
-        window.openThemeModal = function() { editingThemeId = null; document.getElementById('thmName').value=''; document.getElementById('themeModal').classList.add('show'); };
+        
+        window.openThemeModal = function() { 
+            editingThemeId = null; 
+            document.getElementById('themeModalTitle').innerHTML = '<i data-lucide="palette" class="w-5 h-5 text-amber-400"></i> Nuevo Tema';
+            document.getElementById('thmName').value = '';
+            document.getElementById('thmDesc').value = '';
+            document.getElementById('thmStart').value = '';
+            document.getElementById('thmEnd').value = '';
+            document.getElementById('thmGradient').value = '';
+            document.getElementById('thmDecorations').value = 'none';
+            document.getElementById('thmAnimations').checked = true;
+            const defaultColors = { Primary: '#8B5CF6', Secondary: '#EC4899', Button: '#8B5CF6', Text: '#1E293B', Bg: '#FFFFFF', Card: '#F8FAFC' };
+            ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => { document.getElementById(`thmCol${t}`).value = defaultColors[t]; document.getElementById(`thmCol${t}Picker`).value = defaultColors[t]; });
+            lucide.createIcons();
+            document.getElementById('themeModal').classList.add('show'); 
+        };
         window.closeThemeModal = () => document.getElementById('themeModal').classList.remove('show');
-        window.editTheme = function(id) { editingThemeId = id; const thm = window.temasLocales.find(t => t.id === id); if(!thm) return; document.getElementById('thmName').value = thm.nombre; document.getElementById('thmStart').value = thm.fechaInicio || ''; document.getElementById('thmEnd').value = thm.fechaFin || ''; ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t=>{document.getElementById(`thmCol${t}`).value=thm[`color${t}`]||'#000';document.getElementById(`thmCol${t}Picker`).value=thm[`color${t}`]||'#000';}); document.getElementById('themeModal').classList.add('show'); };
-        window.saveTheme = async function() { const data={nombre:document.getElementById('thmName').value,fechaInicio:document.getElementById('thmStart').value,fechaFin:document.getElementById('thmEnd').value}; ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t=>data[`color${t}`]=document.getElementById(`thmCol${t}`).value); if(editingThemeId) await updateDoc(doc(db,'artifacts',APP_ID,'public','data','temas_web',editingThemeId),data); else {data.isDefault=false;data.activo=false;await setDoc(doc(db,'artifacts',APP_ID,'public','data','temas_web','tema_'+Date.now()),data);} window.closeThemeModal(); await window.loadThemes(); };
+        
+        window.editTheme = function(id) { 
+            editingThemeId = id; const thm = window.temasLocales.find(t => t.id === id); if(!thm) return; 
+            document.getElementById('themeModalTitle').innerHTML = '<i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i> Editar Tema';
+            document.getElementById('thmName').value = thm.nombre || ''; document.getElementById('thmDesc').value = thm.descripcion || ''; document.getElementById('thmStart').value = thm.fechaInicio || ''; document.getElementById('thmEnd').value = thm.fechaFin || ''; document.getElementById('thmGradient').value = thm.gradient || ''; document.getElementById('thmDecorations').value = thm.decorations || 'none'; document.getElementById('thmAnimations').checked = thm.animations !== false;
+            ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => { const colorValue = thm[`color${t}`] || '#FFFFFF'; document.getElementById(`thmCol${t}`).value = colorValue; document.getElementById(`thmCol${t}Picker`).value = colorValue; });
+            lucide.createIcons(); document.getElementById('themeModal').classList.add('show'); 
+        };
 
-        // CAMPAÑAS - SE CORRIGIÓ LA FALTA DE DATOS GUARDADOS
-        document.getElementById('campImgNative').addEventListener('change', e => uploadToCloudinary(e.target.files[0], document.getElementById('campImg'), document.getElementById('campImgPreviewBox'), document.getElementById('campImgPreview')));
+        window.saveTheme = async function() { 
+            const nombre = document.getElementById('thmName').value.trim();
+            if(!nombre) { showToast("Debes ingresar un nombre para el tema", "error"); return; }
+            const data = { nombre: nombre, descripcion: document.getElementById('thmDesc').value, fechaInicio: document.getElementById('thmStart').value, fechaFin: document.getElementById('thmEnd').value, gradient: document.getElementById('thmGradient').value, decorations: document.getElementById('thmDecorations').value, animations: document.getElementById('thmAnimations').checked };
+            ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => { data[`color${t}`] = document.getElementById(`thmCol${t}`).value; });
+            
+            const btn = document.getElementById('saveThemeBtn'); const originalText = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Guardando...'; btn.disabled = true;
+            try {
+                if(editingThemeId) { await updateDoc(doc(db,'artifacts',APP_ID,'public','data','temas_web',editingThemeId), data); showToast("Tema actualizado", "success"); } 
+                else { data.isDefault = window.temasLocales.length === 0; data.activo = false; await setDoc(doc(db,'artifacts',APP_ID,'public','data','temas_web','tema_'+Date.now()), data); showToast("Tema creado exitosamente", "success"); } 
+                window.closeThemeModal(); await window.loadThemes(); 
+            } catch(e) { showToast("Error al guardar el tema", "error"); } finally { btn.innerHTML = originalText; btn.disabled = false; lucide.createIcons(); }
+        };
+
+        // --- SISTEMA REAL DE CAMPAÑAS NUEVO ---
+        window.campanasLocales = []; 
+        let editingCampaignId = null;
+
+        document.getElementById('campImgNative').addEventListener('change', e => uploadToCloudinary(e.target.files[0], document.getElementById('campImagen'), document.getElementById('campImgPreviewBox'), document.getElementById('campImgPreview')));
+        
         window.loadCampaigns = async function() {
             try {
-                if(window.temasLocales.length === 0) await window.loadThemes(true);
                 const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web'));
-                window.campanasLocales = []; qSnap.forEach(d => window.campanasLocales.push({id: d.id, ...d.data()}));
-                const today = new Date().toISOString().split('T')[0];
-                window.campanasLocales.forEach(c => {
-                    if(c.autoActivation && c.startDate && c.endDate) {
-                        const shouldBeActive = (today >= c.startDate && today <= c.endDate);
-                        if(c.active !== shouldBeActive) { c.active = shouldBeActive; updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', c.id), { active: shouldBeActive }); }
-                    }
-                });
-                window.campanasLocales.sort((a,b) => (a.order || 999) - (b.order || 999));
+                window.campanasLocales = []; 
+                qSnap.forEach(d => window.campanasLocales.push({id: d.id, ...d.data()}));
+                window.campanasLocales.sort((a,b) => (a.orden || 999) - (b.orden || 999));
                 renderCampaignsView();
-            } catch(e) {}
+            } catch(e) {
+                console.error("Error cargando campañas", e);
+            }
         }
         
         function renderCampaignsView() {
             const container = document.getElementById('campaignsList'); container.innerHTML = '';
             window.campanasLocales.forEach(camp => {
-                const themeName = window.temasLocales.find(t => t.id === camp.themeId)?.nombre || 'Sin Tema';
                 let tags = '';
-                if(camp.featured) tags += `<span class="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-[9px] font-black shrink-0">⭐ DESTACADA</span>`;
-                if(camp.active) tags += `<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[9px] font-black shrink-0">🟢 ACTIVA</span>`; else tags += `<span class="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[9px] font-bold">⚪ INACTIVA</span>`;
+                if(camp.destacada) tags += `<span class="bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded text-[9px] font-black shrink-0">⭐ DESTACADA</span>`;
+                if(camp.activo) tags += `<span class="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded text-[9px] font-black shrink-0">🟢 ACTIVA</span>`; 
+                else tags += `<span class="bg-slate-800 text-slate-400 px-2 py-0.5 rounded text-[9px] font-bold">⚪ INACTIVA</span>`;
+
                 container.innerHTML += `
-                    <div class="campaign-item flex flex-col p-4 bg-[#0F172A] border ${camp.active ? 'border-rose-500/30 shadow-[0_0_15px_rgba(225,29,72,0.1)]' : 'border-slate-700'} rounded-2xl relative w-full group" data-id="${camp.id}">
+                    <div class="campaign-item flex flex-col p-4 bg-[#0F172A] border ${camp.activo ? 'border-rose-500/30 shadow-[0_0_15px_rgba(225,29,72,0.1)]' : 'border-slate-700'} rounded-2xl relative w-full group" data-id="${camp.id}">
                         <div class="drag-handle-camp absolute top-3 right-3 w-8 h-8 bg-slate-800/80 border border-slate-700 rounded-md flex items-center justify-center z-10 text-slate-400 hover:text-white cursor-grab"><i data-lucide="grip-horizontal" class="w-4 h-4 pointer-events-none"></i></div>
+                        
                         <div class="flex gap-4 items-start w-full pr-10">
-                            ${camp.image ? `<img src="${camp.image}" class="w-16 h-16 rounded-xl object-cover bg-slate-800 shrink-0">` : `<div class="w-16 h-16 rounded-xl bg-slate-800 flex items-center justify-center"><i data-lucide="image" class="w-6 h-6 text-slate-600"></i></div>`}
-                            <div class="flex-1 min-w-0"><div class="flex flex-wrap gap-2 mb-1.5">${tags}</div><h3 class="text-white font-bold text-sm truncate">${camp.name}</h3><p class="text-[10px] font-bold text-slate-500 mt-1 uppercase">TEMA: <span class="text-slate-300">${themeName}</span></p></div>
+                            ${camp.imagen ? `<img src="${camp.imagen}" class="w-16 h-16 rounded-xl object-cover bg-slate-800 shrink-0">` : `<div class="w-16 h-16 rounded-xl bg-slate-800 flex items-center justify-center"><i data-lucide="image" class="w-6 h-6 text-slate-600"></i></div>`}
+                            <div class="flex-1 min-w-0">
+                                <div class="flex flex-wrap gap-2 mb-1.5">${tags}</div>
+                                <h3 class="text-white font-bold text-sm truncate">${camp.titulo}</h3>
+                                <p class="text-[10px] font-bold text-slate-500 mt-1 uppercase">
+                                    FECHAS: <span class="text-slate-300">${camp.fechaInicio || 'N/A'} al ${camp.fechaFin || 'N/A'}</span> • ORDEN: ${camp.orden || '-'}
+                                </p>
+                            </div>
                         </div>
+
                         <div class="flex gap-2 mt-4 pt-3 border-t border-slate-800">
-                            ${camp.active ? `<button onclick="window.toggleCampaignStatus('${camp.id}', false)" class="flex-1 bg-slate-800 text-slate-300 hover:text-white text-xs font-bold py-2 rounded-xl">Desactivar</button>` : `<button onclick="window.toggleCampaignStatus('${camp.id}', true)" class="flex-1 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white text-xs font-bold py-2 rounded-xl border border-rose-500/20">Activar</button>`}
-                            <button onclick="window.editCampaign('${camp.id}')" class="px-3 bg-slate-800 text-slate-300 rounded-xl"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            ${camp.activo ? `<button onclick="window.toggleCampaignStatus('${camp.id}', false)" class="flex-1 bg-slate-800 text-slate-300 hover:text-white text-xs font-bold py-2 rounded-xl">Desactivar</button>` : `<button onclick="window.toggleCampaignStatus('${camp.id}', true)" class="flex-1 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white text-xs font-bold py-2 rounded-xl border border-rose-500/20">Activar</button>`}
+                            <button onclick="window.editCampaign('${camp.id}')" class="px-3 bg-slate-800 text-slate-300 hover:text-white rounded-xl" title="Editar"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="window.duplicateCampaign('${camp.id}')" class="px-3 bg-slate-800 text-slate-300 hover:text-white rounded-xl" title="Duplicar"><i data-lucide="copy" class="w-4 h-4"></i></button>
+                            <button onclick="window.deleteDocGen('campanas_web', '${camp.id}', window.loadCampaigns)" class="px-3 bg-slate-800 text-rose-400 hover:text-rose-300 hover:bg-rose-900/20 rounded-xl" title="Eliminar"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                         </div>
                     </div>`;
             });
             lucide.createIcons();
+
             if(window.campaignSortable) window.campaignSortable.destroy();
             window.campaignSortable = new Sortable(container, { animation: 250, handle: '.drag-handle-camp', forceFallback: true, onEnd: async function() {
                 const items = container.querySelectorAll('.campaign-item'); let updates = [];
-                items.forEach((item, index) => { updates.push({id: item.dataset.id, order: index + 1}); });
-                const batch = writeBatch(db); updates.forEach(u => batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', u.id), { order: u.order }));
+                items.forEach((item, index) => { updates.push({id: item.dataset.id, orden: index + 1}); });
+                const batch = writeBatch(db); 
+                updates.forEach(u => batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', u.id), { orden: u.orden }));
                 await batch.commit(); window.loadCampaigns();
             }});
         }
         
         window.openCampaignModal = function() {
             editingCampaignId = null; 
-            document.getElementById('campName').value = ''; 
-            document.getElementById('campActive').checked = true; 
-            document.getElementById('campFeatured').checked = false;
-            document.getElementById('campDesc').value = '';
-            document.getElementById('campAuto').checked = true;
-            document.getElementById('campStart').value = '';
-            document.getElementById('campEnd').value = '';
-            document.getElementById('campTitle').value = '';
-            document.getElementById('campSubtitle').value = '';
-            document.getElementById('campPrice').value = '';
-            document.getElementById('campPrevPrice').value = '';
-            document.getElementById('campBtnText').value = '';
-            document.getElementById('campBtnAction').value = '';
-            document.getElementById('campImg').value = '';
+            document.getElementById('campModalTitle').innerHTML = '<i data-lucide="megaphone" class="w-5 h-5 text-rose-400"></i> Nueva Campaña';
+            document.getElementById('campTitulo').value = ''; 
+            document.getElementById('campSubtitulo').value = ''; 
+            document.getElementById('campDescripcion').value = ''; 
+            document.getElementById('campActivo').checked = true; 
+            document.getElementById('campDestacada').checked = false;
+            document.getElementById('campOrden').value = window.campanasLocales.length + 1;
+            document.getElementById('campFechaInicio').value = '';
+            document.getElementById('campFechaFin').value = '';
+            document.getElementById('campPrecio').value = '';
+            document.getElementById('campPrecioOriginal').value = '';
+            document.getElementById('campBotonTexto').value = '';
+            document.getElementById('campAccion').value = '';
+            document.getElementById('campImagen').value = '';
             document.getElementById('campImgPreviewBox').classList.add('hidden');
             
-            const sel = document.getElementById('campTheme'); 
-            sel.innerHTML = '<option value="">(Sin tema específico)</option>'; 
-            window.temasLocales.forEach(t => sel.innerHTML += `<option value="${t.id}">${t.nombre}</option>`);
             document.getElementById('campaignModal').classList.add('show');
+            lucide.createIcons();
         };
         
         window.closeCampaignModal = () => document.getElementById('campaignModal').classList.remove('show');
         
         window.editCampaign = function(id) {
-            editingCampaignId = id; const c = window.campanasLocales.find(x => x.id === id); if(!c) return;
+            editingCampaignId = id; 
+            const c = window.campanasLocales.find(x => x.id === id); 
+            if(!c) return;
             
-            document.getElementById('campName').value = c.name || ''; 
-            document.getElementById('campActive').checked = c.active || false; 
-            document.getElementById('campFeatured').checked = c.featured || false;
-            document.getElementById('campDesc').value = c.description || '';
-            document.getElementById('campAuto').checked = c.autoActivation !== false;
-            document.getElementById('campStart').value = c.startDate || ''; 
-            document.getElementById('campEnd').value = c.endDate || '';
-            document.getElementById('campTitle').value = c.promoTitle || '';
-            document.getElementById('campSubtitle').value = c.promoSubtitle || '';
-            document.getElementById('campPrice').value = c.promoPrice || '';
-            document.getElementById('campPrevPrice').value = c.promoPrevPrice || '';
-            document.getElementById('campBtnText').value = c.btnText || '';
-            document.getElementById('campBtnAction').value = c.btnAction || '';
-            document.getElementById('campImg').value = c.image || '';
+            document.getElementById('campModalTitle').innerHTML = '<i data-lucide="edit-3" class="w-5 h-5 text-rose-400"></i> Editar Campaña';
+            document.getElementById('campTitulo').value = c.titulo || ''; 
+            document.getElementById('campSubtitulo').value = c.subtitulo || ''; 
+            document.getElementById('campDescripcion').value = c.descripcion || '';
+            document.getElementById('campActivo').checked = c.activo || false; 
+            document.getElementById('campDestacada').checked = c.destacada || false;
+            document.getElementById('campOrden').value = c.orden || '';
+            document.getElementById('campFechaInicio').value = c.fechaInicio || ''; 
+            document.getElementById('campFechaFin').value = c.fechaFin || '';
+            document.getElementById('campPrecio').value = c.precio || '';
+            document.getElementById('campPrecioOriginal').value = c.precioOriginal || '';
+            document.getElementById('campBotonTexto').value = c.botonTexto || '';
+            document.getElementById('campAccion').value = c.accion || '';
+            document.getElementById('campImagen').value = c.imagen || '';
             
-            if(c.image) {
+            if(c.imagen) {
                 document.getElementById('campImgPreviewBox').classList.remove('hidden');
-                document.getElementById('campImgPreview').src = c.image;
+                document.getElementById('campImgPreview').src = c.imagen;
             } else {
                 document.getElementById('campImgPreviewBox').classList.add('hidden');
             }
 
-            const sel = document.getElementById('campTheme'); 
-            sel.innerHTML = '<option value="">(Sin tema específico)</option>'; 
-            window.temasLocales.forEach(t => sel.innerHTML += `<option value="${t.id}">${t.nombre}</option>`); 
-            sel.value = c.themeId || '';
             document.getElementById('campaignModal').classList.add('show');
+            lucide.createIcons();
         };
 
+        window.duplicateCampaign = function(id) {
+            const camp = window.campanasLocales.find(x => x.id === id);
+            if(!camp) return;
+
+            editingCampaignId = null; 
+            document.getElementById('campModalTitle').innerHTML = '<i data-lucide="copy" class="w-5 h-5 text-rose-400"></i> Duplicar Campaña';
+            document.getElementById('campTitulo').value = camp.titulo + " (Copia)";
+            document.getElementById('campSubtitulo').value = camp.subtitulo || '';
+            document.getElementById('campDescripcion').value = camp.descripcion || '';
+            document.getElementById('campActivo').checked = false; 
+            document.getElementById('campDestacada').checked = camp.destacada || false;
+            document.getElementById('campOrden').value = window.campanasLocales.length + 1;
+            document.getElementById('campFechaInicio').value = camp.fechaInicio || '';
+            document.getElementById('campFechaFin').value = camp.fechaFin || '';
+            document.getElementById('campPrecio').value = camp.precio || '';
+            document.getElementById('campPrecioOriginal').value = camp.precioOriginal || '';
+            document.getElementById('campBotonTexto').value = camp.botonTexto || '';
+            document.getElementById('campAccion').value = camp.accion || '';
+            document.getElementById('campImagen').value = camp.imagen || '';
+
+            if (camp.imagen) {
+                document.getElementById('campImgPreviewBox').classList.remove('hidden');
+                document.getElementById('campImgPreview').src = camp.imagen;
+            } else {
+                document.getElementById('campImgPreviewBox').classList.add('hidden');
+            }
+
+            document.getElementById('campaignModal').classList.add('show');
+            lucide.createIcons();
+        }
+
         window.saveCampaign = async function() {
-            // FIX: Se incluyeron TODOS los datos que faltaban por guardarse.
+            const titulo = document.getElementById('campTitulo').value.trim();
+            const imagen = document.getElementById('campImagen').value.trim();
+            const fechaInicio = document.getElementById('campFechaInicio').value;
+            const fechaFin = document.getElementById('campFechaFin').value;
+
+            // Validación de campos obligatorios solicitada
+            if (!titulo || !imagen || !fechaInicio || !fechaFin) {
+                return showToast("Título, Imagen, Fecha Inicio y Fecha Fin son obligatorios", "error");
+            }
+            if (new Date(fechaFin) < new Date(fechaInicio)) {
+                return showToast("La Fecha Final no puede ser anterior a la Inicial", "error");
+            }
+
             const data = { 
-                name: document.getElementById('campName').value, 
-                active: document.getElementById('campActive').checked, 
-                featured: document.getElementById('campFeatured').checked, 
-                startDate: document.getElementById('campStart').value, 
-                endDate: document.getElementById('campEnd').value, 
-                themeId: document.getElementById('campTheme').value,
-                description: document.getElementById('campDesc').value,
-                autoActivation: document.getElementById('campAuto').checked,
-                promoTitle: document.getElementById('campTitle').value,
-                promoSubtitle: document.getElementById('campSubtitle').value,
-                promoPrice: Number(document.getElementById('campPrice').value) || null,
-                promoPrevPrice: Number(document.getElementById('campPrevPrice').value) || null,
-                btnText: document.getElementById('campBtnText').value,
-                btnAction: document.getElementById('campBtnAction').value,
-                image: document.getElementById('campImg').value
+                titulo: titulo,
+                subtitulo: document.getElementById('campSubtitulo').value.trim(),
+                descripcion: document.getElementById('campDescripcion').value.trim(),
+                imagen: imagen,
+                precio: Number(document.getElementById('campPrecio').value) || null,
+                precioOriginal: Number(document.getElementById('campPrecioOriginal').value) || null,
+                botonTexto: document.getElementById('campBotonTexto').value.trim(),
+                accion: document.getElementById('campAccion').value.trim(),
+                activo: document.getElementById('campActivo').checked,
+                destacada: document.getElementById('campDestacada').checked,
+                orden: Number(document.getElementById('campOrden').value) || (window.campanasLocales.length + 1),
+                fechaInicio: fechaInicio,
+                fechaFin: fechaFin,
+                updatedAt: new Date().toISOString()
             };
             
             const btn = document.getElementById('saveCampBtn');
@@ -1335,19 +1449,13 @@
 
             try {
                 const batch = writeBatch(db);
-                if(data.featured) {
-                    window.campanasLocales.forEach(c => { 
-                        if(c.id !== editingCampaignId && c.featured) {
-                            batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', c.id), { featured: false }); 
-                        }
-                    });
-                }
                 
                 if(editingCampaignId) {
                     batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', editingCampaignId), data);
                 } else { 
                     const id = 'camp_' + Date.now(); 
-                    data.order = window.campanasLocales.length + 1; 
+                    data.id = id;
+                    data.createdAt = new Date().toISOString();
                     batch.set(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', id), data); 
                 }
                 
@@ -1356,6 +1464,7 @@
                 window.closeCampaignModal(); 
                 window.loadCampaigns();
             } catch(e) {
+                console.error("Error guardando campaña", e);
                 showToast("Error guardando campaña", "error");
             } finally {
                 btn.innerHTML = originalText;
@@ -1363,14 +1472,32 @@
                 lucide.createIcons();
             }
         };
-        window.toggleCampaignStatus = async function(id, status) { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', id), { active: status }); window.loadCampaigns(); }
+        
+        window.toggleCampaignStatus = async function(id, status) { 
+            await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', id), { activo: status }); 
+            window.loadCampaigns(); 
+        }
 
         // Util general subida imagen
         async function uploadToCloudinary(file, inputUrl, box, img) { if(!file)return;const compressed=await compressImage(file);if(img)img.src=URL.createObjectURL(compressed);if(box)box.classList.remove('hidden');const formData=new FormData();formData.append('file',compressed);formData.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);try{const res=await fetch(CLOUDINARY_URL,{method:'POST',body:formData});const data=await res.json();if(data.secure_url){inputUrl.value=data.secure_url;showToast("Imagen subida","success");}}catch(e){showToast("Error","error");} }
         
+        // EVENTOS DOM GLOBALES
+        function initEvents() {
+            // Sincronizar selectores de color (Pickers) con los inputs de texto (HEX) en el Modal de Temas
+            ['Primary', 'Secondary', 'Button', 'Text', 'Bg', 'Card'].forEach(t => {
+                const picker = document.getElementById(`thmCol${t}Picker`);
+                const text = document.getElementById(`thmCol${t}`);
+                if (picker && text) {
+                    picker.addEventListener('input', (e) => text.value = e.target.value);
+                    text.addEventListener('input', (e) => picker.value = e.target.value);
+                }
+            });
+        }
+
         // INICIALIZACIÓN GLOBAL
         async function init() {
             try {
+                initEvents();
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { try { await signInWithCustomToken(auth, __initial_auth_token); } catch (e) { await signInAnonymously(auth); } } else { await signInAnonymously(auth); }
                 await window.loadCategories(); await window.loadThemes(true); loadDataForTab(currentTab);
             } catch(e) {}
@@ -1379,4 +1506,3 @@
     </script>
 </body>
 </html>
-
