@@ -93,11 +93,15 @@
         .whatsapp-btn { width: 60px; height: 60px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(37,211,102,0.5); animation: glowing-wa 2s infinite; transition: transform 0.2s ease; } 
         .whatsapp-btn:hover, .whatsapp-btn:active { transform: scale(1.05); }
         @keyframes glowing-wa { 0% { box-shadow: 0 0 15px rgba(37,211,102,0.4); } 50% { box-shadow: 0 0 30px rgba(37,211,102,0.8), 0 0 10px rgba(255,255,255,0.3) inset; } 100% { box-shadow: 0 0 15px rgba(37,211,102,0.4); } }
-        
+
         /* Banner Controlado CSS */
         #topAnnouncementBanner { background: linear-gradient(90deg, #db2777, #7c3aed); position: relative; width: 100%; z-index: 60; padding: 6px 16px; font-weight: 800; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.05em; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
         video.bg-video-optimized { transform: translateZ(0); will-change: transform; backface-visibility: hidden; perspective: 1000; }
         
+        /* CSS DINÁMICO PARA FONDOS OSCUROS (100% EFECTIVO) */
+        body.dark-bg-theme .dynamic-title { color: #FFFFFF !important; }
+        body.dark-bg-theme .dynamic-subtitle { color: #CBD5E1 !important; }
+
         /* Prefers-reduced-motion compatible */
         @media (prefers-reduced-motion: reduce) {
             *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
@@ -181,9 +185,9 @@
 
     <!-- Main Content -->
     <main id="mainContent" class="flex-grow flex flex-col w-full relative z-10">
-        <div id="initial-loader" class="flex-grow flex flex-col items-center justify-center py-32 text-slate-500 fade-in">
+        <div id="initial-loader" class="flex-grow flex flex-col items-center justify-center py-32 fade-in">
             <i data-lucide="loader-2" class="animate-spin w-12 h-12 mb-4 text-purple-500"></i>
-            <p class="font-bold text-sm tracking-widest uppercase text-slate-500">Cargando diversión...</p>
+            <p class="font-bold text-sm tracking-widest uppercase text-slate-500 dynamic-subtitle">Cargando diversión...</p>
         </div>
     </main>
 
@@ -293,7 +297,7 @@
         const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [], theme: null, campaigns: [] };
 
         // ==========================================
-        // 1. FUNCIONES UTILITARIAS Y NORMALIZADORES (ANTI-UNDEFINED)
+        // 1. FUNCIONES UTILITARIAS Y NORMALIZADORES 
         // ==========================================
         
         async function fetchWithTimeout(promise, ms) {
@@ -308,19 +312,40 @@
             return String(val).trim();
         };
 
+        // NORMALIZADOR DE FECHAS MEJORADO (Evita errores si el admin guarda como "25/12/2026")
         const normalizeDate = (val) => {
             if (!val) return null;
             let d;
-            if (typeof val === 'string') return val.split('T')[0]; 
-            if (val.toDate) d = val.toDate();
-            else if (val.seconds) d = new Date(val.seconds * 1000);
-            else if (val instanceof Date) d = val;
-            else return null;
             
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return `${year}-${month}-${day}`;
+            if (typeof val === 'string') {
+                const s = val.split('T')[0].trim();
+                // Si ya viene en YYYY-MM-DD
+                if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+                
+                // Si viene como DD/MM/YYYY o DD-MM-YYYY (Muy común en paneles hispanos)
+                const parts = s.split(/[\/\-]/);
+                if (parts.length === 3) {
+                    if (parts[2].length === 4) return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+                    if (parts[0].length === 4) return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+                }
+                d = new Date(val);
+            } else if (val.toDate) {
+                d = val.toDate();
+            } else if (val.seconds) {
+                d = new Date(val.seconds * 1000);
+            } else if (val instanceof Date) {
+                d = val;
+            } else {
+                return null;
+            }
+            
+            if (d && !isNaN(d.getTime())) {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+            return null;
         };
 
         function setContent(html) { 
@@ -380,22 +405,52 @@
         }
 
         // ==========================================
+        // DETECCIÓN A PRUEBA DE BALAS DE FONDO OSCURO
+        // ==========================================
+        function checkIsDark(colorStr) {
+            if (!colorStr) return false;
+            try {
+                const d = document.createElement('div');
+                d.style.backgroundColor = colorStr;
+                d.style.display = 'none';
+                document.body.appendChild(d);
+                const rgb = window.getComputedStyle(d).backgroundColor;
+                document.body.removeChild(d);
+                
+                const match = rgb.match(/\d+/g);
+                if (match && match.length >= 3) {
+                    const r = parseInt(match[0]);
+                    const g = parseInt(match[1]);
+                    const b = parseInt(match[2]);
+                    const luminance = (r * 299 + g * 587 + b * 114) / 1000;
+                    return luminance < 128;
+                }
+            } catch(e) {}
+            return false;
+        }
+
+        // ==========================================
         // TEMA Y TEMPORADAS (DINÁMICO CSS INYECTADO)
         // ==========================================
         function applyThemeColors(themeData) {
             if (!themeData) return;
-            console.log("🎨 APLICANDO TEMA AL HTML:", themeData);
             
             const style = document.getElementById('theme-dynamic-styles') || document.createElement('style');
             style.id = 'theme-dynamic-styles';
             
-            // Forzar validez del color y asegurar que lleve '#'
             const fixHex = (h) => (h && !h.startsWith('#') && /^[0-9A-Fa-f]{3,6}$/.test(h)) ? '#' + h : h;
             
             const pColor = fixHex(cleanStr(themeData.colorPrimario || themeData.colorPrimary || themeData.primaryColor || (themeData.colores && themeData.colores.primary))) || '#7C3AED';
             const sColor = fixHex(cleanStr(themeData.colorSecundario || themeData.colorSecondary || themeData.secondaryColor || (themeData.colores && themeData.colores.secondary))) || '#E11D48';
             const bColor = fixHex(cleanStr(themeData.colorFondo || themeData.colorBackground || themeData.backgroundColor || (themeData.colores && themeData.colores.background))) || '#F1F5F9';
             
+            const isDarkBg = checkIsDark(bColor);
+            if (isDarkBg) {
+                document.body.classList.add('dark-bg-theme');
+            } else {
+                document.body.classList.remove('dark-bg-theme');
+            }
+
             let css = `:root {
                 --color-primary: ${pColor};
                 --color-secondary: ${sColor};
@@ -562,7 +617,7 @@
         }
 
         // ==========================================
-        // 3. GENERADORES DE HTML Y UI (COMPLETAMENTE PROTEGIDOS DE UNDEFINED)
+        // 3. GENERADORES DE HTML Y UI
         // ==========================================
 
         function createInput(label, name, type, extra='') { return `<div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase tracking-wider mb-1.5 block">${label} *</label><input type="${type}" name="${name}" required class="w-full bg-white border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-purple-500 transition-colors shadow-inner" ${extra}></div>`; }
@@ -576,6 +631,9 @@
             return `<div class="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-lg transition-all animate-slide-up"><div class="p-6 border-b border-slate-200"><div class="flex justify-between items-start mb-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${color} shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-80"></div> ${ev.estado}</span></div><h4 class="text-2xl font-black text-slate-900 mb-1 capitalize">${ev.cliente}</h4><p class="text-sm text-slate-500 flex items-center gap-1.5 font-semibold mb-4"><i data-lucide="calendar-days" class="w-4 h-4 text-purple-500"></i> ${ev.fecha?String(ev.fecha).split('-').reverse().join('/'):'Por definir'} a las ${ev.hora}</p><div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3"><div class="bg-purple-100 p-2 rounded-lg text-purple-600 mt-0.5"><i data-lucide="gift" class="w-5 h-5"></i></div><div><p class="text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1">Paquete / Servicio</p><p class="text-sm font-bold text-slate-900 leading-snug">${ev.servicio||'Servicio no especificado'}</p></div></div></div><div class="bg-slate-50 p-6 flex flex-col gap-3"><div class="flex justify-between items-center text-sm font-semibold text-slate-500"><span>Costo Total</span><span class="text-slate-900">$${tot.toFixed(2)}</span></div><div class="flex justify-between items-center text-sm font-semibold text-emerald-600"><span>Abono Realizado</span><span>$${abo.toFixed(2)}</span></div><div class="w-full h-px bg-slate-200 my-1"></div><div class="flex justify-between items-center"><span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Saldo Pendiente</span><span class="text-2xl font-black ${saldo>0?'text-pink-600':'text-emerald-500'}">$${saldo.toFixed(2)}</span></div>${saldo===0?`<div class="mt-2 text-center bg-emerald-100 text-emerald-600 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 border border-emerald-200"><i data-lucide="check-circle" class="w-4 h-4"></i> Totalmente Pagado</div>`:''}</div></div>`;
         }
 
+        // ==========================================
+        // RENDER DE CAMPAÑAS (A PRUEBA DE ERRORES)
+        // ==========================================
         function getCampaignsHTML() {
             if(!app.campaigns || app.campaigns.length === 0) return '';
             
@@ -585,22 +643,26 @@
             let html = '<div class="container mx-auto px-4 w-full mb-10 flex flex-col gap-6 animate-slide-up">';
             
             if (destacada) {
-                // Extracción segura usando cleanStr para evitar "undefined"
                 const titulo = cleanStr(destacada.titulo || destacada.nombre) || 'Oferta Especial';
                 const sub = cleanStr(destacada.subtitulo || destacada.tag) || 'Campaña Destacada';
                 const desc = cleanStr(destacada.descripcion || destacada.texto);
-                const img = cleanStr(destacada.imagen || destacada.imagenUrl || destacada.foto);
+                const img = cleanStr(destacada.imagen || destacada.imagenUrl || destacada.foto || destacada.url || destacada.image);
                 const pPromo = cleanStr(destacada.precioPromocional || destacada.precioPromo || destacada.precio) || '0';
                 const pAnt = cleanStr(destacada.precioAnterior || destacada.precioNormal);
                 const btnTxt = cleanStr(destacada.textoBoton || destacada.boton) || 'Aprovechar Oferta';
                 const tId = cleanStr(destacada.itemId || destacada.servicioId || destacada.paqueteId);
-                const actStr = cleanStr(destacada.accion).toLowerCase();
+                const targetSec = cleanStr(destacada.targetSection) || 'booking';
                 
+                // Mapeo seguro de acciones
+                let actionBtn = 'navigate-from-modal';
+                const rawAccion = cleanStr(destacada.accion).toLowerCase();
+                if (rawAccion === 'carrito' || rawAccion === 'add-to-cart' || rawAccion === 'comprar') actionBtn = 'add-to-cart';
+
                 html += `
                 <div class="bg-gradient-to-r from-purple-600 to-pink-500 rounded-[2rem] p-1 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.15)] relative overflow-hidden group">
                     <div class="absolute inset-0 bg-white/20 blur-3xl rounded-full group-hover:bg-white/30 transition-colors pointer-events-none"></div>
                     <div class="bg-white rounded-[1.8rem] flex flex-col md:flex-row overflow-hidden relative z-10 h-full">
-                        ${img ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative"><img src="${img}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:hidden"></div></div>` : ''}
+                        ${img && img !== 'undefined' ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative"><img src="${img}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:hidden"></div></div>` : ''}
                         <div class="p-6 sm:p-8 md:p-10 flex flex-col justify-center flex-1 relative">
                             <div class="inline-flex items-center gap-1.5 bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max mb-4 border border-pink-200 relative z-10">
                                 <i data-lucide="star" class="w-3 h-3 fill-pink-500"></i> ${sub}
@@ -611,7 +673,7 @@
                                 <span class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 leading-none">$${pPromo}</span>
                                 ${pAnt ? `<span class="text-base sm:text-lg font-bold text-slate-400 line-through leading-none mb-1">$${pAnt}</span>` : ''}
                             </div>
-                            <button data-action="${actStr === 'carrito' ? 'add-to-cart' : 'navigate-from-modal'}" data-item-id="${tId}" data-target-section="${cleanStr(destacada.targetSection) || 'booking'}" class="w-full sm:w-max bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-[0_8px_20px_rgba(219,39,119,0.3)] hover:scale-[1.02] transition-transform text-center flex items-center justify-center gap-2 relative z-10">
+                            <button data-action="${actionBtn}" data-item-id="${tId}" data-target-section="${targetSec}" class="w-full sm:w-max bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-[0_8px_20px_rgba(219,39,119,0.3)] hover:scale-[1.02] transition-transform text-center flex items-center justify-center gap-2 relative z-10">
                                 ${btnTxt} <i data-lucide="arrow-right" class="w-4 h-4"></i>
                             </button>
                         </div>
@@ -625,16 +687,21 @@
                     const titulo = cleanStr(camp.titulo || camp.nombre) || 'Campaña';
                     const sub = cleanStr(camp.subtitulo || camp.tag);
                     const desc = cleanStr(camp.descripcion || camp.texto);
-                    const img = cleanStr(camp.imagen || camp.imagenUrl || camp.foto);
+                    const img = cleanStr(camp.imagen || camp.imagenUrl || camp.foto || camp.url || camp.image);
                     const pPromo = cleanStr(camp.precioPromocional || camp.precioPromo || camp.precio) || '0';
                     const pAnt = cleanStr(camp.precioAnterior || camp.precioNormal);
                     const btnTxt = cleanStr(camp.textoBoton || camp.boton) || 'Ver Promoción';
                     const tId = cleanStr(camp.itemId || camp.servicioId || camp.paqueteId);
-                    const actStr = cleanStr(camp.accion).toLowerCase();
+                    const targetSec = cleanStr(camp.targetSection) || 'booking';
+
+                    // Mapeo seguro de acciones
+                    let actionBtn = 'navigate-from-modal';
+                    const rawAccion = cleanStr(camp.accion).toLowerCase();
+                    if (rawAccion === 'carrito' || rawAccion === 'add-to-cart' || rawAccion === 'comprar') actionBtn = 'add-to-cart';
 
                     html += `
                     <div class="bg-white border border-slate-200 rounded-[2rem] p-5 shadow-sm hover:shadow-lg hover:border-purple-300 transition-all flex flex-col h-full group relative overflow-hidden">
-                        ${img ? `<div class="w-full h-48 rounded-[1.25rem] overflow-hidden mb-4 relative z-10"><img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>` : ''}
+                        ${img && img !== 'undefined' ? `<div class="w-full h-48 rounded-[1.25rem] overflow-hidden mb-4 relative z-10"><img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>` : ''}
                         ${sub ? `<span class="text-[10px] font-black uppercase tracking-widest text-purple-500 mb-2 block relative z-10">${sub}</span>` : ''}
                         <h3 class="text-xl font-extrabold text-slate-900 mb-2 font-nunito leading-tight relative z-10">${titulo}</h3>
                         ${desc ? `<p class="text-slate-600 text-xs font-medium mb-5 flex-1 relative z-10">${desc}</p>` : ''}
@@ -642,7 +709,7 @@
                             <span class="text-2xl font-black text-slate-900">$${pPromo}</span>
                             ${pAnt ? `<span class="text-sm font-bold text-slate-400 line-through">$${pAnt}</span>` : ''}
                         </div>
-                        <button data-action="${actStr === 'carrito' ? 'add-to-cart' : 'navigate-from-modal'}" data-item-id="${tId}" data-target-section="${cleanStr(camp.targetSection) || 'booking'}" class="w-full bg-slate-100 hover:bg-purple-50 text-purple-700 font-extrabold py-3 px-4 rounded-xl border border-slate-200 hover:border-purple-300 transition-colors text-xs text-center relative z-10">
+                        <button data-action="${actionBtn}" data-item-id="${tId}" data-target-section="${targetSec}" class="w-full bg-slate-100 hover:bg-purple-50 text-purple-700 font-extrabold py-3 px-4 rounded-xl border border-slate-200 hover:border-purple-300 transition-colors text-xs text-center relative z-10">
                             ${btnTxt}
                         </button>
                     </div>`;
@@ -701,16 +768,15 @@
                         eh += destacados.map(createDetailedCardHTML).join(''); 
                         ex = `<div class="flex md:hidden justify-center mb-3 opacity-80 animate-slide-up w-full"><span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mr-3 border border-slate-200 bg-white px-3 py-1 rounded-full shadow-sm">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-6 px-2">${eh}</div>`;
                     } else {
-                        ex = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="sparkles" class="w-10 h-10 mx-auto mb-3 text-purple-300"></i><p class="text-slate-500 text-sm font-bold">Nuevos paquetes espectaculares próximamente.</p></div>`;
+                        ex = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="sparkles" class="w-10 h-10 mx-auto mb-3 text-purple-300"></i><p class="text-sm font-bold dynamic-subtitle text-slate-500">Nuevos paquetes espectaculares próximamente.</p></div>`;
                     }
                 }
             }
             let rc = '';
             if(isFirebaseLoaded && customerReviews && customerReviews.length>0){
-                rc = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-slate-900 font-nunito">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-500 font-bold uppercase px-3 py-1 rounded-full border border-slate-200 bg-white shadow-sm">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-white border border-slate-200 flex flex-col h-full rounded-[2rem] p-6 shadow-sm relative overflow-hidden group hover:border-purple-300 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-200 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-slate-900 font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-500 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-600 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-200 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-100 px-2 py-1 rounded-lg border border-emerald-200"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
+                rc = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 text-slate-900 font-nunito dynamic-title">Reseñas <i data-lucide="star" class="w-8 h-8 inline text-yellow-400 animate-bounce"></i></h2><div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] text-slate-500 font-bold uppercase px-3 py-1 rounded-full border border-slate-200 bg-white shadow-sm">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3">` + customerReviews.map(r=>`<div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up"><div class="bg-white border border-slate-200 flex flex-col h-full rounded-[2rem] p-6 shadow-sm relative overflow-hidden group hover:border-purple-300 transition-colors"><div class="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br ${r.color||'from-purple-500 to-indigo-500'} opacity-10 rounded-full blur-2xl pointer-events-none"></div><div class="flex items-center gap-4 mb-4 relative z-10"><div class="w-12 h-12 rounded-full border border-slate-200 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-xl">${r.initial}</div><div class="flex-1 min-w-0"><div class="text-slate-900 font-bold text-base truncate">${r.name}</div><div class="text-[11px] text-slate-500 truncate"><i data-lucide="map-pin" class="inline w-3 h-3"></i> ${r.location}</div></div></div><div class="text-slate-600 mb-5 flex-grow relative z-10"><p class="font-medium text-sm leading-relaxed italic whitespace-normal break-words overflow-wrap-break-word" style="word-break: break-word;">"${r.comment}"</p></div><div class="border-t border-slate-200 pt-4 flex justify-between items-center relative z-10"><div class="text-sm tracking-widest drop-shadow-sm">${'⭐'.repeat(r.rating)}</div><div class="text-[9px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-100 px-2 py-1 rounded-lg border border-emerald-200"><i data-lucide="check-circle" class="inline w-3 h-3"></i> Verificado</div></div></div></div>`).join('') + `</div></div>`;
             }
             
-            // Lógica para Hero Background (Video normal vs Imagen del Tema Activo)
             const bgStr = app.theme ? cleanStr(app.theme.fondoUrl || app.theme.imagenFondo || app.theme.fondo || app.theme.imagen) : null;
             let heroBgHtml = `<video autoplay loop muted playsinline preload="auto" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-0 bg-video-optimized"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video>`;
             if (bgStr) {
@@ -735,15 +801,15 @@
         }
 
         function renderSection(items, title, icon) { 
-            if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p class="font-bold text-sm tracking-widest uppercase text-slate-500">Cargando...</p></div>`); return; }
-            if(items.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-12 text-slate-900 font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400"></i></h2><div class="text-center text-slate-500 animate-slide-up"><i data-lucide="folder-open" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Próximamente más opciones.</p></div></section></div>`); return; }
-            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 text-slate-900 font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-5 hide-scrollbar -mx-4 px-4 pt-6 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch" style="-webkit-overflow-scrolling: touch;">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
+            if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center dynamic-subtitle text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p class="font-bold text-sm tracking-widest uppercase">Cargando...</p></div>`); return; }
+            if(items.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-12 text-slate-900 font-nunito flex justify-center items-center gap-3 dynamic-title">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400"></i></h2><div class="text-center text-slate-500 animate-slide-up dynamic-subtitle"><i data-lucide="folder-open" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Próximamente más opciones.</p></div></section></div>`); return; }
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 text-slate-900 font-nunito flex justify-center items-center gap-3 dynamic-title">${title} <i data-lucide="${icon}" class="w-8 h-8 text-slate-400 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-5 hide-scrollbar -mx-4 px-4 pt-6 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch" style="-webkit-overflow-scrolling: touch;">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
         }
         
         function renderGallery() {
-            if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p>Cargando Galería...</p></div>`); return; }
-            if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-slate-900 font-nunito">Nuestra Galería</h2><div class="text-center text-slate-500 animate-slide-up"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
-            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-slate-900 font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-slate-200 rounded-[2rem] overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.05)] hover:shadow-[0_0_35px_rgba(139,92,246,0.15)] hover:border-purple-300 transition-all duration-500 relative"><img src="${cleanStr(i.image)}" loading="lazy" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
+            if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center dynamic-subtitle text-slate-500"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin text-purple-500"></i><p>Cargando Galería...</p></div>`); return; }
+            if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-slate-900 font-nunito dynamic-title">Nuestra Galería</h2><div class="text-center text-slate-500 animate-slide-up dynamic-subtitle"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 text-slate-900 font-nunito dynamic-title">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-slate-200 rounded-[2rem] overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.05)] hover:shadow-[0_0_35px_rgba(139,92,246,0.15)] hover:border-purple-300 transition-all duration-500 relative"><img src="${cleanStr(i.image)}" loading="lazy" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
         }
 
         function renderCalendar() {
@@ -781,7 +847,7 @@
         }
 
         function renderPortal() {
-            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 font-nunito tracking-tight">Portal del Cliente</h2><p class="text-slate-500 mt-2 font-medium text-sm">Consulta el estado de tu evento de forma rápida.</p></div><div class="bg-white p-6 sm:p-10 rounded-[2rem] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] border border-slate-200"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-slate-50 border border-slate-300 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-indigo-400 transition-colors shadow-inner" required></div><button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_20px_rgba(79,70,229,0.2)] flex justify-center items-center gap-2 text-sm transition-transform hover:scale-[1.02]"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50"><p class="text-slate-500 font-semibold">Ingresa tu número para ver tus reservas activas.</p></div></div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold text-slate-900 font-nunito tracking-tight dynamic-title">Portal del Cliente</h2><p class="text-slate-500 mt-2 font-medium text-sm dynamic-subtitle">Consulta el estado de tu evento de forma rápida.</p></div><div class="bg-white p-6 sm:p-10 rounded-[2rem] shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] border border-slate-200"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-slate-50 border border-slate-300 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold text-slate-900 outline-none focus:border-indigo-400 transition-colors shadow-inner" required></div><button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold py-3.5 rounded-2xl shadow-[0_8px_20px_rgba(79,70,229,0.2)] flex justify-center items-center gap-2 text-sm transition-transform hover:scale-[1.02]"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50"><p class="text-slate-500 font-semibold">Ingresa tu número para ver tus reservas activas.</p></div></div></div></section></div>`);
             const form = document.getElementById('portalSearchForm');
             if(form){
                 form.onsubmit = (e) => {
@@ -847,7 +913,7 @@
                  exploreButtons += `<button data-action="navigate-from-modal" data-target-section="home" class="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient border border-purple-400/40 text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-[0_8px_20px_rgba(219,39,119,0.3)] hover:scale-[1.02] transition-all flex items-center justify-center gap-2 nav-action"><i data-lucide="home" class="w-5 h-5"></i> Volver al Inicio</button>`;
             }
 
-            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 text-slate-900 font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm sticky top-24"><h3 class="text-lg font-bold text-slate-900 mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-slate-200 space-y-2 text-right"><p class="text-sm text-slate-600 font-semibold">Subtotal: <span class="text-slate-900">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm text-slate-600 font-semibold">Transporte: <span class="text-slate-900">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-600 mt-2">Total: <span>$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-100 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-emerald-500 z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative"><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños">🎉 Cumpleaños</option><option value="Bautizo">🕊️ Bautizo</option><option value="Escolar">🎒 Escolar</option><option value="Otro">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm" min="1"></div>${dateDisplay}<div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Hora *</label><input type="time" name="time" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm"></div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-4">Lugar</h3><div class="space-y-5"><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Ubicación *</label><select name="location" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm">${lo}</select></div><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Dirección o Link de Waze/Maps *</label><textarea name="address" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm focus:border-purple-500 transition-colors shadow-inner" rows="2" placeholder="Ej: Pega tu link de Waze aquí..."></textarea></div><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-slate-200"><button type="button" id="btn-prev" class="bg-slate-200 text-slate-800 hover:bg-slate-300 py-3.5 px-6 rounded-full hidden transition-colors">Atrás</button><button type="button" id="btn-next" class="bg-slate-900 text-white hover:bg-slate-800 py-3.5 px-6 rounded-full ml-auto transition-colors">Siguiente</button><button type="submit" id="btn-submit" class="bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 px-6 rounded-full hidden ml-auto transition-colors">Confirmar Reserva</button></div></div></form>` : `<div id="empty-booking-state" class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200 text-center relative overflow-hidden"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-100 rounded-full blur-3xl pointer-events-none"></div><div class="relative z-10"><div class="w-20 h-20 bg-slate-50 border border-slate-200 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm badge-float"><i data-lucide="gift" class="w-10 h-10 text-purple-500"></i></div><h3 class="text-2xl sm:text-3xl font-black text-slate-900 mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="text-slate-600 mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 text-slate-900 font-nunito dynamic-title">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm sticky top-24"><h3 class="text-lg font-bold text-slate-900 mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-slate-200 space-y-2 text-right"><p class="text-sm text-slate-600 font-semibold">Subtotal: <span class="text-slate-900">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm text-slate-600 font-semibold">Transporte: <span class="text-slate-900">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-600 mt-2">Total: <span>$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-slate-200"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-slate-100 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-emerald-500 z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative"><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños">🎉 Cumpleaños</option><option value="Bautizo">🕊️ Bautizo</option><option value="Escolar">🎒 Escolar</option><option value="Otro">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm" min="1"></div>${dateDisplay}<div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Hora *</label><input type="time" name="time" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm"></div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold text-slate-900 mb-6 border-b border-slate-200 pb-4">Lugar</h3><div class="space-y-5"><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Ubicación *</label><select name="location" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm">${lo}</select></div><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Dirección o Link de Waze/Maps *</label><textarea name="address" required class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm focus:border-purple-500 transition-colors shadow-inner" rows="2" placeholder="Ej: Pega tu link de Waze aquí..."></textarea></div><div class="form-group"><label class="form-label font-bold text-slate-500 text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full bg-slate-50 border border-slate-300 text-slate-900 rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-slate-200"><button type="button" id="btn-prev" class="bg-slate-200 text-slate-800 hover:bg-slate-300 py-3.5 px-6 rounded-full hidden transition-colors">Atrás</button><button type="button" id="btn-next" class="bg-slate-900 text-white hover:bg-slate-800 py-3.5 px-6 rounded-full ml-auto transition-colors">Siguiente</button><button type="submit" id="btn-submit" class="bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 px-6 rounded-full hidden ml-auto transition-colors">Confirmar Reserva</button></div></div></form>` : `<div id="empty-booking-state" class="bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200 text-center relative overflow-hidden"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-100 rounded-full blur-3xl pointer-events-none"></div><div class="relative z-10"><div class="w-20 h-20 bg-slate-50 border border-slate-200 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm badge-float"><i data-lucide="gift" class="w-10 h-10 text-purple-500"></i></div><h3 class="text-2xl sm:text-3xl font-black text-slate-900 mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="text-slate-600 mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
             
             if(app.cart.length>0){
                 const bForm = document.getElementById('bookingForm');
@@ -1108,7 +1174,7 @@
 
                 const todayStr = normalizeDate(new Date());
 
-                // 1. CARGAR TEMAS ROBUSTAMENTE (Prueba en dos colecciones)
+                // 1. CARGAR TEMAS 
                 try {
                     let themes = [];
                     try {
@@ -1158,28 +1224,55 @@
                     }
                 } catch (e) { console.warn("Fallo cargando Temas", e); }
 
-                // 2. CARGAR CAMPAÑAS ACTIVAS ROBUSTAMENTE
+                // 2. CARGAR CAMPAÑAS ACTIVAS (CON RED DE SEGURIDAD Y DIAGNÓSTICO)
                 try {
                     let camps = [];
-                    try {
-                        const campSnap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), 4000);
-                        camps = campSnap.docs.map(d => ({id: d.id, ...d.data()}));
-                    } catch(e) {}
+                    console.log("%c[DIAGNÓSTICO] Buscando campañas en Firestore...", "color: #0ea5e9; font-weight: bold;");
                     
-                    if (camps.length === 0) {
-                        try {
-                            const campSnap2 = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas')), 4000);
-                            camps = campSnap2.docs.map(d => ({id: d.id, ...d.data()}));
-                        } catch(e) {}
-                    }
+                    try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){}
+                    if(camps.length===0){ try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){} }
+                    if(camps.length===0){ try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'promociones_web')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){} }
+                    if(camps.length===0){ try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'promociones')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){} }
+                    if(camps.length===0){ try { const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'ofertas_web')), 2000); if(!snap.empty) camps = snap.docs.map(d=>({id:d.id, ...d.data()})); } catch(e){} }
+
+                    console.log(`%c[DIAGNÓSTICO] Total campañas crudas encontradas: ${camps.length}`, "color: #8b5cf6; font-weight: bold;");
+                    if (camps.length > 0) { console.log("[DIAGNÓSTICO] Datos crudos:", camps); }
+                    else { console.warn("[DIAGNÓSTICO] ALERTA: No se encontró NINGUNA campaña en la base de datos."); }
 
                     app.campaigns = camps.filter(c => {
-                        const act = c.activa === true || cleanStr(c.estado).toLowerCase().includes('activ') || cleanStr(c.status).toLowerCase().includes('activ');
-                        if (!act) return false;
+                        const titulo = cleanStr(c.titulo || c.nombre || c.id);
+                        
+                        const esActiva = c.activa === true || c.activo === true ||
+                                         cleanStr(c.activa).toLowerCase() === 'true' || 
+                                         cleanStr(c.activo).toLowerCase() === 'true' || 
+                                         cleanStr(c.estado).toLowerCase().includes('activ') || 
+                                         cleanStr(c.status).toLowerCase().includes('activ');
+                        
+                        console.log(`--- Campaña: ${titulo} ---`);
+                        console.log(`Estado (activa): ${esActiva ? 'SÍ' : 'NO'}`);
+                        
+                        if (!esActiva) {
+                            console.log(`Mostrar: NO (Está desactivada)`);
+                            return false;
+                        }
+
                         const cInicio = normalizeDate(c.fechaInicio || c.inicio);
-                        const cFin = normalizeDate(c.fechaFin || c.fin);
-                        if (cInicio && cInicio > todayStr) return false;
-                        if (cFin && cFin < todayStr) return false;
+                        const cFin = normalizeDate(c.fechaFin || c.fin || c.vencimiento);
+                        
+                        console.log(`Fecha inicio (Normalizada): ${cInicio || 'No configurada'}`);
+                        console.log(`Fecha fin (Normalizada): ${cFin || 'No configurada'}`);
+                        console.log(`Hoy (Normalizada): ${todayStr}`);
+
+                        if (cInicio && cInicio > todayStr) {
+                            console.log(`Mostrar: NO (Campaña futura, aún no empieza)`);
+                            return false;
+                        }
+                        if (cFin && cFin < todayStr) {
+                            console.log(`Mostrar: NO (Campaña vencida)`);
+                            return false;
+                        }
+                        
+                        console.log(`Mostrar: SÍ (Cumple todos los requisitos)`);
                         return true;
                     }).sort((a, b) => {
                         const aDest = (a.destacada === true || cleanStr(a.destacada).toLowerCase() === 'true');
@@ -1188,7 +1281,9 @@
                         if (!aDest && bDest) return 1;
                         return (a.orden || 0) - (b.orden || 0);
                     });
-                } catch (e) { console.warn("Fallo cargando Campañas", e); }
+                } catch (e) { 
+                    console.error("[DIAGNÓSTICO] Fallo general al leer campañas:", e); 
+                }
 
                 // 3. CARGAR CATÁLOGOS DINÁMICOS
                 try {
@@ -1235,14 +1330,18 @@
                         } catch(e){}
                     }
 
+                    if (!ajustes) {
+                        ajustes = { mostrarBanner: true, mensajeBanner: "¡Reserva hoy y obtén descuentos especiales!" };
+                    }
+
                     if (ajustes) {
                         const bannerEl = document.getElementById('topAnnouncementBanner');
                         const bannerTextEl = document.getElementById('bannerTextSpan');
-                        const mostrar = ajustes.mostrarBanner === true || String(ajustes.mostrarBanner).toLowerCase() === 'true' || ajustes.mostrar === true;
+                        const mostrar = ajustes.mostrarBanner === true || String(ajustes.mostrarBanner).toLowerCase() === 'true' || ajustes.mostrar === true || String(ajustes.mostrar).toLowerCase() === 'true';
 
                         if (mostrar && bannerEl && bannerTextEl) {
-                            bannerTextEl.textContent = cleanStr(ajustes.mensajeBanner || ajustes.mensaje || ajustes.texto) || '¡Promoción especial activa!';
-                            bannerEl.style.display = 'flex';
+                            bannerTextEl.textContent = cleanStr(ajustes.mensajeBanner || ajustes.mensaje || ajustes.texto) || '¡Reserva hoy y obtén descuentos especiales!';
+                            bannerEl.style.display = 'flex'; 
                             document.documentElement.style.setProperty('--banner-offset', bannerEl.offsetHeight + 'px');
                         } else if (bannerEl) {
                             bannerEl.style.display = 'none';
