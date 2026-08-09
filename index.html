@@ -549,95 +549,143 @@
             
             let html = '<div class="container mx-auto px-4 w-full mb-10 flex flex-col gap-6 animate-slide-up">';
             
-            if (destacada) {
-                const titulo = cleanStr(destacada.titulo);
-                const sub = cleanStr(destacada.subtitulo);
-                const desc = cleanStr(destacada.descripcion);
-                const img = cleanStr(destacada.imagen);
-                const pPromo = cleanStr(destacada.precio);
-                const pAnt = cleanStr(destacada.precioOriginal);
-                const btnTxt = cleanStr(destacada.botonTexto) || 'Aprovechar Oferta';
-                const tId = cleanStr(destacada.id); 
-                
-                // Mapeo Inteligente de acciones
-                let actionBtn = 'navigate-from-modal';
-                let targetSec = 'booking';
-                let itemDataId = tId;
-                
-                if (destacada.accion) {
-                    const mappedCatalogItem = allPurchasableItems.find(i => i.id === destacada.accion);
-                    if (mappedCatalogItem) {
-                        actionBtn = 'add-to-cart';
-                        itemDataId = mappedCatalogItem.id;
-                    }
-                }
+            const renderIncluye = (incluyeData) => {
+                let arr = [];
+                if (Array.isArray(incluyeData)) arr = incluyeData;
+                else if (typeof incluyeData === 'string') arr = incluyeData.split('\n');
+                arr = arr.filter(i => cleanStr(i) !== '');
+                if (arr.length === 0) return '';
+                return `<div class="mb-5 relative z-10"><ul class="space-y-2">` + arr.map(inc => `<li class="flex items-start text-sm sm:text-base text-slate-700 font-medium"><i data-lucide="check" class="w-5 h-5 text-emerald-500 mr-2 shrink-0 mt-0.5"></i> <span class="flex-1">${cleanStr(inc)}</span></li>`).join('') + `</ul></div>`;
+            };
 
-                html += `
-                <div class="bg-gradient-to-r from-purple-600 to-pink-500 rounded-[2rem] p-1 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.15)] relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-white/20 blur-3xl rounded-full group-hover:bg-white/30 transition-colors pointer-events-none"></div>
-                    <div class="bg-white rounded-[1.8rem] flex flex-col md:flex-row overflow-hidden relative z-10 h-full">
-                        ${img ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative"><img src="${img}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:hidden"></div></div>` : ''}
-                        <div class="p-6 sm:p-8 md:p-10 flex flex-col justify-center flex-1 relative">
-                            ${sub ? `<div class="inline-flex items-center gap-1.5 bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max mb-4 border border-pink-200 relative z-10"><i data-lucide="star" class="w-3 h-3 fill-pink-500"></i> ${sub}</div>` : ''}
-                            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mb-3 font-nunito leading-tight relative z-10">${titulo}</h2>
-                            ${desc ? `<p class="text-slate-600 text-sm sm:text-base font-medium mb-6 relative z-10">${desc}</p>` : ''}
-                            
-                            ${(pPromo || pAnt) ? `
-                            <div class="flex flex-wrap items-end gap-3 mb-6 relative z-10">
-                                ${pPromo ? `<span class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 leading-none">$${Number(pPromo).toFixed(2)}</span>` : ''}
-                                ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="text-base sm:text-lg font-bold text-slate-400 line-through leading-none mb-1">$${Number(pAnt).toFixed(2)}</span>` : ''}
-                            </div>` : ''}
-                            
-                            <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" class="w-full sm:w-max bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-[0_8px_20px_rgba(219,39,119,0.3)] hover:scale-[1.02] transition-transform text-center flex items-center justify-center gap-2 relative z-10">
-                                ${btnTxt} <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-            }
+            const renderCamp = (camp, isDestacada) => {
+                const titulo = cleanStr(camp.titulo);
+                const sub = cleanStr(camp.subtitulo);
+                const desc = cleanStr(camp.descripcion);
+                const img = cleanStr(camp.imagen);
+                const pPromo = cleanStr(camp.precio);
+                const pAnt = cleanStr(camp.precioOriginal);
+                const tId = cleanStr(camp.id);
+                const incluyeHtml = renderIncluye(camp.incluye);
+                const accionStr = cleanStr(camp.accion).toLowerCase();
+                let btnTxt = cleanStr(camp.botonTexto) || 'VER MÁS';
+                
+                let mappedCatalogItem = null;
 
-            if (regulares.length > 0) {
-                html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">`;
-                regulares.forEach(camp => {
-                    const titulo = cleanStr(camp.titulo);
-                    const sub = cleanStr(camp.subtitulo);
-                    const desc = cleanStr(camp.descripcion);
-                    const img = cleanStr(camp.imagen);
-                    const pPromo = cleanStr(camp.precio);
-                    const pAnt = cleanStr(camp.precioOriginal);
-                    const btnTxt = cleanStr(camp.botonTexto) || 'Ver Promoción';
-                    const tId = cleanStr(camp.id);
+                // ESCÁNER PROFUNDO DE PRODUCTOS
+                for (let p of allPurchasableItems) {
+                    let pid = String(p.id).toLowerCase();
+                    let pname = String(p.name).toLowerCase();
                     
-                    let actionBtn = 'navigate-from-modal';
-                    let targetSec = 'booking';
-                    let itemDataId = tId;
-                    
-                    if (camp.accion) {
-                        const mappedCatalogItem = allPurchasableItems.find(i => i.id === camp.accion);
-                        if (mappedCatalogItem) {
-                            actionBtn = 'add-to-cart';
-                            itemDataId = mappedCatalogItem.id;
+                    // 1. ¿Está el ID en algún campo de texto de la campaña?
+                    let idEncontrado = false;
+                    for (let key in camp) {
+                        if (typeof camp[key] === 'string' && camp[key].toLowerCase().includes(pid)) {
+                            idEncontrado = true;
+                            break;
                         }
                     }
 
-                    html += `
+                    // 2. ¿El nombre del producto del catálogo aparece en el Título, Subtítulo o Botón?
+                    let nombreEncontrado = (
+                        titulo.toLowerCase().includes(pname) ||
+                        sub.toLowerCase().includes(pname) ||
+                        btnTxt.toLowerCase().includes(pname)
+                    );
+
+                    if (idEncontrado || nombreEncontrado) {
+                        mappedCatalogItem = p;
+                        break;
+                    }
+                }
+
+                let actionBtn = 'navigate-from-modal';
+                let targetSec = 'booking';
+                let itemDataId = tId;
+                let extraAttrs = '';
+                
+                if (mappedCatalogItem) {
+                    // SE ENCONTRÓ UN PRODUCTO ASOCIADO EN EL CATÁLOGO (Ej. Plan Escolar)
+                    actionBtn = 'add-to-cart'; // Acción para que lo intercepte el carrito
+                    itemDataId = mappedCatalogItem.id;
+                    extraAttrs = `data-is-campaign="true" data-promo-price="${pPromo || mappedCatalogItem.price}" data-campaign-id="${tId}"`;
+                    if (!camp.botonTexto) btnTxt = 'AÑADIR AL CARRITO';
+                } else {
+                    // SI REALMENTE NO TIENE PRODUCTO ASOCIADO (Es genérica)
+                    if (accionStr.includes('reserva') || accionStr.includes('booking')) {
+                        actionBtn = 'navigate-from-modal';
+                        targetSec = 'booking';
+                        if (!camp.botonTexto) btnTxt = 'RESERVAR AHORA';
+                    } else if (accionStr.startsWith('cat_')) {
+                        actionBtn = 'navigate-from-modal';
+                        targetSec = accionStr;
+                        if (!camp.botonTexto) btnTxt = 'VER CATÁLOGO';
+                    } else {
+                        actionBtn = 'navigate-from-modal';
+                        targetSec = 'booking';
+                    }
+                }
+
+                // Diagnóstico Temporal (Para comprobación en celular)
+                const diagnosticHTML = `
+                <div class="mt-4 p-3 bg-slate-900/5 border border-slate-200 text-slate-700 text-[10px] font-mono rounded-xl text-left leading-relaxed shadow-inner">
+                    <span class="font-black text-slate-900 uppercase">Diagnóstico Temporal</span><br>
+                    Producto asociado: <b class="${mappedCatalogItem ? 'text-emerald-600' : 'text-rose-600'}">${mappedCatalogItem ? 'ENCONTRADO ✅' : 'NO ENCONTRADO ❌'}</b><br>
+                    ID producto encontrado: ${mappedCatalogItem ? mappedCatalogItem.id : '-'}<br>
+                    Botón final (acción): <b>${actionBtn}</b>
+                </div>`;
+
+                if (isDestacada) {
+                    return `
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-500 rounded-[2rem] p-1 shadow-[0_15px_40px_-10px_rgba(0,0,0,0.15)] relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-white/20 blur-3xl rounded-full group-hover:bg-white/30 transition-colors pointer-events-none"></div>
+                        <div class="bg-white rounded-[1.8rem] flex flex-col md:flex-row overflow-hidden relative z-10 h-full">
+                            ${img ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative"><img src="${img}" class="w-full h-full object-cover" loading="lazy" onerror="console.log('[CAMPAÑA IMAGEN ERROR]\\\\nID: ${tId}\\\\nURL: ${img}')"><div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent md:hidden"></div></div>` : ''}
+                            <div class="p-6 sm:p-8 md:p-10 flex flex-col justify-center flex-1 relative">
+                                ${sub ? `<div class="inline-flex items-center gap-1.5 bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max mb-4 border border-pink-200 relative z-10"><i data-lucide="star" class="w-3 h-3 fill-pink-500"></i> ${sub}</div>` : ''}
+                                <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 mb-3 font-nunito leading-tight relative z-10">${titulo}</h2>
+                                ${desc ? `<p class="text-slate-600 text-sm sm:text-base font-medium mb-6 relative z-10">${desc}</p>` : ''}
+                                ${incluyeHtml}
+                                ${(pPromo || pAnt) ? `
+                                <div class="flex flex-wrap items-end gap-3 mb-6 relative z-10">
+                                    ${pPromo ? `<span class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-purple-600 leading-none">$${Number(pPromo).toFixed(2)}</span>` : ''}
+                                    ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="text-base sm:text-lg font-bold text-slate-400 line-through leading-none mb-1">Antes $${Number(pAnt).toFixed(2)}</span>` : ''}
+                                </div>` : ''}
+                                
+                                <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} class="w-full sm:w-max bg-gradient-to-r from-purple-600 to-pink-600 btn-animated-gradient text-white font-extrabold py-3.5 px-8 rounded-2xl shadow-[0_8px_20px_rgba(219,39,119,0.3)] hover:scale-[1.02] transition-transform text-center flex items-center justify-center gap-2 relative z-10 uppercase">
+                                    ${btnTxt} ${actionBtn === 'add-to-cart' ? '<i data-lucide="shopping-cart" class="w-5 h-5"></i>' : '<i data-lucide="arrow-right" class="w-5 h-5"></i>'}
+                                </button>
+                                ${diagnosticHTML}
+                            </div>
+                        </div>
+                    </div>`;
+                } else {
+                    return `
                     <div class="bg-white border border-slate-200 rounded-[2rem] p-5 shadow-sm hover:shadow-lg hover:border-purple-300 transition-all flex flex-col h-full group relative overflow-hidden">
-                        ${img ? `<div class="w-full h-48 rounded-[1.25rem] overflow-hidden mb-4 relative z-10"><img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></div>` : ''}
+                        ${img ? `<div class="w-full h-48 rounded-[1.25rem] overflow-hidden mb-4 relative z-10"><img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" onerror="console.log('[CAMPAÑA IMAGEN ERROR]\\\\nID: ${tId}\\\\nURL: ${img}')"></div>` : ''}
                         ${sub ? `<span class="text-[10px] font-black uppercase tracking-widest text-purple-500 mb-2 block relative z-10">${sub}</span>` : ''}
                         <h3 class="text-xl font-extrabold text-slate-900 mb-2 font-nunito leading-tight relative z-10">${titulo}</h3>
-                        ${desc ? `<p class="text-slate-600 text-xs font-medium mb-5 flex-1 relative z-10">${desc}</p>` : ''}
-                        
+                        ${desc ? `<p class="text-slate-600 text-xs font-medium mb-4 relative z-10">${desc}</p>` : ''}
+                        ${incluyeHtml}
                         ${(pPromo || pAnt) ? `
-                        <div class="flex items-center gap-3 mb-5 mt-auto relative z-10">
-                            ${pPromo ? `<span class="text-2xl font-black text-slate-900">$${Number(pPromo).toFixed(2)}</span>` : ''}
-                            ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="text-sm font-bold text-slate-400 line-through">$${Number(pAnt).toFixed(2)}</span>` : ''}
+                        <div class="flex items-end gap-3 mb-5 mt-auto relative z-10">
+                            ${pPromo ? `<span class="text-2xl font-black text-slate-900 leading-none">$${Number(pPromo).toFixed(2)}</span>` : ''}
+                            ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="text-sm font-bold text-slate-400 line-through leading-none mb-0.5">Antes $${Number(pAnt).toFixed(2)}</span>` : ''}
                         </div>` : '<div class="mb-5 mt-auto"></div>'}
                         
-                        <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" class="w-full bg-slate-100 hover:bg-purple-50 text-purple-700 font-extrabold py-3 px-4 rounded-xl border border-slate-200 hover:border-purple-300 transition-colors text-xs text-center relative z-10">
+                        <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} class="w-full bg-slate-100 hover:bg-purple-50 text-purple-700 font-extrabold py-3 px-4 rounded-xl border border-slate-200 hover:border-purple-300 transition-colors text-xs text-center flex items-center justify-center gap-1.5 relative z-10 uppercase">
                             ${btnTxt}
                         </button>
+                        ${diagnosticHTML}
                     </div>`;
-                });
+                }
+            };
+
+            if (destacada) html += renderCamp(destacada, true);
+
+            if (regulares.length > 0) {
+                html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">`;
+                regulares.forEach(camp => { html += renderCamp(camp, false); });
                 html += `</div>`;
             }
             
@@ -712,7 +760,10 @@
             setContent(`<div id="hero-section-identifier"><div class="bg-slate-100"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden">${heroBgHtml}<div class="absolute inset-0 bg-gradient-to-b from-[#0F172A]/50 via-[#0F172A]/70 to-[#0F172A] z-10 pointer-events-none"></div><div class="hero-content z-20 relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-slate-900/80 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg badge-float"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-extrabold mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400 btn-animated-gradient">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full bg-gradient-to-r from-pink-500 to-purple-600 btn-animated-gradient text-white rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] shadow-[0_8px_20px_rgba(219,39,119,0.4)] font-bold text-base"><i data-lucide="calendar-check" class="w-5 h-5 group-hover:animate-pulse"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="${firstCatTarget}" class="nav-action w-full bg-white text-slate-900 border border-transparent hover:bg-slate-100 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-lg"><i data-lucide="eye" class="w-5 h-5 text-purple-600"></i> Explorar Catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-4"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-3xl mx-auto px-2 sm:px-4"><div class="bg-white p-6 sm:p-8 rounded-[32px] shadow-[0_15px_40px_-10px_rgba(0,0,0,0.05)] border border-slate-200 relative overflow-hidden" id="calendar-card-inner"><div class="absolute -top-24 -right-24 w-48 h-48 bg-purple-100 rounded-full blur-3xl pointer-events-none"></div><div class="flex items-center gap-3 mb-2"><div class="w-10 h-10 rounded-xl border border-purple-200 bg-purple-50 flex items-center justify-center text-purple-600"><i data-lucide="calendar" class="w-5 h-5"></i></div><div class="text-left"><h2 class="text-2xl font-extrabold text-slate-900 font-poppins leading-none">Selecciona tu fecha</h2><p class="text-slate-500 text-sm mt-1">Elige un día disponible para tu fiesta</p></div></div><div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 flex items-start gap-3 mb-6 mt-4"><i data-lucide="clock" class="w-5 h-5 text-indigo-500 mt-0.5 shrink-0"></i><p class="text-indigo-800 text-sm font-medium leading-tight">Selecciona una fecha disponible para reservar en segundos</p></div><div class="flex justify-between items-center mb-6 px-2 relative z-10 bg-slate-50 py-2 rounded-xl border border-slate-200"><button data-action="prevMonth" id="prevMonth" class="w-8 h-8 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button><h3 id="cal-month-year" class="text-lg font-bold text-slate-900 capitalize leading-none font-poppins">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-8 h-8 hover:bg-slate-200 text-slate-500 hover:text-slate-800 rounded-lg flex items-center justify-center transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-3 gap-x-2 text-center relative z-10 w-full"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
             
             const campWrapper = document.getElementById('home-campaigns-wrapper');
-            if (campWrapper && isFirebaseLoaded) campWrapper.innerHTML = getCampaignsHTML();
+            if (campWrapper && isFirebaseLoaded) {
+                campWrapper.innerHTML = getCampaignsHTML();
+                if(typeof lucide !== 'undefined') lucide.createIcons({root: campWrapper});
+            }
 
             if(typeof renderCalendar === 'function') renderCalendar(); 
         }
@@ -889,7 +940,12 @@
 
         function addToCart(item, qty=1) {
             const e = app.cart.find(i=>i.id===item.id);
-            if(e) e.quantity+=qty; else app.cart.push({...item,quantity:qty});
+            if(e) {
+                e.quantity+=qty; 
+                if(item.isCampaign) e.price = item.price;
+            } else {
+                app.cart.push({...item,quantity:qty});
+            }
             updateCartUI(); 
             showToast(`${cleanStr(item.name) || 'Servicio'} añadido al carrito`, 'success');
             setTimeout(() => showModal('cartModal'), 250); 
@@ -928,6 +984,9 @@
                 document.querySelectorAll('button[data-action="add-to-cart"], button[data-action="add-hourly-to-cart"]').forEach(b => {
                     const id = b.dataset.itemId, ic = app.cart.find(i=>i.id===id);
                     if(!b.dataset.origHtml) b.dataset.origHtml = b.innerHTML;
+                    
+                    if (b.dataset.isCampaign === 'true') return;
+
                     if(ic){
                         const qe = document.querySelector(`#qty-${id}`); const vq = qe ? parseInt(qe.textContent) : ic.quantity;
                         if(vq!==ic.quantity && b.dataset.action==='add-hourly-to-cart'){ b.innerHTML=`<i data-lucide="refresh-cw" class="w-5 h-5 text-white"></i> Actualizar`; b.className="w-full text-white font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 text-[11px] sm:text-xs relative z-10 transition-all !bg-amber-500 !border-amber-400 !shadow-[0_0_25px_rgba(245,158,11,0.3)]"; }
@@ -978,9 +1037,35 @@
                     });
                     break;
                 case 'add-to-cart': { 
-                    const it = allPurchasableItems.find(s=>s.id===itemId); 
-                    if(it){ if(!app.cart.find(i=>i.id===itemId)) addToCart(it); else showModal('cartModal'); } 
-                    else { showModal('cartModal'); }
+                    let it = allPurchasableItems.find(s=>s.id===itemId); 
+                    
+                    if(it){
+                        if (target.dataset.isCampaign === 'true') {
+                            const promoPrice = target.dataset.promoPrice;
+                            const campaignId = target.dataset.campaignId;
+                            // Clonamos de forma segura el objeto de catálogo completo
+                            it = { ...it, price: Number(promoPrice), isCampaign: true, campaignId: campaignId };
+                        }
+
+                        const existingCartItem = app.cart.find(i=>i.id===it.id);
+
+                        if(!existingCartItem) { 
+                            console.log("AGREGANDO CAMPAÑA AL CARRITO", it);
+                            addToCart(it, 1);
+                            console.log("CARRITO ACTUALIZADO");
+                        } else { 
+                            if (target.dataset.isCampaign === 'true' && existingCartItem.price !== it.price) {
+                                existingCartItem.price = it.price;
+                                existingCartItem.isCampaign = true;
+                                existingCartItem.campaignId = it.campaignId;
+                                updateCartUI();
+                                showToast(`Precio promocional aplicado en carrito`, 'success');
+                            }
+                            showModal('cartModal'); 
+                        } 
+                    } else { 
+                        showModal('cartModal'); 
+                    }
                     break; 
                 }
                 case 'remove-from-cart': removeFromCart(itemId); break;
@@ -989,12 +1074,33 @@
                     break;
                 }
                 case 'add-hourly-to-cart': { 
-                    const sh = allPurchasableItems.find(s=>s.id===itemId); const qe = document.querySelector(`#qty-${itemId}`); 
+                    let sh = allPurchasableItems.find(s=>s.id===itemId); 
+                    const qe = document.querySelector(`#qty-${itemId}`); 
                     const qh = qe?parseInt(qe.textContent):1; 
-                    if(sh&&qh>0){ 
-                        const ex=app.cart.find(i=>i.id===itemId); 
-                        if(ex){ ex.quantity=qh; updateCartUI(); showToast(`Cantidad actualizada`, 'success'); showModal('cartModal'); } 
-                        else { addToCart(sh, qh); }
+                    
+                    if(sh && qh>0){ 
+                        if (target.dataset.isCampaign === 'true') {
+                            const promoPrice = target.dataset.promoPrice;
+                            const campaignId = target.dataset.campaignId;
+                            sh = { ...sh, price: Number(promoPrice), isCampaign: true, campaignId: campaignId };
+                        }
+
+                        const ex = app.cart.find(i=>i.id===itemId); 
+                        if(ex){ 
+                            ex.quantity = qh; 
+                            if (target.dataset.isCampaign === 'true' && ex.price !== sh.price) {
+                                ex.price = sh.price;
+                                ex.isCampaign = true;
+                                ex.campaignId = sh.campaignId;
+                            }
+                            updateCartUI(); 
+                            showToast(`Cantidad y precio actualizados`, 'success'); 
+                            showModal('cartModal'); 
+                        } else { 
+                            console.log("AGREGANDO CAMPAÑA AL CARRITO", sh);
+                            addToCart(sh, qh); 
+                            console.log("CARRITO ACTUALIZADO");
+                        }
                     } 
                     break; 
                 }
@@ -1051,7 +1157,6 @@
         }
 
         async function initFirebaseAndData() {
-            console.log("[FIREBASE] Inicio");
             const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
             db = getFirestore(fbApp); auth = getAuth(fbApp);
             
@@ -1062,13 +1167,11 @@
                         catch(e){ await signInAnonymously(auth); } 
                     } else { await signInAnonymously(auth); }
                 })(), 2500); 
-                console.log("[FIREBASE] Auth OK");
-            } catch(e) { console.log("[FIREBASE] Auth timeout/fallo. Ejecutando lecturas públicas..."); }
+            } catch(e) {}
 
             // 1. Funciones de Carga Independientes (No bloquean el resto de la ejecución)
 
             const loadBanner = async () => {
-                console.log("[BANNER] Consultando config_web/global...");
                 try {
                     const docRef = doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global');
                     const docSnap = await fetchWithTimeout(getDoc(docRef), 2000);
@@ -1077,8 +1180,6 @@
                     
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        console.log(`[BANNER] bannerActive: ${data.bannerActive}`);
-                        console.log(`[BANNER] bannerText: ${data.bannerText}`);
                         
                         if (data.bannerActive === true && data.bannerText && cleanStr(data.bannerText) !== '') {
                             bannerTextEl.textContent = cleanStr(data.bannerText);
@@ -1088,30 +1189,23 @@
                             bannerEl.style.display = 'none';
                         }
                     } else {
-                        console.log("[BANNER] Documento no existe. (Ruta: artifacts/diverty-oficial/public/data/config_web/global)");
                         if (bannerEl) bannerEl.style.display = 'none';
                     }
-                } catch(e) {
-                    console.log("[BANNER] ERROR:", e);
-                }
+                } catch(e) {}
             };
 
             const loadCampaigns = async () => {
-                console.log("[CAMPAÑAS] Consultando campanas_web...");
                 try {
                     const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), 2000);
-                    console.log(`[CAMPAÑAS] Documentos encontrados: ${snap.docs.length}`);
                     
                     const today = new Date();
                     const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                     
                     app.campaigns = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => {
                         if (c.activo !== true) return false;
-                        
                         const fIni = c.fechaInicio ? cleanStr(c.fechaInicio) : null;
                         const fFin = c.fechaFin ? cleanStr(c.fechaFin) : null;
                         
-                        // Comparación lexicográfica correcta sobre YYYY-MM-DD
                         if (fIni && todayStr < fIni) return false;
                         if (fFin && todayStr > fFin) return false;
                         
@@ -1123,11 +1217,7 @@
                         if (!aDest && bDest) return 1;
                         return (Number(a.orden) || 0) - (Number(b.orden) || 0);
                     });
-                    
-                    console.log(`[CAMPAÑAS] Campañas activas: ${app.campaigns.length}`);
-                } catch(e) {
-                    console.log("[CAMPAÑAS] ERROR:", e);
-                }
+                } catch(e) {}
             };
 
             const loadCategories = async () => {
@@ -1135,8 +1225,7 @@
                     const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'categorias_web')), 2000);
                     if(!snap.empty) { dynamicCategories = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => c.activo !== false).sort((a, b) => (a.orden || 0) - (b.orden || 0)); } 
                     else { dynamicCategories = fallbackCategories; }
-                    console.log("[FIREBASE] Categorías OK");
-                } catch(e) { console.log("[FIREBASE] ERROR en categorías:", e); dynamicCategories = fallbackCategories; }
+                } catch(e) { dynamicCategories = fallbackCategories; }
             };
 
             const loadCatalog = async () => {
@@ -1154,8 +1243,7 @@
                         });
                         if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
                     }
-                    console.log("[FIREBASE] Catálogo OK");
-                } catch(e) { console.log("[FIREBASE] ERROR en catálogo:", e); }
+                } catch(e) {}
             };
 
             const loadTheme = async () => {
@@ -1175,7 +1263,7 @@
                         if (!sel) sel = themes.find(t => t.activo===true || t.estado==='Activo') || themes[0];
                         if (sel) { app.theme = sel; applyThemeColors(app.theme); }
                     }
-                } catch(e) { console.log("[FIREBASE] ERROR en temas:", e); }
+                } catch(e) {}
             };
 
             // 2. Disparar Cargas Críticas y Renderizar de inmediato para no congelar la pantalla
@@ -1199,13 +1287,15 @@
                 (async () => { try { const es = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos')), 2000); bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(cleanStr(ev.estado)).toLowerCase().includes(s))); } catch(e){} })()
             ]);
 
-            // Re-renderizamos campañas si estamos en la vista de Home
+            // Re-renderizamos campañas si estamos en la vista de Home, ahora que allPurchasableItems y app.campaigns están listos
             if (app.activeSection === 'home') {
                 const cW = document.getElementById('home-campaigns-wrapper'); 
-                if (cW) cW.innerHTML = getCampaignsHTML();
+                if (cW) {
+                    cW.innerHTML = getCampaignsHTML();
+                    if(typeof lucide !== 'undefined') lucide.createIcons({root: cW});
+                }
             }
 
-            console.log("[FIREBASE] INDEX listo");
             isFirebaseLoaded = true;
             refreshDynamicData(); 
             updateCartUI(); 
