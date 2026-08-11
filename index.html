@@ -12,7 +12,7 @@
     </script>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Diverty Eventos | Planes de Fiestas en Panamá</title>
     <meta name="description" content="¡Celebra con Diverty Eventos! Fiestas infantiles en Panamá. Payasitos, animadores, pintacaritas y shows de burbujas.">
     <meta name="theme-color" content="#F8FAFC">
@@ -49,21 +49,22 @@
             transition: background-color 0.5s ease;
         }
 
-        /* OPTIMIZACIÓN CSS PARA RENDERIZADO RÁPIDO FUERA DE PANTALLA */
-        .content-auto { content-visibility: auto; contain-intrinsic-size: 400px; }
+        button, a, input, select, textarea {
+            touch-action: manipulation;
+        }
 
         .season-background {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-image: var(--s-bg-img); background-size: cover; background-position: center;
             background-attachment: fixed; z-index: -2;
             transition: background-image 0.8s ease-in-out;
-            will-change: background-image; /* Optimización GPU */
+            will-change: background-image;
         }
         .season-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: var(--s-overlay); z-index: -1;
             backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-            will-change: backdrop-filter; /* Optimización GPU */
+            will-change: backdrop-filter;
         }
 
         h2, h3, h4, .font-poppins { font-family: 'Poppins', sans-serif; letter-spacing: -0.02em; }
@@ -73,6 +74,14 @@
         body:not(.js-loaded) footer, body:not(.js-loaded) .whatsapp-container { opacity: 0; visibility: hidden; pointer-events: none; }
         body.js-loaded footer, body.js-loaded .whatsapp-container { transition: opacity 0.5s ease-in; opacity: 1; visibility: visible; pointer-events: auto; }
         
+        .header-brand-text {
+            color: #ffffff;
+            transition: color 0.3s ease;
+        }
+        #headerWrapper.scrolled .header-brand-text {
+            color: var(--s-text-title);
+        }
+
         #mainHeader { padding-top: 1rem; padding-bottom: 1rem; background: linear-gradient(to bottom, rgba(0,0,0, 0.6), transparent); }
         #headerWrapper.scrolled #mainHeader { background: var(--s-glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid var(--s-glass-border); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); } 
         
@@ -81,12 +90,11 @@
         .nav-link.active::before, .nav-link:hover::before { width: 80%; }
         .nav-link.active, .nav-link:hover { color: var(--s-text-title); background: rgba(0,0,0,0.05); transform: translateY(-2px); } 
         
-        /* MENÚ MÓVIL ESTILO APP PREMIUM - OPTIMIZADO POR GPU */
         #mobileMenu { 
             position: fixed; top: 0; right: 0; width: 85%; max-width: 360px; height: 100vh; 
             background: var(--s-bg-color); 
             border-left: 1px solid var(--s-glass-border); box-shadow: -20px 0 60px rgba(0,0,0,0.15); 
-            transform: translateX(100%); /* Usar transform en lugar de 'right' mejora radicalmente los FPS */
+            transform: translateX(100%); 
             transition: transform .4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1000; 
             display: flex; flex-direction: column; 
             will-change: transform;
@@ -116,19 +124,25 @@
 
         .glass-panel {
             background: var(--s-glass-bg);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); 
             border: 1px solid var(--s-glass-border);
             box-shadow: 0 15px 35px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,0.4);
             border-radius: 2rem;
             position: relative;
             z-index: 10;
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
 
         @keyframes gradient-border-spin {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
+        }
+
+        .animate-shimmer { animation: shimmer-fast 3s infinite linear; }
+        @keyframes shimmer-fast {
+            0% { transform: translateX(-100%) skewX(-15deg); }
+            100% { transform: translateX(200%) skewX(-15deg); }
         }
 
         .card-alive { border: none !important; }
@@ -138,39 +152,79 @@
             background-size: 300% 300%;
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor; mask-composite: exclude;
-            pointer-events: none; z-index: 1; opacity: 0.65; transition: all 0.4s ease;
+            pointer-events: none; z-index: 1; opacity: 0.65; transition: opacity 0.4s ease;
             animation: gradient-border-spin 8s ease infinite;
+            will-change: opacity; 
         }
-        .card-alive:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 30px 50px -12px color-mix(in srgb, var(--s-primary) 40%, transparent), inset 0 0 0 1px rgba(255,255,255,0.8);
+
+        @media (hover: hover) {
+            .card-alive:hover {
+                transform: translateY(-4px); 
+                box-shadow: 0 20px 40px -12px color-mix(in srgb, var(--s-primary) 30%, transparent), inset 0 0 0 1px rgba(255,255,255,0.8);
+            }
+            .card-alive:hover::after { opacity: 1; filter: brightness(1.1); animation-duration: 4s; }
+            .season-btn-outline:hover { border-color: var(--s-primary); background-color: color-mix(in srgb, var(--s-primary) 10%, transparent); }
         }
-        .card-alive:hover::after { opacity: 1; padding: 4px; filter: brightness(1.2); animation-duration: 3s; }
 
         .card-safe-wrapper { position: relative; padding-top: 1.5rem; height: 100%; display: flex; flex-direction: column; }
         
         .season-btn { 
             background: var(--s-btn-grad) !important; color: #ffffff !important; 
             border: none; box-shadow: 0 8px 20px -5px color-mix(in srgb, var(--s-primary) 60%, transparent); 
-            position: relative; overflow: hidden; z-index: 1; transition: all 0.3s ease;
+            position: relative; overflow: hidden; z-index: 1; 
+            transition: transform 0.15s ease-out, background-color 0.15s ease-out; 
         }
-        .season-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent); transition: left 0.6s ease; z-index: -1; }
-        .season-btn:hover::before { left: 100%; }
-        .season-btn:hover { transform: scale(1.02); box-shadow: 0 12px 25px -5px color-mix(in srgb, var(--s-primary) 80%, transparent); }
+        .season-btn:active { transform: scale(0.96) !important; } 
         .season-btn svg { stroke: #ffffff; }
 
-        .season-btn-outline { background-color: transparent; border: 2px solid var(--s-glass-border); color: var(--s-text-title); transition: all 0.3s ease; }
-        .season-btn-outline:hover { border-color: var(--s-primary); background-color: color-mix(in srgb, var(--s-primary) 10%, transparent); }
+        .season-btn-outline { background-color: transparent; border: 2px solid var(--s-glass-border); color: var(--s-text-title); transition: all 0.2s ease; }
 
         .season-text-primary { color: var(--s-primary); }
         .season-text-title { color: var(--s-text-title) !important; }
         .season-text-muted { color: var(--s-text-muted) !important; }
         .season-gradient-text { background: var(--s-btn-grad); -webkit-background-clip: text; color: transparent; }
         
-        .modal-backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85); z-index: 1050; display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; visibility: hidden; transition: opacity .3s ease, visibility .3s ease; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .modal-backdrop { 
+            position: fixed; inset: 0; 
+            background: rgba(15, 23, 42, 0.85); 
+            z-index: 1050; display: flex; align-items: center; justify-content: center; 
+            padding: 1.5rem; opacity: 0; visibility: hidden; 
+            transition: opacity 0.15s ease-out, visibility 0.15s ease-out; 
+            backdrop-filter: none !important; -webkit-backdrop-filter: none !important; 
+        }
         .modal-backdrop.show { opacity: 1; visibility: visible; }
-        .modal-content { background: var(--s-bg-color); color: var(--s-text-title); border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); width: 100%; max-width: 28rem; max-height: 100%; display: flex; flex-direction: column; transform: scale(.95) translateY(10px); transition: transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid var(--s-glass-border); overflow: hidden; }
-        .modal-backdrop.show .modal-content { transform: scale(1) translateY(0); }
+        .modal-content { 
+            background: var(--s-bg-color); color: var(--s-text-title); 
+            border-radius: 32px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); 
+            width: 100%; max-width: 28rem; max-height: 100%; display: flex; flex-direction: column; 
+            transform: scale(0.98); 
+            transition: transform 0.15s ease-out; 
+            border: 1px solid var(--s-glass-border); overflow: hidden; 
+            will-change: transform, opacity;
+        }
+        .modal-backdrop.show .modal-content { transform: scale(1); }
+
+        body.cart-open { overflow: hidden !important; touch-action: none; }
+        body.cart-open #cartSummary { opacity: 0 !important; pointer-events: none !important; transform: translate(-50%, 20px) scale(0.95) !important; }
+        #cartSummary { transition: all 0.2s ease-out; transform: translate(-50%, 0) scale(1); }
+        
+        #cartModal { align-items: flex-end; padding: 0; }
+        #cartModal .modal-content { 
+            height: 88vh; max-height: 88vh; border-radius: 32px 32px 0 0; 
+            transform: translateY(100%) scale(1); transition: transform 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+            background: var(--s-bg-color); border: none;
+        }
+        #cartModal.show .modal-content { transform: translateY(0) scale(1); }
+        
+        @media (min-width: 768px) {
+            #cartModal { justify-content: flex-end; align-items: stretch; padding: 1.5rem; }
+            #cartModal .modal-content { 
+                height: auto; max-height: 94vh; width: 440px; max-width: 440px; border-radius: 28px; 
+                transform: translateX(100%) scale(1); border: 1px solid var(--s-glass-border);
+                margin-left: auto; margin-right: 0;
+            }
+            #cartModal.show .modal-content { transform: translateX(0) scale(1); }
+        }
         
         .wizard-content { display: none; } 
         .wizard-content.active { display: block; }
@@ -179,28 +233,30 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; } 
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 11000; padding: 0.5rem 1.25rem 0.5rem 0.5rem; border-radius: 9999px; color: var(--s-text-title); font-weight: 700; opacity: 0; visibility: hidden; transition: all .4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 0.75rem; background: var(--s-glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--s-glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); font-size: 0.85rem; white-space: nowrap; }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px); z-index: 11000; padding: 0.5rem 1.25rem 0.5rem 0.5rem; border-radius: 9999px; color: var(--s-text-title); font-weight: 700; opacity: 0; visibility: hidden; transition: all .3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 0.75rem; background: var(--s-glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--s-glass-border); box-shadow: 0 10px 30px rgba(0,0,0,0.3); font-size: 0.85rem; white-space: nowrap; }
         #toast.show { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
         #toast.success .toast-icon-bg { background: rgba(16,185,129,0.2); color: #10B981; }
         #toast.error .toast-icon-bg { background: rgba(244,63,94,0.2); color: #F43F5E; }
         #toast.info .toast-icon-bg { background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary); }
         .toast-icon-bg { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
         
-        .animate-slide-up { animation: slideUpFadeIn .5s cubic-bezier(0.16, 1, 0.3, 1) forwards; } 
-        @keyframes slideUpFadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } } 
+        .animate-slide-up { animation: slideUpFadeIn .4s cubic-bezier(0.16, 1, 0.3, 1) forwards; } 
+        @keyframes slideUpFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } 
         
         .whatsapp-container { position: fixed; bottom: 30px; right: 20px; z-index: 998; display: flex; align-items: center; gap: 12px; pointer-events: none; transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .whatsapp-container > * { pointer-events: auto; } 
         body.has-cart .whatsapp-container { bottom: 120px; }
         .whatsapp-btn { width: 60px; height: 60px; border-radius: 50%; background: #25D366; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 20px rgba(37,211,102,0.5); transition: transform 0.2s ease; } 
-        .whatsapp-btn:hover, .whatsapp-btn:active { transform: scale(1.05); }
+        .whatsapp-btn:active { transform: scale(0.95); }
 
         #topAnnouncementBanner { background: var(--s-btn-grad); position: relative; width: 100%; z-index: 60; padding: 6px 16px; font-weight: 800; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.05em; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
         
-        .decor-layer { position: absolute; pointer-events: none; opacity: 0.8; z-index: 20; background-repeat: no-repeat; background-position: center; background-size: contain;}
-        
         @media (max-width: 768px) {
-            .glass-panel { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+            .glass-panel, #headerWrapper.scrolled #mainHeader { 
+                backdrop-filter: none !important; -webkit-backdrop-filter: none !important; 
+            }
+            .glass-panel { background: rgba(255,255,255,0.98) !important; border: 1px solid rgba(0,0,0,0.05) !important; }
+            #headerWrapper.scrolled #mainHeader { background: var(--s-bg-color) !important; }
         }
     </style>
 </head>
@@ -222,8 +278,8 @@
                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full p-[2px] mr-3 shadow-sm" style="background: var(--s-btn-grad);">
                         <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border-2 border-[var(--s-bg-color)]" loading="eager" id="mainHeaderLogo">
                     </div>
-                    <div class="flex flex-col drop-shadow-sm text-white">
-                        <span class="text-2xl sm:text-3xl font-black font-nunito leading-none tracking-tight">Diverty</span>
+                    <div class="flex flex-col drop-shadow-sm">
+                        <span class="text-2xl sm:text-3xl font-black font-nunito leading-none tracking-tight header-brand-text">Diverty</span>
                         <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-0.5 season-gradient-text">Eventos</span>
                     </div>
                 </button>
@@ -231,7 +287,7 @@
                     <button data-target-section="home" class="nav-link nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 season-text-primary"></i>Inicio</button>
                     <div class="w-4 h-4 mx-2 animate-spin rounded-full border-2 border-t-transparent opacity-50" style="border-color: var(--s-primary);"></div>
                 </nav>
-                <button id="mobileToggle" class="lg:hidden pl-5 pr-2 py-1.5 rounded-full bg-[#0F172A] border border-white/10 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)] transition-all duration-300 hover:scale-105 pointer-events-auto group flex items-center gap-3">
+                <button id="mobileToggle" class="lg:hidden pl-5 pr-2 py-1.5 rounded-full bg-[#0F172A] border border-white/10 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.3)] transition-all duration-300 pointer-events-auto group flex items-center gap-3 active:scale-95">
                     <span class="text-[10px] font-black uppercase tracking-widest text-white drop-shadow-md">Menú</span>
                     <div class="bg-white/10 p-2 rounded-full group-hover:bg-[var(--s-primary)] transition-colors duration-300">
                         <i data-lucide="menu" class="w-3.5 h-3.5 text-white"></i>
@@ -247,12 +303,12 @@
                 <div class="p-2 rounded-full" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="shopping-cart" class="w-5 h-5"></i></div>
                 <div class="flex flex-col leading-tight"><span class="text-[10px] season-text-muted uppercase">Total (<span id="itemCount" class="font-bold season-text-title">0</span>)</span><span id="totalPrice" class="font-black text-base season-text-title">$0.00</span></div>
             </div>
-            <button id="viewCart" class="season-btn font-bold text-xs py-2.5 px-4 rounded-xl shadow-md transition-transform hover:scale-105">Ver Carrito</button>
+            <button id="viewCart" class="season-btn font-bold text-xs py-2.5 px-4 rounded-xl shadow-md">Ver Carrito</button>
         </div>
     </div>
 
     <!-- MENÚ MÓVIL ESTILO APP -->
-    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[999] opacity-0 visibility-hidden transition-all duration-300"></div>
+    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/70 z-[999] opacity-0 visibility-hidden transition-all duration-300"></div>
     <nav id="mobileMenu" class="relative overflow-hidden">
         <div class="mobile-menu-header relative z-10 pt-10 pb-4 px-6 border-b border-[var(--s-glass-border)]">
             <div class="flex justify-between items-center">
@@ -260,15 +316,15 @@
                     <span class="text-2xl font-black season-text-title font-nunito leading-none tracking-tight flex items-center gap-2">Diverty <span class="w-1.5 h-1.5 rounded-full bg-[var(--s-primary)] animate-pulse"></span></span>
                     <span class="text-[9px] font-black season-text-muted uppercase tracking-[0.25em] mt-1 ml-0.5">Explorar</span>
                 </div>
-                <button id="closeMobile" class="w-9 h-9 flex items-center justify-center season-text-muted hover:text-rose-500 rounded-full bg-black/5 hover:bg-rose-500/10 transition-all duration-300"><i data-lucide="x" class="h-4 w-4"></i></button>
+                <button id="closeMobile" class="w-9 h-9 flex items-center justify-center season-text-muted hover:text-rose-500 rounded-full bg-black/5 hover:bg-rose-500/10 transition-all duration-300 active:scale-95"><i data-lucide="x" class="h-4 w-4"></i></button>
             </div>
         </div>
-        <div class="flex-1 px-1 py-4 relative z-10 flex flex-col h-full overflow-y-auto content-auto">
+        <div class="flex-1 px-1 py-4 relative z-10 flex flex-col h-full overflow-y-auto">
             <div id="mobileNavLinks" class="space-y-1 flex-1">
                 <div class="text-center py-10 opacity-50"><i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto season-text-primary"></i></div>
             </div>
             <div class="mt-4 px-5 pb-6 pt-4 border-t border-[var(--s-glass-border)]">
-                <button data-target-section="booking" class="w-full season-btn font-extrabold py-4 rounded-2xl nav-action flex justify-center items-center gap-2 transition-all hover:-translate-y-1 shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> ¡Reservar Fecha!</button>
+                <button data-target-section="booking" class="w-full season-btn font-extrabold py-4 rounded-2xl nav-action flex justify-center items-center gap-2 shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> ¡Reservar Fecha!</button>
             </div>
         </div>
     </nav>
@@ -282,18 +338,16 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="glass-panel relative pt-16 pb-12 border-t mt-auto overflow-hidden rounded-none border-x-0 border-b-0 content-auto">
+    <footer class="glass-panel relative pt-16 pb-12 border-t mt-auto overflow-hidden rounded-none border-x-0 border-b-0">
         <div class="container mx-auto px-4 text-center relative z-10">
             <h2 class="text-3xl md:text-4xl font-black season-text-title font-nunito mb-2 tracking-tight">¿Listo para reservar?</h2>
             <p class="season-text-muted mb-10 font-medium">Escríbenos ahora y asegura tu fecha</p>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-12">
-                <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" rel="noopener noreferrer" class="flex items-center justify-start gap-4 bg-black/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-black/10 transition-all group hover:border-[var(--s-primary)] hover:bg-black/10"><div class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm shrink-0" style="background: linear-gradient(135deg, #f59e0b, #ec4899, #8b5cf6);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></div><span class="font-bold season-text-muted group-hover:text-[var(--s-text-title)] truncate">@diverty_eventos_pty</span></a>
-                <a href="https://wa.me/50766677965" target="_blank" rel="noopener noreferrer" class="flex items-center justify-start gap-4 bg-black/5 backdrop-blur-md px-6 py-4 rounded-2xl border border-black/10 transition-all group hover:border-[#10b981] hover:bg-black/10"><div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-sm shrink-0"><i data-lucide="phone" class="w-5 h-5 text-white"></i></div><span class="font-bold season-text-muted group-hover:text-[var(--s-text-title)] truncate">+507 6667-7965</span></a>
+                <a href="https://www.instagram.com/diverty_eventos_pty" target="_blank" rel="noopener noreferrer" class="flex items-center justify-start gap-4 bg-black/5 px-6 py-4 rounded-2xl border border-black/10 transition-all group hover:border-[var(--s-primary)] hover:bg-black/10"><div class="w-10 h-10 rounded-full flex items-center justify-center shadow-sm shrink-0" style="background: linear-gradient(135deg, #f59e0b, #ec4899, #8b5cf6);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg></div><span class="font-bold season-text-muted group-hover:text-[var(--s-text-title)] truncate">@diverty_eventos_pty</span></a>
+                <a href="https://wa.me/50766677965" target="_blank" rel="noopener noreferrer" class="flex items-center justify-start gap-4 bg-black/5 px-6 py-4 rounded-2xl border border-black/10 transition-all group hover:border-[#10b981] hover:bg-black/10"><div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center shadow-sm shrink-0"><i data-lucide="phone" class="w-5 h-5 text-white"></i></div><span class="font-bold season-text-muted group-hover:text-[var(--s-text-title)] truncate">+507 6667-7965</span></a>
             </div>
-            
             <div class="mt-8 pt-8 border-t border-black/10 flex flex-col items-center">
-                <nav id="footerNavLinks" aria-label="Enlaces del sitio" class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6 text-[11px] sm:text-xs font-bold season-text-muted">
-                </nav>
+                <nav id="footerNavLinks" aria-label="Enlaces del sitio" class="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6 text-[11px] sm:text-xs font-bold season-text-muted"></nav>
                 <p class="text-sm font-medium season-text-muted opacity-70">&copy; 2026 Diverty Eventos ✨ Haciendo cada fiesta mágica en Panamá</p>
             </div>
         </div>
@@ -311,27 +365,52 @@
                 <i data-lucide="check-circle" class="w-16 h-16 mx-auto text-emerald-500 mb-4"></i>
                 <h3 class="text-3xl font-black mb-3 tracking-tight">¡Solicitud Exitosa!</h3>
                 <p id="modalMessage" class="text-sm season-text-muted mb-8"></p>
-                <button data-action="close-modal" class="w-full bg-emerald-500 text-white font-extrabold py-4 rounded-[20px]">Entendido</button>
+                <button data-action="close-modal" class="w-full bg-emerald-500 text-white font-extrabold py-4 rounded-[20px] active:scale-95">Entendido</button>
             </div>
         </div>
     </div>
 
+    <!-- EL CARRITO DE COMPRAS UX PREMIUM -->
     <div id="cartModal" class="modal-backdrop z-[1060]">
-        <div class="modal-content glass-panel border shadow-[0_0_50px_rgba(0,0,0,0.1)]">
-            <div class="shrink-0 p-5 sm:p-6 pb-2 relative z-10 flex justify-between items-center border-b" style="border-color: var(--s-glass-border);">
-                <h2 class="text-2xl font-black flex items-center gap-2 season-text-title font-nunito tracking-tight">
-                    <i data-lucide="shopping-cart" class="season-text-primary w-6 h-6"></i> Tu Carrito
+        <div class="modal-content border shadow-[0_0_50px_rgba(0,0,0,0.15)] flex flex-col">
+            <!-- Header Cart -->
+            <div class="shrink-0 p-5 sm:p-6 pb-4 relative z-10 flex justify-between items-center border-b border-black/5 bg-white rounded-t-[32px] md:rounded-t-[28px]">
+                <h2 class="text-xl sm:text-2xl font-black flex items-center gap-2 season-text-title font-nunito tracking-tight">
+                    <svg class="w-6 h-6 season-text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                    Tu Carrito
                 </h2>
-                <button data-action="empty-cart" class="text-xs font-bold text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-500 px-3 py-2 rounded-xl transition-colors flex items-center gap-1.5 border border-rose-500/20 shadow-sm" aria-label="Vaciar Carrito">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i> <span class="hidden sm:inline">Vaciar</span>
+                <button id="emptyCartBtn" data-action="empty-cart" class="text-[10px] sm:text-xs font-bold text-rose-500 hover:text-white bg-rose-500/10 hover:bg-rose-500 active:scale-95 px-3 py-1.5 sm:py-2 rounded-xl transition-colors flex items-center gap-1.5 shadow-sm" aria-label="Vaciar Carrito">
+                    <svg class="w-3 h-3 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    <span class="hidden sm:inline">Vaciar</span>
                 </button>
             </div>
 
-            <div id="cartItems" class="flex-1 overflow-y-auto px-5 sm:px-6 py-4 custom-scrollbar relative z-10 min-h-[80px] bg-black/5"></div>
-            <div class="shrink-0 p-5 sm:p-6 pt-5 relative z-10 border-t" style="border-color: var(--s-glass-border);">
-                <div class="mb-4"><label class="font-bold season-text-muted text-[10px] uppercase tracking-wider mb-2 block pl-1">Ubicación del Evento:</label><div class="relative group"><div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><i data-lucide="map-pin" class="w-4 h-4 text-rose-500"></i></div><select id="cartLocation" class="w-full bg-black/5 border border-black/10 rounded-xl py-3 pl-10 pr-10 text-sm font-bold season-text-title outline-none focus:border-[var(--s-primary)] transition-all appearance-none shadow-sm cursor-pointer"></select><div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none"><i data-lucide="chevron-down" class="w-4 h-4 season-text-muted"></i></div></div></div>
-                <div class="mb-5 pl-1 pr-1 bg-black/5 p-4 rounded-xl border border-black/5 shadow-sm"><div class="flex justify-between items-center mb-2"><span class="text-xs font-medium season-text-muted">Subtotal:</span><span id="cartTotal" class="text-xs font-bold season-text-title w-20 text-right">$0.00</span></div><div id="discountRow" class="flex justify-between items-center mb-2 hidden"><span class="text-xs font-bold text-pink-500 flex items-center gap-1"><i data-lucide="tag" class="w-3 h-3"></i> Descuento:</span><span id="discountAmount" class="text-xs font-bold text-pink-500 w-20 text-right">-$0.00</span></div><div class="flex justify-between items-center mb-3"><span class="text-xs font-medium season-text-muted">Transporte:</span><span id="transportCost" class="text-xs font-bold season-text-title w-20 text-right">$0.00</span></div><div class="w-full h-px bg-black/10 mb-3"></div><div class="flex justify-between items-end"><span class="text-sm font-extrabold season-text-title uppercase tracking-wider">Total</span><span id="finalTotal" class="text-2xl font-black text-emerald-500 drop-shadow-sm leading-none">$0.00</span></div></div>
-                <div class="flex gap-3"><button data-action="close-modal" class="bg-black/5 border border-black/10 season-text-title flex-1 hover:bg-black/10 font-extrabold rounded-[18px] transition-all duration-300 text-[15px] shadow-sm flex items-center justify-center gap-2 h-[54px]">Cerrar</button><button data-action="navigate-from-modal" data-target-section="booking" class="season-btn flex-1 font-extrabold rounded-[18px] text-center transition-all duration-300 text-[15px] flex justify-center items-center h-[54px] gap-2">Reservar <i data-lucide="arrow-right" class="w-4 h-4"></i></button></div>
+            <!-- CONTENEDOR DOM DE LOS ITEMS (SE ACTUALIZA INMEDIATO) -->
+            <div id="cartItems" class="flex-1 overflow-y-auto px-4 sm:px-6 py-2 custom-scrollbar relative z-10 bg-black/[0.02]"></div>
+            
+            <!-- Footer Totals -->
+            <div id="cartTotalsFooter" class="shrink-0 p-4 sm:p-6 relative z-10 border-t border-black/5 bg-white shadow-[0_-10px_20px_rgba(0,0,0,0.03)] rounded-b-[32px] md:rounded-b-[28px]">
+                <div class="mb-4">
+                    <label class="font-bold season-text-muted text-[10px] uppercase tracking-wider mb-2 block pl-1">Ubicación del Evento:</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><i data-lucide="map-pin" class="w-4 h-4 text-rose-500"></i></div>
+                        <select id="cartLocation" class="w-full bg-black/5 border border-black/5 hover:border-[var(--s-primary)] rounded-xl py-3 pl-10 pr-10 text-sm font-bold season-text-title outline-none transition-colors appearance-none shadow-sm cursor-pointer"></select>
+                        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none"><i data-lucide="chevron-down" class="w-4 h-4 season-text-muted"></i></div>
+                    </div>
+                </div>
+                
+                <div class="mb-4 bg-black/5 p-4 rounded-2xl border border-black/5 shadow-sm flex flex-col gap-2">
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold season-text-muted">Subtotal:</span><span id="cartTotal" class="text-sm font-bold season-text-title w-20 text-right">$0.00</span></div>
+                    <div id="discountRow" class="flex justify-between items-center hidden"><span class="text-xs font-bold text-pink-500 flex items-center gap-1"><i data-lucide="tag" class="w-3 h-3"></i> Descuento:</span><span id="discountAmount" class="text-sm font-bold text-pink-500 w-20 text-right">-$0.00</span></div>
+                    <div class="flex justify-between items-center"><span class="text-xs font-bold season-text-muted">Transporte:</span><span id="transportCost" class="text-sm font-bold season-text-title w-20 text-right">$0.00</span></div>
+                    <div class="w-full h-px bg-black/10 my-1.5"></div>
+                    <div class="flex justify-between items-end"><span class="text-sm font-black season-text-title uppercase tracking-wider">Total</span><span id="finalTotal" class="text-2xl font-black text-emerald-500 drop-shadow-sm leading-none">$0.00</span></div>
+                </div>
+                
+                <div class="flex gap-2.5 sm:gap-3">
+                    <button data-action="close-modal" class="bg-black/5 border border-black/10 season-text-title flex-[1] hover:bg-black/10 font-bold rounded-2xl transition-colors duration-200 text-sm shadow-sm flex items-center justify-center gap-2 h-12 active:scale-95">Cerrar</button>
+                    <button data-action="navigate-from-modal" data-target-section="booking" class="season-btn flex-[2.5] font-black rounded-2xl text-center text-[13px] sm:text-sm flex justify-center items-center h-12 gap-2 shadow-md hover:brightness-105 active:scale-95">Continuar con la Reserva <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button>
+                </div>
             </div>
         </div>
     </div>
@@ -340,7 +419,7 @@
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
@@ -369,6 +448,14 @@
         
         const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [], theme: null, campaigns: [] };
 
+        const S_ICONS = {
+            bag: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+            cart: `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>`,
+            plus: `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M3 10h18"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>`,
+            check: `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
+            refresh: `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`
+        };
+
         const fetchWithTimeout = async (promise, ms) => {
             let timer;
             const timeoutPromise = new Promise((_, reject) => {
@@ -382,14 +469,12 @@
             return String(val).trim();
         };
 
-        // Función para renderizado inicial de contenedores
         function setContent(html) { 
             const mc = document.getElementById('mainContent'); 
             if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); setupSliders(); } 
         }
 
         function setupSliders() {
-            // Optimización: Solo agregar eventos a los sliders que no los tengan
             const sliders = document.querySelectorAll('.overflow-x-auto:not(.slider-ready)');
             sliders.forEach(slider => {
                 slider.classList.add('slider-ready');
@@ -404,7 +489,14 @@
             });
         }
 
-        function showModal(modalId) { const mod = document.getElementById(modalId); if(mod) mod.classList.add('show'); }
+        function showModal(modalId) { 
+            const mod = document.getElementById(modalId); 
+            if(mod) {
+                mod.classList.add('show'); 
+                if (modalId === 'cartModal') document.body.classList.add('cart-open');
+            } 
+        }
+        
         function showToast(msg, type='info') { 
             const t = document.getElementById('toast'); if(!t) return; 
             t.className = `show ${type}`; 
@@ -415,10 +507,14 @@
         }
         
         function calculateTransportCost(locVal) { const l = locations.find(x => x.value === locVal); return l ? l.cost : 0; }
+        
         function populateLocationSelects() { 
             const html = locations.map(o => `<option value="${o.value}">${o.label}</option>`).join(''); 
-            document.querySelectorAll('#cartLocation, select[name="location"]').forEach(s => { if(s){ const cv = s.value; s.innerHTML = html; if(cv) s.value = cv; } }); 
+            document.querySelectorAll('#cartLocation, select[name="location"]').forEach(s => { 
+                if(s){ const cv = s.value; s.innerHTML = html; if(cv) s.value = cv; } 
+            }); 
         }
+        
         function toggleMobileMenu(show) { 
             const m = document.getElementById('mobileMenu'), o = document.getElementById('mobileMenuOverlay'); 
             if(!m || !o) return; 
@@ -435,8 +531,8 @@
             const palettes = {
                 default: { 
                     p: '#7C3AED', s: '#E11D48', a: '#F59E0B', 
-                    bg: '#F8FAFC', overlay: 'rgba(248, 250, 252, 0.85)',
-                    glass: 'rgba(255, 255, 255, 0.7)', border: 'rgba(0, 0, 0, 0.1)',
+                    bg: '#F8FAFC', overlay: 'rgba(248,250,252,0.85)',
+                    glass: 'rgba(255,255,255,0.7)', border: 'rgba(0,0,0,0.1)',
                     tTitle: '#0F172A', tMuted: '#475569',
                     img: 'none', theme: 'default'
                 },
@@ -604,7 +700,7 @@
             let color = 'bg-amber-500/20 text-amber-500 border-amber-500/30';
             if(ev.estado.toLowerCase()==='confirmado') color = 'bg-blue-500/20 text-blue-500 border-blue-500/30';
             if(ev.estado.toLowerCase()==='completado') color = 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30';
-            return `<div class="glass-panel card-alive rounded-2xl overflow-hidden shadow-lg transition-all animate-slide-up content-auto"><div class="p-6 border-b" style="border-color: var(--s-glass-border)"><div class="flex justify-between items-start mb-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${color} shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-80"></div> ${ev.estado}</span></div><h4 class="text-2xl font-black season-text-title mb-1 capitalize">${ev.cliente}</h4><p class="text-sm season-text-muted flex items-center gap-1.5 font-semibold mb-4"><i data-lucide="calendar-days" class="w-4 h-4 season-text-primary"></i> ${ev.fecha?String(ev.fecha).split('-').reverse().join('/'):'Por definir'} a las ${ev.hora}</p><div class="bg-black/5 border border-black/5 rounded-xl p-4 flex items-start gap-3"><div class="p-2 rounded-lg mt-0.5" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="gift" class="w-5 h-5"></i></div><div><p class="text-[10px] font-bold season-text-primary uppercase tracking-wider mb-1">Paquete / Servicio</p><p class="text-sm font-bold season-text-title leading-snug">${ev.servicio||'Servicio no especificado'}</p></div></div></div><div class="bg-black/5 p-6 flex flex-col gap-3"><div class="flex justify-between items-center text-sm font-semibold season-text-muted"><span>Costo Total</span><span class="season-text-title">$${tot.toFixed(2)}</span></div><div class="flex justify-between items-center text-sm font-semibold text-emerald-500"><span>Abono Realizado</span><span>$${abo.toFixed(2)}</span></div><div class="w-full h-px border-t border-black/10 my-1"></div><div class="flex justify-between items-center"><span class="text-xs font-bold season-text-muted uppercase tracking-wider">Saldo Pendiente</span><span class="text-2xl font-black ${saldo>0?'text-pink-500':'text-emerald-500'}">$${saldo.toFixed(2)}</span></div>${saldo===0?`<div class="mt-2 text-center bg-emerald-500/20 text-emerald-600 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 border border-emerald-500/30"><i data-lucide="check-circle" class="w-4 h-4"></i> Totalmente Pagado</div>`:''}</div></div>`;
+            return `<div class="glass-panel card-alive rounded-2xl overflow-hidden shadow-lg transition-all animate-slide-up"><div class="p-6 border-b" style="border-color: var(--s-glass-border)"><div class="flex justify-between items-start mb-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${color} shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-80"></div> ${ev.estado}</span></div><h4 class="text-2xl font-black season-text-title mb-1 capitalize">${ev.cliente}</h4><p class="text-sm season-text-muted flex items-center gap-1.5 font-semibold mb-4"><i data-lucide="calendar-days" class="w-4 h-4 season-text-primary"></i> ${ev.fecha?String(ev.fecha).split('-').reverse().join('/'):'Por definir'} a las ${ev.hora}</p><div class="bg-black/5 border border-black/5 rounded-xl p-4 flex items-start gap-3"><div class="p-2 rounded-lg mt-0.5" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="gift" class="w-5 h-5"></i></div><div><p class="text-[10px] font-bold season-text-primary uppercase tracking-wider mb-1">Paquete / Servicio</p><p class="text-sm font-bold season-text-title leading-snug">${ev.servicio||'Servicio no especificado'}</p></div></div></div><div class="bg-black/5 p-6 flex flex-col gap-3"><div class="flex justify-between items-center text-sm font-semibold season-text-muted"><span>Costo Total</span><span class="season-text-title">$${tot.toFixed(2)}</span></div><div class="flex justify-between items-center text-sm font-semibold text-emerald-500"><span>Abono Realizado</span><span>$${abo.toFixed(2)}</span></div><div class="w-full h-px border-t border-black/10 my-1"></div><div class="flex justify-between items-center"><span class="text-xs font-bold season-text-muted uppercase tracking-wider">Saldo Pendiente</span><span class="text-2xl font-black ${saldo>0?'text-pink-500':'text-emerald-500'}">$${saldo.toFixed(2)}</span></div>${saldo===0?`<div class="mt-2 text-center bg-emerald-500/20 text-emerald-600 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 border border-emerald-500/30"><i data-lucide="check-circle" class="w-4 h-4"></i> Totalmente Pagado</div>`:''}</div></div>`;
         }
 
         function getCampaignsHTML() {
@@ -613,7 +709,7 @@
             const destacada = app.campaigns.find(c => c.destacada === true);
             const regulares = app.campaigns.filter(c => c !== destacada);
             
-            let html = '<div class="container mx-auto px-4 w-full mb-10 flex flex-col gap-8 animate-slide-up content-auto">';
+            let html = '<div class="container mx-auto px-4 w-full mb-10 flex flex-col gap-8 animate-slide-up">';
             
             const renderIncluye = (incluyeData) => {
                 let arr = [];
@@ -621,7 +717,9 @@
                 else if (typeof incluyeData === 'string') arr = incluyeData.split('\n');
                 arr = arr.filter(i => cleanStr(i) !== '');
                 if (arr.length === 0) return '';
-                return `<div class="mb-5 relative z-10"><ul class="space-y-2.5">` + arr.map(inc => `<li class="flex items-start text-sm sm:text-base font-medium season-text-muted"><i data-lucide="check-circle-2" class="w-5 h-5 season-text-primary mr-2.5 shrink-0 mt-0.5"></i> <span class="flex-1">${cleanStr(inc)}</span></li>`).join('') + `</ul></div>`;
+                return `<div class="mb-6 relative z-20 w-full flex-grow"><ul class="space-y-3 w-full bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[color-mix(in_srgb,var(--s-text-title)_5%,transparent)] rounded-[1.25rem] p-5 shadow-inner">` + 
+                       arr.map(inc => `<li class="flex items-start text-[13px] season-text-muted font-bold leading-snug group/item transition-colors hover:text-[var(--s-text-title)]"><div class="mt-0.5 mr-3.5 shrink-0 p-1 rounded-full shadow-sm text-[var(--s-bg-color)] border border-white/20" style="background: var(--s-btn-grad);"><i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i></div><span class="flex-1 mt-px">${cleanStr(inc)}</span></li>`).join('') + 
+                       `</ul></div>`;
             };
 
             const renderCamp = (camp, isDestacada) => {
@@ -633,43 +731,48 @@
                 const pAnt = cleanStr(camp.precioOriginal);
                 const tId = cleanStr(camp.id);
                 const incluyeHtml = renderIncluye(camp.incluye);
-                let btnTxt = cleanStr(camp.botonTexto) || 'VER MÁS';
+                let btnTxt = cleanStr(camp.botonTexto) || 'AÑADIR AL CARRITO';
                 
                 let actionBtn = 'add-to-cart';
                 let itemDataId = tId;
-                let extraAttrs = `data-is-campaign="true"`;
+                let extraAttrs = `data-is-campaign="true" data-cart-state="none"`;
                 let targetSec = 'booking';
                 
                 if (!pPromo && !pAnt && !camp.precio) {
                     actionBtn = 'navigate-from-modal';
-                    extraAttrs = '';
+                    extraAttrs = 'data-cart-state="none"';
                     const accionStr = cleanStr(camp.accion).toLowerCase();
                     if (accionStr.startsWith('cat_')) targetSec = accionStr;
-                } else if (!camp.botonTexto) {
-                    btnTxt = 'AÑADIR AL CARRITO';
                 }
+
+                const ic = app.cart.find(i=>i.id===itemDataId);
 
                 if (isDestacada) {
                     return `
-                    <div class="card-safe-wrapper mt-8 mb-4">
+                    <div class="card-safe-wrapper mt-8 mb-4 w-full">
                         <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[11px] sm:text-xs font-black uppercase tracking-widest px-8 py-2 rounded-full z-[40] shadow-[0_4px_20px_rgba(244,63,94,0.6)] border border-pink-400/50 flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="tag" class="w-3.5 h-3.5 fill-white"></i> GRAN PROMOCIÓN</div>
                         
-                        <div class="glass-panel card-alive flex flex-col md:flex-row h-full rounded-[2.1rem]">
-                            <div class="card-decor-tl"></div>
-                            ${img ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative shrink-0 pt-8 px-6 md:p-8"><img src="${img}" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-[1.25rem] shadow-md border" style="border-color: var(--s-glass-border);"></div>` : ''}
-                            <div class="p-6 sm:p-8 md:p-10 flex flex-col justify-center flex-1 relative z-10">
+                        <div class="glass-panel card-alive flex flex-col md:flex-row h-full rounded-[2.1rem] w-full">
+                            ${img ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative shrink-0 pt-8 px-6 md:p-8"><img src="${img}" class="w-full h-full object-cover rounded-[1.25rem] shadow-md border" style="border-color: var(--s-glass-border);"></div>` : ''}
+                            <div class="p-6 sm:p-8 md:p-10 pb-8 flex flex-col justify-center flex-1 relative z-10 w-full">
                                 ${sub ? `<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest w-max mb-5" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="star" class="w-3.5 h-3.5"></i> ${sub}</div>` : ''}
                                 <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 font-nunito leading-tight season-text-title tracking-tight">${titulo}</h2>
                                 ${desc ? `<p class="season-text-muted text-sm sm:text-base font-semibold mb-6 leading-relaxed">${desc}</p>` : ''}
                                 ${incluyeHtml}
                                 ${(pPromo || pAnt) ? `
-                                <div class="flex flex-wrap items-end gap-3 mb-8 mt-auto pt-4 border-t" style="border-color: var(--s-glass-border);">
-                                    ${pPromo ? `<span class="text-4xl sm:text-5xl font-black season-gradient-text leading-none tracking-tight">$${Number(pPromo).toFixed(2)}</span>` : ''}
-                                    ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="text-base sm:text-lg font-bold opacity-50 line-through leading-none mb-1.5 season-text-muted">Antes $${Number(pAnt).toFixed(2)}</span>` : ''}
-                                </div>` : '<div class="mb-8 mt-auto"></div>'}
-                                <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} class="season-btn w-full sm:w-max font-extrabold py-4 px-10 rounded-2xl text-sm sm:text-base tracking-wide flex items-center justify-center gap-2 uppercase transition-all duration-300">
-                                    ${btnTxt}
-                                </button>
+                                <div class="flex items-center justify-between mt-auto mb-5 w-full relative z-10 pt-5 border-t border-[var(--s-glass-border)]">
+                                    ${pPromo && Number(pAnt) > Number(pPromo) ? `<span class="bg-pink-500/10 text-pink-500 text-[10px] font-black px-3 py-1.5 rounded-xl border border-pink-500/20 shadow-sm flex items-center gap-1"><i data-lucide="percent" class="w-3 h-3"></i> AHORRO</span>` : '<span class="text-[10px] font-black uppercase tracking-widest season-text-muted mb-1 opacity-70">Inversión</span>'}
+                                    <div class="flex items-end gap-2.5">
+                                        ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="season-text-muted opacity-60 line-through text-sm font-bold leading-none mb-1.5">$${Number(pAnt).toFixed(2)}</span>` : ''}
+                                        ${pPromo ? `<span class="text-4xl sm:text-5xl font-black season-gradient-text leading-none tracking-tight drop-shadow-sm">$${Number(pPromo).toFixed(2)}</span>` : ''}
+                                    </div>
+                                </div>` : '<div class="mb-5 mt-auto pt-5"></div>'}
+                                
+                                <div class="mt-auto pt-2 pb-2">
+                                    <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} data-cart-state="${ic?'selected':'none'}" class="w-full sm:w-max font-black py-4 px-10 rounded-[1.25rem] text-[11px] sm:text-[13px] tracking-widest uppercase text-white transition-transform duration-150 active:scale-95 relative overflow-hidden flex items-center justify-center gap-2.5 z-10 shadow-md" style="background: ${ic ? '#10B981' : 'var(--s-btn-grad)'};">
+                                        ${ic ? S_ICONS.check + ' SELECCIONADO' : (actionBtn==='add-to-cart' ? S_ICONS.bag : S_ICONS.sparkles) + ' ' + btnTxt}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>`;
@@ -677,22 +780,27 @@
                     return `
                     <div class="card-safe-wrapper mt-6">
                         <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-5 py-1.5 rounded-full z-[40] shadow-[0_4px_15px_rgba(244,63,94,0.5)] border border-pink-400/50 flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> Promo</div>
-                        <div class="glass-panel card-alive p-6 sm:p-7 flex flex-col h-full group">
-                            <div class="card-decor-tl"></div>
-                            <div class="relative z-10 flex flex-col h-full pt-4">
-                                ${img ? `<div class="w-full h-48 sm:h-52 rounded-[1.25rem] overflow-hidden mb-5 shrink-0 shadow-sm border" style="border-color: var(--s-glass-border);"><img src="${img}" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"></div>` : ''}
+                        <div class="glass-panel card-alive p-5 sm:p-6 pb-8 flex flex-col h-full group w-full">
+                            <div class="relative z-10 flex flex-col h-full pt-2">
+                                ${img ? `<div class="w-full h-48 sm:h-52 rounded-[1.25rem] overflow-hidden mb-5 shrink-0 shadow-sm border border-[var(--s-glass-border)]"><img src="${img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>` : ''}
                                 ${sub ? `<span class="text-[10px] font-black uppercase tracking-widest season-text-primary mb-3 block">${sub}</span>` : ''}
                                 <h3 class="text-xl sm:text-2xl font-black season-text-title mb-3 font-nunito leading-tight">${titulo}</h3>
                                 ${desc ? `<p class="season-text-muted text-xs sm:text-sm font-semibold mb-5 leading-relaxed">${desc}</p>` : ''}
                                 ${incluyeHtml}
                                 ${(pPromo || pAnt) ? `
-                                <div class="flex items-end gap-2.5 mb-6 mt-auto pt-4 border-t" style="border-color: var(--s-glass-border);">
-                                    ${pPromo ? `<span class="text-3xl font-black season-text-primary leading-none tracking-tight">$${Number(pPromo).toFixed(2)}</span>` : ''}
-                                    ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="text-xs sm:text-sm font-bold opacity-50 line-through mb-1 season-text-muted">$${Number(pAnt).toFixed(2)}</span>` : ''}
-                                </div>` : '<div class="mb-6 mt-auto pt-4"></div>'}
-                                <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} class="season-btn-outline w-full font-extrabold py-3.5 px-4 rounded-xl text-xs sm:text-sm text-center flex items-center justify-center gap-2 uppercase relative overflow-hidden">
-                                    ${btnTxt}
-                                </button>
+                                <div class="flex items-center justify-between mt-auto mb-5 w-full relative z-10 pt-5 border-t border-[var(--s-glass-border)]">
+                                    ${pPromo && Number(pAnt) > Number(pPromo) ? `<span class="bg-pink-500/10 text-pink-500 text-[10px] font-black px-3 py-1.5 rounded-xl border border-pink-500/20 shadow-sm flex items-center gap-1"><i data-lucide="percent" class="w-3 h-3"></i> AHORRO</span>` : '<span class="text-[10px] font-black uppercase tracking-widest season-text-muted mb-1 opacity-70">Inversión</span>'}
+                                    <div class="flex items-end gap-2.5">
+                                        ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="season-text-muted opacity-60 line-through text-sm font-bold leading-none mb-1.5">$${Number(pAnt).toFixed(2)}</span>` : ''}
+                                        ${pPromo ? `<span class="text-4xl font-black season-gradient-text leading-none tracking-tight drop-shadow-sm">$${Number(pPromo).toFixed(2)}</span>` : ''}
+                                    </div>
+                                </div>` : '<div class="mb-5 mt-auto pt-5"></div>'}
+                                
+                                <div class="mt-auto pt-2 pb-2">
+                                    <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} data-cart-state="${ic?'selected':'none'}" class="w-full font-black py-4 px-6 rounded-[1.25rem] text-[11px] sm:text-[13px] tracking-widest uppercase text-white transition-transform duration-150 active:scale-95 relative overflow-hidden flex items-center justify-center gap-2.5 z-10 shadow-md" style="background: ${ic ? '#10B981' : 'var(--s-btn-grad)'};">
+                                        ${ic ? S_ICONS.check + ' SELECCIONADO' : (actionBtn==='add-to-cart' ? S_ICONS.bag : S_ICONS.sparkles) + ' ' + btnTxt}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>`;
@@ -701,7 +809,7 @@
 
             if (destacada) html += renderCamp(destacada, true);
             if (regulares.length > 0) {
-                html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">`;
+                html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">`;
                 regulares.forEach(camp => { html += renderCamp(camp, false); });
                 html += `</div>`;
             }
@@ -713,40 +821,46 @@
         function createDetailedCardHTML(item) {
             const isPkg = !item.isHourly; 
             
-            let btn='season-btn w-full font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 tracking-wide uppercase text-[11px] sm:text-xs relative z-10 transition-all duration-300';
-            let tc='text-xl sm:text-2xl font-black leading-tight font-poppins transition-all duration-300 season-text-title';
+            let btn='w-full font-extrabold rounded-[1.25rem] flex justify-center items-center gap-2.5 tracking-wide uppercase relative z-10 transition-transform duration-150 active:scale-95';
             let pc='season-gradient-text drop-shadow-sm';
-            let b='';
             
-            if(item.id==='clown_magic'){ b=`<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white bg-[var(--s-primary)] text-[10px] sm:text-xs font-black uppercase tracking-widest px-6 py-2 rounded-full z-[40] shadow-[0_4px_15px_rgba(0,0,0,0.2)] whitespace-nowrap border border-white/20 flex items-center gap-1.5"><i data-lucide="star" class="w-3.5 h-3.5 fill-white"></i> Más Popular</div>`; }
-            else if(item.id==='clown_diverty'){ b=`<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-emerald-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-6 py-2 rounded-full z-[40] shadow-[0_4px_15px_rgba(16,185,129,0.3)] border border-emerald-400/50 whitespace-nowrap flex items-center gap-1.5"><i data-lucide="thumbs-up" class="w-3.5 h-3.5 fill-white"></i> Recomendado</div>`; }
-            else if(item.discountApplied||item.oferta){ b=`<div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-6 py-2 rounded-full z-[40] shadow-[0_4px_15px_rgba(244,63,94,0.3)] border border-pink-400/50 whitespace-nowrap flex items-center gap-1.5"><i data-lucide="tag" class="w-3.5 h-3.5 fill-white"></i> Oferta</div>`; }
+            let b='';
+            if(item.id==='clown_magic'){ b=`<div class="absolute top-4 left-4 text-white bg-[var(--s-primary)] text-[10px] sm:text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full z-20 shadow-lg border border-white/20 flex items-center gap-1.5 backdrop-blur-md"><i data-lucide="star" class="w-3 h-3 fill-white"></i> Popular</div>`; }
+            else if(item.id==='clown_diverty'){ b=`<div class="absolute top-4 left-4 bg-emerald-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full z-20 shadow-lg border border-emerald-400/50 flex items-center gap-1.5 backdrop-blur-md"><i data-lucide="thumbs-up" class="w-3 h-3 fill-white"></i> Recomendado</div>`; }
+            else if(item.discountApplied||item.oferta){ b=`<div class="absolute top-4 left-4 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full z-20 shadow-lg border border-pink-400/50 flex items-center gap-1.5 backdrop-blur-md"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> Oferta</div>`; }
+            
+            let imgBlock = `<div class="relative w-full h-56 sm:h-64 shrink-0 rounded-[1.25rem] overflow-hidden shadow-sm mb-5 group-hover:shadow-xl transition-all duration-500 border border-[var(--s-glass-border)]">
+                ${b}
+                <img src="${cleanStr(item.image)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/40 to-transparent opacity-90"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-5 pt-10 text-white">
+                    <h3 class="text-2xl sm:text-3xl font-black leading-tight drop-shadow-lg tracking-tight font-poppins text-white">${cleanStr(item.name||item.title)}</h3>
+                    ${cleanStr(item.description||'') ? `<p class="text-white/80 text-[11px] sm:text-xs font-extrabold mt-1.5 leading-snug drop-shadow line-clamp-2 uppercase tracking-wider">${cleanStr(item.description||'')}</p>` : ''}
+                </div>
+            </div>`;
             
             let pd='', px=Number(item.price);
             if(px||px===0){
-                if(item.discountApplied||item.oferta) pd=`<div class="flex items-end justify-between mt-auto mb-4 w-full relative z-10 pt-4 border-t" style="border-color: var(--s-glass-border);"><div class="flex items-end gap-2.5"><span class="text-4xl font-black ${pc} leading-none tracking-tight">$${px.toFixed(2)}</span><span class="season-text-muted opacity-60 line-through text-sm font-bold leading-none mb-1.5">$${Number(item.originalPrice).toFixed(2)}</span></div><span class="bg-pink-500/20 text-pink-500 text-[10px] font-black px-2.5 py-1 rounded-lg border border-pink-500/30 shadow-sm">OFERTA</span></div>`;
-                else pd=`<div class="flex items-end justify-end mt-auto mb-4 w-full relative z-10 pt-4 border-t" style="border-color: var(--s-glass-border);"><span class="text-3xl font-black ${pc} transition-all duration-300 leading-none tracking-tight">$${px.toFixed(2)}</span>${item.isHourly?'<span class="season-text-muted opacity-70 text-[10px] font-bold ml-1 mb-1 uppercase tracking-wider">/hr</span>':''}</div>`;
+                if(item.discountApplied||item.oferta) pd=`<div class="flex items-center justify-between mt-auto mb-5 w-full relative z-10 pt-5 border-t border-[var(--s-glass-border)]"><span class="bg-pink-500/10 text-pink-500 text-[10px] font-black px-3 py-1.5 rounded-xl border border-pink-500/20 shadow-sm flex items-center gap-1"><i data-lucide="percent" class="w-3 h-3"></i> AHORRO</span><div class="flex items-end gap-2.5"><span class="season-text-muted opacity-60 line-through text-sm font-bold leading-none mb-1.5">$${Number(item.originalPrice).toFixed(2)}</span><span class="text-4xl font-black ${pc} leading-none tracking-tight drop-shadow-sm">$${px.toFixed(2)}</span></div></div>`;
+                else pd=`<div class="flex items-end justify-between mt-auto mb-5 w-full relative z-10 pt-5 border-t border-[var(--s-glass-border)]"><span class="text-[10px] font-black uppercase tracking-widest season-text-muted mb-1 opacity-70">Inversión</span><div class="flex items-end"><span class="text-4xl font-black ${pc} transition-all duration-300 leading-none tracking-tight drop-shadow-sm">$${px.toFixed(2)}</span>${item.isHourly?'<span class="season-text-muted opacity-70 text-[10px] font-bold ml-1 mb-1.5 uppercase tracking-wider">/hr</span>':''}</div></div>`;
             }
             
             let sl='';
-            if(item.services&&item.services.length>0){ sl=`<div class="mt-4 mb-4 relative z-20 w-full flex-grow"><ul class="space-y-2.5 w-full">`+item.services.map(s=>`<li class="flex items-start text-[13px] season-text-muted font-medium leading-snug group/item transition-colors hover:text-[var(--s-text-title)]"><div class="mt-0.5 mr-3 shrink-0 p-1 rounded-full border border-[var(--s-glass-border)]"><i data-lucide="check" class="w-3 h-3 season-text-primary"></i></div><span class="flex-1 mt-0.5">${s}</span></li>`).join('')+`</ul></div>`; }
+            if(item.services&&item.services.length>0){ sl=`<div class="mb-6 relative z-20 w-full flex-grow"><ul class="space-y-3 w-full bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[color-mix(in_srgb,var(--s-text-title)_5%,transparent)] rounded-[1.25rem] p-5 shadow-inner">`+item.services.map(s=>`<li class="flex items-start text-[13px] season-text-muted font-bold leading-snug group/item transition-colors hover:text-[var(--s-text-title)]"><div class="mt-0.5 mr-3.5 shrink-0 p-1 rounded-full shadow-sm text-[var(--s-bg-color)] border border-white/20" style="background: var(--s-btn-grad);"><i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i></div><span class="flex-1 mt-px">${s}</span></li>`).join('')+`</ul></div>`; }
 
             const ic=app.cart.find(i=>i.id===item.id); const iq=ic?ic.quantity:1;
             let ab='';
+            
             if(item.isHourly){
-                ab=`<div class="mt-auto w-full pt-3 relative z-10"><div class="flex items-center justify-between mb-3 bg-black/5 border border-[var(--s-glass-border)] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-10 h-10 bg-black/5 hover:bg-black/10 rounded-xl flex items-center justify-center season-text-muted transition-colors"><i data-lucide="minus" class="w-4 h-4"></i></button><span id="qty-${item.id}" class="text-base font-bold season-text-title w-10 text-center">${iq}</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-10 h-10 bg-black/5 hover:bg-black/10 rounded-xl flex items-center justify-center season-text-muted transition-colors"><i data-lucide="plus" class="w-4 h-4"></i></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" class="${btn} ${ic?'!bg-emerald-500 !text-white !shadow-[0_0_25px_rgba(16,185,129,0.3)]':''}">${ic?`<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`:`<i data-lucide="shopping-cart" class="w-5 h-5 text-white"></i> Añadir al Carrito`}</button></div>`;
+                ab=`<div class="mt-auto w-full relative z-10 pb-2"><div class="flex items-center justify-between mb-3 bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[var(--s-glass-border)] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button><span id="qty-${item.id}" class="text-lg font-black season-text-title w-12 text-center">${iq}</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'refresh':'none'}" class="season-btn ${btn} py-4 text-xs sm:text-sm text-white" style="${ic?'background: #F59E0B;':''}">${ic?`${S_ICONS.refresh} Actualizar Cantidad`:`${S_ICONS.cart} Añadir al Carrito`}</button></div>`;
             } else {
-                ab=`<div class="mt-auto w-full pt-2 relative z-10"><button data-action="add-to-cart" data-item-id="${item.id}" class="${btn} ${ic?'!bg-emerald-500 !text-white !shadow-[0_0_25px_rgba(16,185,129,0.3)]':''}">${ic?`<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Plan Seleccionado`:`<i data-lucide="${isPkg?'calendar-plus':'shopping-cart'}" class="w-5 h-5 text-white"></i> ${isPkg?'Reservar este plan':'Añadir al carrito'}`}</button></div>`;
+                ab=`<div class="mt-auto w-full relative z-10 pb-2"><button data-action="add-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'selected':'none'}" class="season-btn ${btn} py-4 text-xs sm:text-sm text-white shadow-md" style="${ic?'background: #10B981;':''}">${ic?`${S_ICONS.check} Plan Seleccionado`:`${isPkg?S_ICONS.plus:S_ICONS.cart} Añadir al carrito`}</button></div>`;
             }
             
-            let ts=`<div class="flex items-center gap-4 mb-2 relative z-10"><div class="w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-[1.25rem] overflow-hidden shadow-sm border border-[var(--s-glass-border)] bg-black/5 relative transition-colors"><img src="${cleanStr(item.image)}" loading="lazy" decoding="async" alt="${cleanStr(item.name||item.title)}" class="w-full h-full object-cover relative z-10"></div><div class="flex flex-col justify-center flex-1"><h3 class="${tc}">${cleanStr(item.name||item.title)}</h3><p class="season-text-primary text-[11px] sm:text-xs font-bold mt-1.5 leading-snug drop-shadow-sm opacity-90 transition-opacity line-clamp-2">${cleanStr(item.description||'')}</p></div></div>`;
-            
             return `
-            <div class="w-[85vw] max-w-[360px] md:w-full snap-center flex-shrink-0 h-full snap-container relative pt-6 pb-2 content-auto">
-                <div class="glass-panel card-alive p-6 flex flex-col h-full group group-hover-playful relative">
-                    ${b}
-                    <div class="card-decor-tl"></div>
-                    <div class="relative z-10 flex flex-col h-full pt-2">${ts}${sl}${pd}${ab}</div>
+            <div class="w-[85vw] max-w-[380px] md:w-full snap-center flex-shrink-0 h-full snap-container relative pt-6 pb-2">
+                <div class="glass-panel card-alive p-5 sm:p-6 pb-8 flex flex-col h-full group group-hover-playful relative">
+                    <div class="relative z-10 flex flex-col h-full">${imgBlock}${sl}${pd}${ab}</div>
                 </div>
             </div>`;
         }
@@ -754,7 +868,7 @@
         function renderHome() {
             let ex = '';
             if(!isFirebaseLoaded || (app.catalog && app.catalog.length === 0 && !catalogLoaded)){ 
-                ex = `<div class="w-full flex flex-col items-center justify-center py-12"><i data-lucide="loader-2" class="w-10 h-10 season-text-primary animate-spin mb-4"></i><p class="text-sm font-bold season-text-muted tracking-widest uppercase">Cargando catálogo...</p></div>`; 
+                ex = `<div class="w-full flex flex-col items-center justify-center py-12"><i data-lucide="loader-2" class="w-10 h-10 season-text-primary animate-spin mb-4"></i><p class="text-sm font-bold season-text-muted tracking-widest uppercase">Cargando nuestros paquetes...</p></div>`; 
             } else {
                 let eh = '';
                 if(app.catalog && app.catalog.length>0){ 
@@ -772,7 +886,7 @@
             
             let rc = '';
             if(isFirebaseLoaded && customerReviews && customerReviews.length>0){
-                rc = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12 content-auto">
+                rc = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12">
                     <h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 season-text-title font-nunito">Lo que dicen de nosotros <i data-lucide="heart" class="w-8 h-8 inline text-rose-500 animate-pulse"></i></h2>
                     <div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] season-text-muted font-bold uppercase px-3 py-1 rounded-full border border-[var(--s-glass-border)] bg-black/5 shadow-sm">Desliza 👉</span></div>
                     <div class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3 pt-6">` + 
@@ -807,7 +921,6 @@
             
             const firstCatTarget = dynamicCategories.length > 0 ? `cat_${dynamicCategories[0].id}` : 'home';
             
-            // --- ACTUALIZACIÓN SUAVE (DOM DIFFING): Rápidez al no recargar el video ---
             const existingHero = document.getElementById('hero-section-identifier');
             const mainCont = document.getElementById('mainContent');
 
@@ -832,17 +945,12 @@
                     if(typeof lucide !== 'undefined') lucide.createIcons({root: revWrap}); 
                     setupSliders(); 
                 }
-                
-                // Actualizar los links de catálogo dinámicamente si llegaron
-                const catBtn = existingHero.querySelector('button[data-target-section^="cat_"]');
-                if(catBtn && catBtn.dataset.targetSection !== firstCatTarget) catBtn.dataset.targetSection = firstCatTarget;
 
                 if(typeof renderCalendar === 'function') renderCalendar(); 
                 return;
             }
 
-            // --- FULL RENDER ---
-            setContent(`<div id="hero-section-identifier"><div class="relative"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video id="hero-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="auto" class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-black/50 z-[2] pointer-events-none"></div><div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--s-bg-color)] to-transparent z-[2] pointer-events-none"></div><div class="hero-content z-[3] relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-black mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="season-gradient-text drop-shadow-md">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full season-btn rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform hover:scale-[1.02] font-bold text-base shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> Reservar ahora</button><button data-action="navigate-from-modal" data-target-section="${firstCatTarget}" class="nav-action w-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-all font-bold text-base shadow-md"><i data-lucide="eye" class="w-5 h-5"></i> Explorar Catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-6"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-[340px] mx-auto px-2"><div class="glass-panel card-alive p-4 sm:p-5 shadow-sm relative overflow-hidden content-auto" id="calendar-card-inner"><div class="flex items-center gap-3 mb-2"><div class="w-9 h-9 rounded-[10px] border-[2px] border-[var(--s-primary)]/20 bg-[var(--s-primary)]/10 flex items-center justify-center season-text-primary shadow-inner"><i data-lucide="calendar-heart" class="w-4 h-4"></i></div><div class="text-left"><h2 class="text-lg font-black season-text-title font-poppins leading-none tracking-tight">Selecciona tu fecha</h2><p class="season-text-muted text-[10px] mt-1 font-medium">Reserva en segundos</p></div></div><div class="flex justify-between items-center mb-4 mt-4 relative z-10 bg-[var(--s-glass-bg)] backdrop-blur-md p-1.5 rounded-[12px] border border-[var(--s-glass-border)] shadow-sm w-full mx-auto gap-2"><button data-action="prevMonth" id="prevMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><h3 id="cal-month-year" class="text-sm sm:text-base font-black season-text-title capitalize leading-none font-poppins px-1 tracking-wide">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-1 gap-x-1 text-center relative z-10 w-full mb-2"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
+            setContent(`<div id="hero-section-identifier"><div class="relative"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video id="hero-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="auto" class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none"><source src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-black/50 z-[2] pointer-events-none"></div><div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--s-bg-color)] to-transparent z-[2] pointer-events-none"></div><div class="hero-content z-[3] relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-black mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="season-gradient-text drop-shadow-md">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full season-btn rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform active:scale-95 font-bold text-base shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> Reservar ahora</button><button data-action="scroll-to-catalog" class="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-colors font-bold text-base shadow-md active:scale-95"><i data-lucide="eye" class="w-5 h-5"></i> Explorar Catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-6"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-[340px] mx-auto px-2"><div class="glass-panel card-alive p-4 sm:p-5 shadow-sm relative overflow-hidden" id="calendar-card-inner"><div class="flex items-center gap-3 mb-2"><div class="w-9 h-9 rounded-[10px] border-[2px] border-[var(--s-primary)]/20 bg-[var(--s-primary)]/10 flex items-center justify-center season-text-primary shadow-inner"><i data-lucide="calendar-heart" class="w-4 h-4"></i></div><div class="text-left"><h2 class="text-lg font-black season-text-title font-poppins leading-none tracking-tight">Selecciona tu fecha</h2><p class="season-text-muted text-[10px] mt-1 font-medium">Reserva en segundos</p></div></div><div class="flex justify-between items-center mb-4 mt-4 relative z-10 bg-[var(--s-glass-bg)] backdrop-blur-md p-1.5 rounded-[12px] border border-[var(--s-glass-border)] shadow-sm w-full mx-auto gap-2"><button data-action="prevMonth" id="prevMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><h3 id="cal-month-year" class="text-sm sm:text-base font-black season-text-title capitalize leading-none font-poppins px-1 tracking-wide">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-1 gap-x-1 text-center relative z-10 w-full mb-2"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
             
             const campWrapper = document.getElementById('home-campaigns-wrapper');
             if (campWrapper && isFirebaseLoaded) {
@@ -873,13 +981,13 @@
         function renderSection(items, title, icon) { 
             if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p class="font-bold text-sm tracking-widest uppercase">Cargando...</p></div>`); return; }
             if(items.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-12 season-text-title font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 opacity-50"></i></h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="folder-open" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Próximamente más opciones.</p></div></section></div>`); return; }
-            setContent(`<div class="container mx-auto px-4 pt-28 pb-12 content-auto"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 season-text-title font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 opacity-50 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-6 hide-scrollbar -mx-4 px-4 pt-12 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch" style="-webkit-overflow-scrolling: touch;">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 season-text-title font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 opacity-50 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-6 hide-scrollbar -mx-4 px-4 pt-12 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch" style="-webkit-overflow-scrolling: touch;">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
         }
         
         function renderGallery() {
             if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p>Cargando Galería...</p></div>`); return; }
             if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
-            setContent(`<div class="container mx-auto px-4 pt-28 pb-12 content-auto"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative content-auto"><img src="${cleanStr(i.image)}" loading="lazy" decoding="async" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative"><img src="${cleanStr(i.image)}" loading="lazy" decoding="async" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
         }
 
         function renderCalendar() {
@@ -911,10 +1019,10 @@
                     html += `<div class="flex items-center justify-center relative pointer-events-none"><div class="${c} bg-rose-500/10 text-rose-500 border-rose-500/20 line-through decoration-rose-500/50 cursor-not-allowed shadow-sm">${d}</div></div>`; 
                 }
                 else if(eventsThisDay>=1){ 
-                    html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'season-btn ring-4 ring-amber-400/30 scale-110 text-white shadow-lg':'bg-amber-500/15 text-amber-600 border-amber-500/30 hover:bg-amber-500 hover:text-white hover:-translate-y-1 hover:shadow-md'}">${d}</div></div>`; 
+                    html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'season-btn ring-4 ring-amber-400/30 scale-110 text-white shadow-lg':'bg-amber-500/15 text-amber-600 border-amber-500/30 active:scale-95 shadow-md'}">${d}</div></div>`; 
                 }
                 else { 
-                    html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'season-btn ring-4 ring-[var(--s-primary)]/30 scale-110 text-white shadow-lg':'bg-[var(--s-glass-bg)] text-[var(--s-text-title)] border-[var(--s-glass-border)] hover:border-[var(--s-primary)] hover:text-[var(--s-primary)] hover:-translate-y-1 hover:shadow-md shadow-[0_2px_10px_rgba(0,0,0,0.03)]'}">${d}</div></div>`; 
+                    html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'season-btn ring-4 ring-[var(--s-primary)]/30 scale-110 text-white shadow-lg':'bg-[var(--s-glass-bg)] text-[var(--s-text-title)] border-[var(--s-glass-border)] active:scale-95 shadow-[0_2px_10px_rgba(0,0,0,0.03)]'}">${d}</div></div>`; 
                 }
             }
             grid.innerHTML = html;
@@ -932,7 +1040,7 @@
                         <div class="w-10 h-10 rounded-full border-[2.5px] border-emerald-500 bg-[var(--s-glass-bg)] flex items-center justify-center text-emerald-500 shadow-sm shrink-0"><i data-lucide="calendar-check" class="w-4 h-4"></i></div>
                         <div><p class="text-emerald-700 font-black text-[11px] leading-tight uppercase tracking-wide">Fecha seleccionada</p><p class="season-text-title font-bold text-sm capitalize mt-0.5">${ds}</p></div>
                     </div>
-                    <button data-action="confirm-date" class="w-full season-btn font-extrabold py-3.5 rounded-xl transition-transform hover:-translate-y-1 hover:shadow-lg flex justify-center items-center gap-2 relative z-10 text-xs tracking-wide uppercase"><i data-lucide="arrow-right" class="w-4 h-4"></i> Continuar</button>
+                    <button data-action="confirm-date" class="w-full season-btn font-extrabold py-3.5 rounded-xl transition-transform active:scale-95 shadow-lg flex justify-center items-center gap-2 relative z-10 text-xs tracking-wide uppercase"><i data-lucide="arrow-right" class="w-4 h-4"></i> Continuar</button>
                 </div>`;
             } else {
                 bBox.innerHTML = `<div class="flex justify-center gap-3 sm:gap-6 mt-5 pt-4 border-t border-[var(--s-glass-border)] flex-wrap">
@@ -945,7 +1053,7 @@
         }
 
         function renderPortal() {
-            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-black/5 border border-[var(--s-primary)] rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm season-text-primary"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold season-text-title font-nunito tracking-tight">Portal del Cliente</h2><p class="season-text-muted mt-2 font-medium text-sm">Consulta el estado de tu evento de forma rápida.</p></div><div class="glass-panel card-alive p-6 sm:p-10 shadow-sm"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 season-text-muted w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-black/5 border border-black/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold season-text-title outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" required></div><button type="submit" class="w-full season-btn font-bold py-3.5 rounded-2xl flex justify-center items-center gap-2 text-sm transition-transform hover:scale-[1.02]"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-black/10 rounded-2xl bg-black/5"><p class="season-text-muted font-semibold">Ingresa tu número para ver tus reservas activas.</p></div></div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-black/5 border border-[var(--s-primary)] rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm season-text-primary"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold season-text-title font-nunito tracking-tight">Portal del Cliente</h2><p class="season-text-muted mt-2 font-medium text-sm">Consulta el estado de tu evento de forma rápida.</p></div><div class="glass-panel card-alive p-6 sm:p-10 shadow-sm"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 season-text-muted w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-black/5 border border-black/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold season-text-title outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" required></div><button type="submit" class="w-full season-btn font-bold py-3.5 rounded-2xl flex justify-center items-center gap-2 text-sm transition-transform active:scale-95"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-black/10 rounded-2xl bg-black/5"><p class="season-text-muted font-semibold">Ingresa tu número para ver tus reservas activas.</p></div></div></div></section></div>`);
             const form = document.getElementById('portalSearchForm');
             if(form){
                 form.onsubmit = (e) => {
@@ -965,8 +1073,9 @@
 
         function renderBooking() {
             const subtotal = app.cart.reduce((s, i) => s + (Number(i.price)*i.quantity), 0);
-            const tCost = calculateTransportCost(app.location);
-            let dVal = 0; if(appliedCoupon && app.cart.length>0){ dVal = appliedCoupon.type==='percent' ? subtotal*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount); }
+            const count = app.cart.reduce((s, i) => s + i.quantity, 0);
+            const tCost = count > 0 ? calculateTransportCost(app.location) : 0;
+            let dVal = 0; if(appliedCoupon && count>0){ dVal = appliedCoupon.type==='percent' ? subtotal*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount); }
             const fTot = subtotal - dVal + tCost;
             const cs = app.cart.length===0?`<div class="text-center py-10 animate-slide-up"><p class="mb-8 season-text-muted">Carrito Vacío</p></div>`:app.cart.map(i=>`<div class="flex flex-col bg-black/5 p-3.5 rounded-xl shadow-sm mb-2.5 border border-black/5"><div class="flex justify-between items-center"><span class="font-semibold season-text-title text-sm pr-2">${i.name} <span class="season-text-muted text-xs font-normal">x${i.quantity}</span></span><span class="font-extrabold season-text-primary text-sm">$${(Number(i.price)*i.quantity).toFixed(2)}</span></div></div>`).join('');
             const lo = locations.map(o=>`<option value="${o.value}" ${app.location===o.value?'selected':''}>${o.label}</option>`).join('');
@@ -1002,22 +1111,22 @@
             let exploreButtons = '';
             if (dynamicCategories.length > 0) {
                 const firstCat = dynamicCategories[0];
-                exploreButtons += `<button data-action="navigate-from-modal" data-target-section="cat_${firstCat.id}" class="w-full sm:w-auto season-btn font-extrabold py-3.5 px-8 rounded-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 nav-action"><i data-lucide="${firstCat.icono || 'star'}" class="w-5 h-5"></i> Ver ${firstCat.nombre}</button>`;
+                exploreButtons += `<button data-action="navigate-from-modal" data-target-section="cat_${firstCat.id}" class="w-full sm:w-auto season-btn font-extrabold py-3.5 px-8 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2 nav-action"><i data-lucide="${firstCat.icono || 'star'}" class="w-5 h-5"></i> Ver ${firstCat.nombre}</button>`;
                 if (dynamicCategories.length > 1) {
                     const secCat = dynamicCategories[1];
-                    exploreButtons += `<button data-action="navigate-from-modal" data-target-section="cat_${secCat.id}" class="w-full sm:w-auto bg-black/5 border border-black/10 season-text-title font-extrabold py-3.5 px-8 rounded-2xl hover:bg-black/10 transition-all flex items-center justify-center gap-2 nav-action"><i data-lucide="${secCat.icono || 'star'}" class="w-5 h-5 text-[var(--s-primary)]"></i> Ver ${secCat.nombre}</button>`;
+                    exploreButtons += `<button data-action="navigate-from-modal" data-target-section="cat_${secCat.id}" class="w-full sm:w-auto bg-black/5 border border-black/10 season-text-title font-extrabold py-3.5 px-8 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2 nav-action"><i data-lucide="${secCat.icono || 'star'}" class="w-5 h-5 text-[var(--s-primary)]"></i> Ver ${secCat.nombre}</button>`;
                 }
             } else {
-                 exploreButtons += `<button data-action="navigate-from-modal" data-target-section="home" class="w-full sm:w-auto season-btn font-extrabold py-3.5 px-8 rounded-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2 nav-action"><i data-lucide="home" class="w-5 h-5"></i> Volver al Inicio</button>`;
+                 exploreButtons += `<button data-action="navigate-from-modal" data-target-section="home" class="w-full sm:w-auto season-btn font-extrabold py-3.5 px-8 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2 nav-action"><i data-lucide="home" class="w-5 h-5"></i> Volver al Inicio</button>`;
             }
 
-            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up content-auto"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span>$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Bautizo" style="color:black">🕊️ Bautizo</option><option value="Escolar" style="color:black">🎒 Escolar</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><input type="time" name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"></div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Ubicación *</label><select name="location" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option style="color:black">${lo}</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Dirección o Link de Waze/Maps *</label><textarea name="address" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej: Pega tu link de Waze aquí..."></textarea></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title hover:bg-black/10 py-3.5 px-6 rounded-full hidden transition-colors font-bold">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold hover:opacity-80 py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md">Siguiente</button><button type="submit" id="btn-submit" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md">Confirmar Reserva</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span>$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Bautizo" style="color:black">🕊️ Bautizo</option><option value="Escolar" style="color:black">🎒 Escolar</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><input type="time" name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"></div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Ubicación *</label><select name="location" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option style="color:black">${lo}</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Dirección o Link de Waze/Maps *</label><textarea name="address" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej: Pega tu link de Waze aquí..."></textarea></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Confirmar Reserva</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
             
             if(app.cart.length>0){
                 const bForm = document.getElementById('bookingForm');
                 if(bForm) bForm.onsubmit = handleBookingSubmit;
                 const locSel = document.querySelector('select[name="location"]');
-                if(locSel) locSel.onchange = e => { app.location=e.target.value; renderBooking(); };
+                if(locSel) locSel.onchange = e => { app.location=e.target.value; updateCartUI(); renderBooking(); };
                 if(bForm && Object.keys(bookingFormState).length>0){ for(let k in bookingFormState){ if(bForm.elements[k]) bForm.elements[k].value=bookingFormState[k]; } }
                 let cs = app.wizardStep;
                 const updUI = () => {
@@ -1057,61 +1166,125 @@
             }
         }
 
+        function updateCartBadgeAndTotals() {
+            const count = app.cart.reduce((s, i) => s + i.quantity, 0);
+            const sub = app.cart.reduce((s, i) => s + (Number(i.price)*i.quantity), 0);
+            
+            const tc = count > 0 ? calculateTransportCost(app.location) : 0;
+            
+            let dv = 0; if(appliedCoupon && count>0) dv = appliedCoupon.type==='percent' ? sub*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount);
+            const ft = sub - dv + tc;
+
+            const ice = document.getElementById('itemCount'), tpe = document.getElementById('totalPrice'), cse = document.getElementById('cartSummary');
+            if(ice) ice.textContent = count;
+            if(tpe) tpe.textContent = `$${Math.max(0,ft).toFixed(2)}`;
+            if(cse){ if(count>0){ cse.classList.remove('hidden'); document.body.classList.add('has-cart'); } else { cse.classList.add('hidden'); document.body.classList.remove('has-cart'); } }
+            
+            const cte = document.getElementById('cartTotal'), tce = document.getElementById('transportCost'), fte = document.getElementById('finalTotal'), dr = document.getElementById('discountRow'), dae = document.getElementById('discountAmount');
+            if(cte) cte.textContent = `$${sub.toFixed(2)}`; if(tce) tce.textContent = `$${tc.toFixed(2)}`;
+            if(dv>0 && dr){ dr.classList.remove('hidden'); if(dae) dae.textContent = `-$${dv.toFixed(2)}`; } else if(dr) dr.classList.add('hidden');
+            if(fte) fte.textContent = `$${Math.max(0,ft).toFixed(2)}`;
+            
+            const cle = document.getElementById('cartLocation'); if(cle && cle.value !== app.location) cle.value = app.location;
+        }
+
+        function renderCartItemsHTML() {
+            const cie = document.getElementById('cartItems');
+            const footer = document.getElementById('cartTotalsFooter');
+            const emptyBtn = document.getElementById('emptyCartBtn');
+            
+            if(!cie) return;
+            
+            if(app.cart.length===0) {
+                cie.innerHTML=`<div class="text-center py-10 flex flex-col items-center justify-center h-full opacity-90 animate-slide-up"><div class="w-16 h-16 bg-black/5 rounded-full flex items-center justify-center mb-4"><i data-lucide="shopping-cart" class="w-8 h-8 season-text-muted opacity-50"></i></div><h3 class="text-lg font-black season-text-title mb-2">Tu carrito está vacío</h3><p class="season-text-muted font-medium text-xs mb-6 max-w-[220px] mx-auto leading-relaxed">Explora nuestros paquetes y agrega el que más te guste.</p><button data-action="close-modal" class="bg-[var(--s-primary)] text-white font-bold py-3 px-6 rounded-2xl shadow-md text-xs active:scale-95 transition-transform flex items-center justify-center gap-2"><i data-lucide="search" class="w-4 h-4"></i> Explorar Paquetes</button></div>`;
+                if(footer) footer.classList.add('hidden');
+                if(emptyBtn) emptyBtn.classList.add('hidden');
+            }
+            else {
+                cie.innerHTML='<div class="space-y-3 pt-2 pb-4">'+app.cart.map(i=>`
+                    <div class="bg-white p-3 rounded-2xl border border-black/5 shadow-sm flex justify-between items-center group relative overflow-hidden">
+                        <div class="flex items-center gap-3 overflow-hidden flex-1 z-10">
+                            <img src="${cleanStr(i.image)}" class="w-14 h-14 object-cover rounded-xl shrink-0 shadow-sm border border-black/5">
+                            <div class="flex flex-col flex-1 min-w-0 pr-2">
+                                <span class="font-black season-text-title text-[13px] leading-tight truncate mb-0.5">${cleanStr(i.name)}</span>
+                                <span class="season-text-muted font-bold text-[10px] uppercase tracking-wider mb-1">Cant: ${i.quantity}</span>
+                                <span class="font-black text-[var(--s-primary)] text-sm">$${(Number(i.price)*i.quantity).toFixed(2)}</span>
+                            </div>
+                        </div>
+                        <button data-action="remove-from-cart" data-item-id="${i.id}" class="w-8 h-8 shrink-0 bg-rose-50 hover:bg-rose-100 rounded-full flex items-center justify-center active:scale-90 text-rose-500 transition-transform z-10 shadow-sm border border-rose-100" aria-label="Eliminar">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                        </button>
+                    </div>`).join('')+'</div>';
+                if(footer) footer.classList.remove('hidden');
+                if(emptyBtn) emptyBtn.classList.remove('hidden');
+            }
+            if(typeof lucide !== 'undefined') lucide.createIcons({root: cie});
+        }
+
+        function updateProductButtonState(itemId) {
+            const ic = app.cart.find(i => i.id === itemId);
+            document.querySelectorAll(`button[data-item-id="${itemId}"]`).forEach(b => {
+                if(!b.dataset.origHtml) b.dataset.origHtml = b.innerHTML;
+
+                const isCampaign = b.dataset.isCampaign === 'true';
+                const isHourly = b.dataset.action === 'add-hourly-to-cart';
+                
+                if (isCampaign) {
+                    if (ic) {
+                        b.innerHTML = `${S_ICONS.check} SELECCIONADO`;
+                        b.style.background = '#10B981'; 
+                        b.dataset.cartState = 'selected';
+                    } else {
+                        b.innerHTML = b.dataset.origHtml;
+                        b.style.background = ''; 
+                        b.dataset.cartState = 'none';
+                    }
+                    return;
+                }
+
+                if(ic){
+                    const qe = document.querySelector(`#qty-${itemId}`); 
+                    const vq = qe ? parseInt(qe.textContent) : ic.quantity;
+                    
+                    if(isHourly && vq !== ic.quantity){ 
+                        b.innerHTML = `${S_ICONS.refresh} Actualizar Cantidad`; 
+                        b.style.background = '#F59E0B'; 
+                        b.dataset.cartState = 'refresh';
+                    } else { 
+                        b.innerHTML = `${S_ICONS.check} Plan Seleccionado`; 
+                        b.style.background = '#10B981'; 
+                        b.dataset.cartState = 'selected';
+                    }
+                } else { 
+                    b.innerHTML = b.dataset.origHtml; 
+                    b.style.background = ''; 
+                    b.dataset.cartState = 'none';
+                }
+            });
+        }
+
+        function updateCartUI() {
+            updateCartBadgeAndTotals();
+            renderCartItemsHTML();
+        }
+
         function addToCart(item, qty=1) {
             const e = app.cart.find(i=>i.id===item.id);
             if(e) { e.quantity+=qty; if(item.isCampaign) e.price = item.price; } 
             else { app.cart.push({...item,quantity:qty}); }
+            
             updateCartUI(); 
+            updateProductButtonState(item.id);
             showToast(`${cleanStr(item.name) || 'Servicio'} añadido al carrito`, 'success');
-            showModal('cartModal'); 
         }
 
         function removeFromCart(id) { 
             app.cart=app.cart.filter(i=>i.id!==id); 
             if(app.cart.length===0) appliedCoupon=null; 
-            updateCartUI(); showToast('Plan eliminado', 'info'); 
-        }
-
-        function updateCartUI() {
-            requestAnimationFrame(() => {
-                const count = app.cart.reduce((s, i) => s + i.quantity, 0);
-                const sub = app.cart.reduce((s, i) => s + (Number(i.price)*i.quantity), 0);
-                const tc = calculateTransportCost(app.location);
-                let dv = 0; if(appliedCoupon && count>0) dv = appliedCoupon.type==='percent' ? sub*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount);
-                const ft = sub - dv + tc;
-
-                const ice = document.getElementById('itemCount'), tpe = document.getElementById('totalPrice'), cse = document.getElementById('cartSummary');
-                if(ice) ice.textContent = count;
-                if(tpe) tpe.textContent = `$${Math.max(0,ft).toFixed(2)}`;
-                if(cse){ if(count>0){ cse.classList.remove('hidden'); document.body.classList.add('has-cart'); } else { cse.classList.add('hidden'); document.body.classList.remove('has-cart'); } }
-                
-                const cie = document.getElementById('cartItems');
-                if(cie){
-                    if(app.cart.length===0) cie.innerHTML=`<div class="text-center py-8"><p class="season-text-muted">Carrito Vacío</p></div>`;
-                    else cie.innerHTML='<div class="space-y-2">'+app.cart.map(i=>`<div class="bg-black/5 p-3 rounded-xl border border-black/10 flex justify-between items-center"><div class="flex items-center gap-3 overflow-hidden"><img src="${cleanStr(i.image)}" class="w-10 h-10 object-cover rounded-xl shrink-0"><div class="flex flex-col"><span class="font-bold season-text-title text-[13px] truncate">${cleanStr(i.name)}</span><span class="season-text-muted text-[10px]">Cant: ${i.quantity}</span></div></div><div class="flex items-center gap-2"><span class="font-bold text-pink-500 text-sm">$${(Number(i.price)*i.quantity).toFixed(2)}</span><button data-action="remove-from-cart" data-item-id="${i.id}" class="w-7 h-7 bg-black/5 rounded-full flex items-center justify-center hover:bg-rose-500/20 season-text-muted hover:text-rose-500 transition-colors"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div></div>`).join('')+'</div>';
-                    if(typeof lucide !== 'undefined') lucide.createIcons({root: cie});
-                }
-
-                const cte = document.getElementById('cartTotal'), tce = document.getElementById('transportCost'), fte = document.getElementById('finalTotal'), dr = document.getElementById('discountRow'), dae = document.getElementById('discountAmount');
-                if(cte) cte.textContent = `$${sub.toFixed(2)}`; if(tce) tce.textContent = `$${tc.toFixed(2)}`;
-                if(dv>0 && dr){ dr.classList.remove('hidden'); if(dae) dae.textContent = `-$${dv.toFixed(2)}`; } else if(dr) dr.classList.add('hidden');
-                if(fte) fte.textContent = `$${Math.max(0,ft).toFixed(2)}`;
-                
-                document.querySelectorAll('button[data-action="add-to-cart"], button[data-action="add-hourly-to-cart"]').forEach(b => {
-                    const id = b.dataset.itemId, ic = app.cart.find(i=>i.id===id);
-                    if(!b.dataset.origHtml) b.dataset.origHtml = b.innerHTML;
-                    
-                    if (b.dataset.isCampaign === 'true') return;
-
-                    if(ic){
-                        const qe = document.querySelector(`#qty-${id}`); const vq = qe ? parseInt(qe.textContent) : ic.quantity;
-                        if(vq!==ic.quantity && b.dataset.action==='add-hourly-to-cart'){ b.innerHTML=`<i data-lucide="refresh-cw" class="w-5 h-5 text-white"></i> Actualizar`; b.className="w-full text-white font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 text-[11px] sm:text-xs relative z-10 transition-all bg-amber-500 hover:bg-amber-600 shadow-md"; }
-                        else { b.innerHTML=`<i data-lucide="check-circle" class="w-5 h-5 text-white"></i> Seleccionado`; b.className="w-full text-white font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 text-[11px] sm:text-xs relative z-10 transition-all bg-emerald-500 hover:bg-emerald-600 shadow-md"; }
-                        if(typeof lucide !== 'undefined') lucide.createIcons({root:b});
-                    } else { b.innerHTML=b.dataset.origHtml; b.className="season-btn w-full font-extrabold py-3.5 px-6 rounded-2xl flex justify-center items-center gap-2.5 uppercase text-[11px] sm:text-xs relative z-10 transition-all duration-300"; if(typeof lucide !== 'undefined') lucide.createIcons({root:b}); }
-                });
-                populateLocationSelects(); const cle = document.getElementById('cartLocation'); if(cle) cle.value = app.location;
-            });
+            
+            updateCartUI(); 
+            updateProductButtonState(id);
+            showToast('Plan eliminado', 'info'); 
         }
 
         function handleGlobalClick(e) {
@@ -1123,9 +1296,13 @@
                 let targetSec = navLink.dataset.targetSection || (navLink.hash ? navLink.hash.substring(1) : null);
                 if(targetSec) {
                     e.preventDefault();
-                    document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('show'));
+                    document.querySelectorAll('.modal-backdrop').forEach(m => { 
+                        m.classList.remove('show'); 
+                        if(m.id === 'cartModal') document.body.classList.remove('cart-open');
+                    });
                     toggleMobileMenu(false);
                     if(app.activeSection !== targetSec) setActiveSection(targetSec);
+                    return; 
                 }
             }
 
@@ -1174,13 +1351,22 @@
 
                     if(it){
                         const existingCartItem = app.cart.find(i=>i.id===it.id);
-                        if(!existingCartItem) { addToCart(it, 1); } else { showModal('cartModal'); } 
-                    } else { showModal('cartModal'); }
+                        if(!existingCartItem) { 
+                            addToCart(it, 1); 
+                        } else { 
+                            showModal('cartModal'); 
+                        } 
+                    }
                     break; 
                 }
                 case 'remove-from-cart': removeFromCart(itemId); break;
                 case 'empty-cart': {
-                    if(app.cart.length > 0) { app.cart = []; appliedCoupon = null; updateCartUI(); showToast('Carrito vaciado', 'info'); }
+                    if(app.cart.length > 0) { 
+                        app.cart = []; appliedCoupon = null; 
+                        updateCartUI(); 
+                        document.querySelectorAll('button[data-cart-state]').forEach(b => updateProductButtonState(b.dataset.itemId));
+                        showToast('Carrito vaciado', 'info'); 
+                    }
                     break;
                 }
                 case 'add-hourly-to-cart': { 
@@ -1202,22 +1388,67 @@
 
                     if(sh && qh>0){ 
                         const ex = app.cart.find(i=>i.id===itemId); 
-                        if(ex){ ex.quantity = qh; updateCartUI(); showToast(`Cantidad y precio actualizados`, 'success'); showModal('cartModal'); } 
+                        if(ex){ 
+                            ex.quantity = qh; 
+                            updateCartUI(); 
+                            updateProductButtonState(itemId);
+                            showToast(`Cantidad actualizada`, 'success'); 
+                        } 
                         else { addToCart(sh, qh); }
                     } 
                     break; 
                 }
-                case 'change-service-qty': { const qe = document.querySelector(`#qty-${itemId}`); if(qe){ let cq=parseInt(qe.textContent); let nq=Math.max(1, cq+parseInt(change)); qe.textContent=nq; updateCartUI(); } break; }
+                case 'change-service-qty': { 
+                    const qe = document.querySelector(`#qty-${itemId}`); 
+                    if(qe){ 
+                        let cq=parseInt(qe.textContent); 
+                        let nq=Math.max(1, cq+parseInt(change)); 
+                        qe.textContent=nq; 
+                        updateProductButtonState(itemId); 
+                    } 
+                    break; 
+                }
                 case 'close-modal': { 
-                    const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); 
+                    const m = target.closest('.modal-backdrop'); 
+                    if(m) {
+                        m.classList.remove('show');
+                        if (m.id === 'cartModal') document.body.classList.remove('cart-open');
+                    }
                     toggleMobileMenu(false);
                     if(targetSection && !navLink) { if(app.activeSection !== targetSection) setActiveSection(targetSection); }
                     break; 
                 }
                 case 'navigate-from-modal': { 
-                    const m = target.closest('.modal-backdrop'); if(m) m.classList.remove('show'); 
+                    const m = target.closest('.modal-backdrop'); 
+                    if(m) {
+                        m.classList.remove('show');
+                        if (m.id === 'cartModal') document.body.classList.remove('cart-open');
+                    }
                     if(targetSection && !navLink) { if(app.activeSection !== targetSection) setActiveSection(targetSection); }
                     break; 
+                }
+                // 🚨 CORRECCIÓN ROBUSTA PARA "EXPLORAR CATÁLOGO"
+                case 'scroll-to-catalog': {
+                    e.preventDefault();
+                    if (!catalogLoaded) {
+                        showToast("Cargando nuestros paquetes...", "info");
+                    }
+                    const campSection = document.getElementById('home-campaigns-wrapper');
+                    const featSection = document.getElementById('home-featured-wrapper');
+                    const targetEl = (campSection && campSection.innerHTML.trim() !== '') ? campSection : featSection;
+                    
+                    if (targetEl) {
+                        const hw = document.getElementById('headerWrapper');
+                        const headerOffset = hw ? hw.offsetHeight : 80;
+                        const elementPosition = targetEl.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.scrollY - headerOffset - 10;
+                        
+                        window.scrollTo({
+                             top: offsetPosition,
+                             behavior: "smooth"
+                        });
+                    }
+                    break;
                 }
             }
         }
@@ -1230,7 +1461,8 @@
             try {
                 const fd = new FormData(e.target);
                 const sub = app.cart.reduce((s,i)=>s+(Number(i.price)*i.quantity),0);
-                const tc = calculateTransportCost(app.location);
+                const count = app.cart.reduce((s,i)=>s+i.quantity,0);
+                const tc = count > 0 ? calculateTransportCost(app.location) : 0;
                 let dv = 0; if(appliedCoupon) dv = appliedCoupon.type==='percent' ? sub*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount);
                 const ft = sub - dv + tc;
                 const lo = locations.find(l=>l.value===app.location);
@@ -1247,14 +1479,6 @@
             finally{ sBtn.disabled=false; sBtn.innerHTML=obh; }
         }
 
-        // Función obsoleta ya que implementamos "soft updates" en renderHome
-        function refreshDynamicData() {
-            try {
-                if (app.activeSection === 'home') renderHome(); 
-                else setActiveSection(app.activeSection);
-            } catch(e) { console.warn(e); }
-        }
-
         async function initFirebaseAndData() {
             const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
             db = getFirestore(fbApp); auth = getAuth(fbApp);
@@ -1268,7 +1492,7 @@
                 }
             } catch(e) { console.error("Error Auth:", e); }
 
-            const T_OUT = 15000;
+            const T_OUT = 8000; 
 
             const loadBanner = async () => {
                 try {
@@ -1333,7 +1557,6 @@
                 } catch(e) {}
             };
 
-            // Cargar datos vitales primero
             await Promise.allSettled([ 
                 loadCategories(), 
                 loadCatalog(), 
@@ -1345,21 +1568,18 @@
             buildDynamicNav();
             isFirebaseLoaded = true;
             
-            // Actualización DOM rápida sin destruir el Hero
             if (app.activeSection === 'home') renderHome(); 
             else setActiveSection(app.activeSection);
             
             updateCartUI(); 
 
-            // Cargar datos no bloqueantes
             Promise.allSettled([
-                (async () => { try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), T_OUT); if(!ts.empty) locations = ts.docs.map(d=>d.data()); } catch(e){} })(),
+                (async () => { try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), T_OUT); if(!ts.empty) { locations = ts.docs.map(d=>d.data()); populateLocationSelects(); updateCartBadgeAndTotals(); } } catch(e){} })(),
                 (async () => { try { const gs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')), T_OUT); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); } catch(e){} })(),
                 (async () => { try { const rs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')), T_OUT); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){} })(),
                 (async () => { try { const cs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web')), T_OUT); activeCoupons = cs.docs.map(d=>d.data()).filter(c=>c.active===true||c.activo===true); } catch(e){} })(),
                 (async () => { try { const es = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos')), T_OUT); bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(cleanStr(ev.estado)).toLowerCase().includes(s))); } catch(e){} })()
             ]).then(() => {
-                // Actualizar porciones pequeñas según la ruta activa
                 if (app.activeSection === 'home') {
                     if (customerReviews.length > 0 || bookedEvents.length > 0) renderHome();
                 } else if (app.activeSection === 'booking') {
@@ -1377,6 +1597,7 @@
             const mt = document.getElementById('mobileToggle'); if(mt) mt.onclick = () => toggleMobileMenu(true);
             const cm = document.getElementById('closeMobile'); if(cm) cm.onclick = () => toggleMobileMenu(false);
             const mmo = document.getElementById('mobileMenuOverlay'); if(mmo) mmo.onclick = () => toggleMobileMenu(false);
+            
             const vc = document.getElementById('viewCart'); if(vc) vc.onclick = () => showModal('cartModal');
             
             let ticking = false;
@@ -1406,5 +1627,3 @@
     </script>
 </body>
 </html>
-
-
