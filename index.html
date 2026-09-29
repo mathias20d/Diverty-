@@ -2193,6 +2193,68 @@ body[data-theme="christmas"] #decor-layer::before{
 }
 </style>
 
+
+<style id="diverty-christmas-elegant-campaigns">
+/* NAVIDAD — campañas elegantes azul noche + hielo + plata */
+body[data-theme="christmas"] #home-campaigns-wrapper .campaign-card,
+body[data-theme="christmas"] #home-campaigns-wrapper [class*="from-red"],
+body[data-theme="christmas"] #home-campaigns-wrapper [class*="from-rose"]{
+  background:
+    radial-gradient(circle at 92% 8%,rgba(191,219,254,.18),transparent 24%),
+    linear-gradient(145deg,#0B2A52 0%,#071B36 54%,#101827 100%)!important;
+  border-color:rgba(226,232,240,.58)!important;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,.42),
+    0 0 0 1px rgba(96,165,250,.12),
+    inset 0 1px rgba(255,255,255,.12)!important;
+}
+
+/* Neutraliza rojos/rosas utilitarios dentro de campañas durante Navidad */
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-red-500,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-red-600,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-rose-500,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-rose-600,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-pink-500,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-pink-600{
+  background:linear-gradient(135deg,#2563EB,#64748B)!important;
+}
+
+/* Títulos y textos de la promo */
+body[data-theme="christmas"] #home-campaigns-wrapper h2,
+body[data-theme="christmas"] #home-campaigns-wrapper h3,
+body[data-theme="christmas"] #home-campaigns-wrapper h4{
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] #home-campaigns-wrapper p,
+body[data-theme="christmas"] #home-campaigns-wrapper li,
+body[data-theme="christmas"] #home-campaigns-wrapper span{
+  border-color:rgba(203,213,225,.25);
+}
+
+/* Panel de beneficios */
+body[data-theme="christmas"] #home-campaigns-wrapper ul,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-white\/5,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-black\/5{
+  background:rgba(3,16,34,.34)!important;
+  border-color:rgba(203,213,225,.18)!important;
+}
+
+/* Etiqueta PROMO: azul hielo/plata en lugar de rosa */
+body[data-theme="christmas"] #home-campaigns-wrapper [class*="pink"],
+body[data-theme="christmas"] #home-campaigns-wrapper [class*="rose"]{
+  border-color:rgba(226,232,240,.55)!important;
+}
+
+/* Botones de campañas coherentes con el tema */
+body[data-theme="christmas"] #home-campaigns-wrapper button,
+body[data-theme="christmas"] #home-campaigns-wrapper .season-btn{
+  background:linear-gradient(105deg,#1D4ED8,#2563EB 48%,#64748B)!important;
+  border-color:rgba(226,232,240,.55)!important;
+  color:#fff!important;
+  box-shadow:0 12px 28px rgba(37,99,235,.25),inset 0 1px rgba(255,255,255,.22)!important;
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
