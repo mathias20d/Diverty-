@@ -2316,6 +2316,194 @@ body[data-theme="christmas"] #home-featured-wrapper .glass-panel[style]{
 }
 </style>
 
+
+<style id="diverty-christmas-unified-v3">
+/* ==========================================================
+   NAVIDAD UNIFICADA — AZUL NOCHE · HIELO · PLATA · BLANCO
+   Solo visual. No altera contenido, datos ni Firebase.
+   ========================================================== */
+body[data-theme="christmas"]{
+  --x-navy:#061426;
+  --x-navy2:#081D38;
+  --x-blue:#2563EB;
+  --x-ice:#93C5FD;
+  --x-silver:#CBD5E1;
+  --x-white:#F8FAFC;
+  --x-muted:#B8C5D6;
+  --x-line:rgba(203,213,225,.30);
+}
+
+/* HEADER / LOGO: elimina contaminación verde */
+body[data-theme="christmas"] #mainHeader,
+body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader{
+  background:linear-gradient(155deg,rgba(5,24,48,.98),rgba(6,20,38,.98))!important;
+  border-color:rgba(203,213,225,.36)!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.08)!important;
+}
+body[data-theme="christmas"] #mainHeader *{
+  border-color:rgba(203,213,225,.26);
+}
+body[data-theme="christmas"] #mainHeader img{
+  background:rgba(8,29,56,.72)!important;
+  box-shadow:0 0 0 2px rgba(147,197,253,.18),0 0 18px rgba(96,165,250,.12)!important;
+}
+body[data-theme="christmas"] #mainHeader button{
+  background:linear-gradient(145deg,#101D36,#111827)!important;
+  border-color:rgba(203,213,225,.22)!important;
+  color:#F8FAFC!important;
+}
+
+/* TEXTOS: evita azul eléctrico/rojo en superficies navideñas */
+body[data-theme="christmas"] #mainContent h1,
+body[data-theme="christmas"] #mainContent h2,
+body[data-theme="christmas"] #mainContent h3,
+body[data-theme="christmas"] #mainContent h4,
+body[data-theme="christmas"] #mainContent .season-text-title{
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] #mainContent p,
+body[data-theme="christmas"] #mainContent li{
+  color:#D7E0EC;
+}
+body[data-theme="christmas"] #mainContent .season-gradient-text{
+  background:linear-gradient(90deg,#FFFFFF,#BFDBFE 48%,#CBD5E1)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+}
+
+/* TARJETAS: títulos/precio/beneficios coherentes */
+body[data-theme="christmas"] .card-safe-wrapper > .glass-panel,
+body[data-theme="christmas"] .card-alive{
+  color:#F8FAFC!important;
+  background:
+    radial-gradient(circle at 90% 4%,rgba(147,197,253,.12),transparent 26%),
+    linear-gradient(150deg,#0A2A50,#071D39 54%,#071426)!important;
+  border-color:rgba(203,213,225,.38)!important;
+}
+body[data-theme="christmas"] .card-safe-wrapper h2,
+body[data-theme="christmas"] .card-safe-wrapper h3,
+body[data-theme="christmas"] .card-safe-wrapper h4{
+  color:#F8FAFC!important;
+  -webkit-text-fill-color:#F8FAFC!important;
+}
+body[data-theme="christmas"] .card-safe-wrapper p,
+body[data-theme="christmas"] .card-safe-wrapper li,
+body[data-theme="christmas"] .card-safe-wrapper span{
+  color:#D7E0EC;
+}
+body[data-theme="christmas"] .card-safe-wrapper [class*="text-red"],
+body[data-theme="christmas"] .card-safe-wrapper [class*="text-blue"],
+body[data-theme="christmas"] .card-safe-wrapper [class*="text-green"]{
+  color:#BFDBFE!important;
+}
+body[data-theme="christmas"] .card-safe-wrapper .season-btn{
+  color:#fff!important;
+  background:linear-gradient(105deg,#1E4FBF,#2563EB 48%,#718096)!important;
+  border-color:rgba(226,232,240,.52)!important;
+}
+
+/* CALENDARIO: quita marco rojo y azul eléctrico */
+body[data-theme="christmas"] #calendar-section{
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+body[data-theme="christmas"] #calendar-section > div,
+body[data-theme="christmas"] #calendar-section .glass-panel{
+  background:
+    radial-gradient(circle at 92% 5%,rgba(147,197,253,.12),transparent 28%),
+    linear-gradient(155deg,#0A2A50,#071D39 55%,#071426)!important;
+  border-color:rgba(203,213,225,.42)!important;
+  box-shadow:0 22px 55px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.08)!important;
+}
+body[data-theme="christmas"] #calendar-section h2,
+body[data-theme="christmas"] #calendar-section h3,
+body[data-theme="christmas"] #calendar-section h4{
+  color:#F8FAFC!important;
+  -webkit-text-fill-color:#F8FAFC!important;
+  background:none!important;
+}
+body[data-theme="christmas"] #calendar-section button{
+  border-color:rgba(203,213,225,.26)!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="bg-red"],
+body[data-theme="christmas"] #calendar-section [class*="bg-rose"],
+body[data-theme="christmas"] #calendar-section [class*="bg-blue"]{
+  background:linear-gradient(135deg,#1E4FBF,#3B82F6)!important;
+  color:#fff!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="text-red"],
+body[data-theme="christmas"] #calendar-section [class*="text-blue"]{
+  color:#BFDBFE!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="border-red"],
+body[data-theme="christmas"] #calendar-section [class*="border-rose"]{
+  border-color:rgba(147,197,253,.42)!important;
+}
+
+/* MENÚ MÓVIL: azul noche elegante, activos azul hielo */
+body[data-theme="christmas"] #mobileMenu,
+body[data-theme="christmas"] #mobileMenuPanel{
+  background:linear-gradient(165deg,#071D39 0%,#061426 62%,#0B1324 100%)!important;
+  border-color:rgba(203,213,225,.30)!important;
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel h2,
+body[data-theme="christmas"] #mobileMenuPanel h3,
+body[data-theme="christmas"] #mobileMenuPanel strong{
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel button,
+body[data-theme="christmas"] #mobileMenuPanel a{
+  color:#E2E8F0!important;
+  border-color:rgba(203,213,225,.16)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel button[class*="bg-red"],
+body[data-theme="christmas"] #mobileMenuPanel a[class*="bg-red"],
+body[data-theme="christmas"] #mobileMenuPanel button[class*="bg-rose"],
+body[data-theme="christmas"] #mobileMenuPanel a[class*="bg-rose"],
+body[data-theme="christmas"] #mobileMenuPanel .active{
+  background:linear-gradient(105deg,#1E4FBF,#2563EB 58%,#64748B)!important;
+  color:#fff!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-red"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-rose"]{
+  background:linear-gradient(145deg,#2563EB,#64748B)!important;
+  color:#fff!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-red"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-blue"]{
+  color:#BFDBFE!important;
+}
+
+/* Estados del calendario: conservan significado pero armonizados */
+body[data-theme="christmas"] .calendar-day.available,
+body[data-theme="christmas"] [data-status="available"]{
+  background:rgba(37,99,235,.16)!important;
+  border-color:#60A5FA!important;
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] .calendar-day.limited,
+body[data-theme="christmas"] [data-status="limited"]{
+  background:rgba(148,163,184,.15)!important;
+  border-color:#94A3B8!important;
+  color:#E2E8F0!important;
+}
+body[data-theme="christmas"] .calendar-day.full,
+body[data-theme="christmas"] [data-status="full"]{
+  background:rgba(71,85,105,.20)!important;
+  border-color:#64748B!important;
+  color:#CBD5E1!important;
+}
+
+/* Bordes decorativos inferiores: plata/hielo */
+body[data-theme="christmas"] footer,
+body[data-theme="christmas"] #home-reviews-wrapper{
+  border-color:rgba(203,213,225,.24)!important;
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
