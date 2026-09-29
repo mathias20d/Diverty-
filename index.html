@@ -2094,6 +2094,105 @@ footer{
 }
 </style>
 
+
+<style id="diverty-christmas-blue-silver-v1">
+/* NAVIDAD AZUL + PLATEADO — capa visual, no cambia contenido ni Firebase */
+body[data-theme="christmas"]{
+  background:#061426!important;
+  --xmas-blue:#2563EB;
+  --xmas-ice:#60A5FA;
+  --xmas-silver:#E2E8F0;
+  --xmas-silver-2:#94A3B8;
+  --xmas-deep:#061426;
+}
+body[data-theme="christmas"] .season-background{
+  filter:saturate(.82) contrast(1.08) brightness(.58) hue-rotate(145deg)!important;
+}
+body[data-theme="christmas"] .season-overlay{
+  background:
+    radial-gradient(circle at 15% 12%,rgba(191,219,254,.17),transparent 25%),
+    radial-gradient(circle at 86% 18%,rgba(37,99,235,.20),transparent 30%),
+    linear-gradient(180deg,rgba(4,15,32,.66),rgba(2,10,24,.91))!important;
+}
+body[data-theme="christmas"] #topAnnouncementBanner{
+  background:linear-gradient(90deg,#0B2B55,#2563EB 42%,#64748B 76%,#CBD5E1)!important;
+  border-bottom-color:rgba(226,232,240,.38)!important;
+}
+body[data-theme="christmas"] #mainHeader,
+body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader{
+  background:linear-gradient(180deg,rgba(4,22,45,.97),rgba(5,17,36,.94))!important;
+  border-color:rgba(203,213,225,.38)!important;
+  box-shadow:0 12px 38px rgba(0,0,0,.40),inset 0 -1px rgba(226,232,240,.12)!important;
+}
+body[data-theme="christmas"] .glass-panel{
+  background:linear-gradient(155deg,rgba(10,37,72,.94),rgba(5,22,47,.96) 62%,rgba(15,23,42,.96))!important;
+  border-color:rgba(203,213,225,.34)!important;
+  box-shadow:0 24px 65px rgba(0,0,0,.46),0 0 0 2px rgba(96,165,250,.10),inset 0 1px rgba(255,255,255,.10)!important;
+}
+body[data-theme="christmas"] .glass-panel:before{
+  background:linear-gradient(120deg,rgba(248,250,252,.82),transparent 20%,transparent 76%,rgba(96,165,250,.58))!important;
+}
+body[data-theme="christmas"] .season-btn{
+  background:linear-gradient(105deg,#1D4ED8 0%,#2563EB 48%,#64748B 100%)!important;
+  border:1px solid rgba(226,232,240,.48)!important;
+  box-shadow:0 13px 30px rgba(37,99,235,.25),inset 0 1px rgba(255,255,255,.24),0 0 18px rgba(191,219,254,.12)!important;
+}
+body[data-theme="christmas"] .season-btn-outline{
+  background:linear-gradient(145deg,rgba(12,42,78,.78),rgba(9,25,50,.76))!important;
+  border-color:rgba(203,213,225,.44)!important;
+}
+body[data-theme="christmas"] .season-gradient-text{
+  background:linear-gradient(90deg,#FFFFFF,#BFDBFE 46%,#E2E8F0 78%,#93C5FD)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;
+}
+body[data-theme="christmas"] .card-alive:after{
+  background:linear-gradient(115deg,#F8FAFC,#60A5FA,#64748B,#DBEAFE,#2563EB)!important;
+}
+body[data-theme="christmas"] #home-featured-wrapper:before,
+body[data-theme="christmas"] #home-campaigns-wrapper:before{
+  border-top-color:rgba(203,213,225,.55)!important;
+  background:
+    radial-gradient(circle at 8% 0,#F8FAFC 0 3px,transparent 4px),
+    radial-gradient(circle at 28% 0,#60A5FA 0 3px,transparent 4px),
+    radial-gradient(circle at 48% 0,#E2E8F0 0 3px,transparent 4px),
+    radial-gradient(circle at 68% 0,#2563EB 0 3px,transparent 4px),
+    radial-gradient(circle at 88% 0,#F8FAFC 0 3px,transparent 4px)!important;
+  filter:drop-shadow(0 0 7px rgba(191,219,254,.68))!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel{
+  background:linear-gradient(160deg,#071D39,#061426 70%,#0F172A)!important;
+  border-left-color:rgba(203,213,225,.30)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel:before{
+  background:linear-gradient(90deg,#2563EB,#E2E8F0,#60A5FA,#F8FAFC,#2563EB)!important;
+}
+body[data-theme="christmas"] .whatsapp-btn{
+  border-color:rgba(226,232,240,.72)!important;
+  box-shadow:0 0 0 7px rgba(9,30,58,.66),0 12px 34px rgba(0,0,0,.35),0 0 25px rgba(96,165,250,.22)!important;
+}
+/* Luces y adornos navideños pasan de rojo/dorado a hielo/azul/plata */
+body[data-theme="christmas"] .xmas-bulb{
+  background:#E2E8F0!important;
+  box-shadow:0 0 8px #F8FAFC,0 0 22px #60A5FA,0 0 38px rgba(96,165,250,.70)!important;
+}
+body[data-theme="christmas"] .xmas-bulb:nth-child(2n){
+  background:#2563EB!important;
+  box-shadow:0 0 8px #60A5FA,0 0 22px #2563EB!important;
+}
+body[data-theme="christmas"] .xmas-ornament{
+  background:radial-gradient(circle at 32% 25%,#fff9 0 7%,transparent 8%),linear-gradient(145deg,#60A5FA,#1D4ED8)!important;
+  border-color:#E2E8F0!important;
+  box-shadow:0 8px 18px #0008,0 0 18px rgba(191,219,254,.35)!important;
+}
+body[data-theme="christmas"] .xmas-ornament.gold{
+  background:radial-gradient(circle at 32% 25%,#fff 0 7%,transparent 8%),linear-gradient(145deg,#F8FAFC,#94A3B8)!important;
+}
+body[data-theme="christmas"] #decor-layer::before{
+  background:repeating-linear-gradient(90deg,#F8FAFC 0 8px,transparent 8px 26px,#2563EB 26px 34px,transparent 34px 52px,#94A3B8 52px 60px,transparent 60px 78px)!important;
+  filter:drop-shadow(0 4px 7px rgba(147,197,253,.42))!important;
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -2429,10 +2528,10 @@ footer{
                     theme: 'halloween' 
                 },
                 christmas: { 
-                    p: '#B91C1C', s: '#166534', a: '#F4C95D', 
-                    bg: '#07150F', overlay: 'rgba(3,18,12,0.76)',
-                    glass: 'rgba(8,34,24,0.82)', border: 'rgba(253,230,138,0.16)',
-                    tTitle: '#FFFBEB', tMuted: '#D1D5DB',
+                    p: '#2563EB', s: '#94A3B8', a: '#E2E8F0', 
+                    bg: '#061426', overlay: 'rgba(4,15,32,0.78)',
+                    glass: 'rgba(9,30,58,0.86)', border: 'rgba(226,232,240,0.24)',
+                    tTitle: '#F8FAFC', tMuted: '#CBD5E1',
                     img: "url('https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&q=80&w=1920')", 
                     theme: 'christmas' 
                 },
