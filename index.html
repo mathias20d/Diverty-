@@ -1118,12 +1118,34 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
             }
         }
 
+        const VALID_CATALOG_ICONS = new Set(['party-popper','smile','sparkles','bubbles','mic-2','wand-sparkles','palette','gamepad-2','ghost','cake-slice','music','camera','image','tent','balloon','baby','crown','star','heart','gift','users','calendar-days','sun','school','graduation-cap','drama','folder']);
+        function getCatalogIcon(cat) {
+            const saved = String(cat?.icono || '').trim();
+            if (saved && VALID_CATALOG_ICONS.has(saved)) return saved;
+            const n = String(cat?.nombre || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            if (/halloween|terror|bruja|fantasma/.test(n)) return 'ghost';
+            if (/burbuja/.test(n)) return 'bubbles';
+            if (/payas|clown/.test(n)) return 'smile';
+            if (/animador|animacion|microfono/.test(n)) return 'mic-2';
+            if (/magia|mago|magic/.test(n)) return 'wand-sparkles';
+            if (/pinta|arte|pintura/.test(n)) return 'palette';
+            if (/juego|game/.test(n)) return 'gamepad-2';
+            if (/foto|fotograf|galeria/.test(n)) return 'camera';
+            if (/musica|dj/.test(n)) return 'music';
+            if (/escuela|escolar|colegio|graduacion/.test(n)) return 'school';
+            if (/cumple|pastel|cake/.test(n)) return 'cake-slice';
+            if (/bebe|baby/.test(n)) return 'baby';
+            if (/regalo/.test(n)) return 'gift';
+            if (/show|servicio|infantil|fiesta|evento/.test(n)) return 'party-popper';
+            return 'sparkles';
+        }
+
         function buildDynamicNav() {
             const dNav = document.getElementById('desktopNav');
             if (dNav) {
                 let dHtml = `<button id="navHome" data-target-section="home" class="nav-link nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 season-text-primary"></i>Inicio</button>`;
                 dynamicCategories.forEach(c => {
-                    if (c.activo !== false) dHtml += `<button id="navCat_${c.id}" data-target-section="cat_${c.id}" class="nav-link nav-action"><i data-lucide="${c.icono || 'star'}" class="w-4 h-4 mr-2 season-text-primary"></i>${c.nombre}</button>`;
+                    if (c.activo !== false) dHtml += `<button id="navCat_${c.id}" data-target-section="cat_${c.id}" class="nav-link nav-action"><i data-lucide="${getCatalogIcon(c)}" class="w-4 h-4 mr-2 season-text-primary"></i>${c.nombre}</button>`;
                 });
                 dHtml += `<button id="navGallery" data-target-section="gallery" class="nav-link nav-action"><i data-lucide="image" class="w-4 h-4 mr-2 text-emerald-500"></i>Galería</button>
                           <button id="navBooking" data-target-section="booking" class="season-btn nav-action text-white shadow-md ml-2 py-2 px-4 rounded-full flex items-center font-bold text-sm"><i data-lucide="calendar-check" class="w-4 h-4 mr-1.5"></i>Reservar</button>`;
@@ -1147,7 +1169,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
                     if (c.activo !== false) {
                         mHtml += `
                         <button id="mobileCat_${c.id}" data-target-section="cat_${c.id}" class="w-full mobile-nav-link nav-action group">
-                            <div class="mobile-nav-icon-box mr-3"><i data-lucide="${c.icono || 'star'}" class="w-4 h-4 text-[var(--s-text-muted)] group-hover:text-[var(--s-primary)] transition-colors"></i></div>
+                            <div class="mobile-nav-icon-box mr-3"><i data-lucide="${getCatalogIcon(c)}" class="w-4 h-4 text-[var(--s-text-muted)] group-hover:text-[var(--s-primary)] transition-colors"></i></div>
                             <span class="flex-1 text-left tracking-wide text-[14px]">${c.nombre}</span>
                             <i data-lucide="chevron-right" class="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:text-[var(--s-primary)] transition-colors"></i>
                         </button>`;
@@ -1483,7 +1505,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
             const cat = dynamicCategories.find(c => c.id === catId);
             if (!cat) return;
             const items = app.catalog.filter(i => i.categoria === catId).sort((a,b) => (a.orden || 0) - (b.orden || 0));
-            renderSection(items, cat.nombre, cat.icono || 'star');
+            renderSection(items, cat.nombre, getCatalogIcon(cat));
         }
 
         function renderSection(items, title, icon) { 
