@@ -2041,6 +2041,59 @@ footer{
 #home-featured-wrapper > .glass-panel{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
 @media (max-width:767px){#home-featured-wrapper{box-shadow:none!important;background:transparent!important;}}
 </style>
+
+<style id="diverty-v11-balanced-spacing">
+/* Ajuste fino solicitado: menos vacío entre bloques, sin apretarlos. */
+@media (max-width:767px){
+  /* Oferta/campaña -> destacados */
+  #home-campaigns-wrapper{
+    margin-bottom:.65rem!important;
+    padding-bottom:0!important;
+  }
+
+  /* Destacados: elimina altura sobrante de la envoltura */
+  #home-featured-wrapper{
+    margin-top:.55rem!important;
+    margin-bottom:.75rem!important;
+    padding-top:.25rem!important;
+    padding-bottom:.25rem!important;
+    min-height:0!important;
+  }
+
+  /* Carrusel más cerca de su indicador/título */
+  #home-featured-wrapper .overflow-x-auto,
+  #home-featured-wrapper .home-swipe-track{
+    padding-top:.35rem!important;
+    padding-bottom:.55rem!important;
+  }
+
+  /* Destacados -> calendario */
+  #calendar-section{
+    margin-top:.85rem!important;
+    padding-top:.75rem!important;
+  }
+
+  /* Evita márgenes acumulados en el primer bloque del calendario */
+  #calendar-section > :first-child{
+    margin-top:0!important;
+  }
+
+  /* Opiniones mantienen un respiro moderado */
+  #home-reviews-wrapper{
+    margin-top:.7rem!important;
+  }
+}
+
+@media (min-width:768px){
+  #home-featured-wrapper{
+    margin-bottom:1.25rem!important;
+  }
+  #calendar-section{
+    margin-top:1.25rem!important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
