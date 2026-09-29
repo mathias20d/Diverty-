@@ -693,6 +693,124 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 }
 @media (min-width:1024px){.home-swipe-track.home-campaign-track{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
+
+<style id="diverty-home-premium-v1">
+/* DIVERTY — renovación visual del Inicio.
+   Solo presentación: no modifica contenido, datos, precios ni lógica. */
+@media (max-width: 767px) {
+  #mainContent { overflow-x: clip; }
+
+  /* Hero: mejor lectura y acabado sin alterar su contenido */
+  #hero-section-identifier > .relative > section {
+    min-height: 72svh !important;
+    padding-top: 8.5rem !important;
+    padding-bottom: 2.75rem !important;
+  }
+  #hero-section-identifier .hero-content {
+    max-width: 34rem !important;
+    padding-left: 1.15rem !important;
+    padding-right: 1.15rem !important;
+  }
+  #hero-section-identifier .hero-content h1 {
+    font-size: clamp(2rem, 9.2vw, 2.8rem) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -.035em !important;
+    text-wrap: balance;
+  }
+  #hero-section-identifier .hero-content p {
+    font-size: .95rem !important;
+    line-height: 1.55 !important;
+    max-width: 31rem;
+  }
+  #hero-section-identifier .hero-content button {
+    min-height: 50px;
+    border-radius: 16px !important;
+  }
+
+  /* Bloques principales: ritmo vertical más limpio */
+  #home-campaigns-wrapper,
+  #home-featured-wrapper {
+    scroll-margin-top: 6rem;
+  }
+  #home-campaigns-wrapper { margin-top: 1rem !important; }
+  #home-featured-wrapper { margin-top: .7rem !important; }
+
+  /* Carruseles del inicio */
+  #home-campaigns-wrapper .overflow-x-auto,
+  #home-featured-wrapper .overflow-x-auto,
+  #home-campaigns-wrapper .home-swipe-track,
+  #home-featured-wrapper .home-swipe-track {
+    gap: .9rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-bottom: 1.15rem !important;
+    scroll-padding-left: 1rem;
+    overscroll-behavior-x: contain;
+  }
+
+  /* Tarjetas: mismas tarjetas y misma información, aspecto más premium */
+  #home-campaigns-wrapper .card-alive,
+  #home-featured-wrapper .card-alive,
+  #home-campaigns-wrapper .glass-panel,
+  #home-featured-wrapper .glass-panel {
+    border-radius: 22px !important;
+    border: 1px solid color-mix(in srgb, var(--s-glass-border) 82%, white 18%) !important;
+    box-shadow: 0 12px 32px rgba(15, 23, 42, .10) !important;
+    overflow: hidden;
+  }
+  #home-campaigns-wrapper img,
+  #home-featured-wrapper img {
+    object-fit: cover;
+  }
+  #home-campaigns-wrapper button,
+  #home-featured-wrapper button {
+    min-height: 44px;
+    border-radius: 14px !important;
+    font-weight: 800 !important;
+  }
+
+  /* Evita que una tarjeta domine toda la pantalla */
+  #home-campaigns-wrapper .home-swipe-item,
+  #home-featured-wrapper .home-swipe-item {
+    scroll-snap-align: center;
+  }
+
+  /* Calendario conserva todo, con marco visual más limpio */
+  #calendar-section { margin-top: .6rem !important; }
+  #calendar-card-inner {
+    border-radius: 24px !important;
+    box-shadow: 0 14px 38px rgba(15,23,42,.09) !important;
+  }
+
+  /* Reseñas: coherencia con tarjetas superiores */
+  #home-reviews-wrapper .glass-panel,
+  #home-reviews-wrapper .card-alive {
+    border-radius: 22px !important;
+    box-shadow: 0 12px 30px rgba(15,23,42,.08) !important;
+  }
+
+  /* Header más nítido en móvil */
+  #mainHeader {
+    border-radius: 0 0 20px 20px;
+  }
+
+  /* Menos trabajo gráfico en móvil, manteniendo los temas */
+  .card-alive {
+    transition: transform .18s ease, box-shadow .18s ease !important;
+  }
+  .card-alive:active { transform: scale(.992); }
+}
+
+@media (min-width: 768px) {
+  #home-campaigns-wrapper .card-alive,
+  #home-featured-wrapper .card-alive,
+  #home-reviews-wrapper .card-alive {
+    border-radius: 24px !important;
+    box-shadow: 0 14px 36px rgba(15,23,42,.09) !important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
