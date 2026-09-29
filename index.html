@@ -693,6 +693,68 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 }
 @media (min-width:1024px){.home-swipe-track.home-campaign-track{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
+
+<style id="diverty-android-compositor-fix">
+/*
+  Corrección móvil conservadora:
+  no cambia Firebase, eventos, carrito ni renderHome.
+  Evita capas de composición que pueden requerir el primer toque en Chrome Android.
+*/
+@media (max-width: 767px), (hover: none) and (pointer: coarse) {
+  html, body {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .season-background,
+  .season-overlay,
+  #decor-layer,
+  #diverty-xmas-stage,
+  #diverty-halloween-stage,
+  #diverty-summer-stage,
+  #diverty-school-stage,
+  #diverty-xmas-stage *,
+  #diverty-halloween-stage *,
+  #diverty-summer-stage *,
+  #diverty-school-stage * {
+    pointer-events: none !important;
+    will-change: auto !important;
+  }
+
+  #diverty-xmas-stage,
+  #diverty-halloween-stage,
+  #diverty-summer-stage,
+  #diverty-school-stage {
+    transform: none !important;
+    contain: none !important;
+  }
+
+  .season-overlay,
+  .glass-panel,
+  #mainHeader,
+  #headerWrapper.scrolled #mainHeader {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    will-change: auto !important;
+  }
+
+  .card-alive,
+  .card-safe-wrapper,
+  .home-swipe-track,
+  .home-swipe-item {
+    will-change: auto !important;
+  }
+
+  .home-swipe-track {
+    -webkit-overflow-scrolling: touch !important;
+    touch-action: auto !important;
+  }
+
+  button, a, [data-action], .nav-action {
+    touch-action: manipulation !important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
