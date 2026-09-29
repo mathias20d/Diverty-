@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -251,12 +252,12 @@
 
         #topAnnouncementBanner { background: var(--s-btn-grad); position: relative; width: 100%; z-index: 60; padding: 6px 16px; font-weight: 800; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.05em; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
         
+        /* CORRECCIÓN: Se eliminó el override que forzaba las tarjetas blancas en móviles */
         @media (max-width: 768px) {
-            .glass-panel, #headerWrapper.scrolled #mainHeader { 
+            #headerWrapper.scrolled #mainHeader { 
                 backdrop-filter: none !important; -webkit-backdrop-filter: none !important; 
+                background: var(--s-bg-color) !important;
             }
-            .glass-panel { background: rgba(255,255,255,0.98) !important; border: 1px solid rgba(0,0,0,0.05) !important; }
-            #headerWrapper.scrolled #mainHeader { background: var(--s-bg-color) !important; }
         }
     </style>
 </head>
@@ -276,7 +277,8 @@
             <div class="container mx-auto flex justify-between items-center">
                 <button data-action="close-modal" data-target-section="home" class="flex items-center logo-container nav-action" aria-label="Inicio">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full p-[2px] mr-3 shadow-sm" style="background: var(--s-btn-grad);">
-                        <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border-2 border-[var(--s-bg-color)]" loading="eager" id="mainHeaderLogo">
+                        <!-- CORRECCIÓN: Agregado el onerror para mostrar "DE" si falla la imagen local -->
+                        <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border-2 border-[var(--s-bg-color)]" loading="eager" id="mainHeaderLogo" onerror="this.onerror=null; this.src='https://placehold.co/100x100/7C3AED/ffffff?text=DE'">
                     </div>
                     <div class="flex flex-col drop-shadow-sm">
                         <span class="text-2xl sm:text-3xl font-black font-nunito leading-none tracking-tight header-brand-text">Diverty</span>
@@ -521,6 +523,7 @@
             if(show){ o.style.opacity='1'; o.style.visibility='visible'; m.classList.add('open'); } else { o.style.opacity='0'; o.style.visibility='hidden'; m.classList.remove('open'); } 
         }
 
+        // CORRECCIÓN: Se añadieron los campos faltantes (Bg, Text, Card)
         function applyThemeColors(themeData) {
             if (!themeData) return;
             const style = document.getElementById('theme-dynamic-styles') || document.createElement('style'); 
@@ -576,10 +579,21 @@
             else if (decorType.includes('navidad') || decorType.includes('santa')) current = palettes.christmas;
             else if (decorType.includes('verano') || decorType.includes('summer')) current = palettes.summer;
 
+            // LECTURA COMPLETA DE VARIABLES DEL PANEL ADMINISTRADOR
             const customP = cleanStr(themeData.colorPrimario || themeData.colorPrimary);
             if (customP && customP.startsWith('#')) current.p = customP;
+            
             const customS = cleanStr(themeData.colorSecundario || themeData.colorSecondary);
             if (customS && customS.startsWith('#')) current.s = customS;
+
+            const customBg = cleanStr(themeData.colorBg);
+            if (customBg && customBg.startsWith('#')) current.bg = customBg;
+            
+            const customText = cleanStr(themeData.colorText);
+            if (customText && customText.startsWith('#')) current.tTitle = customText;
+            
+            const customCard = cleanStr(themeData.colorCard);
+            if (customCard && customCard.startsWith('#')) current.glass = customCard + 'E6'; // Añade ligera transparencia (90%)
 
             document.body.setAttribute('data-theme', current.theme);
 
@@ -1427,7 +1441,6 @@
                     if(targetSection && !navLink) { if(app.activeSection !== targetSection) setActiveSection(targetSection); }
                     break; 
                 }
-                // 🚨 CORRECCIÓN ROBUSTA PARA "EXPLORAR CATÁLOGO"
                 case 'scroll-to-catalog': {
                     e.preventDefault();
                     if (!catalogLoaded) {
@@ -1627,3 +1640,4 @@
     </script>
 </body>
 </html>
+```
