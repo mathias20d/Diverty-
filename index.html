@@ -692,6 +692,11 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   .home-swipe-track.home-campaign-track > *{width:100%!important;max-width:none!important;min-width:0!important}
 }
 @media (min-width:1024px){.home-swipe-track.home-campaign-track{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (hover:none) and (pointer:coarse){
+.home-swipe-track{touch-action:auto!important;scroll-behavior:auto!important;}
+.home-swipe-track .snap-container,.home-swipe-track .card-safe-wrapper{transform:none!important;will-change:auto!important;}
+.home-swipe-track .card-alive:hover{transform:none!important;}
+}
 </style>
 </head>
 <body class="flex flex-col relative min-h-screen">
@@ -945,7 +950,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 
         function setContent(html) { 
             const mc = document.getElementById('mainContent'); 
-            if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); setupSliders(); } 
+            if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); setupSliders(); requestAnimationFrame(() => markInteractiveReady(mc)); } 
         }
 
         function setupSliders() {
@@ -961,6 +966,11 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
                     const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk;
                 });
             });
+        }
+
+        function markInteractiveReady(root=document) {
+            root.querySelectorAll?.('.home-swipe-track').forEach(track => { track.classList.add('interaction-ready'); void track.scrollWidth; });
+            document.documentElement.classList.add('diverty-interactive-ready');
         }
 
         function showModal(modalId) { 
@@ -2131,7 +2141,9 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
             else setActiveSection(app.activeSection);
             
             updateCartUI();
-            finishThemeBoot();
+            setupSliders();
+            markInteractiveReady(document);
+            requestAnimationFrame(() => requestAnimationFrame(finishThemeBoot));
 
             Promise.allSettled([
                 (async () => { try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), T_OUT); if(!ts.empty) { locations = ts.docs.map(d=>d.data()); populateLocationSelects(); updateCartBadgeAndTotals(); } } catch(e){} })(),
@@ -2152,7 +2164,10 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
             if (window.location.hash) { history.replaceState(null, null, ' '); }
             setTimeout(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, 50);
             
-            document.body.addEventListener('click', handleGlobalClick);
+            if (!window.__divertyGlobalClickReady) {
+                document.addEventListener('click', handleGlobalClick, true);
+                window.__divertyGlobalClickReady = true;
+            }
             
             const mt = document.getElementById('mobileToggle'); if(mt) mt.onclick = () => toggleMobileMenu(true);
             const cm = document.getElementById('closeMobile'); if(cm) cm.onclick = () => toggleMobileMenu(false);
