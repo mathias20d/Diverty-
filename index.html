@@ -1088,6 +1088,139 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 }
 </style>
 
+
+<style id="diverty-premium-v4-checkout">
+/* V4 — Reserva + carrito. Exclusivamente presentación. */
+@media (max-width:767px){
+  /* Modal del carrito: panel tipo app */
+  #cartModal {
+    padding:0!important;
+    align-items:flex-end!important;
+  }
+  #cartModal > div {
+    width:100%!important;
+    max-width:none!important;
+    max-height:92svh!important;
+    margin:0!important;
+    border-radius:28px 28px 0 0!important;
+    border:1px solid var(--s-glass-border)!important;
+    border-bottom:0!important;
+    box-shadow:0 -20px 55px rgba(15,23,42,.22)!important;
+    overflow:hidden!important;
+  }
+  #cartModal > div::before {
+    content:"";
+    display:block;
+    width:42px;
+    height:5px;
+    border-radius:999px;
+    margin:9px auto 1px;
+    background:color-mix(in srgb,var(--s-text-muted) 30%,transparent);
+  }
+
+  /* Zona desplazable del carrito */
+  #cartItems,
+  #cartSummary {
+    scrollbar-width:none;
+  }
+  #cartItems::-webkit-scrollbar,
+  #cartSummary::-webkit-scrollbar { display:none; }
+
+  #cartModal .glass-panel {
+    border-radius:18px!important;
+    border:1px solid var(--s-glass-border)!important;
+    box-shadow:0 8px 22px rgba(15,23,42,.07)!important;
+  }
+
+  /* Controles y CTA del carrito */
+  #cartModal button {
+    min-height:44px;
+    border-radius:14px!important;
+  }
+  #cartModal select,
+  #cartModal input {
+    min-height:44px!important;
+    border-radius:13px!important;
+  }
+  #cartModal [data-action="navigate-from-modal"],
+  #cartModal [data-action="checkout"],
+  #cartModal .season-btn {
+    min-height:50px!important;
+    border-radius:16px!important;
+    font-weight:900!important;
+    box-shadow:0 10px 24px color-mix(in srgb,var(--s-primary) 23%,transparent)!important;
+  }
+
+  /* Vista Reserva */
+  #bookingForm,
+  #booking-cart-summary {
+    width:100%;
+  }
+  #bookingForm .form-group {
+    margin-bottom:.85rem!important;
+  }
+  #bookingForm input,
+  #bookingForm select,
+  #bookingForm textarea {
+    min-height:50px!important;
+    border-radius:15px!important;
+    padding-left:1rem!important;
+    padding-right:1rem!important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.22);
+  }
+  #bookingForm textarea {
+    min-height:100px!important;
+    padding-top:.85rem!important;
+  }
+  #bookingForm label {
+    margin-left:.15rem;
+    letter-spacing:.045em!important;
+  }
+  #bookingForm button[type="submit"],
+  #bookingForm .season-btn {
+    min-height:52px!important;
+    border-radius:16px!important;
+    font-weight:900!important;
+    box-shadow:0 11px 26px color-mix(in srgb,var(--s-primary) 24%,transparent)!important;
+  }
+
+  /* Tarjeta de resumen de reserva */
+  #booking-cart-summary > div,
+  #booking-cart-summary .glass-panel {
+    border-radius:17px!important;
+  }
+  #mainContent .sticky.top-24 {
+    position:relative!important;
+    top:auto!important;
+    border-radius:25px!important;
+    border:1px solid color-mix(in srgb,var(--s-primary) 13%,var(--s-glass-border))!important;
+    box-shadow:0 14px 34px rgba(15,23,42,.09)!important;
+  }
+
+  /* Espaciado del flujo de reserva */
+  #mainContent .lg\:grid-cols-12 {
+    gap:1rem!important;
+  }
+}
+
+/* Escritorio: refinamiento, sin alterar estructura */
+@media (min-width:768px){
+  #cartModal > div {
+    border-radius:26px!important;
+    box-shadow:0 24px 70px rgba(15,23,42,.22)!important;
+  }
+  #bookingForm input,
+  #bookingForm select,
+  #bookingForm textarea {
+    border-radius:14px!important;
+  }
+  #booking-cart-summary > div,
+  #booking-cart-summary .glass-panel {
+    border-radius:18px!important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
