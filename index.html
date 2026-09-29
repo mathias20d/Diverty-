@@ -1006,12 +1006,20 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
         }
 
         function finishThemeBoot() {
+            const root = document.documentElement;
             const loader = document.getElementById('themeBootLoader');
-            document.documentElement.classList.remove('diverty-booting');
+            // Liberar la interacción ANTES de mostrar la página.
             if (loader) {
-                loader.classList.add('boot-hide');
-                setTimeout(() => loader.remove(), 320);
+                loader.style.pointerEvents = 'none';
+                loader.style.display = 'none';
+                loader.remove();
             }
+            root.classList.remove('diverty-booting');
+            root.style.removeProperty('overflow');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('pointer-events');
+            // Cancelar cualquier captura táctil residual del arranque.
+            document.querySelectorAll('[inert]').forEach(el => el.removeAttribute('inert'));
         }
 
         function applyThemeColors(themeData) {
@@ -2223,5 +2231,40 @@ setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoo
 <script id="diverty-home-swipe-guard">
 document.addEventListener('dragstart', function(e){ if(e.target.closest && e.target.closest('.home-swipe-track')) e.preventDefault(); }, {passive:false});
 </script>
+
+<style id="diverty-android-touch-fix">
+/* Android/mobile: el primer toque debe ejecutar la acción, no quedarse en hover. */
+@media (hover: none) and (pointer: coarse) {
+  .group:hover, .glass-panel:hover, .card:hover, button:hover, a:hover { transform:none !important; }
+  .home-swipe-track, .home-swipe-track * { -webkit-tap-highlight-color: transparent; }
+  .home-swipe-track { touch-action: pan-x pan-y; overscroll-behavior-x: contain; }
+  button, a, [role="button"], [data-action] { touch-action: manipulation; }
+}
+</style>
+<script id="diverty-hard-release-touch">
+(function(){
+  function hardRelease(){
+    var l=document.getElementById('themeBootLoader');
+    if(l){ l.style.pointerEvents='none'; l.style.display='none'; l.remove(); }
+    document.documentElement.classList.remove('diverty-booting');
+    document.documentElement.style.removeProperty('overflow');
+    if(document.body){
+      document.body.style.removeProperty('overflow');
+      document.body.style.removeProperty('pointer-events');
+    }
+  }
+  document.addEventListener('DOMContentLoaded', function(){
+    // No dejar una capa transparente viva después del primer render.
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      if(!document.documentElement.classList.contains('diverty-booting')) hardRelease();
+    }); });
+  }, {once:true});
+  window.addEventListener('pageshow', function(){
+    // También corrige volver desde caché de navegación móvil (bfcache).
+    if(!document.documentElement.classList.contains('diverty-booting')) hardRelease();
+  });
+})();
+</script>
+
 </body>
 </html>
