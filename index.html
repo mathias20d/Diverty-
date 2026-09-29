@@ -1534,6 +1534,133 @@ footer a:active{ transform:scale(.98); }
 }
 </style>
 
+
+<style id="diverty-premium-v8-seasonal">
+/* V8 — Temas estacionales premium. CSS únicamente. */
+
+/* NAVIDAD — profundidad cálida, cristal y brillo sutil */
+html[data-theme="christmas"] body,
+body.theme-christmas{
+  background:
+    radial-gradient(circle at 10% 5%,rgba(220,38,38,.08),transparent 30%),
+    radial-gradient(circle at 90% 12%,rgba(202,138,4,.09),transparent 26%),
+    var(--s-bg)!important;
+}
+html[data-theme="christmas"] .glass-panel,
+body.theme-christmas .glass-panel{
+  border-color:rgba(202,138,4,.24)!important;
+  box-shadow:0 14px 38px rgba(20,83,45,.10)!important;
+}
+html[data-theme="christmas"] .season-btn,
+body.theme-christmas .season-btn{
+  box-shadow:0 8px 22px rgba(153,27,27,.16);
+}
+
+/* HALLOWEEN — noche violeta/naranja sin oscurecer legibilidad */
+html[data-theme="halloween"] body,
+body.theme-halloween{
+  background:
+    radial-gradient(circle at 86% 4%,rgba(124,58,237,.12),transparent 29%),
+    radial-gradient(circle at 8% 18%,rgba(249,115,22,.10),transparent 27%),
+    var(--s-bg)!important;
+}
+html[data-theme="halloween"] .glass-panel,
+body.theme-halloween .glass-panel{
+  border-color:rgba(124,58,237,.25)!important;
+  box-shadow:0 14px 38px rgba(76,29,149,.12)!important;
+}
+html[data-theme="halloween"] .season-btn,
+body.theme-halloween .season-btn{
+  box-shadow:0 8px 22px rgba(124,58,237,.18);
+}
+
+/* VERANO — agua, cielo y luz */
+html[data-theme="summer"] body,
+body.theme-summer{
+  background:
+    radial-gradient(circle at 8% 6%,rgba(14,165,233,.10),transparent 30%),
+    radial-gradient(circle at 92% 12%,rgba(251,146,60,.10),transparent 28%),
+    var(--s-bg)!important;
+}
+html[data-theme="summer"] .glass-panel,
+body.theme-summer .glass-panel{
+  border-color:rgba(14,165,233,.22)!important;
+  box-shadow:0 14px 38px rgba(8,145,178,.10)!important;
+}
+html[data-theme="summer"] .season-btn,
+body.theme-summer .season-btn{
+  box-shadow:0 8px 22px rgba(6,182,212,.16);
+}
+
+/* ESCOLAR — limpio, creativo y colorido */
+html[data-theme="school"] body,
+body.theme-school{
+  background:
+    linear-gradient(rgba(59,130,246,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(59,130,246,.025) 1px,transparent 1px),
+    var(--s-bg)!important;
+  background-size:24px 24px!important;
+}
+html[data-theme="school"] .glass-panel,
+body.theme-school .glass-panel{
+  border-color:rgba(59,130,246,.20)!important;
+  box-shadow:0 14px 38px rgba(37,99,235,.09)!important;
+}
+html[data-theme="school"] .season-btn,
+body.theme-school .season-btn{
+  box-shadow:0 8px 22px rgba(37,99,235,.14);
+}
+
+/* Todos los temas: cards coherentes con la identidad activa */
+html[data-theme="christmas"] .card-safe-wrapper > *,
+body.theme-christmas .card-safe-wrapper > *{
+  box-shadow:0 14px 34px rgba(20,83,45,.11)!important;
+}
+html[data-theme="halloween"] .card-safe-wrapper > *,
+body.theme-halloween .card-safe-wrapper > *{
+  box-shadow:0 14px 34px rgba(76,29,149,.13)!important;
+}
+html[data-theme="summer"] .card-safe-wrapper > *,
+body.theme-summer .card-safe-wrapper > *{
+  box-shadow:0 14px 34px rgba(8,145,178,.11)!important;
+}
+html[data-theme="school"] .card-safe-wrapper > *,
+body.theme-school .card-safe-wrapper > *{
+  box-shadow:0 14px 34px rgba(37,99,235,.10)!important;
+}
+
+/* Móvil: riqueza visual sin recuperar el coste de animación anterior */
+@media (max-width:767px){
+  html[data-theme="christmas"] body,
+  body.theme-christmas,
+  html[data-theme="halloween"] body,
+  body.theme-halloween,
+  html[data-theme="summer"] body,
+  body.theme-summer{
+    background-attachment:scroll!important;
+  }
+
+  html[data-theme="school"] body,
+  body.theme-school{
+    background-size:28px 28px!important;
+  }
+
+  #diverty-xmas-stage,
+  #diverty-halloween-stage,
+  #diverty-summer-stage,
+  #diverty-school-stage{
+    opacity:.82;
+  }
+
+  #diverty-xmas-stage *,
+  #diverty-halloween-stage *,
+  #diverty-summer-stage *,
+  #diverty-school-stage *{
+    will-change:auto!important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
