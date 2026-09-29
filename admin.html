@@ -74,27 +74,6 @@
         .drag-handle:active, .drag-handle-cat:active, .drag-handle-camp:active, .drag-handle-service:active { cursor: grabbing; }
 
         .color-swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.2); display: inline-block; }
-
-
-        /* === DIVERTY MASTER: EXPERIENCIA PREMIUM DE TEMPORADAS === */
-        .theme-preset-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-        @media(min-width:640px){ .theme-preset-grid{grid-template-columns:repeat(5,minmax(0,1fr));} }
-        .theme-preset { position:relative; min-height:92px; border-radius:16px; overflow:hidden; border:1px solid #334155; padding:12px; text-align:left; transition:.2s ease; isolation:isolate; }
-        .theme-preset:hover { transform:translateY(-2px); border-color:#64748b; }
-        .theme-preset.active { outline:2px solid #f59e0b; outline-offset:2px; }
-        .theme-preset::before { content:''; position:absolute; inset:0; z-index:-2; }
-        .theme-preset::after { content:''; position:absolute; inset:0; z-index:-1; background:linear-gradient(to top,rgba(2,6,23,.9),rgba(2,6,23,.08)); }
-        .preset-normal::before{background:linear-gradient(135deg,#7c3aed,#ec4899)}
-        .preset-christmas::before{background:radial-gradient(circle at 80% 20%,#f6d365 0 3%,transparent 4%),linear-gradient(135deg,#052e26,#14532d 48%,#7f1d1d)}
-        .preset-halloween::before{background:radial-gradient(circle at 80% 22%,#fb923c 0 8%,transparent 9%),linear-gradient(135deg,#09090b,#2e1065 55%,#7c2d12)}
-        .preset-summer::before{background:linear-gradient(155deg,#0284c7,#06b6d4 50%,#f59e0b)}
-        .preset-school::before{background:linear-gradient(145deg,#2563eb,#7c3aed 48%,#f97316)}
-        .theme-live-preview { min-height:260px; border-radius:24px; overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.12); box-shadow:0 24px 60px rgba(0,0,0,.35); transition:.25s ease; }
-        .theme-live-preview::before { content:''; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.58),rgba(0,0,0,.08)); }
-        .theme-preview-card { position:absolute; left:16px; right:16px; bottom:16px; padding:16px; border-radius:18px; backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.18); box-shadow:0 12px 35px rgba(0,0,0,.25); }
-        .theme-preview-decor { position:absolute; inset:0; pointer-events:none; overflow:hidden; opacity:.9; }
-        .theme-preview-decor span { position:absolute; filter:drop-shadow(0 3px 8px rgba(0,0,0,.3)); }
-
     </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-[#020617] w-full">
@@ -496,6 +475,12 @@
         <div class="modal-content bg-[#0F172A] border border-slate-700 rounded-3xl shadow-2xl p-6 w-full max-w-sm mx-4 text-left">
             <h3 class="text-lg font-bold text-white mb-4" id="catModalTitle">Catálogo</h3>
             <input type="text" id="catName" class="saas-input bg-slate-900 mb-4" placeholder="Nombre de la categoría...">
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-2"><label class="saas-label !mb-0">Icono del catálogo</label><span id="catIconLabel" class="text-[10px] font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2 py-1 rounded-lg">Automático</span></div>
+                <input type="hidden" id="catIcon" value="">
+                <div id="catIconGrid" class="grid grid-cols-6 sm:grid-cols-8 gap-2 max-h-44 overflow-y-auto p-2 bg-slate-950/50 border border-slate-800 rounded-2xl"><button type="button" data-cat-icon="party-popper" onclick="window.selectCategoryIcon('party-popper')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="party-popper"><i data-lucide="party-popper" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="smile" onclick="window.selectCategoryIcon('smile')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="smile"><i data-lucide="smile" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="sparkles" onclick="window.selectCategoryIcon('sparkles')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="sparkles"><i data-lucide="sparkles" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="bubbles" onclick="window.selectCategoryIcon('bubbles')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="bubbles"><i data-lucide="bubbles" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="mic-2" onclick="window.selectCategoryIcon('mic-2')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="mic-2"><i data-lucide="mic-2" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="wand-sparkles" onclick="window.selectCategoryIcon('wand-sparkles')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="wand-sparkles"><i data-lucide="wand-sparkles" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="palette" onclick="window.selectCategoryIcon('palette')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="palette"><i data-lucide="palette" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="gamepad-2" onclick="window.selectCategoryIcon('gamepad-2')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="gamepad-2"><i data-lucide="gamepad-2" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="ghost" onclick="window.selectCategoryIcon('ghost')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="ghost"><i data-lucide="ghost" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="cake-slice" onclick="window.selectCategoryIcon('cake-slice')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="cake-slice"><i data-lucide="cake-slice" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="music" onclick="window.selectCategoryIcon('music')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="music"><i data-lucide="music" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="camera" onclick="window.selectCategoryIcon('camera')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="camera"><i data-lucide="camera" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="image" onclick="window.selectCategoryIcon('image')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="image"><i data-lucide="image" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="tent" onclick="window.selectCategoryIcon('tent')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="tent"><i data-lucide="tent" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="balloon" onclick="window.selectCategoryIcon('balloon')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="balloon"><i data-lucide="balloon" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="baby" onclick="window.selectCategoryIcon('baby')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="baby"><i data-lucide="baby" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="crown" onclick="window.selectCategoryIcon('crown')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="crown"><i data-lucide="crown" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="star" onclick="window.selectCategoryIcon('star')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="star"><i data-lucide="star" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="heart" onclick="window.selectCategoryIcon('heart')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="heart"><i data-lucide="heart" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="gift" onclick="window.selectCategoryIcon('gift')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="gift"><i data-lucide="gift" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="users" onclick="window.selectCategoryIcon('users')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="users"><i data-lucide="users" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="calendar-days" onclick="window.selectCategoryIcon('calendar-days')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="calendar-days"><i data-lucide="calendar-days" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="sun" onclick="window.selectCategoryIcon('sun')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="sun"><i data-lucide="sun" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="school" onclick="window.selectCategoryIcon('school')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="school"><i data-lucide="school" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="graduation-cap" onclick="window.selectCategoryIcon('graduation-cap')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="graduation-cap"><i data-lucide="graduation-cap" class="w-5 h-5 pointer-events-none"></i></button><button type="button" data-cat-icon="drama" onclick="window.selectCategoryIcon('drama')" class="cat-icon-option w-11 h-11 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 flex items-center justify-center hover:border-indigo-500 hover:text-white transition-all" title="drama"><i data-lucide="drama" class="w-5 h-5 pointer-events-none"></i></button></div>
+                <p class="text-[11px] text-slate-500 mt-2">Elige un icono. Si lo dejas en automático, la web escogerá uno según el nombre del catálogo.</p>
+            </div>
             <div class="flex gap-3">
                 <button onclick="window.closeCategoryModal()" class="flex-1 bg-slate-800 py-3 rounded-xl text-white font-bold">Cancelar</button>
                 <button onclick="window.saveCategory()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-white font-bold">Guardar</button>
@@ -511,26 +496,6 @@
                 <button onclick="window.closeThemeModal()" class="text-slate-500 hover:text-white p-2"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
             <div class="p-6 overflow-y-auto space-y-4">
-                <!-- PRESETS VISUALES: solo rellenan los campos existentes; no cambian la estructura de Firebase -->
-                <div class="bg-slate-900/60 border border-slate-700 rounded-2xl p-4">
-                    <div class="flex items-center justify-between gap-3 mb-3">
-                        <div><h4 class="text-sm font-black text-white">Estilos profesionales</h4><p class="text-[11px] text-slate-400 mt-0.5">Elige una base y luego personaliza colores, fechas y animaciones.</p></div>
-                        <span class="text-[9px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-full">Vista previa</span>
-                    </div>
-                    <div class="theme-preset-grid">
-                        <button type="button" class="theme-preset preset-normal" data-theme-preset="normal"><span class="block text-xl mb-2">✨</span><strong class="text-xs text-white">Normal</strong><small class="block text-[9px] text-white/70 mt-1">Diverty clásico</small></button>
-                        <button type="button" class="theme-preset preset-christmas" data-theme-preset="christmas"><span class="block text-xl mb-2">🎄</span><strong class="text-xs text-white">Navidad</strong><small class="block text-[9px] text-white/70 mt-1">Pino · vino · dorado</small></button>
-                        <button type="button" class="theme-preset preset-halloween" data-theme-preset="halloween"><span class="block text-xl mb-2">🎃</span><strong class="text-xs text-white">Halloween</strong><small class="block text-[9px] text-white/70 mt-1">Noche · naranja · violeta</small></button>
-                        <button type="button" class="theme-preset preset-summer" data-theme-preset="summer"><span class="block text-xl mb-2">☀️</span><strong class="text-xs text-white">Verano</strong><small class="block text-[9px] text-white/70 mt-1">Mar · cielo · sol</small></button>
-                        <button type="button" class="theme-preset preset-school" data-theme-preset="school"><span class="block text-xl mb-2">🎒</span><strong class="text-xs text-white">Escolar</strong><small class="block text-[9px] text-white/70 mt-1">Aula · color · energía</small></button>
-                    </div>
-                </div>
-                <div class="theme-live-preview" id="themeLivePreview">
-                    <div class="theme-preview-decor" id="themePreviewDecor"></div>
-                    <div class="theme-preview-card" id="themePreviewCard">
-                        <div class="flex items-center justify-between gap-3"><div><span id="themePreviewBadge" class="text-[9px] font-black uppercase tracking-[.18em]">Vista del tema</span><h3 id="themePreviewTitle" class="text-xl font-black mt-1">Diverty Eventos</h3><p id="themePreviewDesc" class="text-[11px] mt-1 opacity-80">Así se sentirá la temporada en tu web.</p></div><button type="button" id="themePreviewButton" class="shrink-0 px-4 py-2.5 rounded-xl text-[10px] font-black text-white shadow-lg">Reservar</button></div>
-                    </div>
-                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div><label class="saas-label">Nombre del Tema</label><input type="text" id="thmName" class="saas-input bg-slate-900"></div>
                     <div><label class="saas-label">Descripción</label><input type="text" id="thmDesc" class="saas-input bg-slate-900" placeholder="Ej: Especial de Octubre"></div>
@@ -841,17 +806,35 @@
         // --- 7. CATEGORÍAS ---
         let editingCategoryId = null;
 
+        window.selectCategoryIcon = function(icon = '') {
+            const input = document.getElementById('catIcon');
+            if(input) input.value = icon || '';
+            document.querySelectorAll('.cat-icon-option').forEach(btn => {
+                const active = btn.dataset.catIcon === icon;
+                btn.classList.toggle('border-indigo-500', active);
+                btn.classList.toggle('bg-indigo-500/20', active);
+                btn.classList.toggle('text-white', active);
+                btn.classList.toggle('ring-2', active);
+                btn.classList.toggle('ring-indigo-500/20', active);
+            });
+            const label = document.getElementById('catIconLabel');
+            if(label) label.textContent = icon ? icon.replace(/-/g, ' ') : 'Automático';
+        };
+
         window.openCategoryModal = function(id = null) {
             editingCategoryId = id;
             if(id) {
                 const cat = window.categoriasLocales.find(c => c.id === id);
                 document.getElementById('catName').value = cat ? cat.nombre : '';
+                window.selectCategoryIcon(cat && cat.icono ? cat.icono : '');
                 document.getElementById('catModalTitle').textContent = "Editar Catálogo";
             } else {
                 document.getElementById('catName').value = '';
+                window.selectCategoryIcon('');
                 document.getElementById('catModalTitle').textContent = "Nuevo Catálogo";
             }
             document.getElementById('categoryModal').classList.add('show');
+            if(typeof lucide !== 'undefined') lucide.createIcons({root: document.getElementById('categoryModal')});
         };
 
         window.closeCategoryModal = () => { 
@@ -861,17 +844,18 @@
         
         window.saveCategory = async () => {
             const nombre = document.getElementById('catName').value.trim();
+            const icono = (document.getElementById('catIcon')?.value || '').trim();
             if(!nombre) return showToast("Escribe un nombre para el catálogo", "error");
 
             try {
                 if (editingCategoryId) {
-                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', editingCategoryId), { nombre });
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', editingCategoryId), { nombre, icono });
                     showToast("Catálogo actualizado", "success");
                 } else {
                     const newId = nombre.toLowerCase().replace(/[^a-z0-9]/g, '-');
                     const orden = window.categoriasLocales.length + 1;
                     await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', newId), {
-                        id: newId, nombre, orden, visible: true
+                        id: newId, nombre, icono, orden, visible: true
                     });
                     showToast("Catálogo creado exitosamente", "success");
                 }
@@ -917,7 +901,8 @@
                         <div class="category-item flex justify-between items-center bg-[#0F172A] p-3 md:p-4 rounded-xl border border-slate-700 shadow-sm relative w-full" data-id="${c.id}">
                             <div class="flex items-center gap-2 pl-2 flex-1">
                                 <div class="drag-handle-cat p-1.5 cursor-grab -ml-2 text-slate-500 hover:text-white transition-colors"><i data-lucide="grip-vertical" class="w-5 h-5"></i></div>
-                                <div class="flex-1"><h4 class="text-white font-bold text-sm">${c.nombre}</h4></div>
+                                <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0"><i data-lucide="${c.icono || 'folder'}" class="w-5 h-5 text-indigo-300"></i></div>
+                                 <div class="flex-1 min-w-0"><h4 class="text-white font-bold text-sm truncate">${c.nombre}</h4><p class="text-[10px] text-slate-500 mt-0.5">${c.icono ? 'Icono: '+c.icono : 'Icono automático en la web'}</p></div>
                             </div>
                             <div class="flex gap-2">
                                 <button onclick="window.openCategoryModal('${c.id}')" class="text-slate-400 hover:text-white p-2 bg-slate-800 rounded-lg transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
@@ -1299,37 +1284,13 @@
         window.setManualTheme = async function(id) { window.globalThemeConfig.modo = 'manual'; window.globalThemeConfig.temaManualActivo = id; await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'tema_global'), window.globalThemeConfig, {merge: true}); await evaluateAndApplyThemes(); }
         window.setDefaultTheme = async function(id) { const batch = writeBatch(db); window.temasLocales.forEach(t => { t.isDefault = (t.id === id); batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web', t.id), { isDefault: t.isDefault }); }); await batch.commit(); await evaluateAndApplyThemes(); }
         
-
-        // --- PRESETS Y VISTA PREVIA DE TEMAS (UI; usa los mismos campos de Firebase) ---
-        const THEME_PRESETS = {
-            normal: { nombre:'Tema Normal', descripcion:'Diseño por defecto', Primary:'#7C3AED', Secondary:'#E11D48', Button:'#7C3AED', Text:'#0F172A', Bg:'#F8FAFC', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #7C3AED, #E11D48)', decorations:'none', emoji:'✨' },
-            christmas: { nombre:'Navidad', descripcion:'Temporada navideña elegante y festiva', Primary:'#B91C1C', Secondary:'#166534', Button:'#B91C1C', Text:'#FFFFFF', Bg:'#071A14', Card:'#102A20', gradient:'linear-gradient(135deg, #B91C1C, #166534)', decorations:'snow', emoji:'🎄' },
-            halloween: { nombre:'Halloween', descripcion:'Temporada Halloween nocturna y premium', Primary:'#F97316', Secondary:'#7E22CE', Button:'#EA580C', Text:'#F8FAFC', Bg:'#09070D', Card:'#17111F', gradient:'linear-gradient(135deg, #EA580C, #7E22CE)', decorations:'bats', emoji:'🎃' },
-            summer: { nombre:'Verano', descripcion:'Temporada fresca, luminosa y tropical', Primary:'#0284C7', Secondary:'#EA580C', Button:'#0284C7', Text:'#082F49', Bg:'#F0F9FF', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #0284C7, #EA580C)', decorations:'confetti', emoji:'☀️' },
-            school: { nombre:'Escolar', descripcion:'Temporada escolar alegre, creativa y profesional', Primary:'#2563EB', Secondary:'#F97316', Button:'#7C3AED', Text:'#1E3A8A', Bg:'#F8FAFC', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #2563EB, #7C3AED 55%, #F97316)', decorations:'none', emoji:'🎒' }
-        };
-        function setThemeFieldColor(key, value){ const txt=document.getElementById('thmCol'+key), picker=document.getElementById('thmCol'+key+'Picker'); if(txt)txt.value=value; if(picker)picker.value=value; }
-        function applyThemePreset(key){ const p=THEME_PRESETS[key]; if(!p)return; document.getElementById('thmName').value=p.nombre; document.getElementById('thmDesc').value=p.descripcion; ['Primary','Secondary','Button','Text','Bg','Card'].forEach(k=>setThemeFieldColor(k,p[k])); document.getElementById('thmGradient').value=p.gradient; document.getElementById('thmDecorations').value=p.decorations; document.getElementById('thmAnimations').checked=true; document.querySelectorAll('[data-theme-preset]').forEach(b=>b.classList.toggle('active',b.dataset.themePreset===key)); updateThemeLivePreview(); }
-        function updateThemeLivePreview(){
-            const val=id=>document.getElementById(id)?.value || '';
-            const primary=val('thmColPrimary')||'#7C3AED', secondary=val('thmColSecondary')||'#E11D48', button=val('thmColButton')||primary, text=val('thmColText')||'#fff', bg=val('thmColBg')||'#0f172a', card=val('thmColCard')||'#111827';
-            const gradient=val('thmGradient')||`linear-gradient(135deg, ${primary}, ${secondary})`, name=val('thmName')||'Diverty Eventos', desc=val('thmDesc')||'Así se sentirá la temporada en tu web.', decor=val('thmDecorations');
-            const preview=document.getElementById('themeLivePreview'), pc=document.getElementById('themePreviewCard'), title=document.getElementById('themePreviewTitle'), description=document.getElementById('themePreviewDesc'), badge=document.getElementById('themePreviewBadge'), btn=document.getElementById('themePreviewButton'), layer=document.getElementById('themePreviewDecor'); if(!preview)return;
-            preview.style.background=`radial-gradient(circle at 82% 16%, ${secondary}66 0, transparent 27%), linear-gradient(145deg, ${bg}, ${primary}55)`; pc.style.background=card+'E6'; pc.style.color=text; title.textContent=name; description.textContent=desc; badge.style.color=primary; btn.style.background=gradient; layer.innerHTML='';
-            const icons=decor==='snow'?['❄','✦','❄','✧','❄']:decor==='bats'?['🦇','✦','🦇','☾']:decor==='leaves'?['🍂','🍁','🍂']:decor==='confetti'?['✦','●','◆','✧','●']:[];
-            icons.forEach((icon,i)=>{const sp=document.createElement('span');sp.textContent=icon;sp.style.left=(8+i*19)+'%';sp.style.top=(10+(i%3)*18)+'%';sp.style.fontSize=(14+(i%2)*8)+'px';layer.appendChild(sp);});
-        }
-        document.querySelectorAll('[data-theme-preset]').forEach(b=>b.addEventListener('click',()=>applyThemePreset(b.dataset.themePreset)));
-        ['thmName','thmDesc','thmGradient','thmDecorations','thmColPrimary','thmColSecondary','thmColButton','thmColText','thmColBg','thmColCard'].forEach(id=>document.getElementById(id)?.addEventListener('input',updateThemeLivePreview));
-        ['Primary','Secondary','Button','Text','Bg','Card'].forEach(k=>{ const picker=document.getElementById('thmCol'+k+'Picker'); picker?.addEventListener('input',()=>{setThemeFieldColor(k,picker.value);updateThemeLivePreview();}); });
-
         window.openThemeModal = function() { 
             editingThemeId = null; 
             document.getElementById('themeModalTitle').innerHTML = '<i data-lucide="palette" class="w-5 h-5 text-amber-400"></i> Nuevo Tema';
             document.getElementById('thmName').value = ''; document.getElementById('thmDesc').value = ''; document.getElementById('thmStart').value = ''; document.getElementById('thmEnd').value = ''; document.getElementById('thmGradient').value = ''; document.getElementById('thmDecorations').value = 'none'; document.getElementById('thmAnimations').checked = true;
             const defaultColors = { Primary: '#8B5CF6', Secondary: '#EC4899', Button: '#8B5CF6', Text: '#1E293B', Bg: '#FFFFFF', Card: '#F8FAFC' };
             ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => { document.getElementById(`thmCol${t}`).value = defaultColors[t]; document.getElementById(`thmCol${t}Picker`).value = defaultColors[t]; });
-            lucide.createIcons(); document.getElementById('themeModal').classList.add('show'); updateThemeLivePreview(); 
+            lucide.createIcons(); document.getElementById('themeModal').classList.add('show'); 
         };
         window.closeThemeModal = () => document.getElementById('themeModal').classList.remove('show');
         
@@ -1338,7 +1299,7 @@
             document.getElementById('themeModalTitle').innerHTML = '<i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i> Editar Tema';
             document.getElementById('thmName').value = thm.nombre || ''; document.getElementById('thmDesc').value = thm.descripcion || ''; document.getElementById('thmStart').value = thm.fechaInicio || ''; document.getElementById('thmEnd').value = thm.fechaFin || ''; document.getElementById('thmGradient').value = thm.gradient || ''; document.getElementById('thmDecorations').value = thm.decorations || 'none'; document.getElementById('thmAnimations').checked = thm.animations !== false;
             ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => { const colorValue = thm[`color${t}`] || '#FFFFFF'; document.getElementById(`thmCol${t}`).value = colorValue; document.getElementById(`thmCol${t}Picker`).value = colorValue; });
-            lucide.createIcons(); document.getElementById('themeModal').classList.add('show'); updateThemeLivePreview(); 
+            lucide.createIcons(); document.getElementById('themeModal').classList.add('show'); 
         };
 
         window.saveTheme = async function() { 
