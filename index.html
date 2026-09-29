@@ -2504,6 +2504,121 @@ body[data-theme="christmas"] #home-reviews-wrapper{
 }
 </style>
 
+
+<style id="diverty-christmas-final-clean-v4">
+/* ===== NAVIDAD FINAL: azul noche / hielo / plata / blanco ===== */
+
+/* 1. PANTALLA INICIAL / LOADER: elimina verde y rojo */
+html.diverty-booting body,
+body[data-theme="christmas"],
+body[data-theme="christmas"] #themeBootLoader{
+  background:
+    radial-gradient(circle at 20% 18%,rgba(59,130,246,.20),transparent 28%),
+    radial-gradient(circle at 82% 82%,rgba(148,163,184,.13),transparent 30%),
+    linear-gradient(160deg,#061426 0%,#071D39 52%,#0B1324 100%)!important;
+}
+#themeBootLoader{
+  background:
+    radial-gradient(circle at 20% 18%,rgba(59,130,246,.18),transparent 28%),
+    radial-gradient(circle at 82% 82%,rgba(148,163,184,.12),transparent 30%),
+    linear-gradient(160deg,#061426,#071D39 55%,#0B1324)!important;
+}
+#themeBootLoader > div{
+  background:linear-gradient(155deg,rgba(10,42,80,.88),rgba(7,20,38,.92))!important;
+  border-color:rgba(203,213,225,.30)!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.10)!important;
+}
+
+/* 2. MENÚ MÓVIL: neutraliza estilos inline / utilitarios heredados */
+body[data-theme="christmas"] #mobileMenu,
+body[data-theme="christmas"] #mobileMenuPanel,
+body[data-theme="christmas"] #mobileMenu > div{
+  background:linear-gradient(165deg,#081D38 0%,#061426 64%,#0B1324 100%)!important;
+  background-color:#061426!important;
+  border-color:rgba(203,213,225,.28)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel::before{
+  background:linear-gradient(90deg,#2563EB,#E2E8F0,#60A5FA,#CBD5E1)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel a,
+body[data-theme="christmas"] #mobileMenuPanel button{
+  color:#E2E8F0!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel a > div,
+body[data-theme="christmas"] #mobileMenuPanel button > div,
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-red"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-rose"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-pink"]{
+  background:linear-gradient(145deg,#173D70,#315B8E)!important;
+  background-color:#173D70!important;
+  border-color:rgba(203,213,225,.34)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel .active,
+body[data-theme="christmas"] #mobileMenuPanel [aria-current="page"],
+body[data-theme="christmas"] #mobileMenuPanel a:hover{
+  background:linear-gradient(105deg,rgba(37,99,235,.92),rgba(100,116,139,.88))!important;
+  color:#fff!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-red"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-blue"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-green"]{
+  color:#BFDBFE!important;
+}
+
+/* 3. CALENDARIO: sin rojo */
+body[data-theme="christmas"] #calendar-section [style*="background"],
+body[data-theme="christmas"] #calendar-section [class*="bg-red"],
+body[data-theme="christmas"] #calendar-section [class*="bg-rose"]{
+  background-color:#173D70!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="bg-red"],
+body[data-theme="christmas"] #calendar-section [class*="bg-rose"]{
+  background-image:linear-gradient(105deg,#1E4FBF,#3B82F6 55%,#64748B)!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="text-red"],
+body[data-theme="christmas"] #calendar-section [class*="text-rose"],
+body[data-theme="christmas"] #calendar-section [class*="text-blue"]{
+  color:#BFDBFE!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="border-red"],
+body[data-theme="christmas"] #calendar-section [class*="border-rose"]{
+  border-color:rgba(147,197,253,.46)!important;
+}
+
+/* Cabecera del mes */
+body[data-theme="christmas"] #calendar-section .calendar-header,
+body[data-theme="christmas"] #calendar-section [class*="rounded"][class*="p-"][class*="flex"]{
+  border-color:rgba(203,213,225,.30)!important;
+}
+
+/* Días seleccionables / seleccionado */
+body[data-theme="christmas"] #calendar-section button:not(:disabled){
+  color:#EAF2FF!important;
+}
+body[data-theme="christmas"] #calendar-section button[class*="bg-red"],
+body[data-theme="christmas"] #calendar-section button[class*="bg-rose"],
+body[data-theme="christmas"] #calendar-section button[class*="bg-blue"]{
+  background:linear-gradient(145deg,#2563EB,#64748B)!important;
+  border-color:#93C5FD!important;
+  color:#fff!important;
+  box-shadow:0 0 0 1px rgba(226,232,240,.14),0 7px 18px rgba(37,99,235,.22)!important;
+}
+
+/* Leyenda inferior: disponible pasa a hielo/azul, sin rojo */
+body[data-theme="christmas"] #calendar-section [class*="rounded-full"][class*="bg-red"],
+body[data-theme="christmas"] #calendar-section [class*="rounded-full"][class*="bg-rose"]{
+  background:#2563EB!important;
+  border-color:#60A5FA!important;
+  color:#F8FAFC!important;
+}
+
+/* 4. Evita rojo residual en superficies principales de Navidad */
+body[data-theme="christmas"] #mainContent > section [class*="bg-red"]:not(.whatsapp-btn),
+body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.whatsapp-btn){
+  background-color:#173D70!important;
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
