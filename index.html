@@ -2046,8 +2046,10 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
             if (heroVideo) {
                 heroVideo.muted = true;
                 heroVideo.defaultMuted = true;
-                /* El atributo autoplay del propio video gestiona la reproducción.
-                   No llamamos play() manualmente para no depender de user activation en móvil. */
+                const playPromise = heroVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => { console.log("Autoplay prevenido por navegador", error); });
+                }
             }
 
             if(typeof renderCalendar === 'function') renderCalendar(); 
