@@ -340,6 +340,52 @@
             body[data-theme="halloween"] .falling-decor { animation:none!important; opacity:.12!important; }
         }
 
+        /* === DIVERTY: SISTEMA DE EXPERIENCIAS ESTACIONALES COMPLETAS === */
+        body[data-theme="christmas"],body[data-theme="halloween"],body[data-theme="summer"],body[data-theme="school"] { --season-premium-radius:28px; }
+        body[data-theme="summer"] .glass-panel,body[data-theme="school"] .glass-panel { border-radius:var(--season-premium-radius); overflow:hidden; }
+        body[data-theme="summer"] .season-btn,body[data-theme="school"] .season-btn { border-radius:16px; font-weight:900; }
+
+        /* Navidad mágica: luces, pino, oro, nieve y cristal */
+        body[data-theme="christmas"] #mainContent::before { content:""; position:fixed; inset:0 0 auto 0; height:115px; z-index:2; pointer-events:none; background:linear-gradient(180deg,rgba(1,24,13,.96),transparent),repeating-radial-gradient(circle at 4% 8%,#ffd86b 0 3px,transparent 4px 48px); filter:drop-shadow(0 8px 12px rgba(255,200,70,.18)); opacity:.88; }
+        body[data-theme="christmas"] #mainContent::after { content:"🎄   ✦   🔔   ✦   🎁   ✦   🎄"; position:fixed; left:0; right:0; bottom:0; z-index:2; pointer-events:none; height:44px; overflow:hidden; text-align:center; letter-spacing:clamp(14px,5vw,58px); font-size:18px; opacity:.25; background:linear-gradient(0deg,rgba(3,32,18,.92),transparent); }
+        body[data-theme="christmas"] .card-safe-wrapper::before { content:"✦"; position:absolute; right:18px; top:5px; color:#f6d365; font-size:18px; text-shadow:0 0 15px #f6d365; z-index:20; }
+        body[data-theme="christmas"] .card-alive { box-shadow:0 24px 70px rgba(0,0,0,.34),0 0 0 1px rgba(255,215,112,.12); }
+
+        /* Halloween inmersivo: luna, neblina, calabaza y violeta */
+        body[data-theme="halloween"] #mainContent::before { content:""; position:fixed; width:150px; height:150px; right:-35px; top:105px; border-radius:50%; z-index:1; pointer-events:none; background:radial-gradient(circle at 38% 35%,#ffd38a,#fb923c 44%,#9a3412 72%,transparent 74%); opacity:.28; box-shadow:0 0 70px rgba(249,115,22,.3); }
+        body[data-theme="halloween"] #mainContent::after { content:""; position:fixed; left:-10%; right:-10%; bottom:-25px; height:150px; z-index:1; pointer-events:none; background:radial-gradient(ellipse at 30% 100%,rgba(126,34,206,.24),transparent 50%),radial-gradient(ellipse at 70% 100%,rgba(249,115,22,.16),transparent 48%); filter:blur(18px); }
+        body[data-theme="halloween"] .card-safe-wrapper::before { content:"🦇"; position:absolute; right:16px; top:0; font-size:18px; opacity:.65; z-index:20; }
+
+        /* Verano tropical: mar, sol, reflejos y hojas */
+        body[data-theme="summer"] { background:#e8fbff; }
+        body[data-theme="summer"] .season-background { filter:saturate(1.12) brightness(.95); }
+        body[data-theme="summer"] .season-overlay { background:radial-gradient(circle at 85% 8%,rgba(255,196,60,.32),transparent 18%),linear-gradient(180deg,rgba(224,250,255,.55),rgba(236,253,245,.82)); }
+        body[data-theme="summer"] #headerWrapper.scrolled #mainHeader { background:rgba(239,253,255,.94)!important; border-bottom-color:rgba(2,132,199,.14); }
+        body[data-theme="summer"] .glass-panel { background:linear-gradient(145deg,rgba(255,255,255,.9),rgba(224,247,250,.82)); border-color:rgba(14,165,233,.18); box-shadow:0 18px 50px rgba(2,132,199,.12),inset 0 1px rgba(255,255,255,.8); }
+        body[data-theme="summer"] .card-alive::after { background:linear-gradient(120deg,#0284c7,#22d3ee,#f59e0b,#fb7185,#0284c7); opacity:.62; }
+        body[data-theme="summer"] .season-btn { background:linear-gradient(135deg,#0284c7,#06b6d4 55%,#f59e0b)!important; box-shadow:0 10px 28px rgba(2,132,199,.24); }
+        body[data-theme="summer"] .season-gradient-text { background:linear-gradient(100deg,#0369a1,#0891b2,#ea580c); -webkit-background-clip:text; color:transparent; }
+        body[data-theme="summer"] #decor-layer::before { content:"☀️"; position:absolute; right:4vw; top:12vh; font-size:clamp(46px,8vw,92px); filter:drop-shadow(0 10px 25px rgba(245,158,11,.28)); opacity:.7; }
+        body[data-theme="summer"] #decor-layer::after { content:"🌴"; position:absolute; left:-12px; bottom:3vh; font-size:clamp(68px,12vw,140px); opacity:.18; transform:rotate(8deg); }
+
+        /* Escolar creativo: cuaderno, lápices, bloques de color */
+        body[data-theme="school"] { background:#f8fafc; }
+        body[data-theme="school"] .season-overlay { background:linear-gradient(rgba(248,250,252,.88),rgba(248,250,252,.92)),repeating-linear-gradient(0deg,transparent 0 31px,rgba(59,130,246,.08) 32px),linear-gradient(90deg,transparent 0 44px,rgba(244,63,94,.08) 45px 47px,transparent 48px); }
+        body[data-theme="school"] #headerWrapper.scrolled #mainHeader { background:rgba(255,255,255,.96)!important; border-bottom-color:rgba(37,99,235,.12); }
+        body[data-theme="school"] .glass-panel { background:rgba(255,255,255,.92); border-color:rgba(37,99,235,.13); box-shadow:0 18px 45px rgba(30,64,175,.1); }
+        body[data-theme="school"] .card-alive::after { background:linear-gradient(120deg,#2563eb,#f97316,#eab308,#ec4899,#2563eb); opacity:.58; }
+        body[data-theme="school"] .season-btn { background:linear-gradient(135deg,#2563eb,#7c3aed 52%,#f97316)!important; box-shadow:0 10px 25px rgba(37,99,235,.2); }
+        body[data-theme="school"] .season-gradient-text { background:linear-gradient(100deg,#1d4ed8,#7c3aed,#ea580c); -webkit-background-clip:text; color:transparent; }
+        body[data-theme="school"] #decor-layer::before { content:"✏️  📚  ⭐  🎒"; position:absolute; top:11vh; left:0; right:0; text-align:center; letter-spacing:clamp(20px,8vw,90px); font-size:clamp(18px,3vw,30px); opacity:.18; transform:rotate(-2deg); }
+
+        @media(max-width:768px){
+          body[data-theme="summer"] .glass-panel,body[data-theme="school"] .glass-panel{border-radius:22px}
+          body[data-theme="christmas"] #mainContent::before{height:78px;opacity:.62}
+          body[data-theme="christmas"] #mainContent::after{font-size:14px;height:34px;letter-spacing:18px}
+          body[data-theme="halloween"] #mainContent::before{width:100px;height:100px;top:95px}
+          body[data-theme="summer"] #decor-layer::before{top:14vh;right:1vw;opacity:.38}
+        }
+
     </style>
 </head>
 <body class="flex flex-col relative min-h-screen">
