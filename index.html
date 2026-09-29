@@ -1453,6 +1453,87 @@ footer a:active{ transform:scale(.98); }
 }
 </style>
 
+
+<style id="diverty-premium-v7-performance">
+/* V7 — Rendimiento móvil. CSS únicamente; datos y lógica intactos. */
+@media (max-width:767px){
+  /* Reduce el coste de composición sin eliminar la estética */
+  .glass-panel{
+    -webkit-backdrop-filter:blur(6px)!important;
+    backdrop-filter:blur(6px)!important;
+  }
+  #mainHeader,
+  #headerWrapper.scrolled #mainHeader{
+    -webkit-backdrop-filter:blur(8px)!important;
+    backdrop-filter:blur(8px)!important;
+  }
+
+  /* Evita promover decenas de tarjetas a capas GPU permanentes */
+  .card-alive,
+  .card-safe-wrapper,
+  .home-swipe-item,
+  .home-swipe-track{
+    will-change:auto!important;
+  }
+
+  /* El navegador puede diferir el pintado de contenido lejano */
+  #calendar-section,
+  #home-reviews-wrapper,
+  footer{
+    content-visibility:auto;
+    contain-intrinsic-size:auto 650px;
+  }
+
+  /* Carruseles nativos y ligeros */
+  .overflow-x-auto,
+  .home-swipe-track{
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-inline:contain;
+  }
+
+  /* Decoración estacional: conserva apariencia, reduce movimiento continuo */
+  #diverty-xmas-stage *,
+  #diverty-halloween-stage *,
+  #diverty-summer-stage *,
+  #diverty-school-stage *{
+    animation-duration:18s!important;
+  }
+
+  /* Elementos decorativos nunca deben participar en interacción */
+  .season-background,
+  .season-overlay,
+  #decor-layer,
+  #diverty-xmas-stage,
+  #diverty-halloween-stage,
+  #diverty-summer-stage,
+  #diverty-school-stage{
+    pointer-events:none!important;
+  }
+
+  /* Imágenes: el navegador puede decodificarlas sin bloquear pintura */
+  img{
+    image-rendering:auto;
+  }
+
+  /* Transiciones cortas = menos trabajo al navegar */
+  .card-alive,
+  button,
+  .nav-action{
+    transition-duration:.16s!important;
+  }
+}
+
+/* Dispositivos que piden ahorro de movimiento */
+@media (prefers-reduced-motion:reduce){
+  #diverty-xmas-stage *,
+  #diverty-halloween-stage *,
+  #diverty-summer-stage *,
+  #diverty-school-stage *{
+    animation:none!important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
