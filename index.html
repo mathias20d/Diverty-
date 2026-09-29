@@ -12,7 +12,7 @@
     </script>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diverty Eventos | Planes de Fiestas en Panamá</title>
     <meta name="description" content="¡Celebra con Diverty Eventos! Fiestas infantiles en Panamá. Payasitos, animadores, pintacaritas y shows de burbujas.">
     <meta name="theme-color" content="#F8FAFC">
@@ -581,7 +581,7 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
 html.diverty-booting body{overflow:hidden}
 html.diverty-booting body> :not(#themeBootLoader){visibility:hidden!important}
 #themeBootLoader{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#0b1220;opacity:1;transition:opacity .28s ease,visibility .28s ease}
-html[data-cached-theme="christmas"] #themeBootLoader{background:linear-gradient(145deg,#061c13,#0a2d1f 58%,#401016)}
+html[data-cached-theme="christmas"] #themeBootLoader{background:radial-gradient(circle at 20% 18%,rgba(59,130,246,.18),transparent 28%),radial-gradient(circle at 82% 82%,rgba(148,163,184,.12),transparent 30%),linear-gradient(160deg,#061426,#071D39 55%,#0B1324)}
 html[data-cached-theme="halloween"] #themeBootLoader{background:linear-gradient(145deg,#09060f,#1b0b23 58%,#401508)}
 html[data-cached-theme="summer"] #themeBootLoader{background:linear-gradient(145deg,#dff8ff,#eafffb 58%,#fff2cf)}
 html[data-cached-theme="school"] #themeBootLoader{background:linear-gradient(145deg,#fffdf6,#f4f7ff 58%,#fff4cf)}
@@ -694,7 +694,36 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 @media (min-width:1024px){.home-swipe-track.home-campaign-track{grid-template-columns:repeat(3,minmax(0,1fr))}}
 </style>
 
-<style id="diverty-home-premium-v1">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style id="diverty-premium-master-v10">
+/* V10 MASTER — Consolidación exacta de V1–V9. Se conserva el orden de cascada para mantener la apariencia aprobada. */
+
+/* ===== diverty-home-premium-v1 ===== */
 /* DIVERTY — renovación visual del Inicio.
    Solo presentación: no modifica contenido, datos, precios ni lógica. */
 @media (max-width: 767px) {
@@ -809,10 +838,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
     box-shadow: 0 14px 36px rgba(15,23,42,.09) !important;
   }
 }
-</style>
 
-
-<style id="diverty-home-premium-v2">
+/* ===== diverty-home-premium-v2 ===== */
 /* V2 — Cambio visual fuerte, sin alterar contenido ni lógica */
 @media (max-width: 767px) {
   body { background-attachment: fixed; }
@@ -988,10 +1015,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
     border-radius:30px;
   }
 }
-</style>
 
-
-<style id="diverty-premium-v3-catalog">
+/* ===== diverty-premium-v3-catalog ===== */
 /* V3 — Catálogo y paquetes. Solo presentación. */
 @media (max-width:767px){
   /* Contenido de categorías */
@@ -1086,10 +1111,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
     border-radius:14px!important;
   }
 }
-</style>
 
-
-<style id="diverty-premium-v4-checkout">
+/* ===== diverty-premium-v4-checkout ===== */
 /* V4 — Reserva + carrito. Exclusivamente presentación. */
 @media (max-width:767px){
   /* Modal del carrito: panel tipo app */
@@ -1219,10 +1242,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
     border-radius:18px!important;
   }
 }
-</style>
 
-
-<style id="diverty-premium-v5-header-menu">
+/* ===== diverty-premium-v5-header-menu ===== */
 /* V5 — Header + menú móvil. Solo presentación; navegación y JS intactos. */
 @media (max-width:767px){
   /* Contenedor superior flotante */
@@ -1324,10 +1345,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
     box-shadow:0 12px 34px rgba(15,23,42,.12)!important;
   }
 }
-</style>
 
-
-<style id="diverty-premium-v6-finish">
+/* ===== diverty-premium-v6-finish ===== */
 /* V6 — Acabado visual general. CSS únicamente. */
 
 /* Consistencia global */
@@ -1451,10 +1470,8 @@ footer a:active{ transform:scale(.98); }
     transition-duration:.01ms!important;
   }
 }
-</style>
 
-
-<style id="diverty-premium-v7-performance">
+/* ===== diverty-premium-v7-performance ===== */
 /* V7 — Rendimiento móvil. CSS únicamente; datos y lógica intactos. */
 @media (max-width:767px){
   /* Reduce el coste de composición sin eliminar la estética */
@@ -1532,28 +1549,26 @@ footer a:active{ transform:scale(.98); }
     animation:none!important;
   }
 }
-</style>
 
-
-<style id="diverty-premium-v8-seasonal">
+/* ===== diverty-premium-v8-seasonal ===== */
 /* V8 — Temas estacionales premium. CSS únicamente. */
 
 /* NAVIDAD — profundidad cálida, cristal y brillo sutil */
 html[data-theme="christmas"] body,
 body.theme-christmas{
   background:
-    radial-gradient(circle at 10% 5%,rgba(248,250,252,.09),transparent 30%),
-    radial-gradient(circle at 90% 12%,rgba(174,185,199,.12),transparent 26%),
+    radial-gradient(circle at 10% 5%,rgba(220,38,38,.08),transparent 30%),
+    radial-gradient(circle at 90% 12%,rgba(202,138,4,.09),transparent 26%),
     var(--s-bg)!important;
 }
 html[data-theme="christmas"] .glass-panel,
 body.theme-christmas .glass-panel{
-  border-color:rgba(215,222,232,.32)!important;
-  box-shadow:0 14px 38px rgba(174,185,199,.14)!important;
+  border-color:rgba(202,138,4,.24)!important;
+  box-shadow:0 14px 38px rgba(20,83,45,.10)!important;
 }
 html[data-theme="christmas"] .season-btn,
 body.theme-christmas .season-btn{
-  box-shadow:0 8px 22px rgba(215,222,232,.18);
+  box-shadow:0 8px 22px rgba(153,27,27,.16);
 }
 
 /* HALLOWEEN — noche violeta/naranja sin oscurecer legibilidad */
@@ -1614,7 +1629,7 @@ body.theme-school .season-btn{
 /* Todos los temas: cards coherentes con la identidad activa */
 html[data-theme="christmas"] .card-safe-wrapper > *,
 body.theme-christmas .card-safe-wrapper > *{
-  box-shadow:0 14px 34px rgba(174,185,199,.14)!important;
+  box-shadow:0 14px 34px rgba(20,83,45,.11)!important;
 }
 html[data-theme="halloween"] .card-safe-wrapper > *,
 body.theme-halloween .card-safe-wrapper > *{
@@ -1658,6 +1673,949 @@ body.theme-school .card-safe-wrapper > *{
   #diverty-school-stage *{
     will-change:auto!important;
   }
+}
+
+/* ===== diverty-premium-v9-home-mobile ===== */
+/* V9 — Pulido del Inicio móvil. CSS únicamente. */
+@media (max-width:767px){
+  /* Ritmo visual entre bloques del inicio */
+  #home-campaigns-wrapper,
+  #home-featured-wrapper,
+  #calendar-section,
+  #home-reviews-wrapper{
+    position:relative;
+    isolation:isolate;
+  }
+
+  #home-campaigns-wrapper,
+  #home-featured-wrapper{
+    margin-inline:.65rem!important;
+    width:auto!important;
+    border-radius:28px;
+  }
+
+  /* Campañas: tratamiento editorial, sin alterar su contenido */
+  #home-campaigns-wrapper{
+    overflow:hidden;
+  }
+  #home-campaigns-wrapper img{
+    border-radius:22px!important;
+  }
+
+  /* Destacados: bloque visual más claro */
+  #home-featured-wrapper{
+    padding-top:.35rem;
+    padding-bottom:.5rem;
+  }
+
+  #home-featured-wrapper h2,
+  #home-featured-wrapper h3,
+  #calendar-section h2,
+  #home-reviews-wrapper h2{
+    letter-spacing:-.035em!important;
+    line-height:1.08!important;
+  }
+
+  /* Carruseles: la siguiente tarjeta queda visible como invitación a deslizar */
+  #home-featured-wrapper .overflow-x-auto,
+  #home-campaigns-wrapper .overflow-x-auto,
+  .home-swipe-track{
+    scroll-padding-inline:1rem;
+    gap:.85rem!important;
+  }
+
+  #home-featured-wrapper .card-safe-wrapper,
+  #home-featured-wrapper .home-swipe-item{
+    scroll-snap-align:center;
+  }
+
+  /* Tarjetas destacadas con presencia uniforme */
+  #home-featured-wrapper .card-safe-wrapper > *{
+    border-radius:26px!important;
+    overflow:hidden;
+  }
+
+  #home-featured-wrapper img{
+    object-fit:cover;
+  }
+
+  /* Separación elegante sin añadir contenido */
+  #calendar-section{
+    margin-top:1.15rem!important;
+    border-radius:30px 30px 0 0;
+  }
+
+  #home-reviews-wrapper{
+    margin-top:.35rem!important;
+  }
+
+  /* Calendario más integrado al flujo del inicio */
+  #calendar-section .glass-panel,
+  #calendar-section [class*="rounded"]{
+    box-shadow:0 12px 32px rgba(15,23,42,.08);
+  }
+
+  /* Opiniones: lectura más cómoda */
+  #home-reviews-wrapper .overflow-x-auto{
+    scroll-padding-inline:1rem;
+  }
+  #home-reviews-wrapper .glass-panel,
+  #home-reviews-wrapper [class*="rounded"]{
+    border-radius:22px;
+  }
+
+  /* Evita cortes bruscos de sombras en carruseles */
+  #home-featured-wrapper .overflow-x-auto,
+  #home-reviews-wrapper .overflow-x-auto{
+    padding-top:.7rem!important;
+    padding-bottom:1.15rem!important;
+  }
+
+  /* CTA del inicio: jerarquía consistente */
+  #mainContent .season-btn{
+    border-radius:16px!important;
+  }
+}
+
+@media (min-width:768px){
+  #home-featured-wrapper,
+  #home-campaigns-wrapper{
+    border-radius:30px;
+  }
+  #home-featured-wrapper .card-safe-wrapper > *{
+    transition:transform .2s ease,box-shadow .2s ease;
+  }
+  #home-featured-wrapper .card-safe-wrapper > *:hover{
+    transform:translateY(-3px);
+    box-shadow:0 18px 42px rgba(15,23,42,.13)!important;
+  }
+}
+
+</style>
+
+<style id="diverty-v11-visual-redesign">
+/* V11 — Rediseño visual fuerte. Solo CSS; contenido y lógica intactos. */
+:root{
+  --v11-ink:#172033;
+  --v11-soft:#f7f8fc;
+  --v11-line:rgba(76,29,149,.10);
+  --v11-shadow:0 20px 55px rgba(31,41,55,.12);
+}
+
+/* Fondo general más editorial */
+body{
+  background:
+    radial-gradient(circle at 0 10%,rgba(124,58,237,.055),transparent 28rem),
+    radial-gradient(circle at 100% 35%,rgba(236,72,153,.045),transparent 30rem),
+    var(--s-bg)!important;
+}
+
+/* Header premium flotante */
+#headerWrapper{
+  padding-top:.55rem!important;
+}
+#mainHeader{
+  max-width:1180px!important;
+  margin-inline:auto!important;
+  border-radius:24px!important;
+  box-shadow:0 16px 45px rgba(15,23,42,.12)!important;
+}
+
+/* HERO: cambio visual principal */
+#hero-section,
+.hero-section,
+#mainContent > section:first-child{
+  position:relative;
+}
+#hero-section video,
+.hero-section video,
+#mainContent > section:first-child video{
+  filter:saturate(1.08) contrast(1.04);
+}
+#hero-section::after,
+.hero-section::after{
+  content:"";
+  position:absolute;
+  inset:auto 0 0;
+  height:38%;
+  pointer-events:none;
+  background:linear-gradient(to bottom,transparent,var(--s-bg));
+  z-index:1;
+}
+#hero-section > *,
+.hero-section > *{
+  position:relative;
+  z-index:2;
+}
+
+/* Grandes títulos con jerarquía más marcada */
+#mainContent h1{
+  letter-spacing:-.055em!important;
+  line-height:.98!important;
+}
+#mainContent h2{
+  letter-spacing:-.045em!important;
+}
+#mainContent h3{
+  letter-spacing:-.025em!important;
+}
+
+/* Secciones como bloques editoriales */
+#home-campaigns-wrapper,
+#home-featured-wrapper,
+#calendar-section,
+#home-reviews-wrapper{
+  max-width:1180px;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+
+/* Campañas */
+#home-campaigns-wrapper{
+  position:relative;
+  border-radius:34px!important;
+  overflow:hidden;
+}
+#home-campaigns-wrapper img{
+  transform:scale(1.001);
+}
+
+/* Destacados: superficie premium */
+#home-featured-wrapper{
+  border:1px solid var(--v11-line)!important;
+  border-radius:34px!important;
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.92),rgba(248,247,255,.82))!important;
+  box-shadow:var(--v11-shadow)!important;
+}
+
+/* Tarjetas: cambio notorio */
+.card-safe-wrapper > *{
+  border:1px solid rgba(255,255,255,.75)!important;
+  border-radius:28px!important;
+  box-shadow:0 16px 40px rgba(15,23,42,.11)!important;
+}
+.card-safe-wrapper img{
+  border-radius:22px!important;
+}
+.card-safe-wrapper .season-btn{
+  border-radius:17px!important;
+  min-height:48px;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--s-primary) 18%,transparent)!important;
+}
+
+/* Calendario como módulo destacado */
+#calendar-section{
+  border-radius:34px!important;
+  overflow:hidden;
+}
+#calendar-section .glass-panel{
+  border-radius:28px!important;
+  border:1px solid var(--v11-line)!important;
+  box-shadow:0 18px 45px rgba(15,23,42,.09)!important;
+}
+
+/* Opiniones */
+#home-reviews-wrapper{
+  padding-top:1rem;
+  padding-bottom:1rem;
+}
+#home-reviews-wrapper .glass-panel{
+  box-shadow:0 14px 35px rgba(15,23,42,.08)!important;
+}
+
+/* Footer: cierre de página más sólido */
+footer{
+  margin-top:2rem;
+  border-radius:34px 34px 0 0;
+  overflow:hidden;
+  box-shadow:0 -12px 35px rgba(15,23,42,.05);
+}
+
+/* Desktop */
+@media (min-width:768px){
+  #mainContent{
+    overflow:clip;
+  }
+  .card-safe-wrapper > *{
+    transition:transform .22s ease,box-shadow .22s ease!important;
+  }
+  .card-safe-wrapper > *:hover{
+    transform:translateY(-5px)!important;
+    box-shadow:0 24px 52px rgba(15,23,42,.15)!important;
+  }
+}
+
+/* MÓVIL: apariencia tipo app/eventos premium */
+@media (max-width:767px){
+  #headerWrapper{
+    padding:.45rem .55rem 0!important;
+  }
+  #mainHeader{
+    border-radius:21px!important;
+  }
+
+  #hero-section,
+  .hero-section{
+    min-height:70svh!important;
+    border-radius:0 0 34px 34px!important;
+    overflow:hidden!important;
+    box-shadow:0 20px 48px rgba(15,23,42,.16);
+  }
+
+  #hero-section h1,
+  .hero-section h1{
+    font-size:clamp(2.35rem,10.5vw,3.4rem)!important;
+    max-width:10ch;
+    margin-inline:auto;
+    text-shadow:0 3px 20px rgba(0,0,0,.20);
+  }
+
+  #hero-section .season-btn,
+  .hero-section .season-btn{
+    min-height:52px!important;
+    border-radius:18px!important;
+  }
+
+  /* Espacio tipo revista entre hero y contenido */
+  #home-campaigns-wrapper{
+    margin-top:1.15rem!important;
+    border-radius:26px!important;
+  }
+
+  #home-featured-wrapper{
+    margin:.85rem .55rem 0!important;
+    padding:1rem .2rem .65rem!important;
+    border-radius:28px!important;
+    box-shadow:0 18px 45px rgba(15,23,42,.11)!important;
+  }
+
+  #home-featured-wrapper h2,
+  #home-featured-wrapper h3{
+    padding-inline:.8rem;
+  }
+
+  /* Tarjetas casi full-width, con siguiente tarjeta visible */
+  #home-featured-wrapper .card-safe-wrapper,
+  #home-featured-wrapper .home-swipe-item{
+    width:84vw!important;
+    max-width:355px!important;
+  }
+  .card-safe-wrapper > *{
+    border-radius:25px!important;
+    box-shadow:0 14px 34px rgba(15,23,42,.12)!important;
+  }
+
+  /* Carruseles llegan visualmente a los bordes */
+  #home-featured-wrapper .overflow-x-auto,
+  #home-reviews-wrapper .overflow-x-auto{
+    padding-left:.85rem!important;
+    padding-right:.85rem!important;
+  }
+
+  #calendar-section{
+    margin-top:1.35rem!important;
+    border-radius:30px!important;
+  }
+
+  #home-reviews-wrapper{
+    margin-top:.9rem!important;
+  }
+
+  footer{
+    margin-top:1.2rem;
+    border-radius:28px 28px 0 0;
+  }
+
+  /* WhatsApp ligeramente separado del borde */
+  .whatsapp-container{
+    right:.8rem!important;
+    bottom:max(.8rem,env(safe-area-inset-bottom))!important;
+  }
+}
+</style>
+
+
+<style id="diverty-v11-featured-background-fix">
+#home-featured-wrapper{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+#home-featured-wrapper > .glass-panel{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+@media (max-width:767px){#home-featured-wrapper{box-shadow:none!important;background:transparent!important;}}
+</style>
+
+<style id="diverty-v11-balanced-spacing">
+/* Ajuste fino solicitado: menos vacío entre bloques, sin apretarlos. */
+@media (max-width:767px){
+  /* Oferta/campaña -> destacados */
+  #home-campaigns-wrapper{
+    margin-bottom:.65rem!important;
+    padding-bottom:0!important;
+  }
+
+  /* Destacados: elimina altura sobrante de la envoltura */
+  #home-featured-wrapper{
+    margin-top:.55rem!important;
+    margin-bottom:.75rem!important;
+    padding-top:.25rem!important;
+    padding-bottom:.25rem!important;
+    min-height:0!important;
+  }
+
+  /* Carrusel más cerca de su indicador/título */
+  #home-featured-wrapper .overflow-x-auto,
+  #home-featured-wrapper .home-swipe-track{
+    padding-top:.35rem!important;
+    padding-bottom:.55rem!important;
+  }
+
+  /* Destacados -> calendario */
+  #calendar-section{
+    margin-top:.85rem!important;
+    padding-top:.75rem!important;
+  }
+
+  /* Evita márgenes acumulados en el primer bloque del calendario */
+  #calendar-section > :first-child{
+    margin-top:0!important;
+  }
+
+  /* Opiniones mantienen un respiro moderado */
+  #home-reviews-wrapper{
+    margin-top:.7rem!important;
+  }
+}
+
+@media (min-width:768px){
+  #home-featured-wrapper{
+    margin-bottom:1.25rem!important;
+  }
+  #calendar-section{
+    margin-top:1.25rem!important;
+  }
+}
+</style>
+
+
+<style id="diverty-christmas-blue-silver-v1">
+/* NAVIDAD AZUL + PLATEADO — capa visual, no cambia contenido ni Firebase */
+body[data-theme="christmas"]{
+  background:#061426!important;
+  --xmas-blue:#2563EB;
+  --xmas-ice:#60A5FA;
+  --xmas-silver:#E2E8F0;
+  --xmas-silver-2:#94A3B8;
+  --xmas-deep:#061426;
+}
+body[data-theme="christmas"] .season-background{
+  filter:saturate(.82) contrast(1.08) brightness(.58) hue-rotate(145deg)!important;
+}
+body[data-theme="christmas"] .season-overlay{
+  background:
+    radial-gradient(circle at 15% 12%,rgba(191,219,254,.17),transparent 25%),
+    radial-gradient(circle at 86% 18%,rgba(37,99,235,.20),transparent 30%),
+    linear-gradient(180deg,rgba(4,15,32,.66),rgba(2,10,24,.91))!important;
+}
+body[data-theme="christmas"] #topAnnouncementBanner{
+  background:linear-gradient(90deg,#0B2B55,#2563EB 42%,#64748B 76%,#CBD5E1)!important;
+  border-bottom-color:rgba(226,232,240,.38)!important;
+}
+body[data-theme="christmas"] #mainHeader,
+body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader{
+  background:linear-gradient(180deg,rgba(4,22,45,.97),rgba(5,17,36,.94))!important;
+  border-color:rgba(203,213,225,.38)!important;
+  box-shadow:0 12px 38px rgba(0,0,0,.40),inset 0 -1px rgba(226,232,240,.12)!important;
+}
+body[data-theme="christmas"] .glass-panel{
+  background:linear-gradient(155deg,rgba(10,37,72,.94),rgba(5,22,47,.96) 62%,rgba(15,23,42,.96))!important;
+  border-color:rgba(203,213,225,.34)!important;
+  box-shadow:0 24px 65px rgba(0,0,0,.46),0 0 0 2px rgba(96,165,250,.10),inset 0 1px rgba(255,255,255,.10)!important;
+}
+body[data-theme="christmas"] .glass-panel:before{
+  background:linear-gradient(120deg,rgba(248,250,252,.82),transparent 20%,transparent 76%,rgba(96,165,250,.58))!important;
+}
+body[data-theme="christmas"] .season-btn{
+  background:linear-gradient(105deg,#1D4ED8 0%,#2563EB 48%,#64748B 100%)!important;
+  border:1px solid rgba(226,232,240,.48)!important;
+  box-shadow:0 13px 30px rgba(37,99,235,.25),inset 0 1px rgba(255,255,255,.24),0 0 18px rgba(191,219,254,.12)!important;
+}
+body[data-theme="christmas"] .season-btn-outline{
+  background:linear-gradient(145deg,rgba(12,42,78,.78),rgba(9,25,50,.76))!important;
+  border-color:rgba(203,213,225,.44)!important;
+}
+body[data-theme="christmas"] .season-gradient-text{
+  background:linear-gradient(90deg,#FFFFFF,#BFDBFE 46%,#E2E8F0 78%,#93C5FD)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;
+}
+body[data-theme="christmas"] .card-alive:after{
+  background:linear-gradient(115deg,#F8FAFC,#60A5FA,#64748B,#DBEAFE,#2563EB)!important;
+}
+body[data-theme="christmas"] #home-featured-wrapper:before,
+body[data-theme="christmas"] #home-campaigns-wrapper:before{
+  border-top-color:rgba(203,213,225,.55)!important;
+  background:
+    radial-gradient(circle at 8% 0,#F8FAFC 0 3px,transparent 4px),
+    radial-gradient(circle at 28% 0,#60A5FA 0 3px,transparent 4px),
+    radial-gradient(circle at 48% 0,#E2E8F0 0 3px,transparent 4px),
+    radial-gradient(circle at 68% 0,#2563EB 0 3px,transparent 4px),
+    radial-gradient(circle at 88% 0,#F8FAFC 0 3px,transparent 4px)!important;
+  filter:drop-shadow(0 0 7px rgba(191,219,254,.68))!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel{
+  background:linear-gradient(160deg,#071D39,#061426 70%,#0F172A)!important;
+  border-left-color:rgba(203,213,225,.30)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel:before{
+  background:linear-gradient(90deg,#2563EB,#E2E8F0,#60A5FA,#F8FAFC,#2563EB)!important;
+}
+body[data-theme="christmas"] .whatsapp-btn{
+  border-color:rgba(226,232,240,.72)!important;
+  box-shadow:0 0 0 7px rgba(9,30,58,.66),0 12px 34px rgba(0,0,0,.35),0 0 25px rgba(96,165,250,.22)!important;
+}
+/* Luces y adornos navideños pasan de rojo/dorado a hielo/azul/plata */
+body[data-theme="christmas"] .xmas-bulb{
+  background:#E2E8F0!important;
+  box-shadow:0 0 8px #F8FAFC,0 0 22px #60A5FA,0 0 38px rgba(96,165,250,.70)!important;
+}
+body[data-theme="christmas"] .xmas-bulb:nth-child(2n){
+  background:#2563EB!important;
+  box-shadow:0 0 8px #60A5FA,0 0 22px #2563EB!important;
+}
+body[data-theme="christmas"] .xmas-ornament{
+  background:radial-gradient(circle at 32% 25%,#fff9 0 7%,transparent 8%),linear-gradient(145deg,#60A5FA,#1D4ED8)!important;
+  border-color:#E2E8F0!important;
+  box-shadow:0 8px 18px #0008,0 0 18px rgba(191,219,254,.35)!important;
+}
+body[data-theme="christmas"] .xmas-ornament.gold{
+  background:radial-gradient(circle at 32% 25%,#fff 0 7%,transparent 8%),linear-gradient(145deg,#F8FAFC,#94A3B8)!important;
+}
+body[data-theme="christmas"] #decor-layer::before{
+  background:repeating-linear-gradient(90deg,#F8FAFC 0 8px,transparent 8px 26px,#2563EB 26px 34px,transparent 34px 52px,#94A3B8 52px 60px,transparent 60px 78px)!important;
+  filter:drop-shadow(0 4px 7px rgba(147,197,253,.42))!important;
+}
+</style>
+
+
+<style id="diverty-christmas-elegant-campaigns">
+/* NAVIDAD — campañas elegantes azul noche + hielo + plata */
+body[data-theme="christmas"] #home-campaigns-wrapper .campaign-card,
+body[data-theme="christmas"] #home-campaigns-wrapper [class*="from-red"],
+body[data-theme="christmas"] #home-campaigns-wrapper [class*="from-rose"]{
+  background:
+    radial-gradient(circle at 92% 8%,rgba(191,219,254,.18),transparent 24%),
+    linear-gradient(145deg,#0B2A52 0%,#071B36 54%,#101827 100%)!important;
+  border-color:rgba(226,232,240,.58)!important;
+  box-shadow:
+    0 24px 60px rgba(0,0,0,.42),
+    0 0 0 1px rgba(96,165,250,.12),
+    inset 0 1px rgba(255,255,255,.12)!important;
+}
+
+/* Neutraliza rojos/rosas utilitarios dentro de campañas durante Navidad */
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-red-500,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-red-600,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-rose-500,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-rose-600,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-pink-500,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-pink-600{
+  background:linear-gradient(135deg,#2563EB,#64748B)!important;
+}
+
+/* Títulos y textos de la promo */
+body[data-theme="christmas"] #home-campaigns-wrapper h2,
+body[data-theme="christmas"] #home-campaigns-wrapper h3,
+body[data-theme="christmas"] #home-campaigns-wrapper h4{
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] #home-campaigns-wrapper p,
+body[data-theme="christmas"] #home-campaigns-wrapper li,
+body[data-theme="christmas"] #home-campaigns-wrapper span{
+  border-color:rgba(203,213,225,.25);
+}
+
+/* Panel de beneficios */
+body[data-theme="christmas"] #home-campaigns-wrapper ul,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-white\/5,
+body[data-theme="christmas"] #home-campaigns-wrapper .bg-black\/5{
+  background:rgba(3,16,34,.34)!important;
+  border-color:rgba(203,213,225,.18)!important;
+}
+
+/* Etiqueta PROMO: azul hielo/plata en lugar de rosa */
+body[data-theme="christmas"] #home-campaigns-wrapper [class*="pink"],
+body[data-theme="christmas"] #home-campaigns-wrapper [class*="rose"]{
+  border-color:rgba(226,232,240,.55)!important;
+}
+
+/* Botones de campañas coherentes con el tema */
+body[data-theme="christmas"] #home-campaigns-wrapper button,
+body[data-theme="christmas"] #home-campaigns-wrapper .season-btn{
+  background:linear-gradient(105deg,#1D4ED8,#2563EB 48%,#64748B)!important;
+  border-color:rgba(226,232,240,.55)!important;
+  color:#fff!important;
+  box-shadow:0 12px 28px rgba(37,99,235,.25),inset 0 1px rgba(255,255,255,.22)!important;
+}
+</style>
+
+
+<style id="diverty-christmas-card-force-v2">
+/* Navidad azul/plata: fuerza la superficie de TODAS las tarjetas
+   de campañas, destacados y catálogo sin tocar su contenido. */
+body[data-theme="christmas"] .card-safe-wrapper > .glass-panel,
+body[data-theme="christmas"] #home-featured-wrapper .glass-panel.card-alive,
+body[data-theme="christmas"] #home-campaigns-wrapper .glass-panel,
+body[data-theme="christmas"] #mainContent .card-alive{
+  background:
+    radial-gradient(circle at 90% 5%,rgba(147,197,253,.13),transparent 27%),
+    linear-gradient(150deg,#0B2A52 0%,#071D3B 52%,#081629 100%)!important;
+  background-color:#071D3B!important;
+  border:1px solid rgba(203,213,225,.42)!important;
+  box-shadow:0 20px 48px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.09)!important;
+}
+
+/* Panel de características dentro de las tarjetas */
+body[data-theme="christmas"] .card-safe-wrapper .glass-panel .bg-black\/5,
+body[data-theme="christmas"] .card-safe-wrapper .glass-panel .bg-white\/5,
+body[data-theme="christmas"] .card-safe-wrapper .glass-panel [class*="border-"]{
+  border-color:rgba(203,213,225,.20)!important;
+}
+
+/* Neutraliza fondos rojos/rosados que puedan venir guardados en clases */
+body[data-theme="christmas"] .card-safe-wrapper > [class*="bg-red"],
+body[data-theme="christmas"] .card-safe-wrapper > [class*="bg-rose"],
+body[data-theme="christmas"] #home-featured-wrapper [class*="bg-red"],
+body[data-theme="christmas"] #home-featured-wrapper [class*="bg-rose"]{
+  background-color:#071D3B!important;
+  background-image:linear-gradient(150deg,#0B2A52,#071D3B 55%,#081629)!important;
+}
+
+/* Precio y títulos: blanco/hielo */
+body[data-theme="christmas"] .card-safe-wrapper h2,
+body[data-theme="christmas"] .card-safe-wrapper h3,
+body[data-theme="christmas"] .card-safe-wrapper .season-text-title{
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] .card-safe-wrapper .season-text-primary,
+body[data-theme="christmas"] .card-safe-wrapper .season-gradient-text{
+  color:#DBEAFE!important;
+  background:none!important;
+  -webkit-text-fill-color:initial!important;
+}
+
+/* Botón conserva azul -> plata */
+body[data-theme="christmas"] .card-safe-wrapper .season-btn{
+  background:linear-gradient(105deg,#1D4ED8 0%,#2563EB 48%,#64748B 100%)!important;
+  border:1px solid rgba(226,232,240,.55)!important;
+  color:#fff!important;
+}
+
+/* Si una tarjeta trae background inline, la superficie principal sigue mandando */
+body[data-theme="christmas"] .card-safe-wrapper > .glass-panel[style],
+body[data-theme="christmas"] #home-featured-wrapper .glass-panel[style]{
+  background:
+    radial-gradient(circle at 90% 5%,rgba(147,197,253,.13),transparent 27%),
+    linear-gradient(150deg,#0B2A52 0%,#071D3B 52%,#081629 100%)!important;
+}
+</style>
+
+
+<style id="diverty-christmas-unified-v3">
+/* ==========================================================
+   NAVIDAD UNIFICADA — AZUL NOCHE · HIELO · PLATA · BLANCO
+   Solo visual. No altera contenido, datos ni Firebase.
+   ========================================================== */
+body[data-theme="christmas"]{
+  --x-navy:#061426;
+  --x-navy2:#081D38;
+  --x-blue:#2563EB;
+  --x-ice:#93C5FD;
+  --x-silver:#CBD5E1;
+  --x-white:#F8FAFC;
+  --x-muted:#B8C5D6;
+  --x-line:rgba(203,213,225,.30);
+}
+
+/* HEADER / LOGO: elimina contaminación verde */
+body[data-theme="christmas"] #mainHeader,
+body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader{
+  background:linear-gradient(155deg,rgba(5,24,48,.98),rgba(6,20,38,.98))!important;
+  border-color:rgba(203,213,225,.36)!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.08)!important;
+}
+body[data-theme="christmas"] #mainHeader *{
+  border-color:rgba(203,213,225,.26);
+}
+body[data-theme="christmas"] #mainHeader img{
+  background:rgba(8,29,56,.72)!important;
+  box-shadow:0 0 0 2px rgba(147,197,253,.18),0 0 18px rgba(96,165,250,.12)!important;
+}
+body[data-theme="christmas"] #mainHeader button{
+  background:linear-gradient(145deg,#101D36,#111827)!important;
+  border-color:rgba(203,213,225,.22)!important;
+  color:#F8FAFC!important;
+}
+
+/* TEXTOS: evita azul eléctrico/rojo en superficies navideñas */
+body[data-theme="christmas"] #mainContent h1,
+body[data-theme="christmas"] #mainContent h2,
+body[data-theme="christmas"] #mainContent h3,
+body[data-theme="christmas"] #mainContent h4,
+body[data-theme="christmas"] #mainContent .season-text-title{
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] #mainContent p,
+body[data-theme="christmas"] #mainContent li{
+  color:#D7E0EC;
+}
+body[data-theme="christmas"] #mainContent .season-gradient-text{
+  background:linear-gradient(90deg,#FFFFFF,#BFDBFE 48%,#CBD5E1)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+}
+
+/* TARJETAS: títulos/precio/beneficios coherentes */
+body[data-theme="christmas"] .card-safe-wrapper > .glass-panel,
+body[data-theme="christmas"] .card-alive{
+  color:#F8FAFC!important;
+  background:
+    radial-gradient(circle at 90% 4%,rgba(147,197,253,.12),transparent 26%),
+    linear-gradient(150deg,#0A2A50,#071D39 54%,#071426)!important;
+  border-color:rgba(203,213,225,.38)!important;
+}
+body[data-theme="christmas"] .card-safe-wrapper h2,
+body[data-theme="christmas"] .card-safe-wrapper h3,
+body[data-theme="christmas"] .card-safe-wrapper h4{
+  color:#F8FAFC!important;
+  -webkit-text-fill-color:#F8FAFC!important;
+}
+body[data-theme="christmas"] .card-safe-wrapper p,
+body[data-theme="christmas"] .card-safe-wrapper li,
+body[data-theme="christmas"] .card-safe-wrapper span{
+  color:#D7E0EC;
+}
+body[data-theme="christmas"] .card-safe-wrapper [class*="text-red"],
+body[data-theme="christmas"] .card-safe-wrapper [class*="text-blue"],
+body[data-theme="christmas"] .card-safe-wrapper [class*="text-green"]{
+  color:#BFDBFE!important;
+}
+body[data-theme="christmas"] .card-safe-wrapper .season-btn{
+  color:#fff!important;
+  background:linear-gradient(105deg,#1E4FBF,#2563EB 48%,#718096)!important;
+  border-color:rgba(226,232,240,.52)!important;
+}
+
+/* CALENDARIO: quita marco rojo y azul eléctrico */
+body[data-theme="christmas"] #calendar-section{
+  background:transparent!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+body[data-theme="christmas"] #calendar-section > div,
+body[data-theme="christmas"] #calendar-section .glass-panel{
+  background:
+    radial-gradient(circle at 92% 5%,rgba(147,197,253,.12),transparent 28%),
+    linear-gradient(155deg,#0A2A50,#071D39 55%,#071426)!important;
+  border-color:rgba(203,213,225,.42)!important;
+  box-shadow:0 22px 55px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.08)!important;
+}
+body[data-theme="christmas"] #calendar-section h2,
+body[data-theme="christmas"] #calendar-section h3,
+body[data-theme="christmas"] #calendar-section h4{
+  color:#F8FAFC!important;
+  -webkit-text-fill-color:#F8FAFC!important;
+  background:none!important;
+}
+body[data-theme="christmas"] #calendar-section button{
+  border-color:rgba(203,213,225,.26)!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="bg-red"],
+body[data-theme="christmas"] #calendar-section [class*="bg-rose"],
+body[data-theme="christmas"] #calendar-section [class*="bg-blue"]{
+  background:linear-gradient(135deg,#1E4FBF,#3B82F6)!important;
+  color:#fff!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="text-red"],
+body[data-theme="christmas"] #calendar-section [class*="text-blue"]{
+  color:#BFDBFE!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="border-red"],
+body[data-theme="christmas"] #calendar-section [class*="border-rose"]{
+  border-color:rgba(147,197,253,.42)!important;
+}
+
+/* MENÚ MÓVIL: azul noche elegante, activos azul hielo */
+body[data-theme="christmas"] #mobileMenu,
+body[data-theme="christmas"] #mobileMenuPanel{
+  background:linear-gradient(165deg,#071D39 0%,#061426 62%,#0B1324 100%)!important;
+  border-color:rgba(203,213,225,.30)!important;
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel h2,
+body[data-theme="christmas"] #mobileMenuPanel h3,
+body[data-theme="christmas"] #mobileMenuPanel strong{
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel button,
+body[data-theme="christmas"] #mobileMenuPanel a{
+  color:#E2E8F0!important;
+  border-color:rgba(203,213,225,.16)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel button[class*="bg-red"],
+body[data-theme="christmas"] #mobileMenuPanel a[class*="bg-red"],
+body[data-theme="christmas"] #mobileMenuPanel button[class*="bg-rose"],
+body[data-theme="christmas"] #mobileMenuPanel a[class*="bg-rose"],
+body[data-theme="christmas"] #mobileMenuPanel .active{
+  background:linear-gradient(105deg,#1E4FBF,#2563EB 58%,#64748B)!important;
+  color:#fff!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-red"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-rose"]{
+  background:linear-gradient(145deg,#2563EB,#64748B)!important;
+  color:#fff!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-red"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-blue"]{
+  color:#BFDBFE!important;
+}
+
+/* Estados del calendario: conservan significado pero armonizados */
+body[data-theme="christmas"] .calendar-day.available,
+body[data-theme="christmas"] [data-status="available"]{
+  background:rgba(37,99,235,.16)!important;
+  border-color:#60A5FA!important;
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] .calendar-day.limited,
+body[data-theme="christmas"] [data-status="limited"]{
+  background:rgba(148,163,184,.15)!important;
+  border-color:#94A3B8!important;
+  color:#E2E8F0!important;
+}
+body[data-theme="christmas"] .calendar-day.full,
+body[data-theme="christmas"] [data-status="full"]{
+  background:rgba(71,85,105,.20)!important;
+  border-color:#64748B!important;
+  color:#CBD5E1!important;
+}
+
+/* Bordes decorativos inferiores: plata/hielo */
+body[data-theme="christmas"] footer,
+body[data-theme="christmas"] #home-reviews-wrapper{
+  border-color:rgba(203,213,225,.24)!important;
+}
+</style>
+
+
+<style id="diverty-christmas-final-clean-v4">
+/* ===== NAVIDAD FINAL: azul noche / hielo / plata / blanco ===== */
+
+/* 1. PANTALLA INICIAL / LOADER: elimina verde y rojo */
+html.diverty-booting body,
+body[data-theme="christmas"],
+body[data-theme="christmas"] #themeBootLoader{
+  background:
+    radial-gradient(circle at 20% 18%,rgba(59,130,246,.20),transparent 28%),
+    radial-gradient(circle at 82% 82%,rgba(148,163,184,.13),transparent 30%),
+    linear-gradient(160deg,#061426 0%,#071D39 52%,#0B1324 100%)!important;
+}
+#themeBootLoader{
+  background:
+    radial-gradient(circle at 20% 18%,rgba(59,130,246,.18),transparent 28%),
+    radial-gradient(circle at 82% 82%,rgba(148,163,184,.12),transparent 30%),
+    linear-gradient(160deg,#061426,#071D39 55%,#0B1324)!important;
+}
+#themeBootLoader > div{
+  background:linear-gradient(155deg,rgba(10,42,80,.88),rgba(7,20,38,.92))!important;
+  border-color:rgba(203,213,225,.30)!important;
+  box-shadow:0 20px 55px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.10)!important;
+}
+
+/* 2. MENÚ MÓVIL: neutraliza estilos inline / utilitarios heredados */
+body[data-theme="christmas"] #mobileMenu,
+body[data-theme="christmas"] #mobileMenuPanel,
+body[data-theme="christmas"] #mobileMenu > div{
+  background:linear-gradient(165deg,#081D38 0%,#061426 64%,#0B1324 100%)!important;
+  background-color:#061426!important;
+  border-color:rgba(203,213,225,.28)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel::before{
+  background:linear-gradient(90deg,#2563EB,#E2E8F0,#60A5FA,#CBD5E1)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel a,
+body[data-theme="christmas"] #mobileMenuPanel button{
+  color:#E2E8F0!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel a > div,
+body[data-theme="christmas"] #mobileMenuPanel button > div,
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-red"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-rose"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="bg-pink"]{
+  background:linear-gradient(145deg,#173D70,#315B8E)!important;
+  background-color:#173D70!important;
+  border-color:rgba(203,213,225,.34)!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel .active,
+body[data-theme="christmas"] #mobileMenuPanel [aria-current="page"],
+body[data-theme="christmas"] #mobileMenuPanel a:hover{
+  background:linear-gradient(105deg,rgba(37,99,235,.92),rgba(100,116,139,.88))!important;
+  color:#fff!important;
+}
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-red"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-blue"],
+body[data-theme="christmas"] #mobileMenuPanel [class*="text-green"]{
+  color:#BFDBFE!important;
+}
+
+/* 3. CALENDARIO: sin rojo */
+body[data-theme="christmas"] #calendar-section [style*="background"],
+body[data-theme="christmas"] #calendar-section [class*="bg-red"],
+body[data-theme="christmas"] #calendar-section [class*="bg-rose"]{
+  background-color:#173D70!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="bg-red"],
+body[data-theme="christmas"] #calendar-section [class*="bg-rose"]{
+  background-image:linear-gradient(105deg,#1E4FBF,#3B82F6 55%,#64748B)!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="text-red"],
+body[data-theme="christmas"] #calendar-section [class*="text-rose"],
+body[data-theme="christmas"] #calendar-section [class*="text-blue"]{
+  color:#BFDBFE!important;
+}
+body[data-theme="christmas"] #calendar-section [class*="border-red"],
+body[data-theme="christmas"] #calendar-section [class*="border-rose"]{
+  border-color:rgba(147,197,253,.46)!important;
+}
+
+/* Cabecera del mes */
+body[data-theme="christmas"] #calendar-section .calendar-header,
+body[data-theme="christmas"] #calendar-section [class*="rounded"][class*="p-"][class*="flex"]{
+  border-color:rgba(203,213,225,.30)!important;
+}
+
+/* Días seleccionables / seleccionado */
+body[data-theme="christmas"] #calendar-section button:not(:disabled){
+  color:#EAF2FF!important;
+}
+body[data-theme="christmas"] #calendar-section button[class*="bg-red"],
+body[data-theme="christmas"] #calendar-section button[class*="bg-rose"],
+body[data-theme="christmas"] #calendar-section button[class*="bg-blue"]{
+  background:linear-gradient(145deg,#2563EB,#64748B)!important;
+  border-color:#93C5FD!important;
+  color:#fff!important;
+  box-shadow:0 0 0 1px rgba(226,232,240,.14),0 7px 18px rgba(37,99,235,.22)!important;
+}
+
+/* Leyenda inferior: disponible pasa a hielo/azul, sin rojo */
+body[data-theme="christmas"] #calendar-section [class*="rounded-full"][class*="bg-red"],
+body[data-theme="christmas"] #calendar-section [class*="rounded-full"][class*="bg-rose"]{
+  background:#2563EB!important;
+  border-color:#60A5FA!important;
+  color:#F8FAFC!important;
+}
+
+/* 4. Evita rojo residual en superficies principales de Navidad */
+body[data-theme="christmas"] #mainContent > section [class*="bg-red"]:not(.whatsapp-btn),
+body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.whatsapp-btn){
+  background-color:#173D70!important;
 }
 </style>
 
@@ -1996,10 +2954,10 @@ body.theme-school .card-safe-wrapper > *{
                     theme: 'halloween' 
                 },
                 christmas: { 
-                    p: '#D7DEE8', s: '#FFFFFF', a: '#AEB9C7', 
-                    bg: '#071426', overlay: 'rgba(2,8,23,0.76)',
-                    glass: 'rgba(8,27,49,0.88)', border: 'rgba(215,222,232,0.28)',
-                    tTitle: '#F8FAFC', tMuted: '#D7DEE8',
+                    p: '#2563EB', s: '#94A3B8', a: '#E2E8F0', 
+                    bg: '#061426', overlay: 'rgba(4,15,32,0.78)',
+                    glass: 'rgba(9,30,58,0.86)', border: 'rgba(226,232,240,0.24)',
+                    tTitle: '#F8FAFC', tMuted: '#CBD5E1',
                     img: "url('https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&q=80&w=1920')", 
                     theme: 'christmas' 
                 },
@@ -2028,19 +2986,36 @@ body.theme-school .card-safe-wrapper > *{
             else if (decorType.includes('verano') || decorType.includes('summer')) current = palettes.summer;
 
             const customP = cleanStr(themeData.colorPrimario || themeData.colorPrimary);
-            if (customP && customP.startsWith('#')) current.p = customP;
             const customS = cleanStr(themeData.colorSecundario || themeData.colorSecondary);
-            if (customS && customS.startsWith('#')) current.s = customS;
 
-            if (themeData.colorBg) current.bg = themeData.colorBg;
-            if (themeData.colorText) current.tTitle = themeData.colorText;
-            if (themeData.colorCard) current.glass = themeData.colorCard;
+            // Los temas normales siguen aceptando los colores configurados en Firebase.
+            // Navidad usa una paleta fija premium para impedir que colores antiguos
+            // guardados (verde/rojo) vuelvan a sobrescribir el diseño azul/plateado.
+            if (current.theme !== 'christmas') {
+                if (customP && customP.startsWith('#')) current.p = customP;
+                if (customS && customS.startsWith('#')) current.s = customS;
+                if (themeData.colorBg) current.bg = themeData.colorBg;
+                if (themeData.colorText) current.tTitle = themeData.colorText;
+                if (themeData.colorCard) current.glass = themeData.colorCard;
+            } else {
+                current.p = '#2563EB';
+                current.s = '#94A3B8';
+                current.a = '#E2E8F0';
+                current.bg = '#061426';
+                current.overlay = 'rgba(4,15,32,0.78)';
+                current.glass = 'rgba(9,30,58,0.86)';
+                current.border = 'rgba(226,232,240,0.24)';
+                current.tTitle = '#F8FAFC';
+                current.tMuted = '#CBD5E1';
+            }
 
             document.body.setAttribute('data-theme', current.theme);
             document.documentElement.setAttribute('data-cached-theme', current.theme);
             try { localStorage.setItem('diverty_active_theme', current.theme); } catch(e) {}
 
-            const customGrad = themeData.gradient ? themeData.gradient : `linear-gradient(135deg, ${current.p}, ${current.s})`;
+            const customGrad = current.theme === 'christmas'
+                ? 'linear-gradient(135deg, #2563EB, #94A3B8)'
+                : (themeData.gradient ? themeData.gradient : `linear-gradient(135deg, ${current.p}, ${current.s})`);
 
             let css = `
             :root {
