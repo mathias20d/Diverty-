@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -146,6 +145,14 @@
             100% { transform: translateX(200%) skewX(-15deg); }
         }
 
+        /* Decoraciones Globales Animadas (Halloween, Navidad, etc.) */
+        .decor-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: -1; overflow: hidden; }
+        .spider-web { position: absolute; width: 250px; height: 250px; opacity: 0.25; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M0 0 L100 0 L0 100 Z' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M10 0 A 10 10 0 0 1 0 10 M30 0 A 30 30 0 0 1 0 30 M60 0 A 60 60 0 0 1 0 60 M100 0 A 100 100 0 0 1 0 100' fill='none' stroke='%23ffffff' stroke-width='0.5'/%3E%3Cpath d='M0 0 L80 15 M0 0 L15 80 M0 0 L50 50' stroke='%23ffffff' stroke-width='0.5'/%3E%3C/svg%3E"); background-size: cover; pointer-events: none; mix-blend-mode: overlay; }
+        .spider-web-left { top: 0; left: 0; }
+        .spider-web-right { top: 0; right: 0; transform: scaleX(-1); }
+        @keyframes floatDown { 0% { transform: translateY(-10vh) rotate(0deg) scale(0.8); opacity: 1; } 100% { transform: translateY(110vh) rotate(360deg) scale(1.2); opacity: 0; } }
+        .falling-decor { position: absolute; top: -10%; animation: floatDown linear infinite; font-size: 1.5rem; opacity: 0.6; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3)); }
+
         .card-alive { border: none !important; }
         .card-alive::after {
             content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 2.5px;
@@ -252,13 +259,20 @@
 
         #topAnnouncementBanner { background: var(--s-btn-grad); position: relative; width: 100%; z-index: 60; padding: 6px 16px; font-weight: 800; font-size: 0.70rem; text-transform: uppercase; letter-spacing: 0.05em; color: white; border-bottom: 1px solid rgba(255,255,255,0.2); }
         
-        /* CORRECCIÓN: Se eliminó el override que forzaba las tarjetas blancas en móviles */
+        /* CORRECCIÓN: Hemos eliminado la restricción de fondo blanco sólido para dispositivos móviles */
         @media (max-width: 768px) {
-            #headerWrapper.scrolled #mainHeader { 
+            .glass-panel, #headerWrapper.scrolled #mainHeader { 
                 backdrop-filter: none !important; -webkit-backdrop-filter: none !important; 
-                background: var(--s-bg-color) !important;
             }
+            #headerWrapper.scrolled #mainHeader { background: var(--s-bg-color) !important; }
+            
+            /* FIX: Desactivar animación pesada de border mask en móviles para evitar que tarjetas queden en blanco */
+            .card-alive::after { display: none !important; animation: none !important; }
+            .card-alive { border: 1px solid var(--s-glass-border) !important; }
         }
+
+        /* FIX: Forzar renderizado por hardware para evitar glitch de desaparición en contenedores con scroll horizontal */
+        .snap-container, .card-safe-wrapper, .gallery-item { transform: translateZ(0); will-change: transform; }
     </style>
 </head>
 <body class="flex flex-col relative min-h-screen">
@@ -277,7 +291,7 @@
             <div class="container mx-auto flex justify-between items-center">
                 <button data-action="close-modal" data-target-section="home" class="flex items-center logo-container nav-action" aria-label="Inicio">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full p-[2px] mr-3 shadow-sm" style="background: var(--s-btn-grad);">
-                        <!-- CORRECCIÓN: Agregado el onerror para mostrar "DE" si falla la imagen local -->
+                        <!-- El onerror asegura que si tu logo falla, no quede vacío -->
                         <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border-2 border-[var(--s-bg-color)]" loading="eager" id="mainHeaderLogo" onerror="this.onerror=null; this.src='https://placehold.co/100x100/7C3AED/ffffff?text=DE'">
                     </div>
                     <div class="flex flex-col drop-shadow-sm">
@@ -450,13 +464,39 @@
         
         const app = { activeSection: 'home', cart: [], location: 'panama-centro', wizardStep: 1, catalog: [], theme: null, campaigns: [] };
 
-        const S_ICONS = {
+        const DEFAULT_ICONS = {
             bag: `<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
             cart: `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>`,
             plus: `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><path d="M21 13V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h8"/><path d="M3 10h18"/><path d="M16 19h6"/><path d="M19 16v6"/></svg>`,
             check: `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
             refresh: `<svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>`
         };
+        let S_ICONS = { ...DEFAULT_ICONS };
+
+        function updateThemeAssets(themeName) {
+            S_ICONS = { ...DEFAULT_ICONS }; 
+            if (themeName === 'halloween') {
+                S_ICONS.cart = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🎃</span>';
+                S_ICONS.plus = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🦇</span>';
+                S_ICONS.check = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">👻</span>';
+                S_ICONS.bag = '<span class="text-lg leading-none">🕷️</span>';
+            } else if (themeName === 'christmas') {
+                S_ICONS.cart = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🎁</span>';
+                S_ICONS.plus = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🎄</span>';
+                S_ICONS.check = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">⭐</span>';
+                S_ICONS.bag = '<span class="text-lg leading-none">🎅</span>';
+            } else if (themeName === 'summer') {
+                S_ICONS.cart = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🌴</span>';
+                S_ICONS.plus = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">☀️</span>';
+                S_ICONS.check = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🌊</span>';
+                S_ICONS.bag = '<span class="text-lg leading-none">🕶️</span>';
+            } else if (themeName === 'school') {
+                S_ICONS.cart = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🎒</span>';
+                S_ICONS.plus = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">✏️</span>';
+                S_ICONS.check = '<span class="text-xl leading-none" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🎓</span>';
+                S_ICONS.bag = '<span class="text-lg leading-none">📚</span>';
+            }
+        }
 
         const fetchWithTimeout = async (promise, ms) => {
             let timer;
@@ -523,7 +563,6 @@
             if(show){ o.style.opacity='1'; o.style.visibility='visible'; m.classList.add('open'); } else { o.style.opacity='0'; o.style.visibility='hidden'; m.classList.remove('open'); } 
         }
 
-        // CORRECCIÓN: Se añadieron los campos faltantes (Bg, Text, Card)
         function applyThemeColors(themeData) {
             if (!themeData) return;
             const style = document.getElementById('theme-dynamic-styles') || document.createElement('style'); 
@@ -579,23 +618,18 @@
             else if (decorType.includes('navidad') || decorType.includes('santa')) current = palettes.christmas;
             else if (decorType.includes('verano') || decorType.includes('summer')) current = palettes.summer;
 
-            // LECTURA COMPLETA DE VARIABLES DEL PANEL ADMINISTRADOR
             const customP = cleanStr(themeData.colorPrimario || themeData.colorPrimary);
             if (customP && customP.startsWith('#')) current.p = customP;
-            
             const customS = cleanStr(themeData.colorSecundario || themeData.colorSecondary);
             if (customS && customS.startsWith('#')) current.s = customS;
 
-            const customBg = cleanStr(themeData.colorBg);
-            if (customBg && customBg.startsWith('#')) current.bg = customBg;
-            
-            const customText = cleanStr(themeData.colorText);
-            if (customText && customText.startsWith('#')) current.tTitle = customText;
-            
-            const customCard = cleanStr(themeData.colorCard);
-            if (customCard && customCard.startsWith('#')) current.glass = customCard + 'E6'; // Añade ligera transparencia (90%)
+            if (themeData.colorBg) current.bg = themeData.colorBg;
+            if (themeData.colorText) current.tTitle = themeData.colorText;
+            if (themeData.colorCard) current.glass = themeData.colorCard;
 
             document.body.setAttribute('data-theme', current.theme);
+
+            const customGrad = themeData.gradient ? themeData.gradient : `linear-gradient(135deg, ${current.p}, ${current.s})`;
 
             let css = `
             :root {
@@ -609,7 +643,7 @@
                 --s-glass-border: ${current.border};
                 --s-text-title: ${current.tTitle};
                 --s-text-muted: ${current.tMuted};
-                --s-btn-grad: linear-gradient(135deg, ${current.p}, ${current.s});
+                --s-btn-grad: ${customGrad};
             }
             `;
 
@@ -622,6 +656,48 @@
 
             const logoStr = cleanStr(themeData.logoUrl || themeData.imagenLogo || themeData.logo);
             if (logoStr) { const headLogo = document.getElementById('mainHeaderLogo'); if(headLogo) headLogo.src = logoStr; }
+
+            // Aplicar decoraciones dinámicas e iconos
+            updateThemeAssets(current.theme);
+
+            let decorLayer = document.getElementById('decor-layer');
+            if (!decorLayer) {
+                decorLayer = document.createElement('div');
+                decorLayer.id = 'decor-layer';
+                decorLayer.className = 'decor-layer';
+                document.body.prepend(decorLayer);
+            }
+            decorLayer.innerHTML = '';
+
+            if (current.theme === 'halloween') {
+                decorLayer.innerHTML += '<div class="spider-web spider-web-left"></div><div class="spider-web spider-web-right"></div>';
+                for(let i=0; i<12; i++) {
+                    const left = Math.random() * 100; const dur = 6 + Math.random() * 8; const del = Math.random() * 5; const size = 1 + Math.random() * 1.5;
+                    decorLayer.innerHTML += `<div class="falling-decor" style="left:${left}%; animation-duration:${dur}s; animation-delay:-${del}s; font-size:${size}rem;">🦇</div>`;
+                }
+            } else if (current.theme === 'christmas') {
+                for(let i=0; i<25; i++) {
+                    const left = Math.random() * 100; const dur = 5 + Math.random() * 10; const del = Math.random() * 5; const size = 0.5 + Math.random() * 1;
+                    decorLayer.innerHTML += `<div class="falling-decor text-white" style="left:${left}%; animation-duration:${dur}s; animation-delay:-${del}s; font-size:${size}rem; text-shadow: 0 0 5px rgba(255,255,255,0.8);">❄️</div>`;
+                }
+            } else if (current.theme === 'summer') {
+                for(let i=0; i<10; i++) {
+                    const left = Math.random() * 100; const dur = 7 + Math.random() * 6; const del = Math.random() * 5;
+                    decorLayer.innerHTML += `<div class="falling-decor" style="left:${left}%; animation-duration:${dur}s; animation-delay:-${del}s; opacity:0.4;">🫧</div>`;
+                }
+            } else if (current.theme === 'school') {
+                const confetis = ['📚','✏️','🎒','📏','✨'];
+                for(let i=0; i<15; i++) {
+                    const left = Math.random() * 100; const dur = 6 + Math.random() * 7; const del = Math.random() * 5; const c = confetis[Math.floor(Math.random()*confetis.length)];
+                    decorLayer.innerHTML += `<div class="falling-decor" style="left:${left}%; animation-duration:${dur}s; animation-delay:-${del}s;">${c}</div>`;
+                }
+            }
+
+            // Forzar recarga de UI para aplicar los nuevos iconos en los botones
+            if (window.catalogLoaded) {
+                setActiveSection(app.activeSection);
+                if (app.cart.length > 0) updateCartUI();
+            }
         }
 
         function buildDynamicNav() {
@@ -731,8 +807,8 @@
                 else if (typeof incluyeData === 'string') arr = incluyeData.split('\n');
                 arr = arr.filter(i => cleanStr(i) !== '');
                 if (arr.length === 0) return '';
-                return `<div class="mb-6 relative z-20 w-full flex-grow"><ul class="space-y-3 w-full bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[color-mix(in_srgb,var(--s-text-title)_5%,transparent)] rounded-[1.25rem] p-5 shadow-inner">` + 
-                       arr.map(inc => `<li class="flex items-start text-[13px] season-text-muted font-bold leading-snug group/item transition-colors hover:text-[var(--s-text-title)]"><div class="mt-0.5 mr-3.5 shrink-0 p-1 rounded-full shadow-sm text-[var(--s-bg-color)] border border-white/20" style="background: var(--s-btn-grad);"><i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i></div><span class="flex-1 mt-px">${cleanStr(inc)}</span></li>`).join('') + 
+                return `<div class="mb-3 relative z-20 w-full flex-grow"><ul class="space-y-1.5 w-full bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[color-mix(in_srgb,var(--s-text-title)_5%,transparent)] rounded-xl p-3 shadow-inner">` + 
+                       arr.map(inc => `<li class="flex items-start text-[11px] sm:text-xs season-text-muted font-bold leading-snug group/item transition-colors hover:text-[var(--s-text-title)]"><div class="mt-0.5 mr-2.5 shrink-0 p-0.5 rounded-full shadow-sm text-[var(--s-bg-color)] border border-white/20" style="background: var(--s-btn-grad);"><i data-lucide="check" class="w-2 h-2 stroke-[3]"></i></div><span class="flex-1 mt-px">${cleanStr(inc)}</span></li>`).join('') + 
                        `</ul></div>`;
             };
 
@@ -763,27 +839,27 @@
 
                 if (isDestacada) {
                     return `
-                    <div class="card-safe-wrapper mt-8 mb-4 w-full">
-                        <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[11px] sm:text-xs font-black uppercase tracking-widest px-8 py-2 rounded-full z-[40] shadow-[0_4px_20px_rgba(244,63,94,0.6)] border border-pink-400/50 flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="tag" class="w-3.5 h-3.5 fill-white"></i> GRAN PROMOCIÓN</div>
+                    <div class="card-safe-wrapper mt-6 mb-2 w-full">
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-6 py-1.5 rounded-full z-[40] shadow-md flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> GRAN PROMOCIÓN</div>
                         
-                        <div class="glass-panel card-alive flex flex-col md:flex-row h-full rounded-[2.1rem] w-full">
-                            ${img ? `<div class="w-full md:w-5/12 h-64 md:h-auto relative shrink-0 pt-8 px-6 md:p-8"><img src="${img}" class="w-full h-full object-cover rounded-[1.25rem] shadow-md border" style="border-color: var(--s-glass-border);"></div>` : ''}
-                            <div class="p-6 sm:p-8 md:p-10 pb-8 flex flex-col justify-center flex-1 relative z-10 w-full">
-                                ${sub ? `<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest w-max mb-5" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="star" class="w-3.5 h-3.5"></i> ${sub}</div>` : ''}
-                                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 font-nunito leading-tight season-text-title tracking-tight">${titulo}</h2>
-                                ${desc ? `<p class="season-text-muted text-sm sm:text-base font-semibold mb-6 leading-relaxed">${desc}</p>` : ''}
+                        <div class="glass-panel card-alive flex flex-col md:flex-row h-full rounded-[1.5rem] w-full">
+                            ${img ? `<div class="w-full md:w-5/12 h-40 md:h-auto relative shrink-0 pt-5 px-4 md:p-5"><img src="${img}" class="w-full h-full object-cover rounded-[1rem] shadow-sm border" style="border-color: var(--s-glass-border);"></div>` : ''}
+                            <div class="p-4 sm:p-5 flex flex-col justify-center flex-1 relative z-10 w-full">
+                                ${sub ? `<div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest w-max mb-3" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="star" class="w-3 h-3"></i> ${sub}</div>` : ''}
+                                <h2 class="text-xl sm:text-2xl lg:text-3xl font-black mb-2 font-nunito leading-tight season-text-title tracking-tight">${titulo}</h2>
+                                ${desc ? `<p class="season-text-muted text-[11px] sm:text-xs font-semibold mb-3 leading-snug">${desc}</p>` : ''}
                                 ${incluyeHtml}
                                 ${(pPromo || pAnt) ? `
-                                <div class="flex items-center justify-between mt-auto mb-5 w-full relative z-10 pt-5 border-t border-[var(--s-glass-border)]">
-                                    ${pPromo && Number(pAnt) > Number(pPromo) ? `<span class="bg-pink-500/10 text-pink-500 text-[10px] font-black px-3 py-1.5 rounded-xl border border-pink-500/20 shadow-sm flex items-center gap-1"><i data-lucide="percent" class="w-3 h-3"></i> AHORRO</span>` : '<span class="text-[10px] font-black uppercase tracking-widest season-text-muted mb-1 opacity-70">Inversión</span>'}
-                                    <div class="flex items-end gap-2.5">
-                                        ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="season-text-muted opacity-60 line-through text-sm font-bold leading-none mb-1.5">$${Number(pAnt).toFixed(2)}</span>` : ''}
-                                        ${pPromo ? `<span class="text-4xl sm:text-5xl font-black season-gradient-text leading-none tracking-tight drop-shadow-sm">$${Number(pPromo).toFixed(2)}</span>` : ''}
+                                <div class="flex items-center justify-between mt-auto mb-4 w-full relative z-10 pt-4 border-t border-[var(--s-glass-border)]">
+                                    ${pPromo && Number(pAnt) > Number(pPromo) ? `<span class="bg-pink-500/10 text-pink-500 text-[9px] font-black px-2.5 py-1 rounded-lg border border-pink-500/20 shadow-sm flex items-center gap-1"><i data-lucide="percent" class="w-2.5 h-2.5"></i> AHORRO</span>` : '<span class="text-[9px] font-black uppercase tracking-widest season-text-muted mb-1 opacity-70">Inversión</span>'}
+                                    <div class="flex items-end gap-2">
+                                        ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="season-text-muted opacity-60 line-through text-xs font-bold leading-none mb-1">$${Number(pAnt).toFixed(2)}</span>` : ''}
+                                        ${pPromo ? `<span class="text-2xl sm:text-3xl lg:text-4xl font-black season-gradient-text leading-none tracking-tight drop-shadow-sm">$${Number(pPromo).toFixed(2)}</span>` : ''}
                                     </div>
-                                </div>` : '<div class="mb-5 mt-auto pt-5"></div>'}
+                                </div>` : '<div class="mb-4 mt-auto pt-4"></div>'}
                                 
-                                <div class="mt-auto pt-2 pb-2">
-                                    <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} data-cart-state="${ic?'selected':'none'}" class="w-full sm:w-max font-black py-4 px-10 rounded-[1.25rem] text-[11px] sm:text-[13px] tracking-widest uppercase text-white transition-transform duration-150 active:scale-95 relative overflow-hidden flex items-center justify-center gap-2.5 z-10 shadow-md" style="background: ${ic ? '#10B981' : 'var(--s-btn-grad)'};">
+                                <div class="mt-auto pt-1 pb-1">
+                                    <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} data-cart-state="${ic?'selected':'none'}" class="w-full sm:w-max font-black py-3 px-8 rounded-[1rem] text-[10px] sm:text-[11px] tracking-widest uppercase text-white transition-transform duration-150 active:scale-95 relative overflow-hidden flex items-center justify-center gap-2 z-10 shadow-sm" style="background: ${ic ? '#10B981' : 'var(--s-btn-grad)'};">
                                         ${ic ? S_ICONS.check + ' SELECCIONADO' : (actionBtn==='add-to-cart' ? S_ICONS.bag : S_ICONS.sparkles) + ' ' + btnTxt}
                                     </button>
                                 </div>
@@ -792,26 +868,26 @@
                     </div>`;
                 } else {
                     return `
-                    <div class="card-safe-wrapper mt-6">
-                        <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-5 py-1.5 rounded-full z-[40] shadow-[0_4px_15px_rgba(244,63,94,0.5)] border border-pink-400/50 flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> Promo</div>
-                        <div class="glass-panel card-alive p-5 sm:p-6 pb-8 flex flex-col h-full group w-full">
-                            <div class="relative z-10 flex flex-col h-full pt-2">
-                                ${img ? `<div class="w-full h-48 sm:h-52 rounded-[1.25rem] overflow-hidden mb-5 shrink-0 shadow-sm border border-[var(--s-glass-border)]"><img src="${img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>` : ''}
-                                ${sub ? `<span class="text-[10px] font-black uppercase tracking-widest season-text-primary mb-3 block">${sub}</span>` : ''}
-                                <h3 class="text-xl sm:text-2xl font-black season-text-title mb-3 font-nunito leading-tight">${titulo}</h3>
-                                ${desc ? `<p class="season-text-muted text-xs sm:text-sm font-semibold mb-5 leading-relaxed">${desc}</p>` : ''}
+                    <div class="card-safe-wrapper mt-4">
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full z-[40] shadow-sm flex items-center gap-1 whitespace-nowrap"><i data-lucide="tag" class="w-2.5 h-2.5 fill-white"></i> Promo</div>
+                        <div class="glass-panel card-alive p-3 sm:p-4 flex flex-col h-full group w-full">
+                            <div class="relative z-10 flex flex-col h-full pt-3">
+                                ${img ? `<div class="w-full h-32 sm:h-40 rounded-xl overflow-hidden mb-3 shrink-0 shadow-sm border border-[var(--s-glass-border)]"><img src="${img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>` : ''}
+                                ${sub ? `<span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest season-text-primary mb-1 block">${sub}</span>` : ''}
+                                <h3 class="text-lg sm:text-xl font-black season-text-title mb-1.5 font-nunito leading-tight">${titulo}</h3>
+                                ${desc ? `<p class="season-text-muted text-[11px] sm:text-xs font-semibold mb-3 leading-snug line-clamp-2">${desc}</p>` : ''}
                                 ${incluyeHtml}
                                 ${(pPromo || pAnt) ? `
-                                <div class="flex items-center justify-between mt-auto mb-5 w-full relative z-10 pt-5 border-t border-[var(--s-glass-border)]">
-                                    ${pPromo && Number(pAnt) > Number(pPromo) ? `<span class="bg-pink-500/10 text-pink-500 text-[10px] font-black px-3 py-1.5 rounded-xl border border-pink-500/20 shadow-sm flex items-center gap-1"><i data-lucide="percent" class="w-3 h-3"></i> AHORRO</span>` : '<span class="text-[10px] font-black uppercase tracking-widest season-text-muted mb-1 opacity-70">Inversión</span>'}
-                                    <div class="flex items-end gap-2.5">
-                                        ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="season-text-muted opacity-60 line-through text-sm font-bold leading-none mb-1.5">$${Number(pAnt).toFixed(2)}</span>` : ''}
-                                        ${pPromo ? `<span class="text-4xl font-black season-gradient-text leading-none tracking-tight drop-shadow-sm">$${Number(pPromo).toFixed(2)}</span>` : ''}
+                                <div class="flex items-center justify-between mt-auto mb-4 w-full relative z-10 pt-3 border-t border-[var(--s-glass-border)]">
+                                    ${pPromo && Number(pAnt) > Number(pPromo) ? `<span class="bg-pink-500/10 text-pink-500 text-[9px] font-black px-2 py-1 rounded-lg border border-pink-500/20 shadow-sm flex items-center gap-1"><i data-lucide="percent" class="w-2.5 h-2.5"></i> AHORRO</span>` : '<span class="text-[9px] font-black uppercase tracking-widest season-text-muted mb-1 opacity-70">Inversión</span>'}
+                                    <div class="flex items-end gap-1.5">
+                                        ${pAnt && Number(pAnt) > Number(pPromo) ? `<span class="season-text-muted opacity-60 line-through text-xs font-bold leading-none mb-1">$${Number(pAnt).toFixed(2)}</span>` : ''}
+                                        ${pPromo ? `<span class="text-2xl sm:text-3xl font-black season-gradient-text leading-none tracking-tight drop-shadow-sm">$${Number(pPromo).toFixed(2)}</span>` : ''}
                                     </div>
-                                </div>` : '<div class="mb-5 mt-auto pt-5"></div>'}
+                                </div>` : '<div class="mb-4 mt-auto pt-4"></div>'}
                                 
-                                <div class="mt-auto pt-2 pb-2">
-                                    <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} data-cart-state="${ic?'selected':'none'}" class="w-full font-black py-4 px-6 rounded-[1.25rem] text-[11px] sm:text-[13px] tracking-widest uppercase text-white transition-transform duration-150 active:scale-95 relative overflow-hidden flex items-center justify-center gap-2.5 z-10 shadow-md" style="background: ${ic ? '#10B981' : 'var(--s-btn-grad)'};">
+                                <div class="mt-auto pt-1 pb-1">
+                                    <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} data-cart-state="${ic?'selected':'none'}" class="w-full font-black py-3 px-5 rounded-[1rem] text-[10px] sm:text-[11px] tracking-widest uppercase text-white transition-transform duration-150 active:scale-95 relative overflow-hidden flex items-center justify-center gap-2 z-10 shadow-sm" style="background: ${ic ? '#10B981' : 'var(--s-btn-grad)'};">
                                         ${ic ? S_ICONS.check + ' SELECCIONADO' : (actionBtn==='add-to-cart' ? S_ICONS.bag : S_ICONS.sparkles) + ' ' + btnTxt}
                                     </button>
                                 </div>
@@ -843,7 +919,7 @@
             else if(item.id==='clown_diverty'){ b=`<div class="absolute top-4 left-4 bg-emerald-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full z-20 shadow-lg border border-emerald-400/50 flex items-center gap-1.5 backdrop-blur-md"><i data-lucide="thumbs-up" class="w-3 h-3 fill-white"></i> Recomendado</div>`; }
             else if(item.discountApplied||item.oferta){ b=`<div class="absolute top-4 left-4 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full z-20 shadow-lg border border-pink-400/50 flex items-center gap-1.5 backdrop-blur-md"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> Oferta</div>`; }
             
-            let imgBlock = `<div class="relative w-full h-56 sm:h-64 shrink-0 rounded-[1.25rem] overflow-hidden shadow-sm mb-5 group-hover:shadow-xl transition-all duration-500 border border-[var(--s-glass-border)]">
+            let imgBlock = `<div class="relative w-full h-40 sm:h-48 shrink-0 rounded-[1.25rem] overflow-hidden shadow-sm mb-4 group-hover:shadow-xl transition-all duration-500 border border-[var(--s-glass-border)]">
                 ${b}
                 <img src="${cleanStr(item.image)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/40 to-transparent opacity-90"></div>
@@ -855,12 +931,12 @@
             
             let pd='', px=Number(item.price);
             if(px||px===0){
-                if(item.discountApplied||item.oferta) pd=`<div class="flex items-center justify-between mt-auto mb-5 w-full relative z-10 pt-5 border-t border-[var(--s-glass-border)]"><span class="bg-pink-500/10 text-pink-500 text-[10px] font-black px-3 py-1.5 rounded-xl border border-pink-500/20 shadow-sm flex items-center gap-1"><i data-lucide="percent" class="w-3 h-3"></i> AHORRO</span><div class="flex items-end gap-2.5"><span class="season-text-muted opacity-60 line-through text-sm font-bold leading-none mb-1.5">$${Number(item.originalPrice).toFixed(2)}</span><span class="text-4xl font-black ${pc} leading-none tracking-tight drop-shadow-sm">$${px.toFixed(2)}</span></div></div>`;
-                else pd=`<div class="flex items-end justify-between mt-auto mb-5 w-full relative z-10 pt-5 border-t border-[var(--s-glass-border)]"><span class="text-[10px] font-black uppercase tracking-widest season-text-muted mb-1 opacity-70">Inversión</span><div class="flex items-end"><span class="text-4xl font-black ${pc} transition-all duration-300 leading-none tracking-tight drop-shadow-sm">$${px.toFixed(2)}</span>${item.isHourly?'<span class="season-text-muted opacity-70 text-[10px] font-bold ml-1 mb-1.5 uppercase tracking-wider">/hr</span>':''}</div></div>`;
+                if(item.discountApplied||item.oferta) pd=`<div class="flex items-center justify-between mt-auto mb-4 w-full relative z-10 pt-4 border-t border-[var(--s-glass-border)]"><span class="bg-pink-500/10 text-pink-500 text-[10px] font-black px-3 py-1.5 rounded-xl border border-pink-500/20 shadow-sm flex items-center gap-1"><i data-lucide="percent" class="w-3 h-3"></i> AHORRO</span><div class="flex items-end gap-2.5"><span class="season-text-muted opacity-60 line-through text-sm font-bold leading-none mb-1.5">$${Number(item.originalPrice).toFixed(2)}</span><span class="text-3xl font-black ${pc} leading-none tracking-tight drop-shadow-sm">$${px.toFixed(2)}</span></div></div>`;
+                else pd=`<div class="flex items-end justify-between mt-auto mb-4 w-full relative z-10 pt-4 border-t border-[var(--s-glass-border)]"><span class="text-[10px] font-black uppercase tracking-widest season-text-muted mb-1 opacity-70">Inversión</span><div class="flex items-end"><span class="text-3xl font-black ${pc} transition-all duration-300 leading-none tracking-tight drop-shadow-sm">$${px.toFixed(2)}</span>${item.isHourly?'<span class="season-text-muted opacity-70 text-[10px] font-bold ml-1 mb-1.5 uppercase tracking-wider">/hr</span>':''}</div></div>`;
             }
             
             let sl='';
-            if(item.services&&item.services.length>0){ sl=`<div class="mb-6 relative z-20 w-full flex-grow"><ul class="space-y-3 w-full bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[color-mix(in_srgb,var(--s-text-title)_5%,transparent)] rounded-[1.25rem] p-5 shadow-inner">`+item.services.map(s=>`<li class="flex items-start text-[13px] season-text-muted font-bold leading-snug group/item transition-colors hover:text-[var(--s-text-title)]"><div class="mt-0.5 mr-3.5 shrink-0 p-1 rounded-full shadow-sm text-[var(--s-bg-color)] border border-white/20" style="background: var(--s-btn-grad);"><i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i></div><span class="flex-1 mt-px">${s}</span></li>`).join('')+`</ul></div>`; }
+            if(item.services&&item.services.length>0){ sl=`<div class="mb-4 relative z-20 w-full flex-grow"><ul class="space-y-2 w-full bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[color-mix(in_srgb,var(--s-text-title)_5%,transparent)] rounded-[1rem] p-4 shadow-inner">`+item.services.map(s=>`<li class="flex items-start text-xs sm:text-[13px] season-text-muted font-bold leading-snug group/item transition-colors hover:text-[var(--s-text-title)]"><div class="mt-0.5 mr-3.5 shrink-0 p-1 rounded-full shadow-sm text-[var(--s-bg-color)] border border-white/20" style="background: var(--s-btn-grad);"><i data-lucide="check" class="w-2 h-2 sm:w-2.5 sm:h-2.5 stroke-[3]"></i></div><span class="flex-1 mt-px">${s}</span></li>`).join('')+`</ul></div>`; }
 
             const ic=app.cart.find(i=>i.id===item.id); const iq=ic?ic.quantity:1;
             let ab='';
@@ -872,8 +948,8 @@
             }
             
             return `
-            <div class="w-[85vw] max-w-[380px] md:w-full snap-center flex-shrink-0 h-full snap-container relative pt-6 pb-2">
-                <div class="glass-panel card-alive p-5 sm:p-6 pb-8 flex flex-col h-full group group-hover-playful relative">
+            <div class="w-[85vw] max-w-[380px] md:w-full snap-center flex-shrink-0 h-full snap-container relative pt-4 pb-2">
+                <div class="glass-panel card-alive p-4 sm:p-5 pb-5 flex flex-col h-full group group-hover-playful relative">
                     <div class="relative z-10 flex flex-col h-full">${imgBlock}${sl}${pd}${ab}</div>
                 </div>
             </div>`;
@@ -1547,13 +1623,13 @@
                             return { id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria, orden: dt.orden }; 
                         });
                         if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
-                        catalogLoaded = true;
+                        catalogLoaded = true; window.catalogLoaded = true;
                     } else {
                         app.catalog = [];
-                        catalogLoaded = true;
+                        catalogLoaded = true; window.catalogLoaded = true;
                     }
                 } catch(e) {
-                    catalogLoaded = true;
+                    catalogLoaded = true; window.catalogLoaded = true;
                 }
             };
 
@@ -1562,9 +1638,12 @@
                     const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'temas_web')), T_OUT);
                     if (!snap.empty) {
                         const themes = snap.docs.map(d => ({id: d.id, ...d.data()}));
-                        let sel = themes.find(t => cleanStr(t.modo).toLowerCase().includes('manual') && (t.activo===true || t.estado==='Activo')); 
-                        if (!sel) sel = themes.find(t => (t.activo===true || t.estado==='Activo') && t.esPredeterminado === true);
-                        if (!sel) sel = themes.find(t => t.activo===true || t.estado==='Activo') || themes[0];
+                        
+                        // Busca EXACTAMENTE el tema que marcaste como activo en tu administrador
+                        let sel = themes.find(t => t.activo === true);
+                        if (!sel) sel = themes.find(t => t.isDefault === true);
+                        if (!sel) sel = themes[0];
+                        
                         if (sel) { app.theme = sel; applyThemeColors(app.theme); }
                     }
                 } catch(e) {}
