@@ -990,6 +990,104 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 }
 </style>
 
+
+<style id="diverty-premium-v3-catalog">
+/* V3 — Catálogo y paquetes. Solo presentación. */
+@media (max-width:767px){
+  /* Contenido de categorías */
+  #mainContent > .container {
+    padding-left:.75rem!important;
+    padding-right:.75rem!important;
+  }
+
+  /* Encabezados de vistas de catálogo */
+  #mainContent section h2,
+  #mainContent section h1 {
+    letter-spacing:-.035em;
+  }
+
+  /* Tarjetas creadas por createDetailedCardHTML */
+  .card-safe-wrapper {
+    padding-top:.55rem!important;
+    padding-bottom:.45rem!important;
+  }
+  .card-safe-wrapper > .card-alive,
+  .card-safe-wrapper .card-alive {
+    border-radius:25px!important;
+    border:1px solid color-mix(in srgb,var(--s-glass-border) 78%,white 22%)!important;
+    box-shadow:0 15px 38px rgba(15,23,42,.11)!important;
+    overflow:hidden;
+  }
+  .card-safe-wrapper img {
+    width:100%!important;
+    object-fit:cover!important;
+  }
+  .card-safe-wrapper h3 {
+    font-weight:900!important;
+    letter-spacing:-.025em!important;
+    line-height:1.15!important;
+  }
+  .card-safe-wrapper p {
+    line-height:1.45!important;
+  }
+  .card-safe-wrapper button,
+  .card-safe-wrapper [data-action="add-to-cart"],
+  .card-safe-wrapper [data-action="add-hourly-to-cart"] {
+    min-height:48px!important;
+    border-radius:15px!important;
+    font-weight:900!important;
+    box-shadow:0 8px 20px color-mix(in srgb,var(--s-primary) 20%,transparent)!important;
+  }
+
+  /* Chips/badges existentes */
+  .card-safe-wrapper .absolute.top-4 {
+    border-radius:999px!important;
+    box-shadow:0 7px 18px rgba(15,23,42,.16)!important;
+  }
+
+  /* Carruseles de categorías: se ve parte de la próxima tarjeta */
+  #mainContent .overflow-x-auto {
+    scroll-padding-left:.55rem;
+    overscroll-behavior-x:contain;
+  }
+  #mainContent .overflow-x-auto > .card-safe-wrapper,
+  #mainContent .overflow-x-auto > [class*="snap-"] {
+    scroll-snap-align:center;
+  }
+
+  /* Selectores/cantidad y controles existentes */
+  #mainContent select,
+  #mainContent input[type="number"] {
+    min-height:44px;
+    border-radius:13px!important;
+  }
+
+  /* Separación entre secciones */
+  #mainContent section + section {
+    margin-top:1.25rem;
+  }
+}
+
+/* Tablet/escritorio: tarjetas más ordenadas sin cambiar cantidad ni contenido */
+@media (min-width:768px){
+  .card-safe-wrapper > .card-alive,
+  .card-safe-wrapper .card-alive {
+    border-radius:26px!important;
+    border:1px solid var(--s-glass-border)!important;
+    box-shadow:0 14px 36px rgba(15,23,42,.09)!important;
+    transition:transform .2s ease,box-shadow .2s ease!important;
+  }
+  .card-safe-wrapper > .card-alive:hover,
+  .card-safe-wrapper .card-alive:hover {
+    transform:translateY(-4px);
+    box-shadow:0 20px 44px rgba(15,23,42,.13)!important;
+  }
+  .card-safe-wrapper button {
+    border-radius:14px!important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
