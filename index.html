@@ -597,6 +597,25 @@ html[data-cached-theme="summer"] #themeBootLoader .boot-name,html[data-cached-th
 @media(prefers-reduced-motion:reduce){#themeBootLoader .boot-dots i{animation:none}}
 </style>
 
+
+<style id="cart-selected-mobile-fix">
+/* FIX: evita que botones/insignias de la página de fondo atraviesen visualmente el carrito */
+#cartModal{z-index:2147483000!important;isolation:isolate!important;}
+#cartModal .modal-content{position:relative!important;z-index:2!important;isolation:isolate!important;}
+#cartModal #cartItems,#cartModal .cart-item-card{position:relative!important;z-index:3!important;}
+#cartModal .cart-item-card{background:#fff!important;contain:paint!important;}
+body.cart-open #mainContent .season-btn,
+body.cart-open #mainContent [data-cart-state="selected"]{visibility:hidden!important;}
+@media(max-width:480px){
+  #cartModal .cart-item-card{grid-template-columns:64px minmax(0,1fr) 36px!important;}
+  #cartModal .cart-item-info{padding-right:4px!important;}
+}
+@media(max-width:360px){
+  #cartModal .cart-item-card{grid-template-columns:54px minmax(0,1fr) 32px!important;gap:8px!important;}
+  #cartModal .cart-item-image{width:54px!important;height:54px!important;}
+  #cartModal .cart-item-name{font-size:13px!important;}
+}
+</style>
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
