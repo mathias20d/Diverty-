@@ -273,6 +273,73 @@
 
         /* FIX: Forzar renderizado por hardware para evitar glitch de desaparición en contenedores con scroll horizontal */
         .snap-container, .card-safe-wrapper, .gallery-item { transform: translateZ(0); will-change: transform; }
+
+
+        /* ============================================================
+           DIVERTY — TEMPORADAS PREMIUM 2026
+           Capa exclusivamente visual. No altera contenido ni Firebase.
+           ============================================================ */
+        body[data-theme="christmas"], body[data-theme="halloween"] { --season-premium-radius: 28px; }
+        body[data-theme="christmas"] .season-overlay,
+        body[data-theme="halloween"] .season-overlay { backdrop-filter: blur(2px) saturate(1.08); -webkit-backdrop-filter: blur(2px) saturate(1.08); }
+        body[data-theme="christmas"] .glass-panel,
+        body[data-theme="halloween"] .glass-panel { border-radius: var(--season-premium-radius); overflow: hidden; }
+        body[data-theme="christmas"] .card-alive,
+        body[data-theme="halloween"] .card-alive { isolation: isolate; }
+        body[data-theme="christmas"] .season-btn,
+        body[data-theme="halloween"] .season-btn { border-radius: 16px; font-weight: 900; letter-spacing: .01em; }
+
+        /* NAVIDAD — rojo vino, verde pino, oro cálido y brillo de luces */
+        body[data-theme="christmas"] { background-color: #07150f; }
+        body[data-theme="christmas"] .season-background { filter: saturate(.9) contrast(1.05) brightness(.62); transform: scale(1.015); }
+        body[data-theme="christmas"] .season-overlay { background:
+            radial-gradient(circle at 15% 12%, rgba(245,196,81,.14), transparent 24%),
+            radial-gradient(circle at 86% 18%, rgba(185,28,28,.18), transparent 28%),
+            linear-gradient(180deg, rgba(3,18,12,.68), rgba(3,12,9,.90)); }
+        body[data-theme="christmas"] #topAnnouncementBanner { background: linear-gradient(90deg,#7f1d1d,#b91c1c 35%,#166534 70%,#14532d); border-bottom-color: rgba(253,230,138,.28); box-shadow: 0 8px 30px rgba(0,0,0,.25); }
+        body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader { background: rgba(5,25,17,.92)!important; border-bottom-color: rgba(253,230,138,.18); }
+        body[data-theme="christmas"] .glass-panel { background: linear-gradient(145deg,rgba(8,34,24,.86),rgba(17,24,39,.82)); border-color: rgba(253,230,138,.14); box-shadow: 0 18px 50px rgba(0,0,0,.28), inset 0 1px rgba(255,255,255,.05); }
+        body[data-theme="christmas"] .card-alive::after { background: linear-gradient(120deg,#991b1b,#f4c95d,#166534,#f8e7a1,#991b1b); opacity:.72; }
+        body[data-theme="christmas"] .season-gradient-text { background: linear-gradient(100deg,#fff7d6,#f4c95d 48%,#fff2b3); -webkit-background-clip:text; color:transparent; }
+        body[data-theme="christmas"] .season-btn { background: linear-gradient(135deg,#b91c1c 0%,#991b1b 45%,#166534 100%)!important; box-shadow: 0 10px 26px rgba(127,29,29,.32), inset 0 1px rgba(255,255,255,.18); }
+        body[data-theme="christmas"] .season-btn-outline { border-color: rgba(253,230,138,.24); background: rgba(255,255,255,.035); }
+        body[data-theme="christmas"] footer { border-top-color: rgba(253,230,138,.18)!important; }
+        body[data-theme="christmas"] .whatsapp-btn { box-shadow: 0 0 0 5px rgba(255,255,255,.05),0 12px 34px rgba(37,211,102,.28); }
+        body[data-theme="christmas"] #decor-layer::before { content:""; position:absolute; top:0; left:0; right:0; height:7px; opacity:.9; background: repeating-linear-gradient(90deg,#f4c95d 0 8px,transparent 8px 26px,#b91c1c 26px 34px,transparent 34px 52px,#22c55e 52px 60px,transparent 60px 78px); filter: drop-shadow(0 4px 7px rgba(244,201,93,.45)); }
+
+        /* HALLOWEEN — carbón, naranja calabaza y violeta cinematográfico */
+        body[data-theme="halloween"] { background-color:#07050b; }
+        body[data-theme="halloween"] .season-background { filter: saturate(.82) contrast(1.12) brightness(.48); transform: scale(1.015); }
+        body[data-theme="halloween"] .season-overlay { background:
+            radial-gradient(circle at 82% 14%,rgba(249,115,22,.15),transparent 22%),
+            radial-gradient(circle at 12% 34%,rgba(126,34,206,.18),transparent 28%),
+            linear-gradient(180deg,rgba(5,3,9,.64),rgba(5,3,9,.92)); }
+        body[data-theme="halloween"] #topAnnouncementBanner { background: linear-gradient(90deg,#431407,#c2410c 35%,#6b21a8 75%,#2e1065); border-bottom-color:rgba(251,146,60,.3); box-shadow:0 8px 30px rgba(0,0,0,.32); }
+        body[data-theme="halloween"] #headerWrapper.scrolled #mainHeader { background:rgba(10,6,16,.94)!important; border-bottom-color:rgba(249,115,22,.18); }
+        body[data-theme="halloween"] .glass-panel { background:linear-gradient(145deg,rgba(17,10,27,.9),rgba(8,6,14,.86)); border-color:rgba(249,115,22,.15); box-shadow:0 20px 55px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.035); }
+        body[data-theme="halloween"] .card-alive::after { background:linear-gradient(120deg,#f97316,#7e22ce,#facc15,#c2410c,#f97316); opacity:.68; }
+        body[data-theme="halloween"] .season-gradient-text { background:linear-gradient(100deg,#fdba74,#fb923c 40%,#d8b4fe 82%); -webkit-background-clip:text; color:transparent; }
+        body[data-theme="halloween"] .season-btn { background:linear-gradient(135deg,#ea580c 0%,#c2410c 42%,#6b21a8 100%)!important; box-shadow:0 10px 28px rgba(194,65,12,.3),inset 0 1px rgba(255,255,255,.13); }
+        body[data-theme="halloween"] .season-btn-outline { border-color:rgba(249,115,22,.24); background:rgba(255,255,255,.025); }
+        body[data-theme="halloween"] footer { border-top-color:rgba(249,115,22,.16)!important; }
+        body[data-theme="halloween"] .spider-web { opacity:.14; filter:sepia(.25) hue-rotate(230deg); }
+        body[data-theme="halloween"] #decor-layer::after { content:""; position:absolute; left:0; right:0; bottom:0; height:24%; background:linear-gradient(to top,rgba(72,24,8,.16),transparent); pointer-events:none; }
+
+        @media (max-width:768px) {
+            body[data-theme="christmas"] .glass-panel,
+            body[data-theme="halloween"] .glass-panel { border-radius:22px; }
+            body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader { background:#071a12!important; }
+            body[data-theme="halloween"] #headerWrapper.scrolled #mainHeader { background:#0b0710!important; }
+            body[data-theme="christmas"] .season-overlay,
+            body[data-theme="halloween"] .season-overlay { backdrop-filter:none; -webkit-backdrop-filter:none; }
+            body[data-theme="christmas"] #decor-layer::before { height:5px; opacity:.72; }
+        }
+
+        @media (prefers-reduced-motion:reduce) {
+            body[data-theme="christmas"] .falling-decor,
+            body[data-theme="halloween"] .falling-decor { animation:none!important; opacity:.12!important; }
+        }
+
     </style>
 </head>
 <body class="flex flex-col relative min-h-screen">
@@ -579,18 +646,18 @@
                     img: 'none', theme: 'default'
                 },
                 halloween: { 
-                    p: '#ea580c', s: '#9333ea', a: '#facc15', 
-                    bg: '#05020a', overlay: 'rgba(10,5,20,0.7)',
-                    glass: 'rgba(20,10,35,0.7)', border: 'rgba(255,255,255,0.08)',
-                    tTitle: '#F8FAFC', tMuted: '#cbd5e1',
+                    p: '#F97316', s: '#7E22CE', a: '#FACC15', 
+                    bg: '#07050B', overlay: 'rgba(7,5,11,0.78)',
+                    glass: 'rgba(17,10,27,0.84)', border: 'rgba(249,115,22,0.16)',
+                    tTitle: '#FFF7ED', tMuted: '#D6D3D1',
                     img: "url('https://images.unsplash.com/photo-1509557965875-b88c97052f0e?auto=format&fit=crop&q=80&w=1920')", 
                     theme: 'halloween' 
                 },
                 christmas: { 
-                    p: '#ef4444', s: '#16a34a', a: '#fcd34d', 
-                    bg: '#020617', overlay: 'rgba(5,20,15,0.7)',
-                    glass: 'rgba(10,30,20,0.6)', border: 'rgba(255,255,255,0.1)',
-                    tTitle: '#FFFFFF', tMuted: '#94A3B8',
+                    p: '#B91C1C', s: '#166534', a: '#F4C95D', 
+                    bg: '#07150F', overlay: 'rgba(3,18,12,0.76)',
+                    glass: 'rgba(8,34,24,0.82)', border: 'rgba(253,230,138,0.16)',
+                    tTitle: '#FFFBEB', tMuted: '#D1D5DB',
                     img: "url('https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&q=80&w=1920')", 
                     theme: 'christmas' 
                 },
