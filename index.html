@@ -574,12 +574,12 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
       document.documentElement.setAttribute('data-cached-theme', t);
     }
   } catch(e) {}
-  /* Sin bloqueo global: la página queda interactiva desde el primer frame. */
+  document.documentElement.classList.add('diverty-booting');
 })();
 </script>
 <style id="diverty-boot-style">
-html.diverty-booting body{overflow:auto}
-html.diverty-booting body> :not(#themeBootLoader){visibility:visible!important}
+html.diverty-booting body{overflow:hidden}
+html.diverty-booting body> :not(#themeBootLoader){visibility:hidden!important}
 #themeBootLoader{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#0b1220;opacity:1;transition:opacity .28s ease,visibility .28s ease}
 html[data-cached-theme="christmas"] #themeBootLoader{background:linear-gradient(145deg,#061c13,#0a2d1f 58%,#401016)}
 html[data-cached-theme="halloween"] #themeBootLoader{background:linear-gradient(145deg,#09060f,#1b0b23 58%,#401508)}
@@ -692,33 +692,17 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   .home-swipe-track.home-campaign-track > *{width:100%!important;max-width:none!important;min-width:0!important}
 }
 @media (min-width:1024px){.home-swipe-track.home-campaign-track{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media (hover:none) and (pointer:coarse){
-.home-swipe-track{touch-action:auto!important;scroll-behavior:auto!important;}
-.home-swipe-track .snap-container,.home-swipe-track .card-safe-wrapper{transform:none!important;will-change:auto!important;}
-.home-swipe-track .card-alive:hover{transform:none!important;}
-}
 </style>
 </head>
 <body class="flex flex-col relative min-h-screen">
-</div>
+    <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
+      <div class="boot-card">
+        <img class="boot-logo" id="themeBootLogo" src="./android-chrome-512x512.png" alt="Diverty Eventos" loading="eager" decoding="async">
+        <div class="boot-name">Diverty Eventos</div>
+        <div class="boot-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+    </div>
 
-
-    
-<script id="diverty-cached-theme-no-block">
-(function () {
-  function applyCachedThemeImmediately() {
-    try {
-      var t = localStorage.getItem('diverty_active_theme');
-      if (t && document.body) {
-        document.body.setAttribute('data-theme', t);
-        document.documentElement.setAttribute('data-cached-theme', t);
-      }
-    } catch (e) {}
-  }
-  if (document.body) applyCachedThemeImmediately();
-  else document.addEventListener('DOMContentLoaded', applyCachedThemeImmediately, {once:true});
-})();
-</script>
 
     <div class="season-background"></div>
     <div class="season-overlay"></div>
@@ -961,7 +945,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 
         function setContent(html) { 
             const mc = document.getElementById('mainContent'); 
-            if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); setupSliders(); requestAnimationFrame(() => markInteractiveReady(mc)); } 
+            if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); setupSliders(); } 
         }
 
         function setupSliders() {
@@ -977,11 +961,6 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
                     const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk;
                 });
             });
-        }
-
-        function markInteractiveReady(root=document) {
-            root.querySelectorAll?.('.home-swipe-track').forEach(track => { track.classList.add('interaction-ready'); void track.scrollWidth; });
-            document.documentElement.classList.add('diverty-interactive-ready');
         }
 
         function showModal(modalId) { 
@@ -1017,10 +996,12 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
         }
 
         function finishThemeBoot() {
-            document.documentElement.classList.remove('diverty-booting');
             const loader = document.getElementById('themeBootLoader');
-            if (loader) loader.remove();
-        }
+            document.documentElement.classList.remove('diverty-booting');
+            if (loader) {
+                loader.classList.add('boot-hide');
+                setTimeout(() => loader.remove(), 320);
+            }
         }
 
         function applyThemeColors(themeData) {
@@ -2150,9 +2131,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
             else setActiveSection(app.activeSection);
             
             updateCartUI();
-            setupSliders();
-            markInteractiveReady(document);
-            requestAnimationFrame(() => requestAnimationFrame(finishThemeBoot));
+            finishThemeBoot();
 
             Promise.allSettled([
                 (async () => { try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), T_OUT); if(!ts.empty) { locations = ts.docs.map(d=>d.data()); populateLocationSelects(); updateCartBadgeAndTotals(); } } catch(e){} })(),
@@ -2173,10 +2152,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
             if (window.location.hash) { history.replaceState(null, null, ' '); }
             setTimeout(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, 50);
             
-            if (!window.__divertyGlobalClickReady) {
-                document.addEventListener('click', handleGlobalClick, true);
-                window.__divertyGlobalClickReady = true;
-            }
+            document.body.addEventListener('click', handleGlobalClick);
             
             const mt = document.getElementById('mobileToggle'); if(mt) mt.onclick = () => toggleMobileMenu(true);
             const cm = document.getElementById('closeMobile'); if(cm) cm.onclick = () => toggleMobileMenu(false);
@@ -2224,115 +2200,13 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   <div class="xmas-left"></div><div class="xmas-right"></div><div class="xmas-snow"></div><div class="xmas-snowbank"></div>
 </div>
 
-
+<script>
+// Seguro: nunca dejar la interfaz bloqueada por una conexión lenta.
+setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, 4500);
+</script>
 
 <script id="diverty-home-swipe-guard">
 document.addEventListener('dragstart', function(e){ if(e.target.closest && e.target.closest('.home-swipe-track')) e.preventDefault(); }, {passive:false});
 </script>
-
-<script id="diverty-startup-unlock">
-(function(){
-  function unlock(){
-    document.documentElement.classList.remove('diverty-booting');
-    if(document.body){
-      document.body.style.removeProperty('overflow');
-      document.body.style.removeProperty('pointer-events');
-      document.body.style.removeProperty('touch-action');
-    }
-    var l=document.getElementById('themeBootLoader');
-    if(l) l.remove();
-  }
-  unlock();
-  document.addEventListener('DOMContentLoaded', unlock, {once:true});
-})();
-</script>
-
-
-<script id="diverty-direct-touch-android">
-(function () {
-  if (!('ontouchstart' in window) && !(navigator.maxTouchPoints > 0)) return;
-
-  let startX = 0, startY = 0, startScroll = 0, activeTrack = null;
-  let moved = false, horizontal = false, lastSyntheticTouch = 0;
-
-  /* Swipe táctil explícito: funciona desde el primer gesto. */
-  document.addEventListener('touchstart', function (e) {
-    const t = e.target.closest && e.target.closest('.home-swipe-track');
-    activeTrack = t || null;
-    moved = false;
-    horizontal = false;
-    if (!activeTrack || !e.touches || !e.touches[0]) return;
-    const p = e.touches[0];
-    startX = p.clientX;
-    startY = p.clientY;
-    startScroll = activeTrack.scrollLeft;
-  }, { passive: true, capture: true });
-
-  document.addEventListener('touchmove', function (e) {
-    if (!activeTrack || !e.touches || !e.touches[0]) return;
-    const p = e.touches[0];
-    const dx = p.clientX - startX;
-    const dy = p.clientY - startY;
-
-    if (!horizontal && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
-      horizontal = Math.abs(dx) > Math.abs(dy);
-    }
-    if (horizontal) {
-      moved = true;
-      activeTrack.scrollLeft = startScroll - dx;
-      if (e.cancelable) e.preventDefault();
-    }
-  }, { passive: false, capture: true });
-
-  document.addEventListener('touchend', function (e) {
-    const track = activeTrack;
-    activeTrack = null;
-
-    /* Si fue swipe, no convertirlo en click. */
-    if (track && moved) {
-      lastSyntheticTouch = Date.now();
-      return;
-    }
-
-    const target = e.target && e.target.closest
-      ? e.target.closest('button, a, [data-action], .nav-action')
-      : null;
-
-    if (!target || target.disabled) return;
-
-    /*
-      Ejecuta la acción en el propio touchend. El click() sintético entra por
-      el listener delegado existente y conserva toda la lógica original.
-    */
-    lastSyntheticTouch = Date.now();
-    target.click();
-    if (e.cancelable) e.preventDefault();
-  }, { passive: false, capture: true });
-
-  /* Evita el segundo click nativo que Android puede emitir tras touchend. */
-  document.addEventListener('click', function (e) {
-    if (e.isTrusted && Date.now() - lastSyntheticTouch < 700) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-    }
-  }, true);
-
-  /* En móvil dejamos que nuestro manejador decida horizontal vs vertical. */
-  const style = document.createElement('style');
-  style.textContent = `
-    @media (hover:none) and (pointer:coarse) {
-      .home-swipe-track {
-        touch-action: pan-y !important;
-        -webkit-overflow-scrolling: touch !important;
-      }
-      button, a, [data-action] {
-        touch-action: manipulation !important;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-})();
-</script>
-
 </body>
 </html>
