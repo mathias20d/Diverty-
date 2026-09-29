@@ -811,6 +811,185 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 }
 </style>
 
+
+<style id="diverty-home-premium-v2">
+/* V2 — Cambio visual fuerte, sin alterar contenido ni lógica */
+@media (max-width: 767px) {
+  body { background-attachment: fixed; }
+  #mainContent { overflow-x: clip; }
+
+  /* HERO: ocupa menos pantalla y concentra la acción */
+  #hero-section-identifier > .relative > section {
+    min-height: 66svh !important;
+    padding-top: 7.2rem !important;
+    padding-bottom: 2rem !important;
+    border-radius: 0 0 32px 32px;
+    box-shadow: 0 18px 45px rgba(15,23,42,.18);
+  }
+  #hero-section-identifier > .relative > section::after {
+    content:"";
+    position:absolute; inset:0; z-index:2; pointer-events:none;
+    background:linear-gradient(180deg,rgba(2,6,23,.06) 10%,rgba(2,6,23,.14) 40%,rgba(2,6,23,.78) 100%);
+  }
+  #hero-section-identifier .hero-content {
+    z-index:4 !important;
+    padding: 0 1.1rem !important;
+    max-width: 36rem !important;
+  }
+  #hero-section-identifier .hero-content h1 {
+    font-size: clamp(2.05rem,9.8vw,2.85rem)!important;
+    line-height:1.01!important;
+    letter-spacing:-.045em!important;
+    margin-bottom:.85rem!important;
+  }
+  #hero-section-identifier .hero-content p {
+    margin-bottom:1rem!important;
+    font-size:.93rem!important;
+  }
+  #hero-section-identifier .hero-content > div.flex.justify-between {
+    border:1px solid rgba(255,255,255,.18)!important;
+    background:rgba(15,23,42,.28);
+    border-radius:18px;
+    padding:.8rem!important;
+    margin-bottom:1rem!important;
+  }
+  #hero-section-identifier .hero-content > div.flex.flex-col.gap-3 {
+    display:grid!important;
+    grid-template-columns:1fr 1fr;
+    gap:.65rem!important;
+    margin-bottom:.2rem!important;
+  }
+  #hero-section-identifier .hero-content > div.flex.flex-col.gap-3 button {
+    min-height:48px!important;
+    padding:.65rem .5rem!important;
+    font-size:.86rem!important;
+    border-radius:15px!important;
+  }
+
+  /* Secciones flotantes: sensación de app */
+  #home-campaigns-wrapper,
+  #home-featured-wrapper,
+  #home-reviews-wrapper {
+    position:relative;
+  }
+  #home-campaigns-wrapper {
+    margin-top:-.15rem!important;
+    padding-top:1rem;
+  }
+  #home-featured-wrapper {
+    width:calc(100% - 1rem)!important;
+    margin:.35rem auto 0!important;
+    padding:1.05rem .25rem .15rem!important;
+    border-radius:28px;
+    background:color-mix(in srgb,var(--s-glass-bg) 86%,white 14%);
+    border:1px solid var(--s-glass-border);
+    box-shadow:0 18px 45px rgba(15,23,42,.08);
+  }
+
+  /* Títulos ya existentes: más jerarquía, sin agregar palabras */
+  #home-campaigns-wrapper h2,
+  #home-campaigns-wrapper h3,
+  #home-featured-wrapper h2,
+  #home-featured-wrapper h3,
+  #home-reviews-wrapper h2,
+  #home-reviews-wrapper h3 {
+    letter-spacing:-.035em!important;
+    font-weight:900!important;
+  }
+
+  /* Carrusel: deja asomar la siguiente tarjeta */
+  #home-campaigns-wrapper .home-swipe-track,
+  #home-featured-wrapper .home-swipe-track,
+  #home-campaigns-wrapper .overflow-x-auto,
+  #home-featured-wrapper .overflow-x-auto {
+    gap:.75rem!important;
+    padding-left:.8rem!important;
+    padding-right:2.25rem!important;
+    scroll-padding-left:.8rem!important;
+  }
+  #home-campaigns-wrapper .home-swipe-item,
+  #home-featured-wrapper .home-swipe-item {
+    width:82vw!important;
+    max-width:335px!important;
+    flex:0 0 82vw!important;
+  }
+
+  /* Cards: borde, imagen y CTA mucho más marcados */
+  #home-campaigns-wrapper .card-alive,
+  #home-featured-wrapper .card-alive {
+    border-radius:24px!important;
+    border:1px solid rgba(148,163,184,.22)!important;
+    background:var(--s-glass-bg)!important;
+    box-shadow:0 16px 38px rgba(15,23,42,.13)!important;
+  }
+  #home-campaigns-wrapper .card-alive img,
+  #home-featured-wrapper .card-alive img {
+    min-height:190px;
+    max-height:225px;
+    width:100%;
+    object-fit:cover;
+  }
+  #home-campaigns-wrapper .card-alive button,
+  #home-featured-wrapper .card-alive button,
+  #home-campaigns-wrapper [data-action="add-to-cart"],
+  #home-featured-wrapper [data-action="add-to-cart"] {
+    min-height:48px!important;
+    border-radius:15px!important;
+    box-shadow:0 8px 18px color-mix(in srgb,var(--s-primary) 24%,transparent)!important;
+  }
+
+  /* Calendario como bloque destacado */
+  #calendar-section {
+    width:calc(100% - 1rem);
+    margin:1rem auto!important;
+    padding:.9rem 0!important;
+    border-radius:30px;
+    background:linear-gradient(145deg,
+      color-mix(in srgb,var(--s-primary) 7%,var(--s-glass-bg)),
+      var(--s-glass-bg));
+    border:1px solid var(--s-glass-border);
+    box-shadow:0 18px 44px rgba(15,23,42,.08);
+  }
+  #calendar-section > div { max-width:365px!important; }
+  #calendar-card-inner {
+    border-radius:24px!important;
+    border:1px solid color-mix(in srgb,var(--s-primary) 16%,var(--s-glass-border))!important;
+    box-shadow:0 12px 28px rgba(15,23,42,.08)!important;
+  }
+
+  /* Reseñas */
+  #home-reviews-wrapper {
+    width:calc(100% - 1rem);
+    margin:0 auto 1rem;
+  }
+  #home-reviews-wrapper .card-alive,
+  #home-reviews-wrapper .glass-panel {
+    border-radius:24px!important;
+    border:1px solid var(--s-glass-border)!important;
+    box-shadow:0 14px 34px rgba(15,23,42,.09)!important;
+  }
+
+  /* Header más tipo app */
+  #mainHeader {
+    margin:.45rem .5rem 0!important;
+    width:calc(100% - 1rem)!important;
+    border-radius:20px!important;
+    border:1px solid rgba(255,255,255,.15)!important;
+    box-shadow:0 10px 28px rgba(15,23,42,.12)!important;
+  }
+}
+
+@media (min-width:768px) {
+  #hero-section-identifier > .relative > section {
+    border-radius:0 0 38px 38px;
+    overflow:hidden;
+  }
+  #home-featured-wrapper {
+    border-radius:30px;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
