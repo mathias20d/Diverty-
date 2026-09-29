@@ -616,6 +616,58 @@ body.cart-open #mainContent [data-cart-state="selected"]{visibility:hidden!impor
   #cartModal .cart-item-name{font-size:13px!important;}
 }
 </style>
+
+<style id="diverty-cart-final-polish">
+/* Carrito final: capas, cierre y estado vacío */
+#cartModal{z-index:2147483640!important;isolation:isolate!important;}
+#cartModal .modal-content{z-index:2!important;isolation:isolate!important;overflow:hidden!important;}
+body.cart-open [data-action="add-to-cart"],
+body.cart-open [data-action="add-hourly-to-cart"],
+body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-events:none!important;}
+
+#cartModal .cart-header-actions{
+  display:flex!important;flex-direction:row!important;align-items:center!important;
+  justify-content:flex-end!important;gap:8px!important;flex-shrink:0!important;
+}
+#cartModal .cart-close-always{
+  width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  border-radius:999px!important;background:#f8fafc!important;color:#334155!important;
+  border:1px solid #e2e8f0!important;box-shadow:0 3px 10px rgba(15,23,42,.07)!important;
+  line-height:1!important;appearance:none!important;-webkit-appearance:none!important;
+}
+#cartModal .cart-close-always svg{width:19px!important;height:19px!important;display:block!important;}
+#cartModal #emptyCartBtn{
+  width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  border-radius:999px!important;
+}
+
+#cartModal .cart-empty-state{
+  min-height:330px!important;padding:34px 22px 30px!important;
+  display:flex!important;flex-direction:column!important;align-items:center!important;
+  justify-content:center!important;text-align:center!important;background:#f8fafc!important;
+}
+#cartModal .cart-empty-state h3{font-size:24px!important;line-height:1.15!important;color:#172033!important;margin-bottom:10px!important;}
+#cartModal .cart-empty-state p{font-size:14px!important;line-height:1.55!important;color:#64748b!important;margin-bottom:22px!important;}
+#cartModal .cart-empty-action{
+  width:min(100%,300px)!important;min-height:52px!important;padding:14px 20px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:9px!important;
+  border:0!important;border-radius:16px!important;
+  background:linear-gradient(135deg,#f97316 0%,#e11d48 52%,#7e22ce 100%)!important;
+  color:#fff!important;font-size:15px!important;font-weight:800!important;letter-spacing:.01em!important;
+  box-shadow:0 10px 24px rgba(225,29,72,.22)!important;appearance:none!important;-webkit-appearance:none!important;
+}
+#cartModal .cart-empty-action svg{width:18px!important;height:18px!important;}
+
+@media(max-width:480px){
+  #cartModal .cart-header{padding:15px 16px 13px!important;}
+  #cartModal .cart-title{font-size:19px!important;}
+  #cartModal .cart-close-always,#cartModal #emptyCartBtn{width:38px!important;height:38px!important;min-width:38px!important;}
+  #cartModal .cart-empty-state{min-height:300px!important;padding:28px 20px!important;}
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
