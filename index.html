@@ -461,6 +461,47 @@ body[data-theme="school"] #mainHeader{background:linear-gradient(180deg,#fffdf8f
 @media(prefers-reduced-motion:reduce){.hw-fog,.su-bubbles{animation:none!important}}
 </style>
 
+
+<style>
+/* ===== DIVERTY TEMAS MAGICOS LITE — performance layer ===== */
+/* Keep the visual identity while reducing continuous paint/compositing work. */
+#diverty-xmas-stage,#diverty-halloween-stage,#diverty-summer-stage,#diverty-school-stage{contain:layout paint style;transform:translateZ(0)}
+body[data-theme="christmas"] .xmas-snow{opacity:.34;animation-duration:24s;background-size:68px 68px,112px 112px}
+body[data-theme="christmas"] .xmas-bulb{animation-duration:3.4s;box-shadow:0 0 7px currentColor,0 0 15px rgba(255,190,65,.55)}
+body[data-theme="christmas"] #diverty-xmas-stage .xmas-top{filter:none;box-shadow:0 12px 22px rgba(0,0,0,.32)}
+body[data-theme="christmas"] .xmas-left,body[data-theme="christmas"] .xmas-right{filter:none}
+body[data-theme="christmas"] .glass-panel{box-shadow:0 16px 38px rgba(0,0,0,.38),0 0 0 2px rgba(13,76,50,.28),inset 0 1px rgba(255,255,255,.08)!important}
+body[data-theme="christmas"] .card-alive:after{filter:none}
+body[data-theme="christmas"] #home-featured-wrapper:before,body[data-theme="christmas"] #home-campaigns-wrapper:before{filter:none}
+body[data-theme="halloween"] .hw-fog{filter:blur(12px);animation-duration:16s;opacity:.72}
+body[data-theme="halloween"] .hw-branch{filter:none}
+body[data-theme="halloween"] .glass-panel{box-shadow:0 17px 42px rgba(0,0,0,.5),0 0 0 2px #6d28d916,inset 0 1px #ffffff10!important}
+body[data-theme="summer"] .su-bubbles{animation-duration:28s;opacity:.16;background-size:95px 115px,190px 215px}
+body[data-theme="summer"] .su-leaf,body[data-theme="summer"] .su-wave{filter:none}
+body[data-theme="summer"] .glass-panel{box-shadow:0 16px 38px #0284c71f,0 0 0 2px #ffffff6b,inset 0 1px #fff!important}
+body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2px #ffffffb8!important}
+/* Render long page sections only when they approach the viewport. */
+#home-campaigns-wrapper,#home-featured-wrapper,#calendar-section,#reviews-section,footer{content-visibility:auto;contain-intrinsic-size:1px 700px}
+@media(max-width:767px){
+  /* Mobile: decorative movement becomes mostly static. This saves battery/GPU while preserving the look. */
+  body[data-theme="christmas"] .xmas-snow,body[data-theme="christmas"] .xmas-bulb,body[data-theme="halloween"] .hw-fog,body[data-theme="summer"] .su-bubbles{animation:none!important}
+  body[data-theme="christmas"] .xmas-snow{opacity:.25;background-size:82px 82px,137px 137px}
+  body[data-theme="christmas"] .xmas-bulb{box-shadow:0 0 7px currentColor,0 0 12px rgba(255,190,65,.48)}
+  body[data-theme="christmas"] .xmas-left,body[data-theme="christmas"] .xmas-right{opacity:.52}
+  body[data-theme="christmas"] .glass-panel{box-shadow:0 12px 28px rgba(0,0,0,.34),0 0 0 1px rgba(246,207,105,.22)!important}
+  body[data-theme="halloween"] .hw-fog{filter:blur(8px);opacity:.48;transform:none!important}
+  body[data-theme="halloween"] .hw-web{opacity:.18}
+  body[data-theme="halloween"] .glass-panel{box-shadow:0 12px 28px rgba(0,0,0,.42),0 0 0 1px #f9731626!important}
+  body[data-theme="summer"] .su-bubbles{opacity:.12}
+  body[data-theme="summer"] .glass-panel{box-shadow:0 12px 27px #0284c71a,0 0 0 1px #ffffff75!important}
+  body[data-theme="school"] .glass-panel{box-shadow:0 12px 27px #1e3a8a14,0 0 0 1px #ffffffb0!important}
+  .glass-panel{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  #diverty-xmas-stage *,#diverty-halloween-stage *,#diverty-summer-stage *,#diverty-school-stage *{animation:none!important;transition:none!important}
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
 
