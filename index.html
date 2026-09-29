@@ -668,6 +668,31 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 }
 </style>
 
+
+<style id="diverty-home-swipe-fix">
+/* Carruseles táctiles del inicio: campañas y paquetes destacados */
+.home-swipe-track{
+  display:flex; overflow-x:auto; overflow-y:visible; gap:16px; width:100%;
+  scroll-snap-type:x mandatory; scroll-behavior:smooth; -webkit-overflow-scrolling:touch;
+  overscroll-behavior-x:contain; touch-action:pan-x pan-y; scrollbar-width:none;
+  padding:12px 18px 26px; scroll-padding-inline:18px;
+}
+.home-swipe-track::-webkit-scrollbar{display:none}
+.home-swipe-item{flex:0 0 min(86vw,380px); width:min(86vw,380px); scroll-snap-align:center; scroll-snap-stop:always}
+@media (max-width:767px){
+  #home-featured-wrapper{overflow:visible!important}
+  #home-featured-wrapper .home-swipe-track{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw}
+  #home-campaigns-wrapper .home-swipe-track{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw}
+  .home-swipe-track > .card-safe-wrapper{position:relative;flex:0 0 min(86vw,380px)!important;width:min(86vw,380px)!important;min-width:0!important;scroll-snap-align:center;scroll-snap-stop:always;margin-top:24px}
+}
+@media (min-width:768px){
+  .home-swipe-track.home-featured-track{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;padding-left:0;padding-right:0}
+  .home-swipe-track.home-featured-track > *{width:100%!important;max-width:none!important;min-width:0!important}
+  .home-swipe-track.home-campaign-track{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;padding-left:0;padding-right:0}
+  .home-swipe-track.home-campaign-track > *{width:100%!important;max-width:none!important;min-width:0!important}
+}
+@media (min-width:1024px){.home-swipe-track.home-campaign-track{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -1339,7 +1364,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 
             if (destacada) html += renderCamp(destacada, true);
             if (regulares.length > 0) {
-                html += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">`;
+                if (regulares.length > 1) html += `<div class="flex md:hidden justify-center mb-1 opacity-80 w-full"><span class="text-[10px] season-text-muted font-bold uppercase tracking-widest border border-[var(--s-glass-border)] bg-black/5 px-3 py-1 rounded-full shadow-sm">Desliza 👉</span></div>`;
+                html += `<div class="home-swipe-track home-campaign-track">`;
                 regulares.forEach(camp => { html += renderCamp(camp, false); });
                 html += `</div>`;
             }
@@ -1405,7 +1431,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
                     const destacados = app.catalog.filter(i => i.destacado === true); 
                     if(destacados.length > 0) {
                         eh += destacados.map(createDetailedCardHTML).join(''); 
-                        ex = `<div class="flex md:hidden justify-center mb-1 opacity-80 animate-slide-up w-full"><span class="text-[10px] season-text-muted font-bold uppercase tracking-widest mr-3 border border-[var(--s-glass-border)] bg-black/5 px-3 py-1 rounded-full shadow-sm">Desliza 👉</span></div><div class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 w-full hide-scrollbar pt-10 px-4">${eh}</div>`;
+                        ex = `${destacados.length > 1 ? `<div class="flex md:hidden justify-center mb-1 opacity-80 animate-slide-up w-full"><span class="text-[10px] season-text-muted font-bold uppercase tracking-widest border border-[var(--s-glass-border)] bg-black/5 px-3 py-1 rounded-full shadow-sm">Desliza 👉</span></div>` : ''}<div class="home-swipe-track home-featured-track pt-10">${eh}</div>`;
                     } else {
                         ex = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="sparkles" class="w-10 h-10 mx-auto mb-3 opacity-50 season-text-primary"></i><p class="text-sm font-bold season-text-muted">Nuevos paquetes espectaculares próximamente.</p></div>`;
                     }
@@ -2177,6 +2203,10 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 <script>
 // Seguro: nunca dejar la interfaz bloqueada por una conexión lenta.
 setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, 4500);
+</script>
+
+<script id="diverty-home-swipe-guard">
+document.addEventListener('dragstart', function(e){ if(e.target.closest && e.target.closest('.home-swipe-track')) e.preventDefault(); }, {passive:false});
 </script>
 </body>
 </html>
