@@ -386,7 +386,69 @@
           body[data-theme="summer"] #decor-layer::before{top:14vh;right:1vw;opacity:.38}
         }
 
-    </style>
+    
+
+/* =========================================================
+   CARRITO PREMIUM COMPACTO — AISLADO DE TEMAS ESTACIONALES
+   ========================================================= */
+#cartModal{background:rgba(3,10,18,.64)!important;}
+#cartModal .modal-content{
+  background:#f8fafc!important;color:#172033!important;
+  height:auto!important;max-height:min(90dvh,760px)!important;
+  border:none!important;border-radius:30px 30px 0 0!important;
+  box-shadow:0 -12px 45px rgba(0,0,0,.24)!important;
+}
+#cartModal .modal-content::before,#cartModal .modal-content::after,
+#cartModal .cart-item-card::before,#cartModal .cart-item-card::after{content:none!important;display:none!important;}
+#cartModal .cart-header{padding:16px 18px 13px!important;background:#fff!important;border-bottom:1px solid #e8edf3!important;}
+#cartModal .cart-title{color:#172033!important;font-size:18px!important;line-height:1.2!important;}
+#cartModal .cart-title svg{color:#e11d48!important;}
+#cartModal #emptyCartBtn{background:#fff1f2!important;color:#e11d48!important;border:1px solid #ffe4e6!important;box-shadow:none!important;}
+#cartModal #cartItems{
+  flex:0 1 auto!important;min-height:0!important;max-height:34dvh!important;
+  overflow-y:auto!important;padding:14px 16px 10px!important;background:#f8fafc!important;
+}
+#cartModal .cart-item-card{
+  display:grid!important;grid-template-columns:64px minmax(0,1fr) 36px!important;
+  align-items:center!important;gap:12px!important;width:100%!important;
+  padding:12px!important;margin:0 0 10px!important;background:#fff!important;
+  border:1px solid #e7ebf0!important;border-radius:18px!important;
+  box-shadow:0 5px 16px rgba(15,23,42,.055)!important;overflow:hidden!important;
+}
+#cartModal .cart-item-image{width:64px!important;height:64px!important;border-radius:14px!important;object-fit:cover!important;}
+#cartModal .cart-item-info{min-width:0!important;padding:0!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;}
+#cartModal .cart-item-name{
+  display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;
+  overflow:hidden!important;width:100%!important;color:#172033!important;font-size:14px!important;
+  font-weight:800!important;line-height:1.2!important;margin:0 0 5px!important;white-space:normal!important;
+}
+#cartModal .cart-item-qty{color:#7b8798!important;font-size:10px!important;font-weight:800!important;letter-spacing:.08em!important;margin-bottom:4px!important;}
+#cartModal .cart-item-price{color:#d51f35!important;font-size:16px!important;font-weight:900!important;line-height:1!important;}
+#cartModal .cart-remove{width:34px!important;height:34px!important;background:#fff1f2!important;color:#e11d48!important;border:1px solid #ffe4e6!important;box-shadow:none!important;}
+#cartModal #cartTotalsFooter{
+  padding:13px 16px calc(14px + env(safe-area-inset-bottom))!important;background:#fff!important;
+  color:#172033!important;border-top:1px solid #e8edf3!important;border-radius:0!important;
+  box-shadow:0 -8px 24px rgba(15,23,42,.055)!important;
+}
+#cartModal #cartTotalsFooter label,#cartModal #cartTotalsFooter .season-text-muted{color:#7b8798!important;}
+#cartModal #cartLocation{background:#f7f8fa!important;border:1px solid #e4e8ed!important;color:#263244!important;box-shadow:none!important;}
+#cartModal #cartTotalsFooter>div:nth-child(2){background:#f7f8fa!important;border:1px solid #e4e8ed!important;box-shadow:none!important;padding:12px 14px!important;margin-bottom:12px!important;gap:6px!important;}
+#cartModal #cartTotal,#cartModal #transportCost{color:#263244!important;}
+#cartModal #finalTotal{color:#0da777!important;font-size:25px!important;}
+#cartModal #cartTotalsFooter .season-text-title{color:#263244!important;}
+#cartModal button[data-action="close-modal"]{background:#f2f4f7!important;color:#374151!important;border:1px solid #e1e5ea!important;box-shadow:none!important;}
+#cartModal button[data-action="navigate-from-modal"]{min-width:0!important;padding-left:14px!important;padding-right:14px!important;white-space:nowrap!important;}
+@media(max-width:380px){
+  #cartModal .cart-item-card{grid-template-columns:56px minmax(0,1fr) 32px!important;gap:9px!important;padding:10px!important;}
+  #cartModal .cart-item-image{width:56px!important;height:56px!important;}
+  #cartModal button[data-action="navigate-from-modal"]{font-size:11px!important;gap:5px!important;}
+}
+@media(min-width:768px){
+  #cartModal .modal-content{height:auto!important;max-height:92vh!important;border-radius:28px!important;}
+  #cartModal #cartItems{max-height:46vh!important;}
+  #cartModal #cartTotalsFooter{border-radius:0 0 28px 28px!important;}
+}
+</style>
 <style>
 /* ===== DIVERTY NAVIDAD MAGICA V2 — visual-only layer ===== */
 body[data-theme="christmas"]{--xmas-gold:#f6cf69;--xmas-red:#c91522;--xmas-green:#063d29;--xmas-deep:#021c13;background:#031b13!important;}
@@ -618,8 +680,8 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
     <div id="cartModal" class="modal-backdrop z-[1060]">
         <div class="modal-content border shadow-[0_0_50px_rgba(0,0,0,0.15)] flex flex-col">
             <!-- Header Cart -->
-            <div class="shrink-0 p-5 sm:p-6 pb-4 relative z-10 flex justify-between items-center border-b border-black/5 bg-white rounded-t-[32px] md:rounded-t-[28px]">
-                <h2 class="text-xl sm:text-2xl font-black flex items-center gap-2 season-text-title font-nunito tracking-tight">
+            <div class="cart-header shrink-0 p-5 sm:p-6 pb-4 relative z-10 flex justify-between items-center border-b border-black/5 bg-white rounded-t-[32px] md:rounded-t-[28px]">
+                <h2 class="cart-title text-xl sm:text-2xl font-black flex items-center gap-2 font-nunito tracking-tight">
                     <svg class="w-6 h-6 season-text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                     Tu Carrito
                 </h2>
@@ -1520,16 +1582,16 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
             }
             else {
                 cie.innerHTML='<div class="space-y-3 pt-2 pb-4">'+app.cart.map(i=>`
-                    <div class="bg-white p-3 rounded-2xl border border-black/5 shadow-sm flex justify-between items-center group relative overflow-hidden">
-                        <div class="flex items-center gap-3 overflow-hidden flex-1 z-10">
-                            <img src="${cleanStr(i.image)}" class="w-14 h-14 object-cover rounded-xl shrink-0 shadow-sm border border-black/5">
-                            <div class="flex flex-col flex-1 min-w-0 pr-2">
-                                <span class="font-black season-text-title text-[13px] leading-tight truncate mb-0.5">${cleanStr(i.name)}</span>
-                                <span class="season-text-muted font-bold text-[10px] uppercase tracking-wider mb-1">Cant: ${i.quantity}</span>
-                                <span class="font-black text-[var(--s-primary)] text-sm">$${(Number(i.price)*i.quantity).toFixed(2)}</span>
+                    <div class="cart-item-card group relative">
+                        <div class="contents">
+                            <img src="${cleanStr(i.image)}" class="cart-item-image">
+                            <div class="cart-item-info">
+                                <span class="cart-item-name">${cleanStr(i.name)}</span>
+                                <span class="cart-item-qty">Cant: ${i.quantity}</span>
+                                <span class="cart-item-price">$${(Number(i.price)*i.quantity).toFixed(2)}</span>
                             </div>
                         </div>
-                        <button data-action="remove-from-cart" data-item-id="${i.id}" class="w-8 h-8 shrink-0 bg-rose-50 hover:bg-rose-100 rounded-full flex items-center justify-center active:scale-90 text-rose-500 transition-transform z-10 shadow-sm border border-rose-100" aria-label="Eliminar">
+                        <button data-action="remove-from-cart" data-item-id="${i.id}" class="cart-remove rounded-full flex items-center justify-center active:scale-90 transition-transform" aria-label="Eliminar">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                         </button>
                     </div>`).join('')+'</div>';
