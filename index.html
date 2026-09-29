@@ -1221,6 +1221,111 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 }
 </style>
 
+
+<style id="diverty-premium-v5-header-menu">
+/* V5 — Header + menú móvil. Solo presentación; navegación y JS intactos. */
+@media (max-width:767px){
+  /* Contenedor superior flotante */
+  #headerWrapper {
+    padding:.45rem .55rem 0!important;
+    pointer-events:none;
+  }
+  #mainHeader {
+    pointer-events:auto;
+    margin:0!important;
+    width:100%!important;
+    min-height:76px;
+    border-radius:22px!important;
+    background:color-mix(in srgb,var(--s-glass-bg) 91%,white 9%)!important;
+    border:1px solid color-mix(in srgb,var(--s-glass-border) 70%,white 30%)!important;
+    box-shadow:0 12px 34px rgba(15,23,42,.14)!important;
+    overflow:hidden;
+  }
+  #headerWrapper.scrolled #mainHeader {
+    min-height:66px;
+    border-radius:19px!important;
+    box-shadow:0 10px 28px rgba(15,23,42,.16)!important;
+  }
+
+  /* Marca: misma información, mejor proporción */
+  #mainHeader img {
+    flex:0 0 auto;
+    object-fit:cover;
+    box-shadow:0 5px 15px rgba(15,23,42,.12);
+  }
+  #mainHeader .font-nunito,
+  #mainHeader .font-poppins {
+    letter-spacing:-.025em;
+  }
+
+  /* Acciones del header */
+  #viewCart,
+  #mobileToggle {
+    min-width:46px;
+    min-height:46px;
+    border-radius:15px!important;
+    transition:transform .16s ease,box-shadow .16s ease,background .16s ease!important;
+  }
+  #viewCart:active,
+  #mobileToggle:active { transform:scale(.96); }
+
+  /* Menú lateral: panel más premium sin cambiar opciones */
+  #mobileMenu {
+    width:min(88vw,360px)!important;
+    border-radius:28px 0 0 28px!important;
+    border-left:1px solid var(--s-glass-border)!important;
+    box-shadow:-22px 0 55px rgba(15,23,42,.24)!important;
+    padding-bottom:max(1rem,env(safe-area-inset-bottom))!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain;
+  }
+  #mobileMenuOverlay {
+    background:rgba(2,6,23,.52)!important;
+  }
+
+  /* Enlaces existentes del menú */
+  #mobileMenu .nav-action {
+    min-height:50px;
+    border-radius:15px!important;
+    margin-bottom:.35rem;
+    padding:.7rem .85rem!important;
+    font-weight:800!important;
+    transition:transform .16s ease,background .16s ease!important;
+  }
+  #mobileMenu .nav-action:active {
+    transform:scale(.985);
+  }
+  #mobileMenu .nav-action i,
+  #mobileMenu .nav-action svg {
+    flex:0 0 auto;
+  }
+
+  /* Botón cerrar */
+  #closeMobile {
+    width:44px!important;
+    height:44px!important;
+    border-radius:14px!important;
+  }
+
+  /* Evita que el header tape anclas visualmente */
+  #mainContent section,
+  #mainContent [id] {
+    scroll-margin-top:90px;
+  }
+}
+
+@media (min-width:768px){
+  #mainHeader {
+    border-radius:20px!important;
+    border:1px solid var(--s-glass-border)!important;
+    box-shadow:0 10px 30px rgba(15,23,42,.09)!important;
+  }
+  #headerWrapper.scrolled #mainHeader {
+    box-shadow:0 12px 34px rgba(15,23,42,.12)!important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
