@@ -504,6 +504,16 @@
                     <div><label class="saas-label">Fecha Inicio (Programado)</label><input type="date" id="thmStart" class="saas-input bg-slate-900 text-slate-300"></div>
                     <div><label class="saas-label">Fecha Fin (Programado)</label><input type="date" id="thmEnd" class="saas-input bg-slate-900 text-slate-300"></div>
                 </div>
+
+                <div class="bg-blue-500/10 border border-blue-400/20 rounded-2xl p-4 flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-sm font-black text-white">Colores originales del tema</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Restaura la paleta recomendada si cambiaste los colores y no recuerdas cuáles eran.</p>
+                    </div>
+                    <button type="button" onclick="window.restoreThemeColors()" class="shrink-0 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black px-4 py-3 rounded-xl transition-colors flex items-center gap-2">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Restaurar colores
+                    </button>
+                </div>
                 <h4 class="text-sm font-bold text-white pt-2">🎨 Paleta de Colores</h4>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                     <div><label class="saas-label">Principal</label><div class="flex gap-2"><input type="color" id="thmColPrimaryPicker" class="w-10 h-10 rounded-lg cursor-pointer bg-slate-900 border border-slate-700 shrink-0 p-0.5"><input type="text" id="thmColPrimary" class="saas-input bg-slate-900 flex-1 px-2 text-xs"></div></div>
@@ -1292,6 +1302,42 @@
             ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => { document.getElementById(`thmCol${t}`).value = defaultColors[t]; document.getElementById(`thmCol${t}Picker`).value = defaultColors[t]; });
             lucide.createIcons(); document.getElementById('themeModal').classList.add('show'); 
         };
+
+        const DIVERTY_THEME_DEFAULT_COLORS = {
+            normal: { Primary:'#7C3AED', Secondary:'#E11D48', Button:'#7C3AED', Text:'#0F172A', Bg:'#F8FAFC', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #7C3AED, #E11D48)' },
+            christmas: { Primary:'#2563EB', Secondary:'#94A3B8', Button:'#2563EB', Text:'#F8FAFC', Bg:'#061426', Card:'#091E3A', gradient:'linear-gradient(135deg, #2563EB, #94A3B8)' },
+            halloween: { Primary:'#F97316', Secondary:'#7E22CE', Button:'#EA580C', Text:'#F8FAFC', Bg:'#09070D', Card:'#17111F', gradient:'linear-gradient(135deg, #EA580C, #7E22CE)' },
+            summer: { Primary:'#0284C7', Secondary:'#EA580C', Button:'#0284C7', Text:'#082F49', Bg:'#F0F9FF', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #0284C7, #EA580C)' },
+            school: { Primary:'#2563EB', Secondary:'#EA580C', Button:'#2563EB', Text:'#1E3A8A', Bg:'#F8FAFC', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #2563EB, #EA580C)' }
+        };
+
+        window.restoreThemeColors = function() {
+            const name = (document.getElementById('thmName')?.value || '').toLowerCase();
+            const desc = (document.getElementById('thmDesc')?.value || '').toLowerCase();
+            const hay = name + ' ' + desc;
+            let key = 'normal';
+            if (hay.includes('navidad') || hay.includes('christmas') || hay.includes('santa')) key = 'christmas';
+            else if (hay.includes('halloween') || hay.includes('miedo')) key = 'halloween';
+            else if (hay.includes('verano') || hay.includes('summer')) key = 'summer';
+            else if (hay.includes('escolar') || hay.includes('escuela') || hay.includes('school')) key = 'school';
+
+            const p = DIVERTY_THEME_DEFAULT_COLORS[key];
+            ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => {
+                const txt = document.getElementById(`thmCol${t}`);
+                const picker = document.getElementById(`thmCol${t}Picker`);
+                if (txt) txt.value = p[t];
+                if (picker) picker.value = p[t];
+            });
+            const grad = document.getElementById('thmGradient');
+            if (grad) grad.value = p.gradient;
+            if (key === 'christmas') {
+                const dec = document.getElementById('thmDecorations');
+                if (dec) dec.value = 'snow';
+            }
+            showToast(key === 'christmas' ? 'Paleta Navidad azul y plateado restaurada' : 'Colores originales restaurados', 'success');
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        };
+
         window.closeThemeModal = () => document.getElementById('themeModal').classList.remove('show');
         
         window.editTheme = function(id) { 
