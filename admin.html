@@ -78,7 +78,7 @@
 
         /* === DIVERTY MASTER: EXPERIENCIA PREMIUM DE TEMPORADAS === */
         .theme-preset-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-        @media(min-width:640px){ .theme-preset-grid{grid-template-columns:repeat(4,minmax(0,1fr));} }
+        @media(min-width:640px){ .theme-preset-grid{grid-template-columns:repeat(5,minmax(0,1fr));} }
         .theme-preset { position:relative; min-height:92px; border-radius:16px; overflow:hidden; border:1px solid #334155; padding:12px; text-align:left; transition:.2s ease; isolation:isolate; }
         .theme-preset:hover { transform:translateY(-2px); border-color:#64748b; }
         .theme-preset.active { outline:2px solid #f59e0b; outline-offset:2px; }
@@ -88,6 +88,7 @@
         .preset-christmas::before{background:radial-gradient(circle at 80% 20%,#f6d365 0 3%,transparent 4%),linear-gradient(135deg,#052e26,#14532d 48%,#7f1d1d)}
         .preset-halloween::before{background:radial-gradient(circle at 80% 22%,#fb923c 0 8%,transparent 9%),linear-gradient(135deg,#09090b,#2e1065 55%,#7c2d12)}
         .preset-summer::before{background:linear-gradient(155deg,#0284c7,#06b6d4 50%,#f59e0b)}
+        .preset-school::before{background:linear-gradient(145deg,#2563eb,#7c3aed 48%,#f97316)}
         .theme-live-preview { min-height:260px; border-radius:24px; overflow:hidden; position:relative; border:1px solid rgba(255,255,255,.12); box-shadow:0 24px 60px rgba(0,0,0,.35); transition:.25s ease; }
         .theme-live-preview::before { content:''; position:absolute; inset:0; background:linear-gradient(to top,rgba(0,0,0,.58),rgba(0,0,0,.08)); }
         .theme-preview-card { position:absolute; left:16px; right:16px; bottom:16px; padding:16px; border-radius:18px; backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.18); box-shadow:0 12px 35px rgba(0,0,0,.25); }
@@ -521,6 +522,7 @@
                         <button type="button" class="theme-preset preset-christmas" data-theme-preset="christmas"><span class="block text-xl mb-2">🎄</span><strong class="text-xs text-white">Navidad</strong><small class="block text-[9px] text-white/70 mt-1">Pino · vino · dorado</small></button>
                         <button type="button" class="theme-preset preset-halloween" data-theme-preset="halloween"><span class="block text-xl mb-2">🎃</span><strong class="text-xs text-white">Halloween</strong><small class="block text-[9px] text-white/70 mt-1">Noche · naranja · violeta</small></button>
                         <button type="button" class="theme-preset preset-summer" data-theme-preset="summer"><span class="block text-xl mb-2">☀️</span><strong class="text-xs text-white">Verano</strong><small class="block text-[9px] text-white/70 mt-1">Mar · cielo · sol</small></button>
+                        <button type="button" class="theme-preset preset-school" data-theme-preset="school"><span class="block text-xl mb-2">🎒</span><strong class="text-xs text-white">Escolar</strong><small class="block text-[9px] text-white/70 mt-1">Aula · color · energía</small></button>
                     </div>
                 </div>
                 <div class="theme-live-preview" id="themeLivePreview">
@@ -1303,7 +1305,8 @@
             normal: { nombre:'Tema Normal', descripcion:'Diseño por defecto', Primary:'#7C3AED', Secondary:'#E11D48', Button:'#7C3AED', Text:'#0F172A', Bg:'#F8FAFC', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #7C3AED, #E11D48)', decorations:'none', emoji:'✨' },
             christmas: { nombre:'Navidad', descripcion:'Temporada navideña elegante y festiva', Primary:'#B91C1C', Secondary:'#166534', Button:'#B91C1C', Text:'#FFFFFF', Bg:'#071A14', Card:'#102A20', gradient:'linear-gradient(135deg, #B91C1C, #166534)', decorations:'snow', emoji:'🎄' },
             halloween: { nombre:'Halloween', descripcion:'Temporada Halloween nocturna y premium', Primary:'#F97316', Secondary:'#7E22CE', Button:'#EA580C', Text:'#F8FAFC', Bg:'#09070D', Card:'#17111F', gradient:'linear-gradient(135deg, #EA580C, #7E22CE)', decorations:'bats', emoji:'🎃' },
-            summer: { nombre:'Verano', descripcion:'Temporada fresca, luminosa y tropical', Primary:'#0284C7', Secondary:'#EA580C', Button:'#0284C7', Text:'#082F49', Bg:'#F0F9FF', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #0284C7, #EA580C)', decorations:'confetti', emoji:'☀️' }
+            summer: { nombre:'Verano', descripcion:'Temporada fresca, luminosa y tropical', Primary:'#0284C7', Secondary:'#EA580C', Button:'#0284C7', Text:'#082F49', Bg:'#F0F9FF', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #0284C7, #EA580C)', decorations:'confetti', emoji:'☀️' },
+            school: { nombre:'Escolar', descripcion:'Temporada escolar alegre, creativa y profesional', Primary:'#2563EB', Secondary:'#F97316', Button:'#7C3AED', Text:'#1E3A8A', Bg:'#F8FAFC', Card:'#FFFFFF', gradient:'linear-gradient(135deg, #2563EB, #7C3AED 55%, #F97316)', decorations:'none', emoji:'🎒' }
         };
         function setThemeFieldColor(key, value){ const txt=document.getElementById('thmCol'+key), picker=document.getElementById('thmCol'+key+'Picker'); if(txt)txt.value=value; if(picker)picker.value=value; }
         function applyThemePreset(key){ const p=THEME_PRESETS[key]; if(!p)return; document.getElementById('thmName').value=p.nombre; document.getElementById('thmDesc').value=p.descripcion; ['Primary','Secondary','Button','Text','Bg','Card'].forEach(k=>setThemeFieldColor(k,p[k])); document.getElementById('thmGradient').value=p.gradient; document.getElementById('thmDecorations').value=p.decorations; document.getElementById('thmAnimations').checked=true; document.querySelectorAll('[data-theme-preset]').forEach(b=>b.classList.toggle('active',b.dataset.themePreset===key)); updateThemeLivePreview(); }
