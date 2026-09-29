@@ -2255,6 +2255,67 @@ body[data-theme="christmas"] #home-campaigns-wrapper .season-btn{
 }
 </style>
 
+
+<style id="diverty-christmas-card-force-v2">
+/* Navidad azul/plata: fuerza la superficie de TODAS las tarjetas
+   de campañas, destacados y catálogo sin tocar su contenido. */
+body[data-theme="christmas"] .card-safe-wrapper > .glass-panel,
+body[data-theme="christmas"] #home-featured-wrapper .glass-panel.card-alive,
+body[data-theme="christmas"] #home-campaigns-wrapper .glass-panel,
+body[data-theme="christmas"] #mainContent .card-alive{
+  background:
+    radial-gradient(circle at 90% 5%,rgba(147,197,253,.13),transparent 27%),
+    linear-gradient(150deg,#0B2A52 0%,#071D3B 52%,#081629 100%)!important;
+  background-color:#071D3B!important;
+  border:1px solid rgba(203,213,225,.42)!important;
+  box-shadow:0 20px 48px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.09)!important;
+}
+
+/* Panel de características dentro de las tarjetas */
+body[data-theme="christmas"] .card-safe-wrapper .glass-panel .bg-black\/5,
+body[data-theme="christmas"] .card-safe-wrapper .glass-panel .bg-white\/5,
+body[data-theme="christmas"] .card-safe-wrapper .glass-panel [class*="border-"]{
+  border-color:rgba(203,213,225,.20)!important;
+}
+
+/* Neutraliza fondos rojos/rosados que puedan venir guardados en clases */
+body[data-theme="christmas"] .card-safe-wrapper > [class*="bg-red"],
+body[data-theme="christmas"] .card-safe-wrapper > [class*="bg-rose"],
+body[data-theme="christmas"] #home-featured-wrapper [class*="bg-red"],
+body[data-theme="christmas"] #home-featured-wrapper [class*="bg-rose"]{
+  background-color:#071D3B!important;
+  background-image:linear-gradient(150deg,#0B2A52,#071D3B 55%,#081629)!important;
+}
+
+/* Precio y títulos: blanco/hielo */
+body[data-theme="christmas"] .card-safe-wrapper h2,
+body[data-theme="christmas"] .card-safe-wrapper h3,
+body[data-theme="christmas"] .card-safe-wrapper .season-text-title{
+  color:#F8FAFC!important;
+}
+body[data-theme="christmas"] .card-safe-wrapper .season-text-primary,
+body[data-theme="christmas"] .card-safe-wrapper .season-gradient-text{
+  color:#DBEAFE!important;
+  background:none!important;
+  -webkit-text-fill-color:initial!important;
+}
+
+/* Botón conserva azul -> plata */
+body[data-theme="christmas"] .card-safe-wrapper .season-btn{
+  background:linear-gradient(105deg,#1D4ED8 0%,#2563EB 48%,#64748B 100%)!important;
+  border:1px solid rgba(226,232,240,.55)!important;
+  color:#fff!important;
+}
+
+/* Si una tarjeta trae background inline, la superficie principal sigue mandando */
+body[data-theme="christmas"] .card-safe-wrapper > .glass-panel[style],
+body[data-theme="christmas"] #home-featured-wrapper .glass-panel[style]{
+  background:
+    radial-gradient(circle at 90% 5%,rgba(147,197,253,.13),transparent 27%),
+    linear-gradient(150deg,#0B2A52 0%,#071D3B 52%,#081629 100%)!important;
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
