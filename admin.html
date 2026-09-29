@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -222,9 +223,14 @@
                             <h2 class="text-xl font-bold text-white mb-1">📅 Programación de Temporadas</h2>
                             <p class="text-sm text-slate-400">El sistema cambiará el diseño de tu web automáticamente.</p>
                         </div>
-                        <button onclick="window.openThemeModal()" class="bg-amber-600 hover:bg-amber-500 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-500/20 flex items-center gap-2">
-                            <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Crear Tema</span>
-                        </button>
+                        <div class="flex gap-2">
+                            <button onclick="window.restoreBaseThemes()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20 flex items-center gap-2" title="Recrear 5 temas premium">
+                                <i data-lucide="sparkles" class="w-4 h-4"></i> <span class="hidden sm:inline">Restaurar Base</span>
+                            </button>
+                            <button onclick="window.openThemeModal()" class="bg-amber-600 hover:bg-amber-500 text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-2.5 rounded-xl transition-colors shadow-lg shadow-amber-500/20 flex items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Crear Tema</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="bg-[#0F172A] p-5 rounded-2xl border border-slate-700 shadow-md mb-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 relative overflow-hidden">
@@ -491,14 +497,17 @@
             </div>
             <div class="p-6 overflow-y-auto space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="saas-label">Nombre del Tema</label><input type="text" id="thmName" class="saas-input bg-slate-900"></div>
+                    <div><label class="saas-label">Nombre del Tema</label><input type="text" id="thmName" class="saas-input bg-slate-900" placeholder="Ej: Tema Elegante"></div>
                     <div><label class="saas-label">Descripción</label><input type="text" id="thmDesc" class="saas-input bg-slate-900" placeholder="Ej: Especial de Octubre"></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4 border-b border-slate-800 pb-4">
                     <div><label class="saas-label">Fecha Inicio (Programado)</label><input type="date" id="thmStart" class="saas-input bg-slate-900 text-slate-300"></div>
                     <div><label class="saas-label">Fecha Fin (Programado)</label><input type="date" id="thmEnd" class="saas-input bg-slate-900 text-slate-300"></div>
                 </div>
-                <h4 class="text-sm font-bold text-white pt-2">🎨 Paleta de Colores</h4>
+                <div class="flex items-center justify-between pt-2">
+                    <h4 class="text-sm font-bold text-white">🎨 Paleta de Colores</h4>
+                    <button onclick="window.applyMagicPalette()" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg hover:opacity-90 transition-opacity flex items-center gap-1.5 shadow-lg shadow-purple-500/20" title="Autocompletar colores bonitos"><i data-lucide="wand-2" class="w-3 h-3"></i> Paleta Mágica</button>
+                </div>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                     <div><label class="saas-label">Principal</label><div class="flex gap-2"><input type="color" id="thmColPrimaryPicker" class="w-10 h-10 rounded-lg cursor-pointer bg-slate-900 border border-slate-700 shrink-0 p-0.5"><input type="text" id="thmColPrimary" class="saas-input bg-slate-900 flex-1 px-2 text-xs"></div></div>
                     <div><label class="saas-label">Secundario</label><div class="flex gap-2"><input type="color" id="thmColSecondaryPicker" class="w-10 h-10 rounded-lg cursor-pointer bg-slate-900 border border-slate-700 shrink-0 p-0.5"><input type="text" id="thmColSecondary" class="saas-input bg-slate-900 flex-1 px-2 text-xs"></div></div>
@@ -1211,14 +1220,70 @@
                 window.temasLocales = []; qSnap.forEach(d => window.temasLocales.push({id: d.id, ...d.data()}));
                 
                 if (window.temasLocales.length === 0) {
-                    const defaultTheme = { nombre: "Tema Normal", descripcion: "Diseño por defecto", colorPrimary: "#8B5CF6", colorSecondary: "#EC4899", colorButton: "#8B5CF6", colorText: "#1E293B", colorBg: "#FFFFFF", colorCard: "#F8FAFC", isDefault: true, activo: true };
-                    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web', 'tema_normal'), defaultTheme);
-                    window.temasLocales.push({id: 'tema_normal', ...defaultTheme});
+                    await window.createPremiumBaseThemes();
                 }
                 if(!silent) await evaluateAndApplyThemes();
             } catch(e) {}
         }
+
+        window.createPremiumBaseThemes = async function() {
+            const batch = writeBatch(db);
+            const premiumThemes = [
+                { id: 'tema_normal', nombre: 'Tema Normal Elegante', descripcion: 'Diseño limpio y premium', colorPrimary: '#7C3AED', colorSecondary: '#DB2777', colorButton: '#8B5CF6', colorText: '#0F172A', colorBg: '#F8FAFC', colorCard: 'rgba(255,255,255,0.85)', isDefault: true, activo: true, decorations: 'none', animations: true },
+                { id: 'tema_halloween', nombre: 'Especial Halloween', descripcion: 'Tonos oscuros y naranja', colorPrimary: '#F97316', colorSecondary: '#9333EA', colorButton: '#F97316', colorText: '#F8FAFC', colorBg: '#020617', colorCard: 'rgba(15,23,42,0.85)', isDefault: false, activo: false, decorations: 'bats', animations: true },
+                { id: 'tema_navidad', nombre: 'Magia de Navidad', descripcion: 'Rojo festivo y nieve', colorPrimary: '#EF4444', colorSecondary: '#10B981', colorButton: '#EF4444', colorText: '#0F172A', colorBg: '#FEF2F2', colorCard: 'rgba(255,255,255,0.9)', isDefault: false, activo: false, decorations: 'snow', animations: true },
+                { id: 'tema_verano', nombre: 'Verano Splash', descripcion: 'Refrescante y brillante', colorPrimary: '#06B6D4', colorSecondary: '#3B82F6', colorButton: '#06B6D4', colorText: '#082F49', colorBg: '#ECFEFF', colorCard: 'rgba(255,255,255,0.85)', isDefault: false, activo: false, decorations: 'none', animations: true },
+                { id: 'tema_escolar', nombre: 'Promoción Escolar', descripcion: 'Colores divertidos e infantiles', colorPrimary: '#3B82F6', colorSecondary: '#F59E0B', colorButton: '#3B82F6', colorText: '#1E3A8A', colorBg: '#EFF6FF', colorCard: 'rgba(255,255,255,0.9)', isDefault: false, activo: false, decorations: 'none', animations: true }
+            ];
+            
+            premiumThemes.forEach(t => {
+                batch.set(doc(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web', t.id), t);
+                window.temasLocales.push(t);
+            });
+            await batch.commit();
+        }
+
+        window.restoreBaseThemes = function() {
+            window.showConfirm("Restaurar Temas Base", "Esto borrará tus temas actuales y generará 5 temas premium con combinaciones de colores perfectas. ¿Continuar?", async () => {
+                showToast("Generando magia profesional...", "info");
+                const batch = writeBatch(db);
+                // Delete existing
+                window.temasLocales.forEach(t => batch.delete(doc(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web', t.id)));
+                await batch.commit();
+                
+                window.temasLocales = [];
+                await window.createPremiumBaseThemes();
+                
+                window.globalThemeConfig.modo = 'manual';
+                window.globalThemeConfig.temaManualActivo = 'tema_normal';
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'tema_global'), window.globalThemeConfig, {merge: true});
+                
+                await evaluateAndApplyThemes();
+                showToast("¡Temas profesionales restaurados!", "success");
+            });
+        }
         
+        window.applyMagicPalette = function() {
+            const tName = document.getElementById('thmName').value.toLowerCase();
+            let p = '#7C3AED', s = '#DB2777', b = '#8B5CF6', tx = '#0F172A', bg = '#F8FAFC', cd = 'rgba(255,255,255,0.9)'; // Default
+            
+            if(tName.includes('halloween') || tName.includes('miedo')) { p = '#F97316'; s = '#9333EA'; b = '#F97316'; tx = '#F8FAFC'; bg = '#020617'; cd = 'rgba(15,23,42,0.85)'; }
+            else if(tName.includes('navidad') || tName.includes('santa')) { p = '#EF4444'; s = '#10B981'; b = '#EF4444'; tx = '#0F172A'; bg = '#FEF2F2'; cd = 'rgba(255,255,255,0.9)'; }
+            else if(tName.includes('verano') || tName.includes('summer')) { p = '#06B6D4'; s = '#3B82F6'; b = '#06B6D4'; tx = '#082F49'; bg = '#ECFEFF'; cd = 'rgba(255,255,255,0.85)'; }
+            else if(tName.includes('escolar') || tName.includes('niño')) { p = '#3B82F6'; s = '#F59E0B'; b = '#3B82F6'; tx = '#1E3A8A'; bg = '#EFF6FF'; cd = 'rgba(255,255,255,0.9)'; }
+            else if(tName.includes('neon') || tName.includes('noche')) { p = '#E879F9'; s = '#2DD4BF'; b = '#E879F9'; tx = '#FFFFFF'; bg = '#09090B'; cd = 'rgba(24,24,27,0.8)'; }
+            else if(tName.includes('gold') || tName.includes('lujo')) { p = '#D97706'; s = '#F59E0B'; b = '#D97706'; tx = '#FFFFFF'; bg = '#171717'; cd = 'rgba(38,38,38,0.9)'; }
+
+            document.getElementById('thmColPrimary').value = p; document.getElementById('thmColPrimaryPicker').value = p;
+            document.getElementById('thmColSecondary').value = s; document.getElementById('thmColSecondaryPicker').value = s;
+            document.getElementById('thmColButton').value = b; document.getElementById('thmColButtonPicker').value = b;
+            document.getElementById('thmColText').value = tx; document.getElementById('thmColTextPicker').value = tx.length === 7 ? tx : '#000000';
+            document.getElementById('thmColBg').value = bg; document.getElementById('thmColBgPicker').value = bg.length === 7 ? bg : '#ffffff';
+            document.getElementById('thmColCard').value = cd; document.getElementById('thmColCardPicker').value = cd.length === 7 ? cd : '#ffffff';
+            
+            showToast("¡Paleta mágica aplicada!", "success");
+        }
+
         async function evaluateAndApplyThemes() {
             const today = new Date().toISOString().split('T')[0];
             let winnerId = null; let defaultId = window.temasLocales.find(t => t.isDefault)?.id || (window.temasLocales[0]?.id);
@@ -1722,4 +1787,4 @@
     </script>
 </body>
 </html>
-
+```
