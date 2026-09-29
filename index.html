@@ -1326,6 +1326,133 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 }
 </style>
 
+
+<style id="diverty-premium-v6-finish">
+/* V6 — Acabado visual general. CSS únicamente. */
+
+/* Consistencia global */
+:root{
+  --dv-radius-sm:14px;
+  --dv-radius-md:18px;
+  --dv-radius-lg:24px;
+  --dv-shadow-soft:0 10px 28px rgba(15,23,42,.08);
+  --dv-shadow-card:0 14px 36px rgba(15,23,42,.10);
+}
+button,a,input,select,textarea{ -webkit-tap-highlight-color:transparent; }
+button,[role="button"],.nav-action{ touch-action:manipulation; }
+
+/* Formularios de toda la web */
+input,select,textarea{
+  transition:border-color .18s ease,box-shadow .18s ease,background .18s ease;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:color-mix(in srgb,var(--s-primary) 62%,transparent)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--s-primary) 12%,transparent)!important;
+}
+
+/* Botones y paneles: mismo lenguaje */
+.season-btn{
+  font-weight:900!important;
+  letter-spacing:-.01em;
+}
+.glass-panel{
+  border-color:color-mix(in srgb,var(--s-glass-border) 88%,white 12%);
+}
+
+/* Footer: cierre visual coherente */
+footer{
+  border-top:1px solid var(--s-glass-border);
+}
+footer a{
+  transition:opacity .18s ease,transform .18s ease;
+}
+footer a:active{ transform:scale(.98); }
+
+/* WhatsApp: integrado pero claramente accesible */
+.whatsapp-container a{
+  box-shadow:0 12px 30px rgba(15,23,42,.18)!important;
+  transition:transform .18s ease,box-shadow .18s ease!important;
+}
+.whatsapp-container a:active{ transform:scale(.95)!important; }
+
+/* Toast */
+#toast{
+  border-radius:18px!important;
+  box-shadow:0 16px 40px rgba(15,23,42,.18)!important;
+}
+
+/* Modales */
+.modal-backdrop > div{
+  border:1px solid var(--s-glass-border);
+}
+
+/* Escritorio */
+@media (min-width:768px){
+  .season-btn:hover{ transform:translateY(-1px); }
+  footer a:hover{ opacity:.82; }
+  .whatsapp-container a:hover{
+    transform:translateY(-2px)!important;
+    box-shadow:0 16px 36px rgba(15,23,42,.22)!important;
+  }
+}
+
+/* Móvil: ritmo, legibilidad y consistencia */
+@media (max-width:767px){
+  body{ font-size:16px; }
+
+  #mainContent h1,#mainContent h2,#mainContent h3{
+    text-wrap:balance;
+  }
+
+  /* Espacios verticales coherentes */
+  #mainContent .container{
+    max-width:100%;
+  }
+
+  /* Todos los CTA importantes cómodos al tacto */
+  #mainContent button,
+  #cartModal button,
+  #mobileMenu button,
+  #mobileMenu .nav-action{
+    min-height:44px;
+  }
+
+  /* Inputs evitan zoom incómodo en navegadores móviles */
+  input,select,textarea{
+    font-size:16px!important;
+  }
+
+  /* Paneles */
+  .glass-panel{
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+  }
+
+  /* Footer móvil más respirado sin alterar contenido */
+  footer{
+    padding-bottom:max(1rem,env(safe-area-inset-bottom));
+  }
+
+  /* Toast no invade bordes del teléfono */
+  #toast{
+    width:calc(100% - 1.5rem);
+    max-width:420px;
+    white-space:normal!important;
+    text-align:left;
+  }
+}
+
+/* Respeta usuarios/dispositivos que prefieren menos movimiento */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
