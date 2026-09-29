@@ -574,13 +574,13 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
       document.documentElement.setAttribute('data-cached-theme', t);
     }
   } catch(e) {}
-  /* Arranque no bloqueante: la interfaz local permanece visible e interactiva. */
+  document.documentElement.classList.add('diverty-booting');
 })();
 </script>
 <style id="diverty-boot-style">
-html.diverty-booting body{overflow:auto}
-html.diverty-booting body> :not(#themeBootLoader){visibility:visible!important}
-#themeBootLoader{display:none!important;pointer-events:none!important}
+html.diverty-booting body{overflow:hidden}
+html.diverty-booting body> :not(#themeBootLoader){visibility:hidden!important}
+#themeBootLoader{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#0b1220;opacity:1;transition:opacity .28s ease,visibility .28s ease}
 html[data-cached-theme="christmas"] #themeBootLoader{background:linear-gradient(145deg,#061c13,#0a2d1f 58%,#401016)}
 html[data-cached-theme="halloween"] #themeBootLoader{background:linear-gradient(145deg,#09060f,#1b0b23 58%,#401508)}
 html[data-cached-theme="summer"] #themeBootLoader{background:linear-gradient(145deg,#dff8ff,#eafffb 58%,#fff2cf)}
@@ -1518,10 +1518,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
             if (heroVideo) {
                 heroVideo.muted = true;
                 heroVideo.defaultMuted = true;
-                const playPromise = heroVideo.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => { console.log("Autoplay prevenido por navegador", error); });
-                }
+                /* El atributo autoplay del propio video gestiona la reproducción.
+                   No llamamos play() manualmente para no depender de user activation en móvil. */
             }
 
             if(typeof renderCalendar === 'function') renderCalendar(); 
@@ -2182,7 +2180,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
         document.body.classList.add('js-loaded');
         const loader = document.getElementById('initial-loader'); if(loader) loader.style.display = 'none';
 
-        initFirebaseAndData();
+        setTimeout(() => { initFirebaseAndData(); }, 50);
 
     </script>
 
@@ -2202,7 +2200,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 
 <script>
 // Seguro: nunca dejar la interfaz bloqueada por una conexión lenta.
-/* Boot global desactivado: Firebase ya no bloquea la interfaz. */
+setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, 4500);
 </script>
 
 <script id="diverty-home-swipe-guard">
