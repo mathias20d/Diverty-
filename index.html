@@ -1733,9 +1733,10 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
                         const existingCartItem = app.cart.find(i=>i.id===it.id);
                         if(!existingCartItem) { 
                             addToCart(it, 1); 
-                        } else { 
-                            showModal('cartModal'); 
-                        } 
+                        }
+                        // UX móvil: un solo toque agrega (si hace falta) y abre el carrito.
+                        // Si el usuario toca dos veces rápidamente, no duplica el producto.
+                        showModal('cartModal');
                     }
                     break; 
                 }
