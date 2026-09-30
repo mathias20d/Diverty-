@@ -2657,7 +2657,8 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
           display: grid !important; grid-template-columns: 52px 1fr 52px; align-items: center; gap: 6px;
         }
         #mainHeader .logo-container { grid-column: 2; justify-self: center; min-width: 0; }
-        #mainHeader .logo-container > div:first-child { width: 48px !important; height: 48px !important; margin-right: 8px !important; }
+        #mainHeader .logo-container > div:first-child { width: 58px !important; height: 58px !important; margin-right: 0 !important; }
+        #mainHeader .logo-container > div:last-child { display: none !important; }
         #mainHeader .header-brand-text { color: #172033 !important; }
         #mobileToggle {
           grid-column: 1; grid-row: 1; justify-self: start; width: 48px; height: 48px; padding: 0 !important;
@@ -2682,9 +2683,8 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
       @media (max-width: 420px) {
         #mainHeader { padding: 0 10px !important; }
         #mainHeader > .container { min-height: 68px; grid-template-columns: 44px 1fr 44px; padding: 7px 11px; }
-        #mainHeader .logo-container > div:first-child { width: 42px !important; height: 42px !important; margin-right: 6px !important; }
-        #mainHeader .header-brand-text { font-size: 1.25rem !important; }
-        #mainHeader .logo-container span:last-child { font-size: 8px !important; }
+        #mainHeader .logo-container > div:first-child { width: 54px !important; height: 54px !important; margin-right: 0 !important; }
+        #mainHeader .logo-container > div:last-child { display: none !important; }
         #mobileToggle, #headerCartButton { width: 42px; height: 42px; }
       }
     </style>
@@ -4037,7 +4037,8 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
         }
 
         async function initFirebaseAndData() {
-            const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
+            const existingDivertyApp = getApps().find(a => a.name === "DivertyWeb");
+            const fbApp = existingDivertyApp ? getApp("DivertyWeb") : initializeApp(firebaseConfig, "DivertyWeb");
             db = getFirestore(fbApp); auth = getAuth(fbApp);
             
             try { 
@@ -4155,8 +4156,8 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             
             document.body.addEventListener('click', handleGlobalClick);
             
-            const mt = document.getElementById('mobileToggle'); if(mt) mt.onclick = () => toggleMobileMenu(true);
-            const cm = document.getElementById('closeMobile'); if(cm) cm.onclick = () => toggleMobileMenu(false);
+            const mt = document.getElementById('mobileToggle'); if(mt) mt.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); toggleMobileMenu(true); });
+            const cm = document.getElementById('closeMobile'); if(cm) cm.addEventListener('click', (e) => { e.preventDefault(); toggleMobileMenu(false); });
             const mmo = document.getElementById('mobileMenuOverlay'); if(mmo) mmo.onclick = () => toggleMobileMenu(false);
             
             const vc = document.getElementById('viewCart'); if(vc) vc.onclick = () => showModal('cartModal');
@@ -4191,7 +4192,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
         document.body.classList.add('js-loaded');
         const loader = document.getElementById('initial-loader'); if(loader) loader.style.display = 'none';
 
-        setTimeout(() => { initFirebaseAndData(); }, 50);
+        setTimeout(() => { initFirebaseAndData().catch(err => { console.error('Firebase init:', err); catalogLoaded = true; window.catalogLoaded = true; isFirebaseLoaded = true; buildDynamicNav(); if (app.activeSection === 'home') renderHome(); finishThemeBoot(); }); }, 50);
 
     </script>
 
