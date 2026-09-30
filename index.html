@@ -3407,17 +3407,22 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             };
 
             const loadCampaigns = async () => {
+                const campWrapper = document.getElementById('home-campaigns-wrapper');
                 try {
                     const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), T_OUT);
                     const todayStr = new Date().toISOString().split('T')[0];
                     app.campaigns = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => {
-                        if (c.activo !== true) return false;
+                        const activo = c.activo === true || c.active === true || c.estado === 'activo';
+                        if (!activo) return false;
                         if (c.fechaInicio && todayStr < cleanStr(c.fechaInicio)) return false;
                         if (c.fechaFin && todayStr > cleanStr(c.fechaFin)) return false;
                         return true;
                     }).sort((a, b) => (a.destacada === true && !b.destacada ? -1 : (!a.destacada && b.destacada ? 1 : (Number(a.orden) || 0) - (Number(b.orden) || 0))));
-                } catch(e) {}
-                const campWrapper = document.getElementById('home-campaigns-wrapper');
+                    console.log('Campañas cargadas:', app.campaigns);
+                } catch(e) {
+                    console.error('Error cargando campañas:', e);
+                    app.campaigns = [];
+                }
                 if (campWrapper && typeof getCampaignsHTML === 'function') {
                     campWrapper.innerHTML = getCampaignsHTML();
                     if (typeof lucide !== 'undefined') lucide.createIcons({root: campWrapper});
