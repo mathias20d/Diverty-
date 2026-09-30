@@ -3417,7 +3417,13 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                         return true;
                     }).sort((a, b) => (a.destacada === true && !b.destacada ? -1 : (!a.destacada && b.destacada ? 1 : (Number(a.orden) || 0) - (Number(b.orden) || 0))));
                 } catch(e) {}
+                const campWrapper = document.getElementById('home-campaigns-wrapper');
+                if (campWrapper && typeof getCampaignsHTML === 'function') {
+                    campWrapper.innerHTML = getCampaignsHTML();
+                    if (typeof lucide !== 'undefined') lucide.createIcons({root: campWrapper});
+                }
             };
+
 
             const loadCategories = async () => {
                 try {
