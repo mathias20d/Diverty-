@@ -2643,14 +2643,11 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
         <header id="mainHeader" class="w-full px-4 transition-all duration-200 pointer-events-auto">
             <div class="container mx-auto flex justify-between items-center">
                 <button data-action="close-modal" data-target-section="home" class="flex items-center logo-container nav-action" aria-label="Inicio">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full p-[2px] mr-3 shadow-sm" style="background: var(--s-btn-grad);">
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full p-[2px] shadow-sm" style="background: var(--s-btn-grad);">
                         <!-- El onerror asegura que si tu logo falla, no quede vacío -->
                         <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border-2 border-[var(--s-bg-color)]" loading="eager" id="mainHeaderLogo" onerror="this.onerror=null; this.src='https://placehold.co/100x100/7C3AED/ffffff?text=DE'">
                     </div>
-                    <div class="flex flex-col drop-shadow-sm">
-                        <span class="text-2xl sm:text-3xl font-black font-nunito leading-none tracking-tight header-brand-text">Diverty</span>
-                        <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest mt-0.5 season-gradient-text">Eventos</span>
-                    </div>
+
                 </button>
                 <nav id="desktopNav" class="hidden lg:flex items-center space-x-1 glass-panel px-4 py-2 rounded-full">
                     <button data-target-section="home" class="nav-link nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 season-text-primary"></i>Inicio</button>
