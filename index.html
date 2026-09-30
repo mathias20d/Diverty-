@@ -4007,7 +4007,9 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             const loadCampaigns = async () => {
                 try {
                     const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), T_OUT);
-                    const todayStr = new Date().toISOString().split('T')[0];
+                    const todayStr = new Intl.DateTimeFormat('en-CA', {
+                timeZone: 'America/Panama'
+            }).format(new Date());
                     app.campaigns = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => {
                         if (c.activo !== true) return false;
                         if (c.fechaInicio && todayStr < cleanStr(c.fechaInicio)) return false;
