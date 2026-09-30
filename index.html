@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+m<!DOCTYPE html>
 <html lang="es">
 <head>
     <!-- Google tag (gtag.js) -->
@@ -2809,6 +2809,352 @@ html[data-cached-theme="school"] #themeBootLoader{
 }
 </style>
 
+
+<style id="diverty-catalog-grid-detail-v1">
+/* ===== CATÁLOGO COMPACTO + DETALLE ===== */
+.catalog-grid-page{
+  width:100%;
+  min-height:100vh;
+  padding:118px 18px 70px;
+}
+.catalog-grid-section{
+  width:100%;
+  max-width:1120px;
+  margin:0 auto;
+}
+.catalog-grid-heading{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:14px;
+  margin:0 2px 26px;
+}
+.catalog-grid-heading p{
+  margin:0 0 3px;
+  color:var(--s-text-muted);
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.catalog-grid-heading h2{
+  margin:0;
+  color:var(--s-text-title);
+  font-family:'Poppins',sans-serif;
+  font-size:clamp(24px,6vw,38px);
+  line-height:1.05;
+  font-weight:900;
+}
+.catalog-grid-count{
+  flex:none;
+  color:var(--s-text-muted);
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.catalog-products-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:28px 18px;
+}
+.catalog-tile{
+  appearance:none;
+  -webkit-appearance:none;
+  width:100%;
+  padding:0;
+  margin:0;
+  border:0;
+  background:transparent;
+  text-align:left;
+  cursor:pointer;
+  color:inherit;
+  min-width:0;
+  transition:transform .18s ease;
+}
+.catalog-tile:active{transform:scale(.975)}
+.catalog-tile-image-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:1/1;
+  overflow:hidden;
+  border-radius:18px;
+  background:color-mix(in srgb,var(--s-primary) 8%,var(--s-bg-color));
+  border:1px solid var(--s-glass-border);
+  box-shadow:0 8px 22px rgba(15,23,42,.10);
+}
+.catalog-tile-image{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  transition:transform .35s ease;
+}
+.catalog-tile:hover .catalog-tile-image{transform:scale(1.035)}
+.catalog-tile-offer{
+  position:absolute;
+  left:8px;
+  top:8px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:#e11d48;
+  color:#fff;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+  box-shadow:0 4px 12px rgba(0,0,0,.18);
+}
+.catalog-tile-body{
+  padding:11px 5px 0;
+  text-align:center;
+}
+.catalog-tile-name{
+  margin:0;
+  color:var(--s-text-title);
+  font-family:'Poppins',sans-serif;
+  font-size:14px;
+  line-height:1.25;
+  font-weight:900;
+  text-transform:uppercase;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  overflow:hidden;
+  min-height:35px;
+}
+.catalog-tile-price{
+  margin-top:7px;
+  color:var(--s-primary);
+  font-size:17px;
+  line-height:1.1;
+  font-weight:900;
+}
+.catalog-tile-old-price{
+  margin-top:5px;
+  color:var(--s-text-muted);
+  opacity:.58;
+  text-decoration:line-through;
+  font-size:11px;
+  font-weight:800;
+}
+.catalog-tile-unit{font-size:10px;font-weight:800}
+
+/* DETALLE */
+.catalog-detail-page{
+  width:100%;
+  min-height:100vh;
+  padding:112px 16px 72px;
+}
+.catalog-detail-shell{
+  width:100%;
+  max-width:900px;
+  margin:0 auto;
+}
+.catalog-detail-back{
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--s-glass-border);
+  background:var(--s-glass-bg);
+  color:var(--s-text-title);
+  border-radius:999px;
+  padding:9px 13px;
+  margin:0 0 15px;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 5px 16px rgba(15,23,42,.06);
+}
+.catalog-detail-back svg{width:16px;height:16px}
+.catalog-detail-card{
+  overflow:hidden;
+  border-radius:26px;
+  background:var(--s-glass-bg);
+  border:1px solid var(--s-glass-border);
+  box-shadow:0 20px 55px rgba(15,23,42,.12);
+}
+.catalog-detail-image-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/11;
+  overflow:hidden;
+  background:rgba(0,0,0,.04);
+}
+.catalog-detail-image{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.catalog-detail-offer{
+  position:absolute;
+  left:16px;
+  top:16px;
+  background:#e11d48;
+  color:white;
+  border-radius:999px;
+  padding:7px 12px;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.1em;
+}
+.catalog-detail-content{padding:22px 19px 20px}
+.catalog-detail-category{
+  color:var(--s-primary);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.13em;
+  margin-bottom:5px;
+}
+.catalog-detail-content h1{
+  color:var(--s-text-title);
+  font-family:'Poppins',sans-serif;
+  font-size:clamp(25px,7vw,38px);
+  line-height:1.05;
+  font-weight:900;
+  margin:0 0 10px;
+}
+.catalog-detail-description{
+  color:var(--s-text-muted);
+  font-size:13px;
+  line-height:1.6;
+  font-weight:650;
+  margin:0 0 18px;
+}
+.catalog-detail-price-row{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:15px;
+  padding:15px 0;
+  margin-bottom:16px;
+  border-top:1px solid var(--s-glass-border);
+  border-bottom:1px solid var(--s-glass-border);
+}
+.catalog-detail-price-label{
+  color:var(--s-text-muted);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+.catalog-detail-price{
+  color:var(--s-primary);
+  font-size:29px;
+  line-height:1;
+  font-weight:950;
+}
+.catalog-detail-price small{
+  margin-left:3px;
+  color:var(--s-text-muted);
+  font-size:10px;
+}
+.catalog-detail-old-price{
+  margin-right:8px;
+  color:var(--s-text-muted);
+  opacity:.55;
+  text-decoration:line-through;
+  font-size:12px;
+  font-weight:800;
+}
+.catalog-detail-includes h3{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 12px;
+  color:var(--s-text-title);
+  font-size:15px;
+  font-weight:900;
+}
+.catalog-detail-includes h3 svg{width:17px;height:17px;color:var(--s-primary)}
+.catalog-detail-includes ul{
+  list-style:none;
+  padding:14px;
+  margin:0;
+  border:1px solid var(--s-glass-border);
+  border-radius:18px;
+  background:color-mix(in srgb,var(--s-text-title) 3%,transparent);
+}
+.catalog-detail-includes li{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  color:var(--s-text-muted);
+  font-size:12px;
+  line-height:1.45;
+  font-weight:750;
+}
+.catalog-detail-includes li+li{margin-top:10px}
+.catalog-detail-check{
+  width:21px;
+  height:21px;
+  flex:0 0 21px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  color:white;
+  background:var(--s-btn-grad);
+}
+.catalog-detail-check svg{width:11px;height:11px;stroke-width:3}
+.catalog-detail-actions{margin-top:20px}
+.catalog-detail-cart{
+  width:100%;
+  min-height:52px;
+  border-radius:17px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+}
+.catalog-detail-cart svg{width:18px;height:18px}
+.catalog-detail-qty{
+  display:grid;
+  grid-template-columns:48px 1fr 48px;
+  align-items:center;
+  gap:8px;
+  padding:6px;
+  margin-bottom:10px;
+  border:1px solid var(--s-glass-border);
+  border-radius:17px;
+  background:color-mix(in srgb,var(--s-text-title) 3%,transparent);
+}
+.catalog-detail-qty button{
+  width:48px;
+  height:44px;
+  border-radius:13px;
+  border:1px solid var(--s-glass-border);
+  background:var(--s-bg-color);
+  color:var(--s-text-title);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.catalog-detail-qty button svg{width:17px;height:17px}
+.catalog-detail-qty span{
+  text-align:center;
+  color:var(--s-text-title);
+  font-size:18px;
+  font-weight:900;
+}
+
+@media(min-width:700px){
+  .catalog-products-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:34px 26px}
+  .catalog-tile-name{font-size:15px}
+  .catalog-tile-price{font-size:18px}
+  .catalog-detail-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .catalog-detail-image-wrap{aspect-ratio:auto;min-height:100%;height:100%}
+  .catalog-detail-content{padding:30px}
+}
+@media(min-width:1024px){
+  .catalog-products-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -3679,10 +4025,151 @@ html[data-cached-theme="school"] #themeBootLoader{
             renderSection(items, cat.nombre, getCatalogIcon(cat));
         }
 
+        function createCatalogTileHTML(item) {
+            const price = Number(item.price || 0);
+            const oldPrice = Number(item.originalPrice || 0);
+            const hasOffer = (item.discountApplied || item.oferta) && oldPrice > price;
+            const unit = item.isHourly ? '<span class="catalog-tile-unit">/hr</span>' : '';
+
+            return `
+                <button type="button"
+                    data-action="open-item-detail"
+                    data-item-id="${item.id}"
+                    class="catalog-tile animate-slide-up"
+                    aria-label="Ver ${cleanStr(item.name || item.title)}">
+                    <div class="catalog-tile-image-wrap">
+                        <img src="${cleanStr(item.image)}"
+                             alt="${cleanStr(item.name || item.title)}"
+                             class="catalog-tile-image"
+                             loading="lazy"
+                             decoding="async">
+                        ${hasOffer ? `<span class="catalog-tile-offer">OFERTA</span>` : ''}
+                    </div>
+                    <div class="catalog-tile-body">
+                        <h3 class="catalog-tile-name">${cleanStr(item.name || item.title)}</h3>
+                        ${hasOffer ? `<div class="catalog-tile-old-price">$${oldPrice.toFixed(2)}</div>` : ''}
+                        <div class="catalog-tile-price">$${price.toFixed(2)} ${unit}</div>
+                    </div>
+                </button>`;
+        }
+
+        function renderItemDetail(itemId) {
+            const item = app.catalog.find(i => i.id === itemId);
+            if (!item) return;
+
+            const cat = dynamicCategories.find(c => c.id === item.categoria);
+            const categoryTitle = cat ? cat.nombre : 'Catálogo';
+            const price = Number(item.price || 0);
+            const oldPrice = Number(item.originalPrice || 0);
+            const hasOffer = (item.discountApplied || item.oferta) && oldPrice > price;
+            const inCart = app.cart.find(i => i.id === item.id);
+            const qty = inCart ? inCart.quantity : 1;
+
+            const services = (item.services && item.services.length)
+                ? `<div class="catalog-detail-includes">
+                    <h3><i data-lucide="sparkles"></i> Todo lo que incluye</h3>
+                    <ul>
+                        ${item.services.map(s => `
+                            <li>
+                                <span class="catalog-detail-check"><i data-lucide="check"></i></span>
+                                <span>${cleanStr(s)}</span>
+                            </li>`).join('')}
+                    </ul>
+                   </div>`
+                : '';
+
+            const actionArea = item.isHourly
+                ? `<div class="catalog-detail-actions">
+                    <div class="catalog-detail-qty">
+                        <button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" aria-label="Disminuir cantidad"><i data-lucide="minus"></i></button>
+                        <span id="qty-${item.id}">${qty}</span>
+                        <button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" aria-label="Aumentar cantidad"><i data-lucide="plus"></i></button>
+                    </div>
+                    <button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${inCart ? 'refresh' : 'none'}" class="season-btn catalog-detail-cart">
+                        <i data-lucide="${inCart ? 'refresh-cw' : 'shopping-cart'}"></i>
+                        ${inCart ? 'Actualizar cantidad' : 'Añadir al carrito'}
+                    </button>
+                   </div>`
+                : `<div class="catalog-detail-actions">
+                    <button data-action="add-to-cart" data-item-id="${item.id}" data-cart-state="${inCart ? 'selected' : 'none'}" class="season-btn catalog-detail-cart" style="${inCart ? 'background:#10B981!important;' : ''}">
+                        <i data-lucide="${inCart ? 'check' : 'shopping-cart'}"></i>
+                        ${inCart ? 'Plan seleccionado' : 'Añadir al carrito'}
+                    </button>
+                   </div>`;
+
+            setContent(`
+                <div class="catalog-detail-page">
+                    <div class="catalog-detail-shell animate-slide-up">
+                        <button type="button"
+                            data-action="back-to-category"
+                            data-category-id="${item.categoria}"
+                            class="catalog-detail-back">
+                            <i data-lucide="arrow-left"></i>
+                            <span>Volver a ${cleanStr(categoryTitle)}</span>
+                        </button>
+
+                        <div class="catalog-detail-card">
+                            <div class="catalog-detail-image-wrap">
+                                <img src="${cleanStr(item.image)}"
+                                     alt="${cleanStr(item.name || item.title)}"
+                                     class="catalog-detail-image">
+                                ${hasOffer ? `<span class="catalog-detail-offer">OFERTA</span>` : ''}
+                            </div>
+
+                            <div class="catalog-detail-content">
+                                <div class="catalog-detail-category">${cleanStr(categoryTitle)}</div>
+                                <h1>${cleanStr(item.name || item.title)}</h1>
+
+                                ${cleanStr(item.description || '') ? `<p class="catalog-detail-description">${cleanStr(item.description)}</p>` : ''}
+
+                                <div class="catalog-detail-price-row">
+                                    <span class="catalog-detail-price-label">Precio</span>
+                                    <div>
+                                        ${hasOffer ? `<span class="catalog-detail-old-price">$${oldPrice.toFixed(2)}</span>` : ''}
+                                        <span class="catalog-detail-price">$${price.toFixed(2)}${item.isHourly ? '<small>/hr</small>' : ''}</span>
+                                    </div>
+                                </div>
+
+                                ${services}
+                                ${actionArea}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `);
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+            window.scrollTo(0, 0);
+        }
+
         function renderSection(items, title, icon) { 
-            if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p class="font-bold text-sm tracking-widest uppercase">Cargando...</p></div>`); return; }
-            if(items.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-12 season-text-title font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 opacity-50"></i></h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="folder-open" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Próximamente más opciones.</p></div></section></div>`); return; }
-            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-8 season-text-title font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 opacity-50 animate-bounce" style="animation-duration: 2s;"></i></h2><div class="flex overflow-x-auto snap-x snap-mandatory scroll-smooth gap-6 hide-scrollbar -mx-4 px-4 pt-12 pb-8 md:grid md:grid-cols-2 xl:grid-cols-3 md:overflow-visible md:mx-auto place-items-stretch" style="-webkit-overflow-scrolling: touch;">${items.map(createDetailedCardHTML).join('')}</div></section></div>`);
+            if(!isFirebaseLoaded){
+                setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p class="font-bold text-sm tracking-widest uppercase">Cargando...</p></div>`);
+                return;
+            }
+
+            if(items.length===0){
+                setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-12 season-text-title font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 opacity-50"></i></h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="folder-open" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Próximamente más opciones.</p></div></section></div>`);
+                return;
+            }
+
+            setContent(`
+                <div class="catalog-grid-page">
+                    <section class="catalog-grid-section">
+                        <div class="catalog-grid-heading">
+                            <div>
+                                <p>Selecciona una opción</p>
+                                <h2>${title}</h2>
+                            </div>
+                            <span class="catalog-grid-count">${items.length} ${items.length === 1 ? 'opción' : 'opciones'}</span>
+                        </div>
+
+                        <div class="catalog-products-grid">
+                            ${items.map(createCatalogTileHTML).join('')}
+                        </div>
+                    </section>
+                </div>
+            `);
         }
         
         function renderGallery() {
@@ -4030,6 +4517,21 @@ html[data-cached-theme="school"] #themeBootLoader{
                         showToast('¡Fecha guardada! Ahora elige un paquete.', 'success');
                     });
                     break;
+                case 'open-item-detail': {
+                    e.preventDefault();
+                    renderItemDetail(itemId);
+                    break;
+                }
+                case 'back-to-category': {
+                    e.preventDefault();
+                    const categoryId = target.dataset.categoryId;
+                    if (categoryId) {
+                        app.activeSection = `cat_${categoryId}`;
+                        renderCategory(categoryId);
+                        window.scrollTo(0, 0);
+                    }
+                    break;
+                }
                 case 'add-to-cart': { 
                     let it = allPurchasableItems.find(s=>s.id===itemId); 
                     
