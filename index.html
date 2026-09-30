@@ -3497,7 +3497,17 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             // Banner y campañas son secundarios. No frenan tema, catálogo ni navegación.
             Promise.allSettled([themePromise, loadBanner(), loadCampaigns()]).then(() => {
                 buildDynamicNav();
-                if (app.activeSection === 'home') renderHome();
+
+                if (app.activeSection === 'home') {
+                    renderHome();
+
+                    const campWrapper = document.getElementById('home-campaigns-wrapper');
+                    if (campWrapper && typeof getCampaignsHTML === 'function') {
+                        campWrapper.innerHTML = getCampaignsHTML();
+                        if (typeof lucide !== 'undefined') lucide.createIcons({root: campWrapper});
+                    }
+                }
+
                 updateCartUI();
             });
 
