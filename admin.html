@@ -1507,6 +1507,23 @@
             });
         }
         
+        // Activar / desactivar campaña directamente desde la lista
+        window.toggleCampaignStatus = async function(id, status) {
+            try {
+                const ref = doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', id);
+                await updateDoc(ref, {
+                    activo: status,
+                    updatedAt: new Date().toISOString()
+                });
+
+                showToast(status ? "Campaña activada correctamente" : "Campaña desactivada correctamente", "success");
+                await window.loadCampaigns();
+            } catch (e) {
+                console.error("Error cambiando estado de campaña:", e);
+                showToast("No se pudo cambiar el estado de la campaña", "error");
+            }
+        };
+
         window.openCampaignModal = function() {
             editingCampaignId = null; 
             document.getElementById('campModalTitle').innerHTML = '<i data-lucide="megaphone" class="w-5 h-5 text-rose-400"></i> Nueva Campaña';
