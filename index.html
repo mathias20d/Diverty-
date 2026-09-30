@@ -644,12 +644,9 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
 <!-- Diverty: arranque sin flash de tema -->
 <script>
 (function(){
-  try {
-    var t = localStorage.getItem('diverty_active_theme');
-    if (['default','christmas','halloween','summer','school'].includes(t)) {
-      document.documentElement.setAttribute('data-cached-theme', t);
-    }
-  } catch(e) {}
+  /* Arranque neutro: evita mostrar una temporada antigua guardada en el navegador.
+     El tema real se aplicará en cuanto Firebase responda. */
+  document.documentElement.removeAttribute('data-cached-theme');
   document.documentElement.classList.add('diverty-booting');
 })();
 </script>
@@ -2695,14 +2692,131 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
 }
 </style>
 
+
+<style id="diverty-theme-boot-final">
+/* ===== PANTALLA DE ARRANQUE FINAL =====
+   Solo logo, sin círculo ni tarjeta. El fondo cambia únicamente
+   cuando Firebase confirma el tema activo.
+*/
+html.diverty-booting body{
+  overflow:hidden!important;
+}
+
+html.diverty-booting body > :not(#themeBootLoader){
+  visibility:hidden!important;
+}
+
+#themeBootLoader{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483647!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px!important;
+  opacity:1!important;
+  visibility:visible!important;
+  transition:opacity .32s ease,visibility .32s ease,background .35s ease!important;
+
+  /* Fondo neutro mientras Firebase todavía no ha respondido. */
+  background:
+    radial-gradient(circle at 50% 38%,rgba(124,58,237,.16),transparent 34%),
+    linear-gradient(155deg,#111827,#0b1220 60%,#111827)!important;
+}
+
+/* HALLOWEEN */
+html[data-cached-theme="halloween"] #themeBootLoader{
+  background:
+    radial-gradient(circle at 82% 16%,rgba(249,115,22,.28),transparent 28%),
+    radial-gradient(circle at 12% 82%,rgba(126,34,206,.30),transparent 34%),
+    linear-gradient(150deg,#07050b 0%,#14091d 56%,#351207 100%)!important;
+}
+
+/* NAVIDAD */
+html[data-cached-theme="christmas"] #themeBootLoader{
+  background:
+    radial-gradient(circle at 20% 18%,rgba(59,130,246,.18),transparent 28%),
+    radial-gradient(circle at 82% 82%,rgba(226,232,240,.12),transparent 30%),
+    linear-gradient(160deg,#061426 0%,#071d39 52%,#0b1324 100%)!important;
+}
+
+/* VERANO */
+html[data-cached-theme="summer"] #themeBootLoader{
+  background:
+    radial-gradient(circle at 82% 16%,rgba(245,158,11,.28),transparent 26%),
+    radial-gradient(circle at 14% 80%,rgba(6,182,212,.22),transparent 32%),
+    linear-gradient(150deg,#dff8ff,#eafffb 58%,#fff2cf)!important;
+}
+
+/* ESCOLAR */
+html[data-cached-theme="school"] #themeBootLoader{
+  background:
+    radial-gradient(circle at 82% 18%,rgba(37,99,235,.12),transparent 28%),
+    radial-gradient(circle at 15% 82%,rgba(249,115,22,.12),transparent 30%),
+    linear-gradient(145deg,#fffdf6,#f4f7ff 58%,#fff4cf)!important;
+}
+
+/* Logo grande y limpio: SIN círculo, borde, tarjeta ni fondo. */
+#themeBootLoader .boot-logo{
+  display:block!important;
+  width:min(360px,82vw)!important;
+  height:auto!important;
+  max-height:42vh!important;
+  object-fit:contain!important;
+  border:0!important;
+  border-radius:0!important;
+  padding:0!important;
+  margin:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  filter:drop-shadow(0 12px 28px rgba(0,0,0,.22))!important;
+  animation:divertyBootLogo 1.8s ease-in-out infinite!important;
+}
+
+/* Elimina visualmente cualquier estructura vieja si quedara en caché. */
+#themeBootLoader .boot-card{
+  display:contents!important;
+  background:none!important;
+  border:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
+#themeBootLoader .boot-name,
+#themeBootLoader .boot-dots{
+  display:none!important;
+}
+
+#themeBootLoader.boot-hide{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+
+@keyframes divertyBootLogo{
+  0%,100%{transform:scale(1);}
+  50%{transform:scale(1.035);}
+}
+
+@media(max-width:480px){
+  #themeBootLoader .boot-logo{
+    width:min(320px,86vw)!important;
+    max-height:38vh!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  #themeBootLoader .boot-logo{animation:none!important;}
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
-      <div class="boot-card">
-        <img class="boot-logo" id="themeBootLogo" src="./android-chrome-512x512.png" alt="Diverty Eventos" loading="eager" decoding="async">
-        <div class="boot-name">Diverty Eventos</div>
-        <div class="boot-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-      </div>
+      <img class="boot-logo" id="themeBootLogo"
+           src="./android-chrome-512x512.png"
+           alt="Diverty Eventos"
+           loading="eager"
+           decoding="async">
     </div>
 
 
@@ -4147,10 +4261,13 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                 } catch(e) {}
             };
 
+            // Carga primero la temporada activa para que la pantalla inicial
+            // use inmediatamente el tema correcto mientras carga el resto.
+            await loadTheme();
+
             await Promise.allSettled([ 
                 loadCategories(), 
                 loadCatalog(), 
-                loadTheme(), 
                 loadBanner(), 
                 loadCampaigns() 
             ]);
