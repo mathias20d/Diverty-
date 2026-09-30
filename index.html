@@ -3942,6 +3942,233 @@ body[data-theme="halloween"] #cartModal .cart-empty-state p{color:#cbd5e1!import
 }
 </style>
 
+
+<style id="diverty-categories-touch-performance-final-v3">
+/* =========================================================
+   EXPLORAR PAQUETES = CATEGORÍAS
+   ========================================================= */
+.catalog-categories-grid{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+    margin-top:18px;
+}
+.catalog-category-card{
+    appearance:none;
+    -webkit-appearance:none;
+    width:100%;
+    padding:0;
+    text-align:left;
+    overflow:hidden;
+    border-radius:22px;
+    border:1px solid var(--s-glass-border);
+    background:var(--s-glass-bg);
+    color:var(--s-text-title);
+    box-shadow:0 7px 20px rgba(0,0,0,.10);
+    transform:translateZ(0);
+    transition:transform .16s ease,border-color .16s ease;
+}
+.catalog-category-card:active{transform:scale(.975);}
+.catalog-category-media{
+    position:relative;
+    width:100%;
+    aspect-ratio:1.32/1;
+    overflow:hidden;
+    background:color-mix(in srgb,var(--s-primary) 12%,var(--s-bg-color));
+}
+.catalog-category-media img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+}
+.catalog-category-shade{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(to top,rgba(2,6,23,.42),transparent 62%);
+    pointer-events:none;
+}
+.catalog-category-placeholder{
+    width:100%;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--s-primary);
+}
+.catalog-category-placeholder svg{width:42px;height:42px;}
+.catalog-category-icon{
+    position:absolute;
+    left:10px;
+    bottom:10px;
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    color:#fff;
+    background:var(--s-btn-grad);
+    box-shadow:0 5px 14px rgba(0,0,0,.20);
+}
+.catalog-category-icon svg{width:18px;height:18px;}
+.catalog-category-info{
+    min-height:72px;
+    padding:11px 11px 12px 13px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:7px;
+}
+.catalog-category-info h3{
+    margin:0 0 2px;
+    color:var(--s-text-title);
+    font-size:14px;
+    line-height:1.2;
+    font-weight:900;
+}
+.catalog-category-info p{
+    margin:0;
+    color:var(--s-text-muted);
+    font-size:10px;
+    line-height:1.2;
+    font-weight:700;
+}
+.catalog-category-arrow{
+    flex:0 0 28px;
+    width:28px;
+    height:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    color:var(--s-primary);
+    background:color-mix(in srgb,var(--s-primary) 10%,transparent);
+}
+.catalog-category-arrow svg{width:16px;height:16px;}
+
+@media(min-width:700px){
+    .catalog-categories-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;}
+    .catalog-category-info h3{font-size:16px;}
+}
+
+/* =========================================================
+   CARRITO: TOUCH REAL + MENOS TRABAJO DE GPU
+   ========================================================= */
+
+/* La regla vieja touch-action:none era la principal causa de bloqueo. */
+body.cart-open{
+    overflow:hidden!important;
+    touch-action:pan-y!important;
+    overscroll-behavior:none!important;
+}
+body.cart-open #cartModal,
+body.cart-open #cartModal .modal-content,
+body.cart-open #cartItems,
+body.cart-open #cartTotalsFooter{
+    touch-action:pan-y!important;
+}
+
+/* Durante el carrito no renderizamos decoraciones/video de fondo. */
+body.cart-open #decor-layer,
+body.cart-open #diverty-halloween-stage,
+body.cart-open #diverty-summer-stage,
+body.cart-open #diverty-school-stage,
+body.cart-open #diverty-xmas-stage,
+body.cart-open #hero-video{
+    display:none!important;
+}
+
+/* Fondo sencillo: sin blur, filtros ni animación pesada. */
+#cartModal{
+    background:rgba(2,6,23,.66)!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+}
+#cartModal .modal-content{
+    box-shadow:0 14px 34px rgba(0,0,0,.30)!important;
+    will-change:auto!important;
+}
+#cartModal.cart-animating .modal-content{
+    will-change:transform!important;
+}
+#cartModal #cartItems{
+    contain:content!important;
+    scroll-behavior:auto!important;
+}
+#cartModal .cart-item-card{
+    box-shadow:none!important;
+}
+#cartModal .cart-header,
+#cartModal #cartTotalsFooter{
+    box-shadow:none!important;
+}
+
+/* =========================================================
+   ANDROID / MÓVIL: evita "despertar" la página con un toque
+   ========================================================= */
+@media(max-width:767px){
+    html,body{
+        touch-action:pan-x pan-y!important;
+    }
+    button,a,input,select,textarea,[role="button"]{
+        touch-action:manipulation!important;
+    }
+
+    /* background fixed suele producir jank/repaint en Chrome Android. */
+    .season-background{
+        background-attachment:scroll!important;
+        transform:none!important;
+    }
+
+    /* Revierte content-visibility:auto: en algunos móviles retrasa el
+       primer repintado hasta que ocurre un gesto. */
+    #home-campaigns-wrapper,
+    #home-featured-wrapper,
+    #calendar-section,
+    #home-reviews-wrapper,
+    #reviews-section,
+    .catalog-grid-section,
+    footer{
+        content-visibility:visible!important;
+        contain-intrinsic-size:auto!important;
+    }
+
+    /* Mantiene aislamiento barato sin diferir el pintado. */
+    #home-campaigns-wrapper,
+    #home-featured-wrapper,
+    #calendar-section,
+    #home-reviews-wrapper,
+    .catalog-grid-section{
+        contain:layout style!important;
+    }
+
+    /* Sin transiciones globales de fondo durante scroll. */
+    body{transition:none!important;}
+
+    /* La decoración queda estática en móvil. */
+    #diverty-xmas-stage *,
+    #diverty-halloween-stage *,
+    #diverty-summer-stage *,
+    #diverty-school-stage *,
+    .falling-decor{
+        animation:none!important;
+        transition:none!important;
+    }
+
+    /* El carrito no usa efectos hover en pantalla táctil. */
+    #cartModal button:hover,
+    .catalog-category-card:hover{
+        filter:none!important;
+    }
+}
+
+/* El loader no debe capturar gestos mientras desaparece. */
+#themeBootLoader.boot-hide{
+    pointer-events:none!important;
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -4272,22 +4499,49 @@ body[data-theme="halloween"] #cartModal .cart-empty-state p{color:#cbd5e1!import
         function toggleCartDrawer(forceOpen) {
             const mod = document.getElementById('cartModal');
             const hw = document.getElementById('headerWrapper');
+            const heroVideo = document.getElementById('hero-video');
             if(!mod) return;
 
             const shouldOpen = typeof forceOpen === 'boolean'
                 ? forceOpen
                 : !mod.classList.contains('show');
 
+            mod.classList.add('cart-animating');
+            clearTimeout(window.__divertyCartAnimTimer);
+
             if(shouldOpen) {
                 toggleMobileMenu(false);
-                mod.classList.add('show');
+
+                // Pausa el video mientras el carrito está abierto:
+                // libera decodificación/GPU en móviles Android.
+                if(heroVideo && !heroVideo.paused) {
+                    window.__divertyHeroWasPlaying = true;
+                    heroVideo.pause();
+                } else {
+                    window.__divertyHeroWasPlaying = false;
+                }
+
                 document.body.classList.add('cart-open');
+                mod.classList.add('show');
                 if(hw) hw.classList.add('cart-drawer-open');
             } else {
                 mod.classList.remove('show');
                 document.body.classList.remove('cart-open');
                 if(hw) hw.classList.remove('cart-drawer-open');
+
+                if(heroVideo && window.__divertyHeroWasPlaying && app.activeSection === 'home' && !document.hidden) {
+                    const r = heroVideo.getBoundingClientRect();
+                    if(r.bottom > 0 && r.top < window.innerHeight) {
+                        const p = heroVideo.play();
+                        if(p && typeof p.catch === 'function') p.catch(() => {});
+                    }
+                }
+                window.__divertyHeroWasPlaying = false;
             }
+
+            window.__divertyCartAnimTimer = setTimeout(() => {
+                mod.classList.remove('cart-animating');
+            }, 360);
 
             setCartHeaderState(shouldOpen);
         }
@@ -4930,43 +5184,102 @@ body[data-theme="halloween"] #cartModal .cart-empty-state p{color:#cbd5e1!import
 
         function renderAllCatalog() {
             if(!isFirebaseLoaded || !catalogLoaded){
-                setContent(`<div class="catalog-grid-page all-catalog-page"><section class="catalog-grid-section"><div class="catalog-grid-heading"><div><p>Estamos preparando todo</p><h2>Explora nuestros paquetes</h2></div></div><div class="catalog-loading-light"><i data-lucide="loader-2"></i><span>Cargando catálogo...</span></div></section></div>`);
+                setContent(`
+                    <div class="catalog-grid-page all-catalog-page">
+                        <section class="catalog-grid-section">
+                            <div class="catalog-grid-heading">
+                                <div>
+                                    <p>Estamos preparando todo</p>
+                                    <h2>Explora por categorías</h2>
+                                </div>
+                            </div>
+                            <div class="catalog-loading-light">
+                                <i data-lucide="loader-2"></i>
+                                <span>Cargando categorías...</span>
+                            </div>
+                        </section>
+                    </div>
+                `);
                 if(typeof lucide !== 'undefined') lucide.createIcons();
                 return;
             }
 
-            const activeCategoryIds = new Set(dynamicCategories.filter(c => c.activo !== false).map(c => c.id));
-            const items = app.catalog
-                .filter(i => !i.categoria || activeCategoryIds.size === 0 || activeCategoryIds.has(i.categoria))
-                .sort((a,b) => {
-                    const ca = dynamicCategories.findIndex(c => c.id === a.categoria);
-                    const cb = dynamicCategories.findIndex(c => c.id === b.categoria);
-                    if(ca !== cb) return ca - cb;
-                    return (a.orden || 0) - (b.orden || 0);
-                });
+            const categories = dynamicCategories
+                .filter(c => c.activo !== false)
+                .map(c => {
+                    const items = app.catalog
+                        .filter(i => i.categoria === c.id)
+                        .sort((a,b) => (a.orden || 0) - (b.orden || 0));
+                    return { ...c, items, count: items.length };
+                })
+                .filter(c => c.count > 0);
 
-            if(items.length === 0){
-                setContent(`<div class="catalog-grid-page all-catalog-page"><section class="catalog-grid-section"><div class="catalog-grid-heading"><div><p>Catálogo</p><h2>Explora nuestros paquetes</h2></div></div><div class="catalog-empty-light"><i data-lucide="package-open"></i><h3>Próximamente más opciones</h3></div></section></div>`);
+            if(categories.length === 0){
+                setContent(`
+                    <div class="catalog-grid-page all-catalog-page">
+                        <section class="catalog-grid-section">
+                            <div class="catalog-grid-heading">
+                                <div>
+                                    <p>Catálogo</p>
+                                    <h2>Explora por categorías</h2>
+                                </div>
+                            </div>
+                            <div class="catalog-empty-light">
+                                <i data-lucide="package-open"></i>
+                                <h3>Próximamente más opciones</h3>
+                            </div>
+                        </section>
+                    </div>
+                `);
                 if(typeof lucide !== 'undefined') lucide.createIcons();
                 return;
             }
+
+            const cards = categories.map(cat => {
+                const firstItem = cat.items[0];
+                const cover = cleanStr(cat.imagen || cat.image || firstItem?.image || '');
+                const icon = getCatalogIcon(cat);
+                const countLabel = `${cat.count} ${cat.count === 1 ? 'opción' : 'opciones'}`;
+
+                return `
+                    <button type="button"
+                        data-target-section="cat_${cat.id}"
+                        class="nav-action catalog-category-card"
+                        aria-label="Ver ${cleanStr(cat.nombre)}">
+                        <div class="catalog-category-media">
+                            ${cover
+                                ? `<img src="${cover}" alt="" loading="lazy" decoding="async">`
+                                : `<div class="catalog-category-placeholder"><i data-lucide="${icon}"></i></div>`
+                            }
+                            <div class="catalog-category-shade"></div>
+                            <span class="catalog-category-icon"><i data-lucide="${icon}"></i></span>
+                        </div>
+                        <div class="catalog-category-info">
+                            <div>
+                                <h3>${cleanStr(cat.nombre)}</h3>
+                                <p>${countLabel}</p>
+                            </div>
+                            <span class="catalog-category-arrow"><i data-lucide="chevron-right"></i></span>
+                        </div>
+                    </button>
+                `;
+            }).join('');
 
             setContent(`
                 <div class="catalog-grid-page all-catalog-page">
                     <section class="catalog-grid-section">
                         <div class="catalog-grid-heading">
                             <div>
-                                <p>Encuentra la opción ideal para tu evento</p>
-                                <h2>Explora nuestros paquetes</h2>
+                                <p>Elige lo que estás buscando</p>
+                                <h2>Explora por categorías</h2>
                             </div>
-                            <span class="catalog-grid-count">${items.length} ${items.length === 1 ? 'opción' : 'opciones'}</span>
+                            <span class="catalog-grid-count">${categories.length} ${categories.length === 1 ? 'categoría' : 'categorías'}</span>
                         </div>
-                        <div class="catalog-products-grid">
-                            ${items.map(createCatalogTileHTML).join('')}
-                        </div>
+                        <div class="catalog-categories-grid">${cards}</div>
                     </section>
                 </div>
             `);
+
             if(typeof lucide !== 'undefined') lucide.createIcons();
         }
 
@@ -5810,7 +6123,7 @@ body[data-theme="halloween"] #cartModal .cart-empty-state p{color:#cbd5e1!import
 
 <script>
 // Seguro: nunca dejar la interfaz bloqueada por una conexión lenta.
-setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, 4500);
+setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, 1200);
 </script>
 
 <script id="diverty-home-swipe-guard">
