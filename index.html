@@ -16,6 +16,16 @@
     <title>Diverty Eventos | Planes de Fiestas en Panamá</title>
     <meta name="description" content="¡Celebra con Diverty Eventos! Fiestas infantiles en Panamá. Payasitos, animadores, pintacaritas y shows de burbujas.">
     <meta name="theme-color" content="#F8FAFC">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta property="og:locale" content="es_PA">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Diverty Eventos">
+    <meta property="og:title" content="Diverty Eventos | Planes de Fiestas en Panamá">
+    <meta property="og:description" content="Fiestas infantiles en Panamá con animadores, pintacaritas, shows y planes para celebrar momentos especiales.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Diverty Eventos | Planes de Fiestas en Panamá">
+    <meta name="twitter:description" content="Fiestas infantiles en Panamá con animadores, pintacaritas, shows y planes para celebrar momentos especiales.">
     
     <!-- PRECONEXIÓN DE RECURSOS PARA MAXIMA VELOCIDAD -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -2635,6 +2645,50 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
 
     <h1 class="sr-only">Diverty Eventos: La mejor animación, payasos y planes de fiestas infantiles en Panamá</h1>
 
+    <style id="diverty-floating-menu-redesign">
+      /* Paso 1: rediseño visual del menú. No elimina contenido ni funciones existentes. */
+      @media (max-width: 1023px) {
+        #headerWrapper { padding-top: 14px; }
+        #headerWrapper:has(#topAnnouncementBanner[style*="display: none"]) #mainHeader { margin-top: 0; }
+        #mainHeader { padding: 0 18px !important; background: transparent !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; }
+        #mainHeader > .container {
+          width: 100%; max-width: 640px; min-height: 76px; padding: 8px 14px;
+          background: #fff; border-radius: 999px; box-shadow: 0 14px 35px rgba(15,23,42,.18);
+          display: grid !important; grid-template-columns: 52px 1fr 52px; align-items: center; gap: 6px;
+        }
+        #mainHeader .logo-container { grid-column: 2; justify-self: center; min-width: 0; }
+        #mainHeader .logo-container > div:first-child { width: 48px !important; height: 48px !important; margin-right: 8px !important; }
+        #mainHeader .header-brand-text { color: #172033 !important; }
+        #mobileToggle {
+          grid-column: 1; grid-row: 1; justify-self: start; width: 48px; height: 48px; padding: 0 !important;
+          border: 0 !important; border-radius: 50% !important; background: transparent !important; box-shadow: none !important;
+          display: flex !important; align-items: center; justify-content: center;
+        }
+        #mobileToggle > span { display: none !important; }
+        #mobileToggle > div { padding: 0 !important; background: transparent !important; border-radius: 0 !important; }
+        #mobileToggle svg { width: 28px !important; height: 28px !important; color: #172033 !important; }
+        #headerCartButton {
+          grid-column: 3; grid-row: 1; justify-self: end; width: 48px; height: 48px; border: 0; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center; position: relative; color: #172033; background: transparent;
+        }
+        #headerCartButton svg { width: 25px; height: 25px; }
+        #headerCartBadge {
+          position: absolute; top: 3px; right: 1px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px;
+          display: flex; align-items: center; justify-content: center; background: var(--s-primary); color: #fff;
+          font-size: 10px; font-weight: 900; line-height: 1; border: 2px solid #fff;
+        }
+      }
+      @media (min-width: 1024px) { #headerCartButton { display:none; } }
+      @media (max-width: 420px) {
+        #mainHeader { padding: 0 10px !important; }
+        #mainHeader > .container { min-height: 68px; grid-template-columns: 44px 1fr 44px; padding: 7px 11px; }
+        #mainHeader .logo-container > div:first-child { width: 42px !important; height: 42px !important; margin-right: 6px !important; }
+        #mainHeader .header-brand-text { font-size: 1.25rem !important; }
+        #mainHeader .logo-container span:last-child { font-size: 8px !important; }
+        #mobileToggle, #headerCartButton { width: 42px; height: 42px; }
+      }
+    </style>
+
     <div id="headerWrapper" class="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none transition-all duration-300">
         <div id="topAnnouncementBanner" style="display: none;" class="justify-center items-center shadow-md pointer-events-auto">
             <i data-lucide="megaphone" class="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2"></i> <span id="bannerTextSpan"></span>
@@ -2661,6 +2715,10 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                     <div class="bg-white/10 p-2 rounded-full group-hover:bg-[var(--s-primary)] transition-colors duration-300">
                         <i data-lucide="menu" class="w-3.5 h-3.5 text-white"></i>
                     </div>
+                </button>
+                <button id="headerCartButton" type="button" class="lg:hidden pointer-events-auto" aria-label="Abrir carrito de compras">
+                    <i data-lucide="shopping-cart"></i>
+                    <span id="headerCartBadge">0</span>
                 </button>
             </div>
         </header>
@@ -2789,7 +2847,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
         </div>
     </div>
     
-    <div id="toast"></div>
+    <div id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
@@ -3251,7 +3309,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                         <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-6 py-1.5 rounded-full z-[40] shadow-md flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> GRAN PROMOCIÓN</div>
                         
                         <div class="glass-panel card-alive flex flex-col md:flex-row h-full rounded-[1.5rem] w-full">
-                            ${img ? `<div class="w-full md:w-5/12 h-40 md:h-auto relative shrink-0 pt-5 px-4 md:p-5"><img src="${img}" class="w-full h-full object-cover rounded-[1rem] shadow-sm border" style="border-color: var(--s-glass-border);"></div>` : ''}
+                            ${img ? `<div class="w-full md:w-5/12 h-40 md:h-auto relative shrink-0 pt-5 px-4 md:p-5"><img src="${img}" alt="${cleanStr(c.titulo || c.nombre || 'Evento Diverty')}" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-[1rem] shadow-sm border" style="border-color: var(--s-glass-border);"></div>` : ''}
                             <div class="p-4 sm:p-5 flex flex-col justify-center flex-1 relative z-10 w-full">
                                 ${sub ? `<div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest w-max mb-3" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="star" class="w-3 h-3"></i> ${sub}</div>` : ''}
                                 <h2 class="text-xl sm:text-2xl lg:text-3xl font-black mb-2 font-nunito leading-tight season-text-title tracking-tight">${titulo}</h2>
@@ -3280,7 +3338,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                         <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full z-[40] shadow-sm flex items-center gap-1 whitespace-nowrap"><i data-lucide="tag" class="w-2.5 h-2.5 fill-white"></i> Promo</div>
                         <div class="glass-panel card-alive p-3 sm:p-4 flex flex-col h-full group w-full">
                             <div class="relative z-10 flex flex-col h-full pt-3">
-                                ${img ? `<div class="w-full h-32 sm:h-40 rounded-xl overflow-hidden mb-3 shrink-0 shadow-sm border border-[var(--s-glass-border)]"><img src="${img}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>` : ''}
+                                ${img ? `<div class="w-full h-32 sm:h-40 rounded-xl overflow-hidden mb-3 shrink-0 shadow-sm border border-[var(--s-glass-border)]"><img src="${img}" alt="${cleanStr(c.titulo || c.nombre || 'Evento Diverty')}" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"></div>` : ''}
                                 ${sub ? `<span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest season-text-primary mb-1 block">${sub}</span>` : ''}
                                 <h3 class="text-lg sm:text-xl font-black season-text-title mb-1.5 font-nunito leading-tight">${titulo}</h3>
                                 ${desc ? `<p class="season-text-muted text-[11px] sm:text-xs font-semibold mb-3 leading-snug line-clamp-2">${desc}</p>` : ''}
@@ -3330,7 +3388,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             
             let imgBlock = `<div class="relative w-full h-40 sm:h-48 shrink-0 rounded-[1.25rem] overflow-hidden shadow-sm mb-4 group-hover:shadow-xl transition-all duration-500 border border-[var(--s-glass-border)]">
                 ${b}
-                <img src="${cleanStr(item.image)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <img src="${cleanStr(item.image)}" alt="${cleanStr(item.name || 'Plan Diverty Eventos')}" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/40 to-transparent opacity-90"></div>
                 <div class="absolute bottom-0 left-0 right-0 p-5 pt-10 text-white">
                     <h3 class="text-2xl sm:text-3xl font-black leading-tight drop-shadow-lg tracking-tight font-poppins text-white">${cleanStr(item.name||item.title)}</h3>
@@ -3486,7 +3544,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
         function renderGallery() {
             if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p>Cargando Galería...</p></div>`); return; }
             if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
-            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative"><img src="${cleanStr(i.image)}" loading="lazy" decoding="async" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" rel="noopener noreferrer" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative"><img src="${cleanStr(i.image)}" loading="lazy" decoding="async" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
         }
 
         function renderCalendar() {
@@ -3562,7 +3620,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                     const pi = cleanPhone(sp.value);
                     const rc = document.getElementById('portalResults'); if(!rc) return;
                     if(pi.length<6){ rc.innerHTML=`<div class="text-center p-8 bg-amber-500/10 rounded-2xl border border-amber-500/20"><p class="text-amber-500 font-bold">Número inválido.</p></div>`; return; }
-                    const res = bookedEvents.filter(ev => { const ep=cleanPhone(ev.telefono); return ep && (ep===pi || ep.includes(pi) || pi.includes(ep)); });
+                    const res = bookedEvents.filter(ev => { const ep=cleanPhone(ev.telefono); return ep && ep===pi; });
                     if(res.length===0) rc.innerHTML=`<div class="text-center p-8 bg-rose-500/10 rounded-2xl border border-rose-500/20"><p class="text-rose-500 font-bold">No encontramos reservas.</p></div>`;
                     else rc.innerHTML = res.map(getPortalResultCard).join('');
                     if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -3592,7 +3650,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                 try {
                     const parsed = JSON.parse(savedData);
                     if (parsed.nombre) {
-                        welcomeBanner = `<div class="bg-[color-mix(in_srgb,var(--s-primary)_15%,transparent)] border border-[var(--s-primary)] p-4 rounded-2xl mb-5 text-sm font-bold flex items-center gap-3 shadow-sm animate-slide-up"><i data-lucide="sparkles" class="w-6 h-6 season-text-primary"></i> <div class="season-text-title">¡Hola de nuevo, ${parsed.nombre.split(' ')[0]}!<br><span class="text-xs font-medium season-text-muted">Autocompletamos tus datos.</span></div></div>`;
+                        welcomeBanner = `<div class="bg-[color-mix(in_srgb,var(--s-primary)_15%,transparent)] border border-[var(--s-primary)] p-4 rounded-2xl mb-5 text-sm font-bold flex items-center gap-3 shadow-sm animate-slide-up"><i data-lucide="sparkles" class="w-6 h-6 season-text-primary"></i> <div class="season-text-title">¡Hola de nuevo, ${cleanStr(parsed.nombre.split(' ')[0])}!<br><span class="text-xs font-medium season-text-muted">Autocompletamos tus datos.</span></div></div>`;
                     }
                 } catch(e){}
             }
@@ -3703,7 +3761,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                 cie.innerHTML='<div class="space-y-3 pt-2 pb-4">'+app.cart.map(i=>`
                     <div class="cart-item-card group relative">
                         <div class="contents">
-                            <img src="${cleanStr(i.image)}" class="cart-item-image">
+                            <img src="${cleanStr(i.image)}" alt="${cleanStr(i.name || 'Servicio seleccionado')}" loading="lazy" decoding="async" class="cart-item-image">
                             <div class="cart-item-info">
                                 <span class="cart-item-name">${cleanStr(i.name)}</span>
                                 <span class="cart-item-qty">Cant: ${i.quantity}</span>
@@ -3974,7 +4032,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
 
                 showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
                 app.cart=[]; appliedCoupon=null; bookingFormState={}; app.wizardStep=1; updateCartUI(); renderBooking();
-            } catch(err){ console.error(err); showToast('El entorno bloqueó la escritura, pero procesamos la solicitud.', 'error'); } 
+            } catch(err){ console.error(err); showToast('No pudimos guardar tu reserva. Por favor, inténtalo nuevamente o contáctanos por WhatsApp.', 'error'); } 
             finally{ sBtn.disabled=false; sBtn.innerHTML=obh; }
         }
 
@@ -4102,6 +4160,14 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             const mmo = document.getElementById('mobileMenuOverlay'); if(mmo) mmo.onclick = () => toggleMobileMenu(false);
             
             const vc = document.getElementById('viewCart'); if(vc) vc.onclick = () => showModal('cartModal');
+            const hcb = document.getElementById('headerCartButton'); if(hcb) hcb.onclick = () => showModal('cartModal');
+            const itemCountEl = document.getElementById('itemCount');
+            const headerCartBadge = document.getElementById('headerCartBadge');
+            if (itemCountEl && headerCartBadge) {
+                const syncHeaderCartBadge = () => { headerCartBadge.textContent = itemCountEl.textContent || '0'; };
+                syncHeaderCartBadge();
+                new MutationObserver(syncHeaderCartBadge).observe(itemCountEl, { childList: true, characterData: true, subtree: true });
+            }
             
             let ticking = false;
             window.addEventListener('scroll', () => { 
