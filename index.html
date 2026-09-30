@@ -448,6 +448,82 @@
   #cartModal #cartItems{max-height:46vh!important;}
   #cartModal #cartTotalsFooter{border-radius:0 0 28px 28px!important;}
 }
+
+/* LOADER DE TEMPORADA PREMIUM */
+.initial-season-loader{
+    position:fixed;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    z-index:9999;
+    background:var(--s-bg-color);
+}
+
+.loader-bg{
+    position:absolute;
+    inset:0;
+}
+
+body[data-theme="halloween"] .initial-season-loader{
+    background:
+    radial-gradient(circle at top right,#f97316,transparent 30%),
+    radial-gradient(circle at bottom left,#7e22ce,transparent 35%),
+    #08050e;
+}
+
+body[data-theme="christmas"] .initial-season-loader{
+    background:
+    radial-gradient(circle at top,#166534,transparent 35%),
+    linear-gradient(#021c13,#07150f);
+}
+
+body[data-theme="summer"] .initial-season-loader{
+    background:
+    radial-gradient(circle at top,#38bdf8,transparent 35%),
+    #e0f7ff;
+}
+
+body[data-theme="school"] .initial-season-loader{
+    background:
+    linear-gradient(#fffdf8,#f7f4e9);
+}
+
+.loader-content{
+    position:relative;
+    z-index:2;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.loader-logo{
+    width:220px;
+    max-width:75vw;
+    height:auto;
+    object-fit:contain;
+    animation:logoPulse 2s ease-in-out infinite;
+}
+
+.loader-spinner{
+    margin-top:25px;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:3px solid rgba(255,255,255,.25);
+    border-top-color:white;
+    animation:spinLoader 1s linear infinite;
+}
+
+@keyframes logoPulse{
+    50%{transform:scale(1.05);}
+}
+
+@keyframes spinLoader{
+    to{transform:rotate(360deg);}
+}
+
 </style>
 <style>
 /* ===== DIVERTY NAVIDAD MAGICA V2 — visual-only layer ===== */
