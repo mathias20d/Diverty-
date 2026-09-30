@@ -2653,11 +2653,12 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
         #mainHeader { padding: 0 18px !important; background: transparent !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; }
         #mainHeader > .container {
           width: 100%; max-width: 640px; min-height: 76px; padding: 8px 14px;
-          background: #fff; border-radius: 999px; box-shadow: 0 14px 35px rgba(15,23,42,.18);
+          background: rgba(10,15,30,.72); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; box-shadow: 0 14px 35px rgba(0,0,0,.28); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
           display: grid !important; grid-template-columns: 52px 1fr 52px; align-items: center; gap: 6px;
         }
         #mainHeader .logo-container { grid-column: 2; justify-self: center; min-width: 0; }
-        #mainHeader .logo-container > div:first-child { width: 58px !important; height: 58px !important; margin-right: 0 !important; }
+        #mainHeader .logo-container > div:first-child { width: 82px !important; height: 58px !important; margin-right: 0 !important; padding: 0 !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
+        #mainHeaderLogo { width: 100% !important; height: 100% !important; object-fit: contain !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
         #mainHeader .logo-container > div:last-child { display: none !important; }
         #mainHeader .header-brand-text { color: #172033 !important; }
         #mobileToggle {
@@ -2667,23 +2668,23 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
         }
         #mobileToggle > span { display: none !important; }
         #mobileToggle > div { padding: 0 !important; background: transparent !important; border-radius: 0 !important; }
-        #mobileToggle svg { width: 28px !important; height: 28px !important; color: #172033 !important; }
+        #mobileToggle svg { width: 28px !important; height: 28px !important; color: #fff !important; }
         #headerCartButton {
           grid-column: 3; grid-row: 1; justify-self: end; width: 48px; height: 48px; border: 0; border-radius: 50%;
-          display: flex; align-items: center; justify-content: center; position: relative; color: #172033; background: transparent;
+          display: flex; align-items: center; justify-content: center; position: relative; color: #fff; background: transparent;
         }
         #headerCartButton svg { width: 25px; height: 25px; }
         #headerCartBadge {
           position: absolute; top: 3px; right: 1px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 999px;
           display: flex; align-items: center; justify-content: center; background: var(--s-primary); color: #fff;
-          font-size: 10px; font-weight: 900; line-height: 1; border: 2px solid #fff;
+          font-size: 10px; font-weight: 900; line-height: 1; border: 2px solid rgba(10,15,30,.85);
         }
       }
       @media (min-width: 1024px) { #headerCartButton { display:none; } }
       @media (max-width: 420px) {
         #mainHeader { padding: 0 10px !important; }
         #mainHeader > .container { min-height: 68px; grid-template-columns: 44px 1fr 44px; padding: 7px 11px; }
-        #mainHeader .logo-container > div:first-child { width: 54px !important; height: 54px !important; margin-right: 0 !important; }
+        #mainHeader .logo-container > div:first-child { width: 76px !important; height: 52px !important; margin-right: 0 !important; }
         #mainHeader .logo-container > div:last-child { display: none !important; }
         #mobileToggle, #headerCartButton { width: 42px; height: 42px; }
       }
@@ -2699,7 +2700,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                 <button data-action="close-modal" data-target-section="home" class="flex items-center logo-container nav-action" aria-label="Inicio">
                     <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full p-[2px] mr-3 shadow-sm" style="background: var(--s-btn-grad);">
                         <!-- El onerror asegura que si tu logo falla, no quede vacío -->
-                        <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full rounded-full object-cover border-2 border-[var(--s-bg-color)]" loading="eager" id="mainHeaderLogo" onerror="this.onerror=null; this.src='https://placehold.co/100x100/7C3AED/ffffff?text=DE'">
+                        <img src="./android-chrome-512x512.png" alt="Diverty Eventos" class="w-full h-full object-contain" loading="eager" id="mainHeaderLogo" onerror="this.onerror=null; this.src='https://placehold.co/100x100/7C3AED/ffffff?text=DE'">
                     </div>
                     <div class="flex flex-col drop-shadow-sm">
                         <span class="text-2xl sm:text-3xl font-black font-nunito leading-none tracking-tight header-brand-text">Diverty</span>
@@ -3525,7 +3526,10 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                 }
             }
 
-            if(typeof renderCalendar === 'function') renderCalendar(); 
+            if(typeof renderCalendar === 'function') {
+                renderCalendar();
+                requestAnimationFrame(() => renderCalendar());
+            }
         }
 
         function renderCategory(catId) {
@@ -3549,7 +3553,14 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
 
         function renderCalendar() {
             const grid = document.getElementById('availability-calendar-grid'); if(!grid) return;
+            if (!(currentCalDate instanceof Date) || Number.isNaN(currentCalDate.getTime())) currentCalDate = new Date();
+            if (!Array.isArray(bookedEvents)) bookedEvents = [];
             const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth();
+            const cmyEarly = document.getElementById('cal-month-year');
+            if (cmyEarly) {
+                const monthLabel = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentCalDate);
+                cmyEarly.textContent = monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1);
+            }
             const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate();
             
             let html = '';
