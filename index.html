@@ -1982,7 +1982,8 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
     <h1 class="sr-only">Diverty Eventos: La mejor animación, payasos y planes de fiestas infantiles en Panamá</h1>
 
     <style id="diverty-floating-menu-redesign">@media (max-width: 1023px) {
-        #headerWrapper { padding-top: 14px; }
+        #headerWrapper { padding-top: 14px; background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        #headerWrapper.scrolled, #headerWrapper.scrolled #mainHeader { background: transparent !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
         #headerWrapper:has(#topAnnouncementBanner[style*="display: none"]) #mainHeader { margin-top: 0; }
         #mainHeader { padding: 0 18px !important; background: transparent !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; }
         #mainHeader > .container {
@@ -1991,7 +1992,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
           display: grid !important; grid-template-columns: 52px 1fr 52px; align-items: center; gap: 6px;
         }
         #mainHeader .logo-container { grid-column: 2; justify-self: center; min-width: 0; }
-        #mainHeader .logo-container > div:first-child { width: 82px !important; height: 58px !important; margin-right: 0 !important; padding: 0 !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
+        #mainHeader .logo-container > div:first-child { width: 118px !important; height: 66px !important; margin-right: 0 !important; padding: 0 !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
         #mainHeaderLogo { width: 100% !important; height: 100% !important; object-fit: contain !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
         #mainHeader .logo-container > div:last-child { display: none !important; }
         #mainHeader .header-brand-text { color: #172033 !important; }
@@ -2016,7 +2017,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
       }@media (min-width: 1024px) { #headerCartButton { display:none; } }@media (max-width: 420px) {
         #mainHeader { padding: 0 10px !important; }
         #mainHeader > .container { min-height: 68px; grid-template-columns: 44px 1fr 44px; padding: 7px 11px; }
-        #mainHeader .logo-container > div:first-child { width: 76px !important; height: 52px !important; margin-right: 0 !important; }
+        #mainHeader .logo-container > div:first-child { width: 108px !important; height: 60px !important; margin-right: 0 !important; }
         #mainHeader .logo-container > div:last-child { display: none !important; }
         #mobileToggle, #headerCartButton { width: 42px; height: 42px; }
       }</style>
@@ -2261,7 +2262,15 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
 
         function setContent(html) { 
             const mc = document.getElementById('mainContent'); 
-            if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); setupSliders(); } 
+            if(mc){
+                mc.innerHTML = html;
+                if(typeof lucide!=='undefined') lucide.createIcons({ root: mc });
+                setupSliders();
+                // Si la vista recién creada contiene el calendario, inicializarlo siempre.
+                if (document.getElementById('availability-calendar-grid') && typeof renderCalendar === 'function') {
+                    requestAnimationFrame(() => renderCalendar());
+                }
+            } 
         }
 
         function setupSliders() {
@@ -2813,7 +2822,8 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             const existingHero = document.getElementById('hero-section-identifier');
             const mainCont = document.getElementById('mainContent');
 
-            if (existingHero && app.activeSection === 'home' && mainCont.contains(existingHero)) {
+            const existingCalendar = document.getElementById('availability-calendar-grid');
+            if (existingHero && existingCalendar && app.activeSection === 'home' && mainCont.contains(existingHero)) {
                 
                 const campWrap = document.getElementById('home-campaigns-wrapper');
                 if (campWrap && isFirebaseLoaded) { 
@@ -3392,7 +3402,20 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
                 }
             } catch(e) { console.error("Error Auth:", e); }
 
-            const T_OUT = 8000; 
+            const T_OUT = 4500;
+
+            // Mostrar el último catálogo válido inmediatamente mientras Firebase actualiza en segundo plano.
+            try {
+                const cached = JSON.parse(localStorage.getItem('divertyCatalogCache') || 'null');
+                if (cached && Array.isArray(cached.catalog) && cached.catalog.length) {
+                    app.catalog = cached.catalog;
+                    allPurchasableItems = [...app.catalog];
+                    if (Array.isArray(cached.categories)) dynamicCategories = cached.categories;
+                    catalogLoaded = true; window.catalogLoaded = true;
+                    buildDynamicNav();
+                    if (app.activeSection === 'home') renderHome();
+                }
+            } catch(e) {}
 
             const loadBanner = async () => {
                 try {
@@ -3463,6 +3486,11 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             // Prioridad de carga: catálogo y categorías primero.
             // Así los paquetes aparecen sin esperar tema, banner y campañas.
             await Promise.allSettled([loadCategories(), loadCatalog()]);
+            try {
+                if (Array.isArray(app.catalog) && app.catalog.length) {
+                    localStorage.setItem('divertyCatalogCache', JSON.stringify({ catalog: app.catalog, categories: dynamicCategories, savedAt: Date.now() }));
+                }
+            } catch(e) {}
             buildDynamicNav();
             isFirebaseLoaded = true;
 
@@ -3527,6 +3555,14 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             
             document.addEventListener('change', e => { if (e.target.matches('#cartLocation')) { app.location = e.target.value; updateCartUI(); } });
         }
+
+        window.addEventListener('pageshow', () => {
+            if (app.activeSection === 'home') {
+                const grid = document.getElementById('availability-calendar-grid');
+                if (!grid) renderHome();
+                else if (typeof renderCalendar === 'function') requestAnimationFrame(() => renderCalendar());
+            }
+        });
 
         setupEventListeners(); 
         populateLocationSelects(); 
