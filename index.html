@@ -264,7 +264,7 @@ radial-gradient(ellipse at 4% 14%,#194f34 0 10%,transparent 11%),radial-gradient
   document.documentElement.classList.add('diverty-booting');
 })();
 </script>
-<style id="diverty-boot-style">html.diverty-booting body{overflow:hidden}html.diverty-booting body> :not(#themeBootLoader){visibility:hidden!important}#themeBootLoader{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#0b1220;opacity:1;transition:opacity .28s ease,visibility .28s ease}html[data-cached-theme="christmas"] #themeBootLoader{background:radial-gradient(circle at 20% 18%,rgba(59,130,246,.18),transparent 28%),radial-gradient(circle at 82% 82%,rgba(148,163,184,.12),transparent 30%),linear-gradient(160deg,#061426,#071D39 55%,#0B1324)}html[data-cached-theme="halloween"] #themeBootLoader{background:linear-gradient(145deg,#09060f,#1b0b23 58%,#401508)}html[data-cached-theme="summer"] #themeBootLoader{background:linear-gradient(145deg,#dff8ff,#eafffb 58%,#fff2cf)}html[data-cached-theme="school"] #themeBootLoader{background:linear-gradient(145deg,#fffdf6,#f4f7ff 58%,#fff4cf)}#themeBootLoader .boot-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:0;background:transparent;border:0;box-shadow:none}#themeBootLoader .boot-logo{width:132px;height:auto;max-height:74px;border-radius:0;object-fit:contain;border:0;box-shadow:none}#themeBootLoader .boot-name{display:none}#themeBootLoader .boot-dots{display:flex;gap:7px;margin-top:4px}#themeBootLoader .boot-dots i{width:6px;height:6px;border-radius:50%;background:#fff;opacity:.35;animation:divertyBoot .8s ease-in-out infinite}html[data-cached-theme="summer"] #themeBootLoader .boot-dots i,html[data-cached-theme="school"] #themeBootLoader .boot-dots i{background:#15324a}#themeBootLoader .boot-dots i:nth-child(2){animation-delay:.1s}#themeBootLoader .boot-dots i:nth-child(3){animation-delay:.2s}@keyframes divertyBoot{0%,100%{transform:translateY(0);opacity:.3}50%{transform:translateY(-5px);opacity:1}}#themeBootLoader.boot-hide{opacity:0;visibility:hidden;pointer-events:none}@media(prefers-reduced-motion:reduce){#themeBootLoader .boot-dots i{animation:none}}</style>
+<style id="diverty-boot-style">html.diverty-booting body{overflow:hidden}html.diverty-booting body> :not(#themeBootLoader){visibility:hidden!important}#themeBootLoader{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#0b1220;opacity:1;transition:opacity .16s ease,visibility .16s ease}html[data-cached-theme="christmas"] #themeBootLoader{background:radial-gradient(circle at 20% 18%,rgba(59,130,246,.18),transparent 28%),radial-gradient(circle at 82% 82%,rgba(148,163,184,.12),transparent 30%),linear-gradient(160deg,#061426,#071D39 55%,#0B1324)}html[data-cached-theme="christmas"] #themeBootLoader:before{content:"✦  ❄  ✦  ❄  ✦";position:absolute;top:9%;left:0;right:0;text-align:center;color:#e2e8f0;font-size:24px;letter-spacing:18px;opacity:.72}html[data-cached-theme="christmas"] #themeBootLoader:after{content:"❄";position:absolute;bottom:10%;left:0;right:0;text-align:center;color:#93c5fd;font-size:34px;opacity:.6}html[data-cached-theme="halloween"] #themeBootLoader{background:linear-gradient(145deg,#09060f,#1b0b23 58%,#401508)}html[data-cached-theme="summer"] #themeBootLoader{background:linear-gradient(145deg,#dff8ff,#eafffb 58%,#fff2cf)}html[data-cached-theme="school"] #themeBootLoader{background:linear-gradient(145deg,#fffdf6,#f4f7ff 58%,#fff4cf)}#themeBootLoader .boot-card{display:flex;flex-direction:column;align-items:center;gap:10px;padding:0;background:transparent;border:0;box-shadow:none}#themeBootLoader .boot-logo{width:210px;height:auto;max-height:112px;border-radius:0;object-fit:contain;border:0;box-shadow:none}#themeBootLoader .boot-name{display:none}#themeBootLoader .boot-dots{display:flex;gap:7px;margin-top:4px}#themeBootLoader .boot-dots i{width:6px;height:6px;border-radius:50%;background:#fff;opacity:.35;animation:divertyBoot .8s ease-in-out infinite}html[data-cached-theme="summer"] #themeBootLoader .boot-dots i,html[data-cached-theme="school"] #themeBootLoader .boot-dots i{background:#15324a}#themeBootLoader .boot-dots i:nth-child(2){animation-delay:.1s}#themeBootLoader .boot-dots i:nth-child(3){animation-delay:.2s}@keyframes divertyBoot{0%,100%{transform:translateY(0);opacity:.3}50%{transform:translateY(-5px);opacity:1}}#themeBootLoader.boot-hide{opacity:0;visibility:hidden;pointer-events:none}@media(prefers-reduced-motion:reduce){#themeBootLoader .boot-dots i{animation:none}}</style>
 
 
 <style id="cart-selected-mobile-fix">#cartModal{z-index:2147483000!important;isolation:isolate!important;}#cartModal .modal-content{position:relative!important;z-index:2!important;isolation:isolate!important;}#cartModal #cartItems,#cartModal .cart-item-card{position:relative!important;z-index:3!important;}#cartModal .cart-item-card{background:#fff!important;contain:paint!important;}body.cart-open #mainContent .season-btn,
@@ -2295,7 +2295,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
             document.documentElement.classList.remove('diverty-booting');
             if (loader) {
                 loader.classList.add('boot-hide');
-                setTimeout(() => loader.remove(), 320);
+                setTimeout(() => loader.remove(), 180);
             }
         }
 
@@ -3470,7 +3470,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
 
             // No esconder toda la web por una red lenta: esperamos como máximo 700 ms
             // por la confirmación del tema y luego mostramos la interfaz.
-            await Promise.race([themePromise, new Promise(resolve => setTimeout(resolve, 700))]);
+            await Promise.race([themePromise, new Promise(resolve => setTimeout(resolve, 120))]);
             finishThemeBoot();
 
             await primaryDataPromise;
@@ -3558,7 +3558,10 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
         document.body.classList.add('js-loaded');
         const loader = document.getElementById('initial-loader'); if(loader) loader.style.display = 'none';
 
-        setTimeout(() => { initFirebaseAndData().catch(err => { console.error('Firebase init:', err); catalogLoaded = true; window.catalogLoaded = true; isFirebaseLoaded = true; buildDynamicNav(); if (app.activeSection === 'home') renderHome(); finishThemeBoot(); }); }, 50);
+        // Firebase trabaja en segundo plano; el loader no debe hacer esperar al usuario.
+        initFirebaseAndData().catch(err => { console.error('Firebase init:', err); catalogLoaded = true; window.catalogLoaded = true; isFirebaseLoaded = true; buildDynamicNav(); if (app.activeSection === 'home') renderHome(); finishThemeBoot(); });
+        // Mostrar la interfaz casi de inmediato. El tema guardado ya define el aspecto del arranque.
+        setTimeout(() => finishThemeBoot(), 260);
 
     </script>
 
@@ -3578,7 +3581,7 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
 
 <script>
 // Seguro: nunca dejar la interfaz bloqueada por una conexión lenta.
-setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, 1500);
+setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, 650);
 </script>
 
 <script id="diverty-home-swipe-guard">
