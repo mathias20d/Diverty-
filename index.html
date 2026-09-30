@@ -3492,6 +3492,364 @@ body[data-theme="christmas"] #mobileMenu .mobile-social-btn{
 }
 </style>
 
+
+<style id="diverty-cart-season-final-v2">
+/* ===== CARRITO: BADGE SUPERIOR + DISEÑO DE TEMPORADA ===== */
+
+/* El resumen inferior ya no se usa. */
+#cartSummary{display:none!important;}
+
+/* Contador sobre el icono del carrito */
+#viewCart{overflow:visible!important;}
+.header-cart-badge{
+    position:absolute!important;
+    top:-7px!important;
+    right:-7px!important;
+    z-index:20!important;
+    min-width:22px!important;
+    height:22px!important;
+    padding:0 6px!important;
+    border-radius:999px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    background:var(--s-btn-grad)!important;
+    color:#fff!important;
+    border:2px solid var(--s-bg-color)!important;
+    box-shadow:0 5px 14px rgba(0,0,0,.30)!important;
+    font-family:'Poppins',sans-serif!important;
+    font-size:10px!important;
+    font-weight:950!important;
+    line-height:1!important;
+    opacity:0!important;
+    visibility:hidden!important;
+    transform:scale(.45)!important;
+    transition:opacity .18s ease,transform .22s cubic-bezier(.22,1,.36,1),visibility .18s ease!important;
+}
+.header-cart-badge.show{
+    opacity:1!important;
+    visibility:visible!important;
+    transform:scale(1)!important;
+    animation:divertyCartBadgePop .30s ease-out;
+}
+@keyframes divertyCartBadgePop{
+    0%{transform:scale(.55)}
+    65%{transform:scale(1.16)}
+    100%{transform:scale(1)}
+}
+
+/* Fondo del modal */
+#cartModal{
+    background:rgba(2,6,23,.74)!important;
+    backdrop-filter:blur(8px)!important;
+    -webkit-backdrop-filter:blur(8px)!important;
+}
+
+/* Panel general */
+#cartModal .modal-content{
+    background:var(--s-bg-color)!important;
+    color:var(--s-text-title)!important;
+    border:1px solid var(--s-glass-border)!important;
+    box-shadow:0 28px 75px rgba(0,0,0,.44)!important;
+}
+
+/* Encabezado */
+#cartModal .cart-header{
+    background:var(--s-glass-bg)!important;
+    border-bottom:1px solid var(--s-glass-border)!important;
+}
+#cartModal .cart-title{color:var(--s-text-title)!important;}
+#cartModal .cart-title svg{color:var(--s-primary)!important;}
+#cartModal #emptyCartBtn{
+    background:color-mix(in srgb,var(--s-primary) 12%,transparent)!important;
+    color:var(--s-primary)!important;
+    border:1px solid color-mix(in srgb,var(--s-primary) 30%,transparent)!important;
+}
+#cartModal .cart-close-always,
+#cartModal button[data-action="close-modal"]{
+    background:color-mix(in srgb,var(--s-text-title) 8%,transparent)!important;
+    color:var(--s-text-title)!important;
+    border:1px solid var(--s-glass-border)!important;
+}
+
+/* Productos */
+#cartModal #cartItems{
+    background:linear-gradient(
+        180deg,
+        color-mix(in srgb,var(--s-bg-color) 94%,var(--s-primary) 6%),
+        var(--s-bg-color)
+    )!important;
+}
+#cartModal .cart-item-card{
+    background:var(--s-glass-bg)!important;
+    border:1px solid var(--s-glass-border)!important;
+    box-shadow:0 8px 24px rgba(0,0,0,.12)!important;
+}
+#cartModal .cart-item-name{color:var(--s-text-title)!important;}
+#cartModal .cart-item-qty{color:var(--s-text-muted)!important;}
+#cartModal .cart-item-price{color:var(--s-primary)!important;}
+#cartModal .cart-remove{
+    background:color-mix(in srgb,var(--s-primary) 11%,transparent)!important;
+    color:var(--s-primary)!important;
+    border:1px solid color-mix(in srgb,var(--s-primary) 26%,transparent)!important;
+}
+
+/* Footer / ubicación / totales */
+#cartModal #cartTotalsFooter{
+    background:var(--s-glass-bg)!important;
+    border-top:1px solid var(--s-glass-border)!important;
+    box-shadow:0 -12px 28px rgba(0,0,0,.10)!important;
+}
+#cartModal #cartTotalsFooter label,
+#cartModal #cartTotalsFooter .season-text-muted{
+    color:var(--s-text-muted)!important;
+}
+#cartModal #cartLocation{
+    background:color-mix(in srgb,var(--s-text-title) 6%,transparent)!important;
+    border:1px solid var(--s-glass-border)!important;
+    color:var(--s-text-title)!important;
+}
+#cartModal #cartTotalsFooter>div:nth-child(2){
+    background:color-mix(in srgb,var(--s-text-title) 5%,transparent)!important;
+    border:1px solid var(--s-glass-border)!important;
+    box-shadow:none!important;
+}
+#cartModal #cartTotal,
+#cartModal #transportCost,
+#cartModal #cartTotalsFooter .season-text-title{
+    color:var(--s-text-title)!important;
+}
+#cartModal #finalTotal{
+    color:var(--s-primary)!important;
+    text-shadow:0 0 18px color-mix(in srgb,var(--s-primary) 22%,transparent)!important;
+}
+
+/* Vacío */
+#cartModal .cart-empty-state h3{color:var(--s-text-title)!important;}
+#cartModal .cart-empty-state p{color:var(--s-text-muted)!important;}
+#cartModal .cart-empty-state > div:first-child{
+    background:color-mix(in srgb,var(--s-primary) 12%,transparent)!important;
+}
+#cartModal .cart-empty-state > div:first-child svg{color:var(--s-primary)!important;}
+#cartModal .cart-empty-action{
+    background:color-mix(in srgb,var(--s-primary) 12%,transparent)!important;
+    color:var(--s-primary)!important;
+    border:1px solid color-mix(in srgb,var(--s-primary) 28%,transparent)!important;
+}
+
+/* Botón principal toma el gradiente de temporada */
+#cartModal button[data-action="navigate-from-modal"],
+#cartModal .season-btn{
+    background:var(--s-btn-grad)!important;
+    color:var(--s-btn-text)!important;
+    border-color:transparent!important;
+}
+
+/* Halloween */
+body[data-theme="halloween"] #cartModal .modal-content{
+    background:
+      radial-gradient(circle at 90% 8%,rgba(249,115,22,.11),transparent 26%),
+      radial-gradient(circle at 8% 90%,rgba(126,34,206,.14),transparent 30%),
+      var(--s-bg-color)!important;
+}
+body[data-theme="halloween"] #cartModal .cart-header,
+body[data-theme="halloween"] #cartModal #cartTotalsFooter,
+body[data-theme="halloween"] #cartModal .cart-item-card{
+    background:rgba(10,8,18,.96)!important;
+    border-color:rgba(249,115,22,.20)!important;
+}
+body[data-theme="halloween"] #cartModal #cartItems{
+    background:linear-gradient(180deg,#090711,#100817)!important;
+}
+
+/* Navidad */
+body[data-theme="christmas"] #cartModal .cart-header,
+body[data-theme="christmas"] #cartModal #cartTotalsFooter,
+body[data-theme="christmas"] #cartModal .cart-item-card{
+    background:color-mix(in srgb,var(--s-bg-color) 90%,#0f5132 10%)!important;
+}
+
+/* WhatsApp desaparece mientras el carrito está abierto para no tapar controles */
+body.cart-open .whatsapp-container{
+    opacity:0!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+}
+</style>
+
+
+<style id="diverty-cart-right-drawer-performance-v1">
+/* =========================================================
+   CARRITO MÓVIL LATERAL: MISMO BOTÓN 🛒 / X
+   ========================================================= */
+
+/* Barra superior siempre queda visible y utilizable */
+body.cart-open #headerWrapper{
+    z-index:2147483646!important;
+}
+body.cart-open #mainHeader{
+    pointer-events:auto!important;
+}
+
+/* Overlay detrás de la barra superior */
+#cartModal{
+    z-index:2147483640!important;
+    padding:0!important;
+    align-items:initial!important;
+    justify-content:initial!important;
+    background:rgba(2,6,23,.58)!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+    transition:opacity .22s ease,visibility .22s ease!important;
+}
+
+/* Drawer: arriba, a la derecha, sin nacer desde el fondo */
+#cartModal .modal-content{
+    position:absolute!important;
+    top:88px!important;
+    right:12px!important;
+    left:auto!important;
+    bottom:auto!important;
+
+    width:min(88vw,390px)!important;
+    max-width:390px!important;
+    height:calc(100dvh - 108px)!important;
+    max-height:calc(100dvh - 108px)!important;
+
+    margin:0!important;
+    border-radius:26px 0 0 26px!important;
+    border:1px solid var(--s-glass-border)!important;
+
+    transform:translateX(calc(100% + 24px))!important;
+    opacity:1!important;
+    transition:transform .38s cubic-bezier(.22,1,.36,1)!important;
+    will-change:transform!important;
+    contain:layout paint!important;
+}
+
+#cartModal.show .modal-content{
+    transform:translateX(0)!important;
+}
+
+/* La X interna superior ya no hace falta: la X está en el mismo botón del carrito */
+#cartModal .cart-close-always{
+    display:none!important;
+}
+
+/* Encabezado del drawer más compacto */
+#cartModal .cart-header{
+    padding:14px 16px 12px!important;
+    border-radius:26px 0 0 0!important;
+}
+#cartModal .cart-title{
+    font-size:19px!important;
+}
+
+/* El contenido aprovecha mejor el alto disponible */
+#cartModal #cartItems{
+    min-height:0!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+}
+#cartModal #cartTotalsFooter{
+    padding:12px 14px max(12px,env(safe-area-inset-bottom))!important;
+}
+
+/* El mismo botón cambia visualmente 🛒 <-> X sin moverse */
+#viewCart{
+    position:relative!important;
+    z-index:5!important;
+}
+#headerCartIcon{
+    width:28px!important;
+    height:28px!important;
+}
+#headerCartIcon svg{
+    display:block!important;
+}
+
+/* =========================================================
+   OPTIMIZACIÓN DE FLUIDEZ EN MÓVIL
+   ========================================================= */
+@media(max-width:767px){
+    /* Los blur en tiempo real son costosos en Android; mantenemos fondos sólidos/translúcidos. */
+    .glass-panel,
+    #mainHeader,
+    #headerWrapper.scrolled #mainHeader,
+    .season-overlay,
+    #mobileMenuOverlay,
+    #cartModal,
+    #toast{
+        backdrop-filter:none!important;
+        -webkit-backdrop-filter:none!important;
+    }
+
+    /* El overlay estacional conserva color sin recalcular blur en cada frame. */
+    .season-overlay{
+        will-change:auto!important;
+    }
+
+    /* Menos capas GPU permanentes = scroll más estable. */
+    .card-alive,
+    .card-safe-wrapper,
+    .home-swipe-item,
+    .home-swipe-track,
+    .glass-panel{
+        will-change:auto!important;
+    }
+
+    /* Decoración continua reducida en móvil; no se elimina el tema. */
+    .falling-decor{
+        animation:none!important;
+    }
+
+    /* Transiciones cortas y solo de transform/opacity. */
+    #mobileMenu{
+        transition:transform .34s cubic-bezier(.22,1,.36,1)!important;
+    }
+    #mobileMenuOverlay{
+        transition:opacity .20s ease,visibility .20s ease!important;
+    }
+
+    /* Evita repintados costosos de imágenes durante scroll. */
+    img{
+        backface-visibility:hidden;
+    }
+}
+
+/* Teléfonos pequeños */
+@media(max-width:380px){
+    #cartModal .modal-content{
+        top:80px!important;
+        right:8px!important;
+        width:min(90vw,350px)!important;
+        height:calc(100dvh - 96px)!important;
+        max-height:calc(100dvh - 96px)!important;
+    }
+}
+
+/* Desktop conserva drawer derecho, pero más amplio */
+@media(min-width:768px){
+    #cartModal .modal-content{
+        top:92px!important;
+        right:24px!important;
+        width:440px!important;
+        max-width:440px!important;
+        height:calc(100dvh - 116px)!important;
+        max-height:calc(100dvh - 116px)!important;
+        border-radius:28px!important;
+    }
+}
+
+/* Accesibilidad */
+@media(prefers-reduced-motion:reduce){
+    #cartModal .modal-content,
+    #mobileMenu{
+        transition-duration:.01ms!important;
+    }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -3543,9 +3901,12 @@ body[data-theme="christmas"] #mobileMenu .mobile-social-btn{
 
         <!-- CARRITO DERECHO -->
         <button id="viewCart"
-            class="flex items-center justify-center w-11 h-11 rounded-full bg-white/90 shadow-md border border-gray-200 transition active:scale-95"
+            class="relative flex items-center justify-center w-11 h-11 rounded-full bg-white/90 shadow-md border border-gray-200 transition active:scale-95"
             aria-label="Carrito">
-            <i data-lucide="shopping-cart" class="w-5 h-5 text-gray-800"></i>
+            <span id="headerCartIcon" class="flex items-center justify-center">
+                <i data-lucide="shopping-cart" class="w-5 h-5 text-gray-800"></i>
+            </span>
+            <span id="headerCartBadge" class="header-cart-badge" aria-label="0 productos en el carrito">0</span>
         </button>
 
     </div>
@@ -3802,12 +4163,50 @@ body[data-theme="christmas"] #mobileMenu .mobile-social-btn{
             });
         }
 
+        function setCartHeaderState(open) {
+            const vc = document.getElementById('viewCart');
+            const icon = document.getElementById('headerCartIcon');
+            if(!vc || !icon) return;
+
+            vc.setAttribute('aria-label', open ? 'Cerrar carrito' : 'Abrir carrito');
+            vc.setAttribute('aria-expanded', open ? 'true' : 'false');
+            icon.innerHTML = open
+                ? '<i data-lucide="x" class="w-7 h-7 text-gray-800"></i>'
+                : '<i data-lucide="shopping-cart" class="w-5 h-5 text-gray-800"></i>';
+
+            if(typeof lucide !== 'undefined') lucide.createIcons({ root: vc });
+        }
+
+        function toggleCartDrawer(forceOpen) {
+            const mod = document.getElementById('cartModal');
+            const hw = document.getElementById('headerWrapper');
+            if(!mod) return;
+
+            const shouldOpen = typeof forceOpen === 'boolean'
+                ? forceOpen
+                : !mod.classList.contains('show');
+
+            if(shouldOpen) {
+                toggleMobileMenu(false);
+                mod.classList.add('show');
+                document.body.classList.add('cart-open');
+                if(hw) hw.classList.add('cart-drawer-open');
+            } else {
+                mod.classList.remove('show');
+                document.body.classList.remove('cart-open');
+                if(hw) hw.classList.remove('cart-drawer-open');
+            }
+
+            setCartHeaderState(shouldOpen);
+        }
+
         function showModal(modalId) { 
+            if(modalId === 'cartModal') {
+                toggleCartDrawer(true);
+                return;
+            }
             const mod = document.getElementById(modalId); 
-            if(mod) {
-                mod.classList.add('show'); 
-                if (modalId === 'cartModal') document.body.classList.add('cart-open');
-            } 
+            if(mod) mod.classList.add('show');
         }
         
         function showToast(msg, type='info') { 
@@ -4754,10 +5153,24 @@ body[data-theme="christmas"] #mobileMenu .mobile-social-btn{
             let dv = 0; if(appliedCoupon && count>0) dv = appliedCoupon.type==='percent' ? sub*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount);
             const ft = sub - dv + tc;
 
-            const ice = document.getElementById('itemCount'), tpe = document.getElementById('totalPrice'), cse = document.getElementById('cartSummary');
+            const ice = document.getElementById('itemCount');
+            const tpe = document.getElementById('totalPrice');
+            const cse = document.getElementById('cartSummary');
+            const hcb = document.getElementById('headerCartBadge');
+
             if(ice) ice.textContent = count;
             if(tpe) tpe.textContent = `$${Math.max(0,ft).toFixed(2)}`;
-            if(cse){ if(count>0){ cse.classList.remove('hidden'); document.body.classList.add('has-cart'); } else { cse.classList.add('hidden'); document.body.classList.remove('has-cart'); } }
+
+            // La notificación oficial queda sobre el carrito de la barra superior.
+            if(hcb){
+                hcb.textContent = count > 99 ? '99+' : String(count);
+                hcb.setAttribute('aria-label', `${count} ${count === 1 ? 'producto' : 'productos'} en el carrito`);
+                hcb.classList.toggle('show', count > 0);
+            }
+
+            // La barra inferior se mantiene desactivada para no chocar con WhatsApp.
+            if(cse) cse.classList.add('hidden');
+            document.body.classList.remove('has-cart');
             
             const cte = document.getElementById('cartTotal'), tce = document.getElementById('transportCost'), fte = document.getElementById('finalTotal'), dr = document.getElementById('discountRow'), dae = document.getElementById('discountAmount');
             if(cte) cte.textContent = `$${sub.toFixed(2)}`; if(tce) tce.textContent = `$${tc.toFixed(2)}`;
@@ -4876,8 +5289,8 @@ body[data-theme="christmas"] #mobileMenu .mobile-social-btn{
                 if(targetSec) {
                     e.preventDefault();
                     document.querySelectorAll('.modal-backdrop').forEach(m => { 
-                        m.classList.remove('show'); 
-                        if(m.id === 'cartModal') document.body.classList.remove('cart-open');
+                        if(m.id === 'cartModal') toggleCartDrawer(false);
+                        else m.classList.remove('show');
                     });
                     toggleMobileMenu(false);
                     if(app.activeSection !== targetSec) setActiveSection(targetSec);
@@ -5006,8 +5419,8 @@ body[data-theme="christmas"] #mobileMenu .mobile-social-btn{
                 case 'close-modal': { 
                     const m = target.closest('.modal-backdrop'); 
                     if(m) {
-                        m.classList.remove('show');
-                        if (m.id === 'cartModal') document.body.classList.remove('cart-open');
+                        if(m.id === 'cartModal') toggleCartDrawer(false);
+                        else m.classList.remove('show');
                     }
                     toggleMobileMenu(false);
                     if(targetSection && !navLink) { if(app.activeSection !== targetSection) setActiveSection(targetSection); }
@@ -5016,8 +5429,8 @@ body[data-theme="christmas"] #mobileMenu .mobile-social-btn{
                 case 'navigate-from-modal': { 
                     const m = target.closest('.modal-backdrop'); 
                     if(m) {
-                        m.classList.remove('show');
-                        if (m.id === 'cartModal') document.body.classList.remove('cart-open');
+                        if(m.id === 'cartModal') toggleCartDrawer(false);
+                        else m.classList.remove('show');
                     }
                     if(targetSection && !navLink) { if(app.activeSection !== targetSection) setActiveSection(targetSection); }
                     break; 
@@ -5203,7 +5616,11 @@ body[data-theme="christmas"] #mobileMenu .mobile-social-btn{
             const mmo = document.getElementById('mobileMenuOverlay');
             if(mmo) mmo.onclick = () => toggleMobileMenu(false);
             
-            const vc = document.getElementById('viewCart'); if(vc) vc.onclick = () => showModal('cartModal');
+            const vc = document.getElementById('viewCart');
+            if(vc) {
+                vc.setAttribute('aria-expanded', 'false');
+                vc.onclick = () => toggleCartDrawer();
+            }
             
             let ticking = false;
             window.addEventListener('scroll', () => { 
