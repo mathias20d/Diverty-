@@ -1926,45 +1926,6 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
 }</style>
 
 
-<style id="diverty-menu-polish-v3">@media (max-width:1023px){
-  #headerWrapper, #headerWrapper.scrolled{
-    background:transparent!important;
-    background-color:transparent!important;
-    box-shadow:none!important;
-    border:0!important;
-    backdrop-filter:none!important;
-    -webkit-backdrop-filter:none!important;
-  }
-  #mainHeader, #headerWrapper.scrolled #mainHeader{
-    background:transparent!important;
-    background-color:transparent!important;
-    box-shadow:none!important;
-    border:0!important;
-    backdrop-filter:none!important;
-    -webkit-backdrop-filter:none!important;
-  }
-  #mainHeader > .container{
-    background:rgba(8,13,27,.82)!important;
-    border:1px solid rgba(255,255,255,.14)!important;
-    box-shadow:0 12px 30px rgba(0,0,0,.22)!important;
-  }
-  #mainHeader .logo-container > div:first-child{
-    width:122px!important;
-    height:64px!important;
-    overflow:visible!important;
-  }
-  #mainHeaderLogo{
-    width:122px!important;
-    height:64px!important;
-    object-fit:contain!important;
-    transform:scale(1.12)!important;
-    border-radius:0!important;
-    clip-path:none!important;
-  }
-}@media (max-width:420px){
-  #mainHeader .logo-container > div:first-child{width:112px!important;height:58px!important;}
-  #mainHeaderLogo{width:112px!important;height:58px!important;transform:scale(1.1)!important;}
-}</style>
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -1983,17 +1944,17 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
 
     <style id="diverty-floating-menu-redesign">@media (max-width: 1023px) {
         #headerWrapper { padding-top: 14px; background: transparent !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-        #headerWrapper.scrolled, #headerWrapper.scrolled #mainHeader { background: transparent !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        #headerWrapper.scrolled, body[data-theme] #headerWrapper, body[data-theme] #headerWrapper.scrolled { background: transparent !important; background-color: transparent !important; background-image: none !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
         #headerWrapper:has(#topAnnouncementBanner[style*="display: none"]) #mainHeader { margin-top: 0; }
-        #mainHeader { padding: 0 18px !important; background: transparent !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; }
+        #mainHeader, body[data-theme] #mainHeader, body[data-theme] #headerWrapper.scrolled #mainHeader { padding: 0 18px !important; background: transparent !important; background-color: transparent !important; background-image: none !important; border: 0 !important; box-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; border-radius: 0 !important; overflow: visible !important; }
         #mainHeader > .container {
           width: 100%; max-width: 640px; min-height: 76px; padding: 8px 14px;
           background: rgba(10,15,30,.72); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; box-shadow: 0 14px 35px rgba(0,0,0,.28); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
           display: grid !important; grid-template-columns: 52px 1fr 52px; align-items: center; gap: 6px;
         }
         #mainHeader .logo-container { grid-column: 2; justify-self: center; min-width: 0; }
-        #mainHeader .logo-container > div:first-child { width: 118px !important; height: 66px !important; margin-right: 0 !important; padding: 0 !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
-        #mainHeaderLogo { width: 100% !important; height: 100% !important; object-fit: contain !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+        #mainHeader .logo-container > div:first-child { width: 158px !important; height: 68px !important; margin-right: 0 !important; padding: 0 !important; background: transparent !important; box-shadow: none !important; border-radius: 0 !important;  overflow: visible !important; }
+        #mainHeaderLogo { width: 100% !important; height: 100% !important; object-fit: contain !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important;  transform: scale(1.18) !important; transform-origin: center !important; }
         #mainHeader .logo-container > div:last-child { display: none !important; }
         #mainHeader .header-brand-text { color: #172033 !important; }
         #mobileToggle {
@@ -2017,9 +1978,10 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.what
       }@media (min-width: 1024px) { #headerCartButton { display:none; } }@media (max-width: 420px) {
         #mainHeader { padding: 0 10px !important; }
         #mainHeader > .container { min-height: 68px; grid-template-columns: 44px 1fr 44px; padding: 7px 11px; }
-        #mainHeader .logo-container > div:first-child { width: 108px !important; height: 60px !important; margin-right: 0 !important; }
+        #mainHeader .logo-container > div:first-child { width: 148px !important; height: 64px !important; margin-right: 0 !important; overflow: visible !important; }
         #mainHeader .logo-container > div:last-child { display: none !important; }
         #mobileToggle, #headerCartButton { width: 42px; height: 42px; }
+        #mainHeaderLogo { transform: scale(1.16) !important; }
       }</style>
 
     <div id="headerWrapper" class="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none transition-all duration-300">
