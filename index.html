@@ -5428,6 +5428,33 @@ body[data-theme="christmas"] .catalog-category-cta{
 /* Carruseles conservan gesto táctil nativo; el navegador decide pan vertical/horizontal. */
 .home-swipe-track{touch-action:auto!important;}
 </style>
+
+<style id="diverty-featured-open-swipe-fix-v6">
+/* Permite navegar entre ofertas aun cuando "Ver todo" esta abierto. */
+#home-featured-wrapper .home-featured-track:has(.featured-offer-benefits[open]),
+#home-featured-wrapper .home-featured-track.benefits-expanded{
+  overflow-x:auto!important;
+  overflow-y:visible!important;
+  scroll-snap-type:x mandatory!important;
+  overscroll-behavior-x:contain!important;
+  touch-action:pan-x pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+#home-featured-wrapper .featured-offer-shell{scroll-snap-align:center!important;}
+#home-featured-wrapper .featured-offer-benefits[open],
+#home-featured-wrapper .featured-offer-benefits[open] *{touch-action:auto!important;}
+@media(max-width:767px){
+  #home-featured-wrapper .home-featured-track:has(.featured-offer-benefits[open]),
+  #home-featured-wrapper .home-featured-track.benefits-expanded{
+    width:100vw!important;
+    margin-left:calc(50% - 50vw)!important;
+    margin-right:calc(50% - 50vw)!important;
+    overflow-x:auto!important;
+    scroll-snap-type:x mandatory!important;
+    touch-action:pan-x pan-y!important;
+  }
+}
+</style>
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
