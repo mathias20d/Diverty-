@@ -22,6 +22,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://res.cloudinary.com">
     <link rel="preconnect" href="https://firestore.googleapis.com">
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
     
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" as="style">
@@ -5496,7 +5497,7 @@ body[data-theme="christmas"] .catalog-category-cta{
                 <div class="p-2 rounded-full" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="shopping-cart" class="w-5 h-5"></i></div>
                 <div class="flex flex-col leading-tight"><span class="text-[10px] season-text-muted uppercase">Total (<span id="itemCount" class="font-bold season-text-title">0</span>)</span><span id="totalPrice" class="font-black text-base season-text-title">$0.00</span></div>
             </div>
-            <button id="viewCart" class="season-btn font-bold text-xs py-2.5 px-4 rounded-xl shadow-md">Ver Carrito</button>
+            <button id="viewCartSummary" type="button" class="season-btn font-bold text-xs py-2.5 px-4 rounded-xl shadow-md" aria-label="Abrir carrito">Ver Carrito</button>
         </div>
     </div>
 
@@ -7519,5 +7520,179 @@ document.addEventListener('dragstart', function(e){ if(e.target.closest && e.tar
 })();
 </script>
 
-\n<style id="diverty-ultra-fluid-v3">\n/* =========================================================\n   DIVERTY ULTRA FLUID V3 — optimización móvil final\n   Mantiene el diseño y reduce trabajo de pintura/composición.\n   ========================================================= */\nhtml{scroll-behavior:auto!important;}\nbody{overscroll-behavior-y:auto;}\n\n/* El carrito debe permitir gestos/scroll dentro del drawer. */\nbody.cart-open{touch-action:auto!important;overscroll-behavior:none;}\n#cartModal{touch-action:pan-y!important;contain:layout paint style;}\n#cartModal .modal-content{\n  touch-action:pan-y!important;\n  contain:layout paint style;\n  will-change:transform;\n  backface-visibility:hidden;\n  -webkit-backface-visibility:hidden;\n}\n#cartModal #cartItems{\n  touch-action:pan-y!important;\n  -webkit-overflow-scrolling:touch!important;\n  overscroll-behavior:contain!important;\n  scroll-behavior:auto!important;\n}\n\n/* El fondo oscuro ya da contraste: blur del fondo no aporta suficiente\n   valor en móvil para justificar el coste de GPU. */\n@media (max-width:767px){\n  .season-overlay,\n  .glass-panel,\n  #mainHeader,\n  #headerWrapper.scrolled #mainHeader,\n  #mobileMenuOverlay,\n  #mobileMenu,\n  #cartModal,\n  #cartModal .modal-content{\n    -webkit-backdrop-filter:none!important;\n    backdrop-filter:none!important;\n  }\n\n  /* Cristal visual sin blur en tiempo real. */\n  .glass-panel{background:var(--s-glass-bg)!important;}\n\n  /* No mantener decenas de capas GPU activas durante todo el scroll. */\n  .card-alive,.card-safe-wrapper,.gallery-item,.home-swipe-item,\n  .home-swipe-track,.season-background,.season-overlay{\n    will-change:auto!important;\n  }\n  #cartModal.cart-animating .modal-content,\n  #mobileMenu.open{will-change:transform!important;}\n\n  /* Secciones fuera de pantalla se pintan cuando hacen falta. */\n  #home-campaigns-wrapper,#home-featured-wrapper,#calendar-section,\n  #home-reviews-wrapper,footer{\n    content-visibility:auto;\n    contain-intrinsic-size:auto 720px;\n  }\n\n  /* Sombras más económicas en tarjetas; mismo volumen visual. */\n  .card-alive,.catalog-premium-card,.category-premium-card{\n    box-shadow:0 10px 24px rgba(0,0,0,.16)!important;\n  }\n\n  /* Carruseles: gesto nativo, sin animación de scroll programada. */\n  .home-swipe-track,.overflow-x-auto{\n    scroll-behavior:auto!important;\n    -webkit-overflow-scrolling:touch;\n    overscroll-behavior-inline:contain;\n  }\n\n  /* Cuando hay un drawer abierto, la página de atrás queda visualmente\n     congelada: no gasta GPU animando elementos que el cliente no ve. */\n  body.cart-open #mainContent *,\n  body.cart-open #diverty-xmas-stage *,\n  body.cart-open #diverty-halloween-stage *,\n  body.cart-open #diverty-summer-stage *,\n  body.cart-open #diverty-school-stage *,\n  body.menu-drawer-open #mainContent *,\n  body.menu-drawer-open #diverty-xmas-stage *,\n  body.menu-drawer-open #diverty-halloween-stage *,\n  body.menu-drawer-open #diverty-summer-stage *,\n  body.menu-drawer-open #diverty-school-stage *{\n    animation-play-state:paused!important;\n  }\n\n  /* El contenido detrás del carrito no necesita repintarse. */\n  body.cart-open #mainContent,\n  body.menu-drawer-open #mainContent{\n    contain:paint;\n  }\n\n  /* Transiciones únicamente sobre propiedades baratas. */\n  #cartSummary{transition:opacity .16s ease,transform .16s ease!important;}\n  #cartModal{transition:opacity .14s ease,visibility .14s ease!important;}\n  #cartModal .modal-content{transition:transform .18s cubic-bezier(.2,.8,.2,1)!important;}\n  #mobileMenu{transition:transform .18s cubic-bezier(.2,.8,.2,1),visibility .18s!important;}\n  #mobileMenuOverlay{transition:opacity .16s ease,visibility .16s ease!important;}\n\n  /* Decoración estacional estática en móviles modestos: conserva el tema\n     sin animaciones continuas que compitan con el scroll. */\n  @media (prefers-reduced-motion:reduce){\n    #diverty-xmas-stage *,#diverty-halloween-stage *,\n    #diverty-summer-stage *,#diverty-school-stage *{animation:none!important;}\n  }\n}\n\n/* Durante interacción, evita selección accidental y mejora respuesta táctil. */\nbutton,a,[role="button"],[data-action]{touch-action:manipulation;}\nimg{max-width:100%;}\n</style>\n\n<script id="diverty-ultra-fluid-runtime-v3">\n(function(){\n  'use strict';\n  const isMobile = matchMedia('(max-width: 767px)').matches;\n\n  function tuneImage(img){\n    if(!img || img.dataset.dvPerf==='1') return;\n    img.dataset.dvPerf='1';\n    img.decoding='async';\n    const critical = !!img.closest('#mainHeader,#headerWrapper,#hero-section-identifier');\n    if(!critical){\n      img.loading='lazy';\n      try{ img.fetchPriority='low'; }catch(_){}\n    }\n  }\n  document.querySelectorAll('img').forEach(tuneImage);\n\n  /* Las vistas se regeneran con innerHTML; optimiza nuevas imágenes sin\n     volver a recorrer todo el documento. */\n  const main=document.getElementById('mainContent');\n  if(main && 'MutationObserver' in window){\n    const mo=new MutationObserver(records=>{\n      for(const r of records){\n        for(const n of r.addedNodes){\n          if(n.nodeType!==1) continue;\n          if(n.tagName==='IMG') tuneImage(n);\n          if(n.querySelectorAll) n.querySelectorAll('img').forEach(tuneImage);\n        }\n      }\n    });\n    mo.observe(main,{childList:true,subtree:true});\n  }\n\n  /* Pausa el video cuando no está visible; evita decodificación inútil. */\n  const video=document.getElementById('hero-video');\n  if(video && 'IntersectionObserver' in window){\n    const io=new IntersectionObserver(entries=>{\n      const e=entries[0];\n      if(!e) return;\n      if(!e.isIntersecting || document.hidden || document.body.classList.contains('cart-open')){\n        if(!video.paused) video.pause();\n      }else if(video.paused && !document.body.classList.contains('cart-open')){\n        const p=video.play(); if(p&&p.catch) p.catch(()=>{});\n      }\n    },{rootMargin:'120px 0px',threshold:.01});\n    io.observe(video);\n  }\n\n  /* En móviles con ahorro de datos, no precargar video pesado. */\n  if(isMobile && navigator.connection && navigator.connection.saveData && video){\n    video.preload='none';\n  }\n\n  document.addEventListener('visibilitychange',()=>{\n    if(document.hidden && video && !video.paused) video.pause();\n  },{passive:true});\n})();\n</script>\n</body>
+
+<!-- =========================================================
+     DIVERTY PREMIUM ULTRA PERFORMANCE 2.0
+     Capa consolidada de rendimiento móvil. No cambia el contenido.
+     ========================================================= -->
+<style id="diverty-premium-performance-2">
+html{scroll-behavior:auto!important;}
+body{overscroll-behavior-y:auto;}
+button,a,[role="button"],[data-action]{touch-action:manipulation;}
+img{max-width:100%;height:auto;}
+
+/* Nunca permitir que una capa invisible intercepte gestos. */
+#mobileMenuOverlay:not(.menu-overlay-open){
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+#mobileMenuOverlay.menu-overlay-open{
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+
+/* Drawer del carrito: scroll táctil nativo y composición aislada. */
+body.cart-open{touch-action:auto!important;overscroll-behavior:none;}
+#cartModal{touch-action:pan-y!important;contain:layout paint style;}
+#cartModal .modal-content{
+  touch-action:pan-y!important;
+  contain:layout paint style;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+}
+#cartModal #cartItems{
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+  overscroll-behavior:contain!important;
+  scroll-behavior:auto!important;
+}
+
+/* Solo promover capas mientras realmente se animan. */
+#cartModal.cart-animating .modal-content,#mobileMenu.open{will-change:transform;}
+#cartModal:not(.cart-animating) .modal-content,#mobileMenu:not(.open){will-change:auto;}
+
+@media (max-width:767px){
+  /* Blur en tiempo real es uno de los costes GPU más altos en móvil. */
+  .season-overlay,.glass-panel,#mainHeader,#headerWrapper.scrolled #mainHeader,
+  #mobileMenuOverlay,#mobileMenu,#cartModal,#cartModal .modal-content{
+    -webkit-backdrop-filter:none!important;
+    backdrop-filter:none!important;
+  }
+  .glass-panel{background:var(--s-glass-bg)!important;}
+
+  /* background-attachment:fixed suele provocar repintados completos en móvil. */
+  .season-background{background-attachment:scroll!important;will-change:auto!important;}
+  .season-overlay,.card-alive,.card-safe-wrapper,.gallery-item,.home-swipe-item,
+  .home-swipe-track{will-change:auto!important;}
+
+  /* El navegador puede omitir pintura de secciones que aún no se ven. */
+  #home-campaigns-wrapper,#home-featured-wrapper,#calendar-section,
+  #home-reviews-wrapper,footer{
+    content-visibility:auto;
+    contain-intrinsic-size:auto 680px;
+  }
+
+  /* Gestos nativos: horizontal en carruseles, vertical en la página. */
+  .home-swipe-track,.overflow-x-auto{
+    scroll-behavior:auto!important;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-inline:contain;
+  }
+
+  /* Sombras equivalentes visualmente, mucho más baratas de pintar. */
+  .card-alive,.catalog-premium-card,.category-premium-card{
+    box-shadow:0 10px 24px rgba(0,0,0,.16)!important;
+  }
+
+  /* Transiciones del menú/carrito limitadas a compositor. */
+  #cartSummary{transition:opacity .16s ease,transform .16s ease!important;}
+  #cartModal{transition:opacity .14s ease,visibility .14s ease!important;}
+  #cartModal .modal-content{transition:transform .18s cubic-bezier(.2,.8,.2,1)!important;}
+  #mobileMenu{transition:transform .18s cubic-bezier(.2,.8,.2,1),visibility .18s!important;}
+  #mobileMenuOverlay{transition:opacity .16s ease,visibility .16s ease!important;}
+
+  /* No animar lo que está detrás de un panel abierto. */
+  body.cart-open #mainContent *,body.menu-drawer-open #mainContent *,
+  body.cart-open #diverty-xmas-stage *,body.cart-open #diverty-halloween-stage *,
+  body.cart-open #diverty-summer-stage *,body.cart-open #diverty-school-stage *,
+  body.menu-drawer-open #diverty-xmas-stage *,body.menu-drawer-open #diverty-halloween-stage *,
+  body.menu-drawer-open #diverty-summer-stage *,body.menu-drawer-open #diverty-school-stage *{
+    animation-play-state:paused!important;
+  }
+
+  /* Modo automático para equipos con pocos recursos o ahorro de datos. */
+  html.dv-lite #diverty-xmas-stage *,html.dv-lite #diverty-halloween-stage *,
+  html.dv-lite #diverty-summer-stage *,html.dv-lite #diverty-school-stage *{
+    animation:none!important;
+  }
+  html.dv-lite .group-hover\\:scale-105,html.dv-lite .group-hover\\:scale-110{
+    transform:none!important;
+  }
+}
+
+html.dv-page-hidden *{animation-play-state:paused!important;}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;}
+}
+</style>
+<script id="diverty-premium-performance-runtime-2">
+(function(){
+  'use strict';
+  if(window.__divertyPremiumPerf2) return;
+  window.__divertyPremiumPerf2=true;
+
+  const root=document.documentElement;
+  const conn=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+  const lowMemory=typeof navigator.deviceMemory==='number' && navigator.deviceMemory<=4;
+  const lowCPU=typeof navigator.hardwareConcurrency==='number' && navigator.hardwareConcurrency<=4;
+  const saveData=!!(conn&&conn.saveData);
+  if(saveData||lowMemory||lowCPU) root.classList.add('dv-lite');
+
+  function tuneImage(img){
+    if(!img||img.dataset.dvPerf2==='1') return;
+    img.dataset.dvPerf2='1';
+    img.decoding='async';
+    const critical=!!img.closest('#mainHeader,#headerWrapper,#hero-section-identifier,#themeBootLoader');
+    if(critical){
+      try{img.fetchPriority='high';}catch(_){}
+    }else{
+      img.loading='lazy';
+      try{img.fetchPriority='low';}catch(_){}
+    }
+  }
+  document.querySelectorAll('img').forEach(tuneImage);
+
+  const main=document.getElementById('mainContent');
+  if(main&&'MutationObserver' in window){
+    const mo=new MutationObserver(records=>{
+      for(const r of records){
+        for(const n of r.addedNodes){
+          if(n.nodeType!==1) continue;
+          if(n.tagName==='IMG') tuneImage(n);
+          else if(n.querySelectorAll) n.querySelectorAll('img').forEach(tuneImage);
+        }
+      }
+    });
+    mo.observe(main,{childList:true,subtree:true});
+  }
+
+  const video=document.getElementById('hero-video');
+  if(video){
+    if(saveData) video.preload='none';
+    if('IntersectionObserver' in window){
+      const io=new IntersectionObserver(entries=>{
+        const e=entries[0]; if(!e) return;
+        const blocked=document.hidden||document.body.classList.contains('cart-open')||document.body.classList.contains('menu-drawer-open');
+        if(!e.isIntersecting||blocked){ if(!video.paused) video.pause(); }
+        else if(video.paused&&!saveData){ const p=video.play(); if(p&&p.catch)p.catch(()=>{}); }
+      },{rootMargin:'100px 0px',threshold:.01});
+      io.observe(video);
+    }
+  }
+
+  document.addEventListener('visibilitychange',()=>{
+    root.classList.toggle('dv-page-hidden',document.hidden);
+    if(document.hidden&&video&&!video.paused) video.pause();
+  },{passive:true});
+
+  /* Compatibilidad con el botón legado del resumen del carrito, ya con ID único. */
+  const summaryCart=document.getElementById('viewCartSummary');
+  if(summaryCart) summaryCart.addEventListener('click',()=>{
+    if(typeof toggleCartDrawer==='function') toggleCartDrawer(true);
+  },{passive:true});
+})();
+</script>
+
+</body>
 </html>
