@@ -30,8 +30,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
     
-    <style>
-        /* MOTOR DE TEMAS PREMIUM - VARIABLES BASE */
+    <style data-diverty-css-consolidated="true">
+/* --- CSS consolidado: bloque-css-original --- */
+/* MOTOR DE TEMAS PREMIUM - VARIABLES BASE */
         :root { 
             --s-primary: #7C3AED; --s-secondary: #E11D48; --s-accent: #F59E0B;
             --s-bg-color: #F8FAFC; --s-bg-img: none; --s-overlay: rgba(248,250,252,0.85);
@@ -525,8 +526,7 @@ body[data-theme="school"] .initial-season-loader{
     to{transform:rotate(360deg);}
 }
 
-</style>
-<style>
+/* --- CSS consolidado: bloque-css-original --- */
 /* ===== DIVERTY NAVIDAD MAGICA V2 — visual-only layer ===== */
 body[data-theme="christmas"]{--xmas-gold:#f6cf69;--xmas-red:#c91522;--xmas-green:#063d29;--xmas-deep:#021c13;background:#031b13!important;}
 body[data-theme="christmas"] #diverty-xmas-stage{display:block;position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden;}
@@ -557,9 +557,8 @@ body[data-theme="christmas"] #mobileMenuPanel:before{content:"";position:absolut
 body[data-theme="christmas"] .whatsapp-btn{border:3px solid rgba(255,231,153,.7);box-shadow:0 0 0 7px rgba(4,47,32,.65),0 12px 34px rgba(0,0,0,.35),0 0 25px rgba(246,207,105,.22)!important}
 @media(max-width:767px){body[data-theme="christmas"] #diverty-xmas-stage .xmas-top{height:88px;top:0}body[data-theme="christmas"] .xmas-left,body[data-theme="christmas"] .xmas-right{width:19px;opacity:.68}.xmas-ornament.hide-mobile{display:none}body[data-theme="christmas"] .glass-panel{border-radius:27px!important}body[data-theme="christmas"] #home-featured-wrapper:before,body[data-theme="christmas"] #home-campaigns-wrapper:before{margin-left:8px;margin-right:8px}}
 @media(prefers-reduced-motion:reduce){body[data-theme="christmas"] .xmas-snow,body[data-theme="christmas"] .xmas-bulb{animation:none!important}}
-</style>
 
-<style>
+/* --- CSS consolidado: bloque-css-original --- */
 /* ===== DIVERTY EXPERIENCIAS MAGICAS — HALLOWEEN / VERANO / ESCOLAR ===== */
 #diverty-halloween-stage,#diverty-summer-stage,#diverty-school-stage{display:none;position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden}
 body[data-theme="halloween"] #diverty-halloween-stage,body[data-theme="summer"] #diverty-summer-stage,body[data-theme="school"] #diverty-school-stage{display:block}
@@ -598,10 +597,8 @@ body[data-theme="school"] .season-btn{background:linear-gradient(105deg,#2563eb,
 body[data-theme="school"] #mainHeader{background:linear-gradient(180deg,#fffdf8f8,#f8f6edea)!important;border-bottom:1px solid #2563eb24!important;box-shadow:0 10px 30px #1e3a8a12!important}
 @media(max-width:767px){body[data-theme="halloween"] .hw-moon{width:105px;height:105px;top:90px;opacity:.55}body[data-theme="halloween"] .hw-branch{height:85px}body[data-theme="summer"] .su-sun{width:95px;height:95px;top:92px}body[data-theme="summer"] .su-leaf{width:55px;height:125px;opacity:.55}body[data-theme="school"] .sc-paper{opacity:.5}.sc-pencil{opacity:.65}.hw-pumpkin{transform:scale(.78)}}
 @media(prefers-reduced-motion:reduce){.hw-fog,.su-bubbles{animation:none!important}}
-</style>
 
-
-<style>
+/* --- CSS consolidado: bloque-css-original --- */
 /* ===== DIVERTY TEMAS MAGICOS LITE — performance layer ===== */
 /* Keep the visual identity while reducing continuous paint/compositing work. */
 #diverty-xmas-stage,#diverty-halloween-stage,#diverty-summer-stage,#diverty-school-stage{contain:layout paint style;transform:translateZ(0)}
@@ -664,7 +661,8 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
   }
 })();
 </script>
-<style id="diverty-boot-style">
+<style data-diverty-css-consolidated="true">
+/* --- CSS consolidado: diverty-boot-style --- */
 html.diverty-booting body{overflow:hidden}
 html.diverty-booting body> :not(#themeBootLoader){visibility:hidden!important}
 #themeBootLoader{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#0b1220;opacity:1;transition:opacity .28s ease,visibility .28s ease}
@@ -683,10 +681,8 @@ html[data-cached-theme="summer"] #themeBootLoader .boot-name,html[data-cached-th
 #themeBootLoader.boot-hide{opacity:0;visibility:hidden;pointer-events:none}
 html.diverty-splash-skipped #themeBootLoader{display:none!important}
 @media(prefers-reduced-motion:reduce){#themeBootLoader .boot-dots i{animation:none}}
-</style>
 
-
-<style id="cart-selected-mobile-fix">
+/* --- CSS consolidado: cart-selected-mobile-fix --- */
 /* FIX: evita que botones/insignias de la página de fondo atraviesen visualmente el carrito */
 #cartModal{z-index:2147483000!important;isolation:isolate!important;}
 #cartModal .modal-content{position:relative!important;z-index:2!important;isolation:isolate!important;}
@@ -703,9 +699,8 @@ body.cart-open #mainContent [data-cart-state="selected"]{visibility:hidden!impor
   #cartModal .cart-item-image{width:54px!important;height:54px!important;}
   #cartModal .cart-item-name{font-size:13px!important;}
 }
-</style>
 
-<style id="diverty-cart-final-polish">
+/* --- CSS consolidado: diverty-cart-final-polish --- */
 /* Carrito final: capas, cierre y estado vacío */
 #cartModal{z-index:2147483640!important;isolation:isolate!important;}
 #cartModal .modal-content{z-index:2!important;isolation:isolate!important;overflow:hidden!important;}
@@ -754,10 +749,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   #cartModal .cart-close-always,#cartModal #emptyCartBtn{width:38px!important;height:38px!important;min-width:38px!important;}
   #cartModal .cart-empty-state{min-height:300px!important;padding:28px 20px!important;}
 }
-</style>
 
-
-<style id="diverty-home-swipe-fix">
+/* --- CSS consolidado: diverty-home-swipe-fix --- */
 /* Carruseles táctiles del inicio: campañas y paquetes destacados */
 .home-swipe-track{
   display:flex; overflow-x:auto; overflow-y:visible; gap:16px; width:100%;
@@ -780,35 +773,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   .home-swipe-track.home-campaign-track > *{width:100%!important;max-width:none!important;min-width:0!important}
 }
 @media (min-width:1024px){.home-swipe-track.home-campaign-track{grid-template-columns:repeat(3,minmax(0,1fr))}}
-</style>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<style id="diverty-premium-master-v10">
+/* --- CSS consolidado: diverty-premium-master-v10 --- */
 /* V10 MASTER — Consolidación exacta de V1–V9. Se conserva el orden de cascada para mantener la apariencia aprobada. */
 
 /* ===== diverty-home-premium-v1 ===== */
@@ -1879,9 +1845,7 @@ body.theme-school .card-safe-wrapper > *{
   }
 }
 
-</style>
-
-<style id="diverty-v11-visual-redesign">
+/* --- CSS consolidado: diverty-v11-visual-redesign --- */
 /* V11 — Rediseño visual fuerte. Solo CSS; contenido y lógica intactos. */
 :root{
   --v11-ink:#172033;
@@ -2121,16 +2085,13 @@ footer{
     bottom:max(.8rem,env(safe-area-inset-bottom))!important;
   }
 }
-</style>
 
-
-<style id="diverty-v11-featured-background-fix">
+/* --- CSS consolidado: diverty-v11-featured-background-fix --- */
 #home-featured-wrapper{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
 #home-featured-wrapper > .glass-panel{background:transparent!important;border-color:transparent!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
 @media (max-width:767px){#home-featured-wrapper{box-shadow:none!important;background:transparent!important;}}
-</style>
 
-<style id="diverty-v11-balanced-spacing">
+/* --- CSS consolidado: diverty-v11-balanced-spacing --- */
 /* Ajuste fino solicitado: menos vacío entre bloques, sin apretarlos. */
 @media (max-width:767px){
   /* Oferta/campaña -> destacados */
@@ -2180,10 +2141,8 @@ footer{
     margin-top:1.25rem!important;
   }
 }
-</style>
 
-
-<style id="diverty-christmas-blue-silver-v1">
+/* --- CSS consolidado: diverty-christmas-blue-silver-v1 --- */
 /* NAVIDAD AZUL + PLATEADO — capa visual, no cambia contenido ni Firebase */
 body[data-theme="christmas"]{
   background:#061426!important;
@@ -2279,10 +2238,8 @@ body[data-theme="christmas"] #decor-layer::before{
   background:repeating-linear-gradient(90deg,#F8FAFC 0 8px,transparent 8px 26px,#2563EB 26px 34px,transparent 34px 52px,#94A3B8 52px 60px,transparent 60px 78px)!important;
   filter:drop-shadow(0 4px 7px rgba(147,197,253,.42))!important;
 }
-</style>
 
-
-<style id="diverty-christmas-elegant-campaigns">
+/* --- CSS consolidado: diverty-christmas-elegant-campaigns --- */
 /* NAVIDAD — campañas elegantes azul noche + hielo + plata */
 body[data-theme="christmas"] #home-campaigns-wrapper .campaign-card,
 body[data-theme="christmas"] #home-campaigns-wrapper [class*="from-red"],
@@ -2341,10 +2298,8 @@ body[data-theme="christmas"] #home-campaigns-wrapper .season-btn{
   color:#fff!important;
   box-shadow:0 12px 28px rgba(37,99,235,.25),inset 0 1px rgba(255,255,255,.22)!important;
 }
-</style>
 
-
-<style id="diverty-christmas-card-force-v2">
+/* --- CSS consolidado: diverty-christmas-card-force-v2 --- */
 /* Navidad azul/plata: fuerza la superficie de TODAS las tarjetas
    de campañas, destacados y catálogo sin tocar su contenido. */
 body[data-theme="christmas"] .card-safe-wrapper > .glass-panel,
@@ -2402,10 +2357,8 @@ body[data-theme="christmas"] #home-featured-wrapper .glass-panel[style]{
     radial-gradient(circle at 90% 5%,rgba(147,197,253,.13),transparent 27%),
     linear-gradient(150deg,#0B2A52 0%,#071D3B 52%,#081629 100%)!important;
 }
-</style>
 
-
-<style id="diverty-christmas-unified-v3">
+/* --- CSS consolidado: diverty-christmas-unified-v3 --- */
 /* ==========================================================
    NAVIDAD UNIFICADA — AZUL NOCHE · HIELO · PLATA · BLANCO
    Solo visual. No altera contenido, datos ni Firebase.
@@ -2590,10 +2543,8 @@ body[data-theme="christmas"] footer,
 body[data-theme="christmas"] #home-reviews-wrapper{
   border-color:rgba(203,213,225,.24)!important;
 }
-</style>
 
-
-<style id="diverty-christmas-final-clean-v4">
+/* --- CSS consolidado: diverty-christmas-final-clean-v4 --- */
 /* ===== NAVIDAD FINAL: azul noche / hielo / plata / blanco ===== */
 
 /* 1. PANTALLA INICIAL / LOADER: elimina verde y rojo */
@@ -2705,10 +2656,8 @@ body[data-theme="christmas"] #mainContent > section [class*="bg-red"]:not(.whats
 body[data-theme="christmas"] #mainContent > section [class*="bg-rose"]:not(.whatsapp-btn){
   background-color:#173D70!important;
 }
-</style>
 
-
-<style id="diverty-theme-boot-final">
+/* --- CSS consolidado: diverty-theme-boot-final --- */
 /* ===== PANTALLA DE ARRANQUE FINAL =====
    Solo logo, sin círculo ni tarjeta. El fondo cambia únicamente
    cuando Firebase confirma el tema activo.
@@ -2822,10 +2771,8 @@ html[data-cached-theme="school"] #themeBootLoader{
 @media(prefers-reduced-motion:reduce){
   #themeBootLoader .boot-logo{animation:none!important;}
 }
-</style>
 
-
-<style id="diverty-catalog-grid-detail-v1">
+/* --- CSS consolidado: diverty-catalog-grid-detail-v1 --- */
 /* ===== CATÁLOGO COMPACTO + DETALLE ===== */
 .catalog-grid-page{
   width:100%;
@@ -3168,10 +3115,8 @@ html[data-cached-theme="school"] #themeBootLoader{
 @media(min-width:1024px){
   .catalog-products-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 }
-</style>
 
-
-<style id="diverty-mobile-left-drawer-v1">
+/* --- CSS consolidado: diverty-mobile-left-drawer-v1 --- */
 /* ===== MENÚ MÓVIL: DRAWER IZQUIERDO COMPACTO ===== */
 #mobileMenu{
     position:fixed!important;
@@ -3380,10 +3325,8 @@ body[data-theme="christmas"] #mobileMenuPanel{
         transition:transform .01ms linear!important;
     }
 }
-</style>
 
-
-<style id="diverty-same-toggle-menu-v2">
+/* --- CSS consolidado: diverty-same-toggle-menu-v2 --- */
 /* ===== MISMO BOTÓN: ☰ ABRE / X CIERRA ===== */
 
 /* Cuando el menú está abierto, la barra superior queda visible
@@ -3451,10 +3394,8 @@ body[data-theme="christmas"] #mobileMenuPanel{
         max-height:calc(100dvh - 96px)!important;
     }
 }
-</style>
 
-
-<style id="diverty-social-icons-fix-v1">
+/* --- CSS consolidado: diverty-social-icons-fix-v1 --- */
 /* Redes del menú: SVG propios para que siempre sean visibles */
 #mobileMenu .mobile-socials{
     display:flex!important;
@@ -3505,10 +3446,8 @@ body[data-theme="christmas"] #mobileMenu .mobile-social-btn{
     background:rgba(255,255,255,.08)!important;
     border-color:rgba(246,207,105,.30)!important;
 }
-</style>
 
-
-<style id="diverty-cart-season-final-v2">
+/* --- CSS consolidado: diverty-cart-season-final-v2 --- */
 /* ===== CARRITO: BADGE SUPERIOR + DISEÑO DE TEMPORADA ===== */
 
 /* El resumen inferior ya no se usa. */
@@ -3690,10 +3629,8 @@ body.cart-open .whatsapp-container{
     visibility:hidden!important;
     pointer-events:none!important;
 }
-</style>
 
-
-<style id="diverty-cart-right-drawer-performance-v1">
+/* --- CSS consolidado: diverty-cart-right-drawer-performance-v1 --- */
 /* =========================================================
    CARRITO MÓVIL LATERAL: MISMO BOTÓN 🛒 / X
    ========================================================= */
@@ -3863,10 +3800,8 @@ body.cart-open #mainHeader{
         transition-duration:.01ms!important;
     }
 }
-</style>
 
-
-<style id="diverty-empty-cart-catalog-performance-v2">
+/* --- CSS consolidado: diverty-empty-cart-catalog-performance-v2 --- */
 /* Carrito vacío: sin bloque blanco y con contraste real */
 #cartModal .cart-empty-state{
     width:100%!important;
@@ -3955,10 +3890,8 @@ body[data-theme="halloween"] #cartModal .cart-empty-state p{color:#cbd5e1!import
         contain:layout paint!important;
     }
 }
-</style>
 
-
-<style id="diverty-categories-touch-performance-final-v3">
+/* --- CSS consolidado: diverty-categories-touch-performance-final-v3 --- */
 /* =========================================================
    EXPLORAR PAQUETES = CATEGORÍAS
    ========================================================= */
@@ -4214,10 +4147,8 @@ body.cart-open #hero-video{
   #home-featured-wrapper .home-featured-track > .snap-container{padding-top:.25rem!important}
   #calendar-section{margin-top:.55rem!important;padding-top:.65rem!important}
 }
-</style>
 
-
-<style id="diverty-featured-like-campaign-v4">
+/* --- CSS consolidado: diverty-featured-like-campaign-v4 --- */
 /* Oferta destacada: misma presencia visual que Gran Promoción */
 #home-featured-wrapper{
     width:100%!important;
@@ -4331,10 +4262,8 @@ body.cart-open #hero-video{
         max-height:180px!important;
     }
 }
-</style>
 
-
-<style id="diverty-benefits-scroll-fix-v5">
+/* --- CSS consolidado: diverty-benefits-scroll-fix-v5 --- */
 /* =========================================================
    BENEFICIOS ABIERTOS: UN SOLO SCROLL, EL DE LA PÁGINA
    ========================================================= */
@@ -4407,10 +4336,8 @@ body.cart-open #hero-video{
         touch-action:pan-y!important;
     }
 }
-</style>
 
-
-<style id="diverty-benefits-scroll-fallback-v5">
+/* --- CSS consolidado: diverty-benefits-scroll-fallback-v5 --- */
 #home-featured-wrapper .home-featured-track.benefits-expanded{
     overflow-x:visible!important;
     overflow-y:visible!important;
@@ -4425,10 +4352,8 @@ body.cart-open #hero-video{
         margin-right:0!important;
     }
 }
-</style>
 
-
-<style id="diverty-xmas-header-campaign-clean-v1">
+/* --- CSS consolidado: diverty-xmas-header-campaign-clean-v1 --- */
 /* =========================================================
    NAVIDAD: HEADER LIMPIO + GRAN PROMOCIÓN LEGIBLE
    ========================================================= */
@@ -4534,10 +4459,8 @@ body[data-theme="christmas"] .campaign-featured-card-wrap > .campaign-featured-b
         padding:.5rem 1.45rem!important;
     }
 }
-</style>
 
-
-<style id="diverty-mobile-section-spacing-v1">
+/* --- CSS consolidado: diverty-mobile-section-spacing-v1 --- */
 /* =========================================================
    HOME MÁS COMPACTO: HERO -> CAMPAÑA -> OFERTA -> CALENDARIO
    Mantiene respiración visual sin grandes espacios vacíos.
@@ -4633,10 +4556,8 @@ body[data-theme="christmas"] .campaign-featured-card-wrap > .campaign-featured-b
         margin-top:.5rem!important;
     }
 }
-</style>
 
-
-<style id="diverty-campaign-title-readable-v2">
+/* --- CSS consolidado: diverty-campaign-title-readable-v2 --- */
 /* =========================================================
    GRAN PROMOCIÓN: título fuera de la fotografía y 100% legible
    ========================================================= */
@@ -4718,10 +4639,8 @@ body[data-theme="halloween"] #home-campaigns-wrapper .campaign-main-title{
         font-size:1.3rem!important;
     }
 }
-</style>
 
-
-<style id="diverty-catalogo-visual-premium-v4">
+/* --- CSS consolidado: diverty-catalogo-visual-premium-v4 --- */
 /* ---------- CONTENEDOR ---------- */
 .catalog-grid-page{
   width:100%!important;
@@ -5071,10 +4990,8 @@ body[data-theme="christmas"] .catalog-tile-price{
     grid-template-columns:repeat(4,minmax(0,1fr))!important;
   }
 }
-</style>
 
-
-<style id="diverty-catalog-premium-v5">
+/* --- CSS consolidado: diverty-catalog-premium-v5 --- */
 /* =========================================================
    DIVERTY CATALOG PREMIUM V5
    Tarjetas completas: imagen + panel + CTA integrado.
@@ -5424,10 +5341,8 @@ body[data-theme="christmas"] .catalog-category-cta{
     font-size:9px!important;
   }
 }
-</style>
 
-
-<style id="diverty-touch-first-interaction-fix">
+/* --- CSS consolidado: diverty-touch-first-interaction-fix --- */
 /* FIX DEFINITIVO: el overlay del menú NO puede capturar el primer toque cuando está cerrado. */
 #mobileMenuOverlay{
   opacity:0;
@@ -5441,9 +5356,8 @@ body[data-theme="christmas"] .catalog-category-cta{
 }
 /* Carruseles conservan gesto táctil nativo; el navegador decide pan vertical/horizontal. */
 .home-swipe-track{touch-action:auto!important;}
-</style>
 
-<style id="diverty-featured-open-swipe-fix-v6">
+/* --- CSS consolidado: diverty-featured-open-swipe-fix-v6 --- */
 /* Permite navegar entre ofertas aun cuando "Ver todo" esta abierto. */
 #home-featured-wrapper .home-featured-track:has(.featured-offer-benefits[open]),
 #home-featured-wrapper .home-featured-track.benefits-expanded{
@@ -5468,9 +5382,8 @@ body[data-theme="christmas"] .catalog-category-cta{
     touch-action:pan-x pan-y!important;
   }
 }
-</style>
 
-<style id="diverty-floating-cart-v1">
+/* --- CSS consolidado: diverty-floating-cart-v1 --- */
 /* Resumen flotante premium del carrito */
 #cartSummary{
   display:block!important;
@@ -5498,17 +5411,15 @@ body.cart-open #cartSummary{display:none!important;}
   #cartSummary{bottom:24px!important;}
   body.has-cart .whatsapp-container{bottom:112px!important;}
 }
-</style>
 
-<style id="diverty-direct-booking-v1">
+/* --- CSS consolidado: diverty-direct-booking-v1 --- */
 .direct-booking-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:8px;width:100%;}
 .direct-booking-btn{min-height:48px;border:1px solid color-mix(in srgb,var(--s-primary) 35%,transparent);background:color-mix(in srgb,var(--s-primary) 8%,var(--s-bg-color));color:var(--s-primary);border-radius:1rem;font-weight:900;font-size:11px;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .15s ease,background .15s ease;box-shadow:0 4px 14px rgba(0,0,0,.05);}
 .direct-booking-btn:active{transform:scale(.97);}
 .direct-booking-btn svg{width:16px;height:16px;}
 @media(max-width:380px){.direct-booking-actions{grid-template-columns:1fr;}.direct-booking-btn{min-height:44px;}}
-</style>
 
-<style id="diverty-booking-mobile-ux-v1">
+/* --- CSS consolidado: diverty-booking-mobile-ux-v1 --- */
 @media (max-width:767px){
   #bookingForm{padding:1rem!important;border-radius:22px!important;}
   #bookingForm .wizard-content h3{margin-bottom:1rem!important;padding-bottom:.75rem!important;font-size:1.08rem!important;}
@@ -8087,7 +7998,8 @@ document.addEventListener('dragstart', function(e){ if(e.target.closest && e.tar
      DIVERTY PREMIUM ULTRA PERFORMANCE 2.0
      Capa consolidada de rendimiento móvil. No cambia el contenido.
      ========================================================= -->
-<style id="diverty-premium-performance-2">
+<style data-diverty-css-consolidated="true">
+/* --- CSS consolidado: diverty-premium-performance-2 --- */
 html{scroll-behavior:auto!important;}
 body{overscroll-behavior-y:auto;}
 button,a,[role="button"],[data-action]{touch-action:manipulation;}
@@ -8187,8 +8099,8 @@ html.dv-page-hidden *{animation-play-state:paused!important;}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;}
 }
-</style>
-<style id="diverty-render-performance-v3">
+
+/* --- CSS consolidado: diverty-render-performance-v3 --- */
 /* Rendimiento: permite al navegador omitir pintura de contenido fuera de pantalla sin cambiar el diseño. */
 #calendar-section,
 #home-reviews-wrapper,
