@@ -645,10 +645,23 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
 <!-- Diverty: arranque sin flash de tema -->
 <script>
 (function(){
-  /* Arranque neutro: evita mostrar una temporada antigua guardada en el navegador.
-     El tema real se aplicará en cuanto Firebase responda. */
-  document.documentElement.removeAttribute('data-cached-theme');
-  document.documentElement.classList.add('diverty-booting');
+  /* Arranque inteligente: aplica inmediatamente el último tema conocido y
+     muestra la presentación solo una vez por sesión. Firebase lo valida después. */
+  var root = document.documentElement;
+  var cached = '';
+  try { cached = localStorage.getItem('diverty_active_theme') || ''; } catch(e) {}
+  if (cached) root.setAttribute('data-cached-theme', cached);
+
+  var seen = false;
+  try { seen = sessionStorage.getItem('diverty_splash_seen') === '1'; } catch(e) {}
+  window.__divertyShowSplash = !seen;
+  window.__divertyBootStarted = Date.now();
+  if (!seen) {
+    root.classList.add('diverty-booting');
+    try { sessionStorage.setItem('diverty_splash_seen', '1'); } catch(e) {}
+  } else {
+    root.classList.add('diverty-splash-skipped');
+  }
 })();
 </script>
 <style id="diverty-boot-style">
@@ -668,6 +681,7 @@ html[data-cached-theme="summer"] #themeBootLoader .boot-name,html[data-cached-th
 #themeBootLoader .boot-dots i:nth-child(2){animation-delay:.14s}#themeBootLoader .boot-dots i:nth-child(3){animation-delay:.28s}
 @keyframes divertyBoot{0%,100%{transform:translateY(0);opacity:.3}50%{transform:translateY(-5px);opacity:1}}
 #themeBootLoader.boot-hide{opacity:0;visibility:hidden;pointer-events:none}
+html.diverty-splash-skipped #themeBootLoader{display:none!important}
 @media(prefers-reduced-motion:reduce){#themeBootLoader .boot-dots i{animation:none}}
 </style>
 
@@ -5495,6 +5509,12 @@ body.cart-open #cartSummary{display:none!important;}
 </style>
 </head>
 <body class="flex flex-col relative min-h-screen">
+    <script>
+    (function(){
+      var t=document.documentElement.getAttribute('data-cached-theme');
+      if(t) document.body.setAttribute('data-theme',t);
+    })();
+    </script>
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
       <img class="boot-logo" id="themeBootLogo"
            src="./android-chrome-512x512.png"
@@ -5927,12 +5947,22 @@ body.cart-open #cartSummary{display:none!important;}
         }
 
         function finishThemeBoot() {
+            const root = document.documentElement;
             const loader = document.getElementById('themeBootLoader');
-            document.documentElement.classList.remove('diverty-booting');
-            if (loader) {
-                loader.classList.add('boot-hide');
-                setTimeout(() => loader.remove(), 320);
+            if (window.__divertyShowSplash === false) {
+                root.classList.remove('diverty-booting');
+                if (loader) loader.remove();
+                return;
             }
+            const elapsed = Date.now() - (window.__divertyBootStarted || Date.now());
+            const wait = Math.max(0, 720 - elapsed);
+            setTimeout(() => {
+                root.classList.remove('diverty-booting');
+                if (loader) {
+                    loader.classList.add('boot-hide');
+                    setTimeout(() => loader.remove(), 300);
+                }
+            }, wait);
         }
 
         function applyThemeColors(themeData) {
@@ -6421,7 +6451,7 @@ body.cart-open #cartSummary{display:none!important;}
             
             let imgBlock = `<div class="relative w-full h-40 sm:h-48 shrink-0 rounded-[1.25rem] overflow-hidden shadow-sm mb-4 group-hover:shadow-xl transition-all duration-500 border border-[var(--s-glass-border)]">
                 ${b}
-                <img src="${cleanStr(item.image)}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <img src="${cleanStr(item.image)}" loading="lazy" decoding="async" fetchpriority="low" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/40 to-transparent opacity-90"></div>
                 <div class="absolute bottom-0 left-0 right-0 p-5 pt-10 text-white">
                     <h3 class="text-2xl sm:text-3xl font-black leading-tight drop-shadow-lg tracking-tight font-poppins text-white">${cleanStr(item.name||item.title)}</h3>
@@ -6825,6 +6855,7 @@ body.cart-open #cartSummary{display:none!important;}
                             <div class="catalog-detail-image-wrap">
                                 <img src="${cleanStr(item.image)}"
                                      alt="${cleanStr(item.name || item.title)}"
+                                     decoding="async" fetchpriority="high"
                                      class="catalog-detail-image">
                                 ${hasOffer ? `<span class="catalog-detail-offer">OFERTA</span>` : ''}
                             </div>
@@ -7840,7 +7871,7 @@ body.cart-open #cartSummary{display:none!important;}
 
 <script>
 // Seguro: nunca dejar la interfaz bloqueada por una conexión lenta.
-setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, 1200);
+setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, window.__divertyShowSplash === false ? 0 : 900);
 </script>
 
 <script id="diverty-home-swipe-guard">
@@ -7973,6 +8004,18 @@ html.dv-page-hidden *{animation-play-state:paused!important;}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;}
 }
+</style>
+<style id="diverty-render-performance-v3">
+/* Rendimiento: permite al navegador omitir pintura de contenido fuera de pantalla sin cambiar el diseño. */
+#calendar-section,
+#home-reviews-wrapper,
+.catalog-detail-page,
+.gallery-item {
+  content-visibility:auto;
+  contain-intrinsic-size:auto 500px;
+}
+/* Evita trabajo de animación/transformación cuando la pestaña no está visible. */
+html.dv-page-hidden video { visibility:hidden; }
 </style>
 <script id="diverty-premium-performance-runtime-2">
 (function(){
