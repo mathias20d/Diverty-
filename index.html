@@ -5556,16 +5556,6 @@ body.cart-open #cartSummary{display:none!important;}
 </header>
     </div>
     
-    <div id="cartSummary" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-40 glass-panel p-3 rounded-2xl border-t border-l">
-        <div class="flex justify-between items-center gap-3">
-            <div class="flex items-center gap-2 season-text-title font-semibold">
-                <div class="relative p-2 rounded-full" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="shopping-cart" class="w-5 h-5"></i><span id="summaryCartBadge" class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-blue-600 text-white text-[10px] font-black flex items-center justify-center shadow-md border border-white">0</span></div>
-                <div class="flex flex-col leading-tight"><span class="text-[10px] season-text-muted uppercase">Total (<span id="itemCount" class="font-bold season-text-title">0</span>)</span><span id="totalPrice" class="font-black text-base season-text-title">$0.00</span></div>
-            </div>
-            <button id="viewCartSummary" type="button" class="season-btn font-bold text-xs py-2.5 px-4 rounded-xl shadow-md" aria-label="Abrir carrito">Ver Carrito</button>
-        </div>
-    </div>
-
     <!-- MENÚ MÓVIL ESTILO APP -->
     <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/70 z-[999] opacity-0 invisible transition-all duration-300"></div>
     <nav id="mobileMenu" class="relative overflow-hidden">
@@ -6365,10 +6355,11 @@ body.cart-open #cartSummary{display:none!important;}
                                     </div>
                                 </div>` : '<div class="mb-4 mt-auto pt-4"></div>'}
                                 
-                                <div class="mt-auto pt-1 pb-1">
-                                    <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} data-cart-state="${ic?'selected':'none'}" class="w-full sm:w-max font-black py-3 px-8 rounded-[1rem] text-[10px] sm:text-[11px] tracking-widest uppercase text-white transition-transform duration-150 active:scale-95 relative overflow-hidden flex items-center justify-center gap-2 z-10 shadow-sm" style="background: ${ic ? '#10B981' : 'var(--s-btn-grad)'};">
+                                <div class="mt-auto pt-1 pb-1 direct-booking-actions">
+                                    <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} data-cart-state="${ic?'selected':'none'}" class="w-full sm:flex-1 font-black py-3 px-5 rounded-[1rem] text-[10px] sm:text-[11px] tracking-widest uppercase text-white transition-transform duration-150 active:scale-95 relative overflow-hidden flex items-center justify-center gap-2 z-10 shadow-sm" style="background: ${ic ? '#10B981' : 'var(--s-btn-grad)'};">
                                         ${ic ? S_ICONS.check + ' SELECCIONADO' : (actionBtn==='add-to-cart' ? S_ICONS.bag : S_ICONS.sparkles) + ' ' + btnTxt}
                                     </button>
+                                    ${actionBtn==='add-to-cart' ? `<button data-action="book-now" data-item-id="${itemDataId}" data-is-campaign="true" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button>` : ''}
                                 </div>
                             </div>
                         </div>
@@ -6393,10 +6384,11 @@ body.cart-open #cartSummary{display:none!important;}
                                     </div>
                                 </div>` : '<div class="mb-4 mt-auto pt-4"></div>'}
                                 
-                                <div class="mt-auto pt-1 pb-1">
+                                <div class="mt-auto pt-1 pb-1 direct-booking-actions">
                                     <button data-action="${actionBtn}" data-item-id="${itemDataId}" data-target-section="${targetSec}" ${extraAttrs} data-cart-state="${ic?'selected':'none'}" class="w-full font-black py-3 px-5 rounded-[1rem] text-[10px] sm:text-[11px] tracking-widest uppercase text-white transition-transform duration-150 active:scale-95 relative overflow-hidden flex items-center justify-center gap-2 z-10 shadow-sm" style="background: ${ic ? '#10B981' : 'var(--s-btn-grad)'};">
                                         ${ic ? S_ICONS.check + ' SELECCIONADO' : (actionBtn==='add-to-cart' ? S_ICONS.bag : S_ICONS.sparkles) + ' ' + btnTxt}
                                     </button>
+                                    ${actionBtn==='add-to-cart' ? `<button data-action="book-now" data-item-id="${itemDataId}" data-is-campaign="true" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button>` : ''}
                                 </div>
                             </div>
                         </div>
