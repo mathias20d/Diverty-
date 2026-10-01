@@ -77,6 +77,14 @@
     </style>
 </head>
 <body class="flex h-screen overflow-hidden bg-[#020617] w-full">
+<div id="adminLoginGate" style="position:fixed;inset:0;z-index:99999;background:#080f20;display:flex;align-items:center;justify-content:center;padding:20px">
+<form id="adminLoginForm" style="width:100%;max-width:380px;padding:28px;background:#111b30;color:white;border-radius:24px">
+<h1 style="font-size:24px;font-weight:800;margin-bottom:8px">Diverty · Administrador</h1><p style="margin-bottom:20px">Ingresa con tu cuenta administradora.</p>
+<label for="adminEmail">Correo</label><input id="adminEmail" type="email" autocomplete="username" required style="width:100%;padding:12px;border-radius:10px;color:#111;margin:6px 0 16px">
+<label for="adminPassword">Contraseña</label><input id="adminPassword" type="password" autocomplete="current-password" required style="width:100%;padding:12px;border-radius:10px;color:#111;margin:6px 0 16px">
+<button style="width:100%;padding:12px;background:#7c3aed;color:white;border-radius:10px">Entrar</button><p id="adminLoginMessage" role="status" style="margin-top:12px"></p></form></div>
+<button id="adminLogout" style="display:none;position:fixed;right:12px;bottom:86px;z-index:90;padding:9px 12px;border-radius:10px;background:#17243e;color:white">Cerrar sesión</button>
+
 
     <!-- SIDEBAR DESKTOP -->
     <aside class="hidden md:flex flex-col w-64 border-r border-slate-800 bg-[#0B1120] z-20 shrink-0">
@@ -745,8 +753,8 @@
     <!-- SCRIPTS COMPLETOS Y SINCRONIZADOS -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, deleteDoc, getDoc, setDoc, writeBatch, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, collection, doc, getDocs, getDoc, writeBatch as sdkWriteBatch, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         
         const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
         const app = initializeApp(firebaseConfig);
@@ -754,17 +762,29 @@
         const auth = getAuth(app);
         const APP_ID = 'diverty-oficial';
 
-        // DIVERTY FIRESTORE OPTIMIZER
-        // Cada cambio del administrador toca UN documento pequeño. La web pública
-        // escucha solo este documento para saber cuándo invalidar su caché.
-        async function touchWebSync() {
-            try {
-                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'web_sync'), {
-                    version: Date.now(),
-                    updatedAt: new Date().toISOString()
-                }, { merge: true });
-            } catch (e) { console.warn('No se pudo actualizar web_sync', e); }
+        const ADMIN_UID = 'OblqzhP2L3XulJ920O82jwd1Qrk1';
+        // Each public mutation and its collection version share one atomic commit.
+        function writeBatch(database) {
+            const batch = sdkWriteBatch(database), dirty = new Set();
+            const track = ref => { const parts=ref.path.split('/'); if(parts[0]==='artifacts' && parts[1]===APP_ID && parts[4]) dirty.add(parts[4]); };
+            const api = {
+                set(ref,data,options) {track(ref); if(options) batch.set(ref,data,options); else batch.set(ref,data); return api;},
+                update(ref,data) {track(ref); batch.update(ref,data); return api;},
+                delete(ref) {track(ref); batch.delete(ref); return api;},
+                async commit() {
+                    if (auth.currentUser?.uid !== ADMIN_UID) throw new Error('ADMIN_REQUIRED');
+                    if(dirty.size) {
+                        const versions={}; for(const name of dirty) versions[name]=increment(1);
+                        batch.set(doc(db,'artifacts',APP_ID,'public','data','config_web','web_sync'),{versions,version:increment(1),updatedAt:new Date().toISOString()},{merge:true});
+                    }
+                    return batch.commit();
+                }
+            }; return api;
         }
+        const setDoc = (ref,data,options) => {const b=writeBatch(db); b.set(ref,data,options); return b.commit();};
+        const updateDoc = (ref,data) => {const b=writeBatch(db); b.update(ref,data); return b.commit();};
+        const deleteDoc = ref => {const b=writeBatch(db); b.delete(ref); return b.commit();};
+        const addDoc = async (ref,data) => {const target=doc(ref); await setDoc(target,data); return target;};
 
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/djfboe8rg/image/upload';
         const CLOUDINARY_UPLOAD_PRESET = 'diverty_web';
@@ -1028,7 +1048,7 @@
                     });
                     showToast("Catálogo creado exitosamente", "success");
                 }
-                await touchWebSync();
+                
                 window.closeCategoryModal();
                 await window.loadCategories();
                 loadDashboardStats();
@@ -1038,7 +1058,7 @@
         window.deleteCategory = async (id) => {
             window.showConfirm("Eliminar Catálogo", "Ten cuidado, los paquetes que pertenecían a este catálogo pueden quedar sin asignación visible. ¿Deseas continuar?", async () => {
                 await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', id));
-                await touchWebSync();
+                
                 showToast("Catálogo eliminado", "success");
                 await window.loadCategories();
                 loadDashboardStats();
@@ -1093,7 +1113,7 @@
                         items.forEach((item, idx) => { updates.push({id: item.dataset.id, orden: idx + 1}); });
                         const batch = writeBatch(db); updates.forEach(u => batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', u.id), {orden: u.orden}));
                         await batch.commit(); window.loadCategories();
-                        await touchWebSync();
+                        
                     }});
                 }
             } catch(e){}
@@ -1245,7 +1265,7 @@
                                 const batch = writeBatch(db);
                                 orderUpdates.forEach(upd => batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', upd.id), { orden: upd.orden }));
                                 await batch.commit(); showToast("Orden de paquetes guardado", "success");
-                                await touchWebSync();
+                                
                             } catch(e) { showToast("Error al guardar orden", "error"); }
                         }
                     }
@@ -1286,7 +1306,7 @@
             try {
                 if (editingId) { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', editingId), dataToSave); showToast("Paquete Actualizado"); } 
                 else { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web'), dataToSave); showToast("Paquete Creado"); }
-                await touchWebSync();
+                
                 window.cancelEditing();
             } catch(e) { showToast("Error guardando", "error"); } finally { btn.innerHTML = oHtml; btn.disabled = false; lucide.createIcons(); }
         });
@@ -1321,7 +1341,7 @@
         window.deletePackage = async id => { 
             window.showConfirm("Eliminar Paquete", "¿Seguro que quieres borrar este paquete?", async () => {
                 await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', id)); 
-                await touchWebSync();
+                
                 window.loadCatalog(); loadDashboardStats(); showToast("Eliminado", "success");
             });
         };
@@ -1366,7 +1386,7 @@
             try {
                 if (editingTransportId) { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web', editingTransportId), dataToSave); showToast("Actualizado", "success"); } 
                 else { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'), dataToSave); showToast("Guardado", "success"); }
-                await touchWebSync();
+                
                 window.cancelTransportEdit(); window.loadTransport(); loadDashboardStats();
             } catch (e) {}
         };
@@ -1385,7 +1405,7 @@
             document.getElementById('galleryUploadText').textContent = "Subiendo...";
             const compressed = await compressImage(file);
             const formData = new FormData(); formData.append('file', compressed); formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-            try { const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); const data = await res.json(); if(data.secure_url) { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url }); await touchWebSync(); window.loadGallery(); } } catch(e){}
+            try { const res = await fetch(CLOUDINARY_URL, {method: 'POST', body: formData}); const data = await res.json(); if(data.secure_url) { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'galeria_web'), { image: data.secure_url });  window.loadGallery(); } } catch(e){}
             document.getElementById('galleryUploadText').textContent = "Toca o arrastra"; e.target.value = '';
         });
 
@@ -1398,11 +1418,11 @@
         }
         window.saveCoupon = async function() {
             const code = document.getElementById('coupCode').value.toUpperCase(), discount = Number(document.getElementById('coupValue').value);
-            if(!code || !discount) return; await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'cupones_web', code), { code, type: document.getElementById('coupType').value, discount }); await touchWebSync();
+            if(!/^[A-Z0-9_-]{2,40}$/.test(code) || !Number.isFinite(discount) || discount <= 0 || (document.getElementById('coupType').value==='percent' && discount>100)) return showToast('Revisa el código y el descuento.', 'error'); await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'cupones_web', code), { code, type: document.getElementById('coupType').value, discount, activo: true }); 
             document.getElementById('coupCode').value = ''; document.getElementById('coupValue').value = ''; showToast("Cupón creado", "success"); window.loadCoupons(); loadDashboardStats();
         }
         
-        window.deleteDocGen = async (col, id, cb) => { window.showConfirm("Eliminar", "¿Estás seguro?", async () => { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id)); await touchWebSync(); showToast("Eliminado", "success"); cb(); loadDashboardStats(); }); }
+        window.deleteDocGen = async (col, id, cb) => { window.showConfirm("Eliminar", "¿Estás seguro?", async () => { await deleteDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', col, id));  showToast("Eliminado", "success"); cb(); loadDashboardStats(); }); }
 
         // --- SISTEMAS DE BANNER SUPERIOR (AJUSTES) ---
         window.loadSettings = async function() { 
@@ -1420,7 +1440,7 @@
             try {
                 const bannerActive = document.getElementById('bannerActive').checked;
                 const bannerText = document.getElementById('bannerText').value;
-                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive, bannerText }, {merge: true}); await touchWebSync(); 
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive, bannerText }, {merge: true});  
                 showToast("Ajustes Guardados", "success"); 
             } catch(error) { showToast("Error guardando ajustes", "error"); }
         };
@@ -1447,7 +1467,7 @@
         }
         
         async function evaluateAndApplyThemes() {
-            const today = new Date().toISOString().split('T')[0];
+            const today = new Intl.DateTimeFormat('en-CA',{timeZone:'America/Panama',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
             let winnerId = null; let defaultId = window.temasLocales.find(t => t.isDefault)?.id || (window.temasLocales[0]?.id);
             let matchingThemes = window.temasLocales.filter(t => t.fechaInicio && t.fechaFin && today >= t.fechaInicio && today <= t.fechaFin);
             
@@ -1459,7 +1479,7 @@
                 const batch = writeBatch(db);
                 window.temasLocales.forEach(t => { t.activo = (t.id === winnerId); batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web', t.id), { activo: t.activo }); });
                 await batch.commit();
-                await touchWebSync();
+                
             }
             renderThemesView(winnerId);
         }
@@ -1482,8 +1502,8 @@
             }); lucide.createIcons();
         }
         
-        window.toggleThemeMode = async function() { window.globalThemeConfig.modo = window.globalThemeConfig.modo === 'manual' ? 'automatico' : 'manual'; await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'tema_global'), window.globalThemeConfig, {merge: true}); await touchWebSync(); await evaluateAndApplyThemes(); }
-        window.setManualTheme = async function(id) { window.globalThemeConfig.modo = 'manual'; window.globalThemeConfig.temaManualActivo = id; await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'tema_global'), window.globalThemeConfig, {merge: true}); await touchWebSync(); await evaluateAndApplyThemes(); }
+        window.toggleThemeMode = async function() { window.globalThemeConfig.modo = window.globalThemeConfig.modo === 'manual' ? 'automatico' : 'manual'; await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'tema_global'), window.globalThemeConfig, {merge: true});  await evaluateAndApplyThemes(); }
+        window.setManualTheme = async function(id) { window.globalThemeConfig.modo = 'manual'; window.globalThemeConfig.temaManualActivo = id; await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'tema_global'), window.globalThemeConfig, {merge: true});  await evaluateAndApplyThemes(); }
         window.setDefaultTheme = async function(id) { const batch = writeBatch(db); window.temasLocales.forEach(t => { t.isDefault = (t.id === id); batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web', t.id), { isDefault: t.isDefault }); }); await batch.commit(); await evaluateAndApplyThemes(); }
         
         window.openThemeModal = function() { 
@@ -1550,7 +1570,7 @@
             try {
                 if(editingThemeId) { await updateDoc(doc(db,'artifacts',APP_ID,'public','data','temas_web',editingThemeId), data); showToast("Tema actualizado", "success"); } 
                 else { data.isDefault = window.temasLocales.length === 0; data.activo = false; await setDoc(doc(db,'artifacts',APP_ID,'public','data','temas_web','tema_'+Date.now()), data); showToast("Tema creado exitosamente", "success"); } 
-                await touchWebSync();
+                
                 window.closeThemeModal(); await window.loadThemes(); 
             } catch(e) { showToast("Error al guardar el tema", "error"); } finally { btn.innerHTML = originalText; btn.disabled = false; lucide.createIcons(); }
         };
@@ -1695,7 +1715,7 @@
                     const batch = writeBatch(db); 
                     updates.forEach(u => batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web', u.id), { orden: u.orden }));
                     await batch.commit(); 
-                    await touchWebSync();
+                    
                     window.loadCampaigns();
                 }
             });
@@ -1709,7 +1729,7 @@
                     activo: status,
                     updatedAt: new Date().toISOString()
                 });
-                await touchWebSync();
+                
 
                 showToast(status ? "Campaña activada correctamente" : "Campaña desactivada correctamente", "success");
                 await window.loadCampaigns();
@@ -1866,9 +1886,9 @@
                 }
                 
                 await batch.commit(); 
-                await touchWebSync();
+                
                 showToast("Campaña guardada exitosamente", "success");
-                await touchWebSync();
+                
                 window.closeCampaignModal(); 
                 window.loadCampaigns();
             } catch(e) {
@@ -2054,15 +2074,30 @@
             });
         }
 
-        // INICIALIZACIÓN GLOBAL
-        async function init() {
+        // Authentication is enforced by rules as well as by this login screen.
+        let adminLoaded = false;
+        initEvents();
+        const gate = document.getElementById('adminLoginGate');
+        document.getElementById('adminLoginForm').onsubmit = async e => {
+            e.preventDefault(); const button=e.target.querySelector('button'); button.disabled=true;
+            const message=document.getElementById('adminLoginMessage'); message.textContent='Conectando…';
             try {
-                initEvents();
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) { try { await signInWithCustomToken(auth, __initial_auth_token); } catch (e) { await signInAnonymously(auth); } } else { await signInAnonymously(auth); }
-                await window.loadCategories(); await window.loadThemes(true); loadDataForTab(currentTab);
-            } catch(e) {}
-        }
-        init();
+                const result=await signInWithEmailAndPassword(auth,document.getElementById('adminEmail').value.trim(),document.getElementById('adminPassword').value);
+                if(result.user.uid!==ADMIN_UID) {await signOut(auth); throw new Error('NO_ACCESS');}
+                document.getElementById('adminPassword').value='';
+            } catch(err) {message.textContent='No se pudo ingresar. Comprueba tu cuenta administradora y la conexión.';}
+            finally {button.disabled=false;}
+        };
+        document.getElementById('adminLogout').onclick=()=>signOut(auth);
+        onAuthStateChanged(auth, async user => {
+            const allowed=user?.uid===ADMIN_UID;
+            gate.style.display=allowed?'none':'flex';
+            document.getElementById('adminLogout').style.display=allowed?'block':'none';
+            if(!allowed) {if(adminLoaded) location.reload(); return;}
+            if(adminLoaded) return; adminLoaded=true;
+            try {await window.loadCategories(); await window.loadThemes(true); await loadDataForTab(currentTab);}
+            catch(err) {console.error(err); showToast('No se pudieron cargar los datos. Revisa las reglas y tu conexión.','error');}
+        });
     </script>
 </body>
 </html>
