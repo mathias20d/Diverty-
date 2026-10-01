@@ -6291,7 +6291,7 @@ body.cart-open #cartSummary{display:none!important;}
                 if (cat) {
                     app.activeSection = `cat_${categoryId}`;
                     renderCategory(categoryId);
-                    window.scrollTo(0, 0);
+                    catalogNavMemory.restore(categoryId);
                     return true;
                 }
                 if (invalidFallback) {
@@ -6810,6 +6810,21 @@ body.cart-open #cartSummary{display:none!important;}
             </button>
           `;
         }
+
+        // ===== Navegación inteligente del catálogo =====
+        const catalogNavMemory = {
+            key(catId){ return `diverty_catalog_scroll_${catId || 'catalog'}`; },
+            save(catId){
+                try { sessionStorage.setItem(this.key(catId), String(Math.max(0, window.scrollY || 0))); } catch(e) {}
+            },
+            read(catId){
+                try { return Math.max(0, Number(sessionStorage.getItem(this.key(catId)) || 0)); } catch(e) { return 0; }
+            },
+            restore(catId){
+                const y = this.read(catId);
+                requestAnimationFrame(() => requestAnimationFrame(() => window.scrollTo({ top:y, left:0, behavior:'auto' })));
+            }
+        };
 
         function renderItemDetail(itemId, syncUrl = true) {
             const item = app.catalog.find(i => i.id === itemId);
@@ -7443,6 +7458,8 @@ body.cart-open #cartSummary{display:none!important;}
                     break;
                 case 'open-item-detail': {
                     e.preventDefault();
+                    const itemForNav = app.catalog.find(i => i.id === itemId);
+                    if (itemForNav?.categoria) catalogNavMemory.save(itemForNav.categoria);
                     renderItemDetail(itemId);
                     break;
                 }
@@ -7453,7 +7470,7 @@ body.cart-open #cartSummary{display:none!important;}
                         setDirectRoute('categoria', categoryId);
                         app.activeSection = `cat_${categoryId}`;
                         renderCategory(categoryId);
-                        window.scrollTo(0, 0);
+                        catalogNavMemory.restore(categoryId);
                     }
                     break;
                 }
@@ -7812,6 +7829,15 @@ body.cart-open #cartSummary{display:none!important;}
                 window.scrollTo(0, 0);
             }
         });
+
+        let catalogScrollSaveTimer = null;
+        window.addEventListener('scroll', () => {
+            if (!app.activeSection || !app.activeSection.startsWith('cat_')) return;
+            clearTimeout(catalogScrollSaveTimer);
+            catalogScrollSaveTimer = setTimeout(() => {
+                catalogNavMemory.save(app.activeSection.replace('cat_', ''));
+            }, 120);
+        }, { passive:true });
 
         function setupEventListeners() {
             if (window.location.hash) { history.replaceState(null, null, ' '); }
