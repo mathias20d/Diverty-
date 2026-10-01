@@ -4412,6 +4412,214 @@ body.cart-open #hero-video{
 }
 </style>
 
+
+<style id="diverty-xmas-header-campaign-clean-v1">
+/* =========================================================
+   NAVIDAD: HEADER LIMPIO + GRAN PROMOCIÓN LEGIBLE
+   ========================================================= */
+
+/* Una sola superficie limpia para la barra. */
+body[data-theme="christmas"] #mainHeader,
+body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader{
+    background:linear-gradient(155deg,rgba(5,24,48,.985),rgba(6,20,38,.985))!important;
+    border:1px solid rgba(203,213,225,.28)!important;
+    box-shadow:0 12px 30px rgba(0,0,0,.34)!important;
+    outline:none!important;
+}
+
+/* Elimina líneas/pseudoelementos decorativos que puedan cruzar el header. */
+body[data-theme="christmas"] #mainHeader::before,
+body[data-theme="christmas"] #mainHeader::after,
+body[data-theme="christmas"] #mainHeader > .container::before,
+body[data-theme="christmas"] #mainHeader > .container::after{
+    content:none!important;
+    display:none!important;
+}
+
+/* La regla navideña anterior afectaba a TODOS los hijos del header.
+   Se neutraliza y los bordes quedan solo donde realmente hacen falta. */
+body[data-theme="christmas"] #mainHeader *{
+    outline:none!important;
+}
+
+/* LOGO CENTRAL: completamente limpio, sin cuadro, líneas ni fondo. */
+body[data-theme="christmas"] #mainHeader .logo-container,
+body[data-theme="christmas"] #mainHeader .logo-container:hover,
+body[data-theme="christmas"] #mainHeader .logo-container:focus,
+body[data-theme="christmas"] #mainHeader .logo-container:active{
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+    outline:none!important;
+}
+body[data-theme="christmas"] #mainHeader .logo-container img,
+body[data-theme="christmas"] #mainHeader #mainHeaderLogo{
+    background:transparent!important;
+    border:0!important;
+    box-shadow:none!important;
+    outline:none!important;
+    filter:none!important;
+}
+
+/* Solo menú y carrito conservan su botón visual. */
+body[data-theme="christmas"] #mainHeader #mobileToggle,
+body[data-theme="christmas"] #mainHeader #viewCart{
+    background:rgba(248,250,252,.94)!important;
+    border:1px solid rgba(203,213,225,.52)!important;
+    box-shadow:0 7px 18px rgba(0,0,0,.18)!important;
+}
+body[data-theme="christmas"] #mainHeader #mobileToggle svg,
+body[data-theme="christmas"] #mainHeader #viewCart svg{
+    color:#152238!important;
+}
+
+/* GRAN PROMOCIÓN:
+   reserva un espacio propio arriba de la tarjeta para que la etiqueta
+   nunca vuelva a quedar montada sobre la fotografía. */
+.campaign-featured-card-wrap{
+    position:relative!important;
+    padding-top:2.65rem!important;
+}
+.campaign-featured-card-wrap > .campaign-featured-badge{
+    top:.15rem!important;
+    min-height:2rem;
+    padding:.48rem 1.35rem!important;
+    border:1px solid rgba(255,255,255,.48)!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.25)!important;
+    text-shadow:0 1px 2px rgba(0,0,0,.22);
+}
+
+/* En Navidad la etiqueta sigue la paleta azul/hielo/plata y gana contraste. */
+body[data-theme="christmas"] .campaign-featured-card-wrap > .campaign-featured-badge{
+    background:linear-gradient(105deg,#1D4ED8,#2563EB 48%,#64748B)!important;
+    color:#fff!important;
+    border-color:rgba(248,250,252,.72)!important;
+    box-shadow:0 8px 24px rgba(2,10,24,.46),0 0 16px rgba(96,165,250,.18)!important;
+}
+
+/* La imagen comienza debajo de la etiqueta, no detrás de ella. */
+.campaign-featured-card-wrap > .glass-panel{
+    position:relative!important;
+    z-index:1!important;
+}
+
+/* En móvil: más aire y etiqueta suficientemente grande para leerse. */
+@media(max-width:767px){
+    body[data-theme="christmas"] #mainHeader{
+        border-width:1px!important;
+        box-shadow:0 10px 24px rgba(0,0,0,.30)!important;
+    }
+    .campaign-featured-card-wrap{
+        padding-top:2.8rem!important;
+    }
+    .campaign-featured-card-wrap > .campaign-featured-badge{
+        top:.2rem!important;
+        font-size:11px!important;
+        letter-spacing:.13em!important;
+        padding:.5rem 1.45rem!important;
+    }
+}
+</style>
+
+
+<style id="diverty-mobile-section-spacing-v1">
+/* =========================================================
+   HOME MÁS COMPACTO: HERO -> CAMPAÑA -> OFERTA -> CALENDARIO
+   Mantiene respiración visual sin grandes espacios vacíos.
+   ========================================================= */
+
+@media(max-width:767px){
+
+    /* Banner principal: reduce altura sobrante, no el contenido. */
+    #hero-section-identifier > .relative > section{
+        min-height:66svh!important;
+        padding-bottom:1.45rem!important;
+    }
+
+    /* Campaña inmediatamente después del hero. */
+    #home-campaigns-wrapper{
+        margin-top:.65rem!important;
+        margin-bottom:0!important;
+    }
+
+    /* Oferta inmediatamente después de la campaña. */
+    #home-featured-wrapper{
+        margin-top:.55rem!important;
+        margin-bottom:0!important;
+    }
+
+    /* Las decoraciones de separación de Navidad antes ocupaban
+       casi 50px. Ahora son compactas. */
+    body[data-theme="christmas"] #home-campaigns-wrapper::before,
+    body[data-theme="christmas"] #home-featured-wrapper::before{
+        height:10px!important;
+        margin:0 12px 5px!important;
+        opacity:.68!important;
+    }
+
+    /* Tarjeta de Gran Promoción: reduce márgenes externos,
+       conservando el espacio propio de su etiqueta. */
+    #home-campaigns-wrapper .campaign-featured-card-wrap{
+        margin-top:.15rem!important;
+        margin-bottom:.25rem!important;
+        padding-top:2.55rem!important;
+    }
+
+    /* Por compatibilidad con tarjetas de campaña que no tengan
+       todavía la clase específica. */
+    #home-campaigns-wrapper .card-safe-wrapper{
+        margin-top:.15rem!important;
+        margin-bottom:.25rem!important;
+    }
+
+    /* Oferta destacada: elimina espacio extra del contenedor/carrusel. */
+    #home-featured-wrapper .home-featured-track{
+        padding-top:0!important;
+        padding-bottom:0!important;
+        margin-top:0!important;
+        margin-bottom:0!important;
+        gap:.6rem!important;
+    }
+
+    #home-featured-wrapper .featured-offer-shell{
+        padding-top:.35rem!important;
+        padding-bottom:.25rem!important;
+        margin-top:0!important;
+        margin-bottom:0!important;
+    }
+
+    /* Calendario más cerca de la oferta, pero claramente separado. */
+    #calendar-section{
+        margin-top:.65rem!important;
+        padding-top:.65rem!important;
+        padding-bottom:.8rem!important;
+    }
+
+    /* Reduce el espacio inferior general de este bloque del home. */
+    #hero-section-identifier + .container,
+    #hero-section-identifier ~ .container{
+        margin-top:0!important;
+    }
+}
+
+/* En móviles bajos, compacta un poco más para evitar demasiado scroll. */
+@media(max-width:390px) and (max-height:780px){
+    #hero-section-identifier > .relative > section{
+        min-height:63svh!important;
+        padding-bottom:1.15rem!important;
+    }
+    #home-campaigns-wrapper{
+        margin-top:.45rem!important;
+    }
+    #home-featured-wrapper{
+        margin-top:.4rem!important;
+    }
+    #calendar-section{
+        margin-top:.5rem!important;
+    }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -5175,8 +5383,8 @@ body.cart-open #hero-video{
 
                 if (isDestacada) {
                     return `
-                    <div class="card-safe-wrapper mt-6 mb-2 w-full">
-                        <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-6 py-1.5 rounded-full z-[40] shadow-md flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> GRAN PROMOCIÓN</div>
+                    <div class="card-safe-wrapper campaign-featured-card-wrap mt-6 mb-2 w-full">
+                        <div class="campaign-featured-badge absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-6 py-1.5 rounded-full z-[40] shadow-md flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> GRAN PROMOCIÓN</div>
                         
                         <div class="glass-panel card-alive flex flex-col md:flex-row h-full rounded-[1.5rem] w-full">
                             ${img ? `<div class="w-full md:w-5/12 h-40 md:h-auto relative shrink-0 pt-5 px-4 md:p-5"><img src="${img}" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-[1rem] shadow-sm border" style="border-color: var(--s-glass-border);"></div>` : ''}
