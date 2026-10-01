@@ -7645,7 +7645,23 @@ body.cart-open #cartSummary{display:none!important;}
                         });
                     })().catch(err => { request.promise=null; throw err; });
                 }
-                await fetchWithTimeout(request.promise,15000);
+                try {
+                    await fetchWithTimeout(request.promise,15000);
+                } catch (submitErr) {
+                    // Una transacción puede haber llegado a Firestore aunque el cliente no reciba
+                    // la confirmación antes del timeout. Verificamos el MISMO ID antes de pedir reintento.
+                    if (submitErr?.message !== 'SLOT_FULL') {
+                        try {
+                            const verifyRef = doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',request.id);
+                            const verifySnap = await fetchWithTimeout(getDoc(verifyRef),7000);
+                            if (!verifySnap.exists()) throw submitErr;
+                        } catch (verifyErr) {
+                            throw submitErr;
+                        }
+                    } else {
+                        throw submitErr;
+                    }
+                }
                 pendingBooking = null;
                 bookedEventsMonthCache.clear();
 
