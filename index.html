@@ -5551,10 +5551,10 @@ body.cart-open #cartSummary{display:none!important;}
     <div id="cartSummary" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm z-40 glass-panel p-3 rounded-2xl border-t border-l">
         <div class="flex justify-between items-center gap-3">
             <div class="flex items-center gap-2 season-text-title font-semibold">
-                <div class="p-2 rounded-full" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="shopping-cart" class="w-5 h-5"></i></div>
+                <div class="relative p-2 rounded-full" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="shopping-cart" class="w-5 h-5"></i><span id="summaryCartBadge" class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-blue-600 text-white text-[10px] font-black flex items-center justify-center shadow-md border border-white">0</span></div>
                 <div class="flex flex-col leading-tight"><span class="text-[10px] season-text-muted uppercase">Total (<span id="itemCount" class="font-bold season-text-title">0</span>)</span><span id="totalPrice" class="font-black text-base season-text-title">$0.00</span></div>
             </div>
-            <button id="viewCartSummary" type="button" class="season-btn font-bold text-xs py-2.5 px-4 rounded-xl shadow-md" aria-label="Abrir carrito">Ver Carrito</button>
+            <button id="viewCartSummary" type="button" onclick="showModal('cartModal')" class="season-btn font-bold text-xs py-2.5 px-4 rounded-xl shadow-md" aria-label="Abrir carrito">Ver Carrito</button>
         </div>
     </div>
 
@@ -7205,6 +7205,7 @@ body.cart-open #cartSummary{display:none!important;}
             const tpe = document.getElementById('totalPrice');
             const cse = document.getElementById('cartSummary');
             const hcb = document.getElementById('headerCartBadge');
+            const scb = document.getElementById('summaryCartBadge');
 
             if(ice) ice.textContent = count;
             if(tpe) tpe.textContent = `$${Math.max(0,ft).toFixed(2)}`;
@@ -7214,6 +7215,11 @@ body.cart-open #cartSummary{display:none!important;}
                 hcb.textContent = count > 99 ? '99+' : String(count);
                 hcb.setAttribute('aria-label', `${count} ${count === 1 ? 'producto' : 'productos'} en el carrito`);
                 hcb.classList.toggle('show', count > 0);
+            }
+            if(scb){
+                scb.textContent = count > 99 ? '99+' : String(count);
+                scb.style.display = count > 0 ? 'flex' : 'none';
+                scb.setAttribute('aria-label', `${count} ${count === 1 ? 'producto' : 'productos'} en el carrito`);
             }
 
             // Resumen flotante: aparece solo cuando hay productos.
