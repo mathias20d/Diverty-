@@ -5411,6 +5411,22 @@ body[data-theme="christmas"] .catalog-category-cta{
 }
 </style>
 
+
+<style id="diverty-touch-first-interaction-fix">
+/* FIX DEFINITIVO: el overlay del menú NO puede capturar el primer toque cuando está cerrado. */
+#mobileMenuOverlay{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+#mobileMenuOverlay.menu-overlay-open{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+/* Carruseles conservan gesto táctil nativo; el navegador decide pan vertical/horizontal. */
+.home-swipe-track{touch-action:auto!important;}
+</style>
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -5485,7 +5501,7 @@ body[data-theme="christmas"] .catalog-category-cta{
     </div>
 
     <!-- MENÚ MÓVIL ESTILO APP -->
-    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/70 z-[999] opacity-0 visibility-hidden transition-all duration-300"></div>
+    <div id="mobileMenuOverlay" class="fixed inset-0 bg-black/70 z-[999] opacity-0 invisible transition-all duration-300"></div>
     <nav id="mobileMenu" class="relative overflow-hidden">
         <div class="flex-1 px-1 py-4 relative z-10 flex flex-col h-full overflow-y-auto">
             <div id="mobileNavLinks" class="space-y-1 flex-1">
@@ -5823,8 +5839,10 @@ body[data-theme="christmas"] .catalog-category-cta{
             if(!m || !o) return;
 
             if(show){
+                o.classList.add('menu-overlay-open');
                 o.style.opacity = '1';
                 o.style.visibility = 'visible';
+                o.style.pointerEvents = 'auto';
                 m.classList.add('open');
                 if(hw) hw.classList.add('menu-open');
                 if(mt){
@@ -5833,8 +5851,10 @@ body[data-theme="christmas"] .catalog-category-cta{
                     mt.innerHTML = '<i data-lucide="x" class="w-7 h-7 text-gray-800"></i>';
                 }
             } else {
+                o.classList.remove('menu-overlay-open');
                 o.style.opacity = '0';
                 o.style.visibility = 'hidden';
+                o.style.pointerEvents = 'none';
                 m.classList.remove('open');
                 if(hw) hw.classList.remove('menu-open');
                 if(mt){
@@ -7433,6 +7453,15 @@ body[data-theme="christmas"] .catalog-category-cta{
             }, { passive: true });
             
             document.addEventListener('change', e => { if (e.target.matches('#cartLocation')) { app.location = e.target.value; updateCartUI(); } });
+        }
+
+        // Estado inicial seguro: ningún overlay invisible puede interceptar el primer toque.
+        const __initialMenuOverlay = document.getElementById('mobileMenuOverlay');
+        if (__initialMenuOverlay) {
+            __initialMenuOverlay.classList.remove('menu-overlay-open');
+            __initialMenuOverlay.style.opacity = '0';
+            __initialMenuOverlay.style.visibility = 'hidden';
+            __initialMenuOverlay.style.pointerEvents = 'none';
         }
 
         setupEventListeners(); 
