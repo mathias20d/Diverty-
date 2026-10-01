@@ -5485,6 +5485,14 @@ body.cart-open #cartSummary{display:none!important;}
   body.has-cart .whatsapp-container{bottom:112px!important;}
 }
 </style>
+
+<style id="diverty-direct-booking-v1">
+.direct-booking-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:8px;width:100%;}
+.direct-booking-btn{min-height:48px;border:1px solid color-mix(in srgb,var(--s-primary) 35%,transparent);background:color-mix(in srgb,var(--s-primary) 8%,var(--s-bg-color));color:var(--s-primary);border-radius:1rem;font-weight:900;font-size:11px;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .15s ease,background .15s ease;box-shadow:0 4px 14px rgba(0,0,0,.05);}
+.direct-booking-btn:active{transform:scale(.97);}
+.direct-booking-btn svg{width:16px;height:16px;}
+@media(max-width:380px){.direct-booking-actions{grid-template-columns:1fr;}.direct-booking-btn{min-height:44px;}}
+</style>
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -6464,7 +6472,7 @@ body.cart-open #cartSummary{display:none!important;}
             if(item.isHourly){
                 ab=`<div class="mt-auto w-full relative z-10 pb-2"><div class="flex items-center justify-between mb-3 bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[var(--s-glass-border)] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button><span id="qty-${item.id}" class="text-lg font-black season-text-title w-12 text-center">${iq}</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'refresh':'none'}" class="season-btn ${btn} py-4 text-xs sm:text-sm text-white" style="${ic?'background: #F59E0B;':''}">${ic?`${S_ICONS.refresh} Actualizar Cantidad`:`${S_ICONS.cart} Añadir al Carrito`}</button></div>`;
             } else {
-                ab=`<div class="mt-auto w-full relative z-10 pb-2"><button data-action="add-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'selected':'none'}" class="season-btn ${btn} py-4 text-xs sm:text-sm text-white shadow-md" style="${ic?'background: #10B981;':''}">${ic?`${S_ICONS.check} Plan Seleccionado`:`${isPkg?S_ICONS.plus:S_ICONS.cart} Añadir al carrito`}</button></div>`;
+                ab=`<div class="mt-auto w-full relative z-10 pb-2 direct-booking-actions"><button data-action="add-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'selected':'none'}" class="season-btn ${btn} py-3 text-[11px] sm:text-xs text-white shadow-md" style="${ic?'background: #10B981;':''}">${ic?`${S_ICONS.check} Seleccionado`:`${S_ICONS.cart} Carrito`}</button><button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button></div>`;
             }
             
             return `
@@ -6802,11 +6810,12 @@ body.cart-open #cartSummary{display:none!important;}
                         ${inCart ? 'Actualizar cantidad' : 'Añadir al carrito'}
                     </button>
                    </div>`
-                : `<div class="catalog-detail-actions">
+                : `<div class="catalog-detail-actions direct-booking-actions">
                     <button data-action="add-to-cart" data-item-id="${item.id}" data-cart-state="${inCart ? 'selected' : 'none'}" class="season-btn catalog-detail-cart" style="${inCart ? 'background:#10B981!important;' : ''}">
                         <i data-lucide="${inCart ? 'check' : 'shopping-cart'}"></i>
-                        ${inCart ? 'Plan seleccionado' : 'Añadir al carrito'}
+                        ${inCart ? 'Seleccionado' : 'Carrito'}
                     </button>
+                    <button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button>
                    </div>`;
 
             setContent(`
@@ -7434,6 +7443,26 @@ body.cart-open #cartSummary{display:none!important;}
                         showModal('cartModal');
                     }
                     break; 
+                }
+                case 'book-now': {
+                    let it = allPurchasableItems.find(s=>s.id===itemId);
+                    if (!it && target.dataset.isCampaign === 'true') {
+                        const camp = app.campaigns.find(c => c.id === itemId);
+                        if (camp) {
+                            const servicesArr = Array.isArray(camp.incluye) ? camp.incluye : (typeof camp.incluye === 'string' ? camp.incluye.split('\n').filter(s=>s.trim()!=='') : []);
+                            it = { id: camp.id, name: cleanStr(camp.titulo), price: Number(camp.precio || camp.precioOriginal || 0), originalPrice: Number(camp.precioOriginal || camp.precio || 0), image: cleanStr(camp.imagen) || '', description: cleanStr(camp.subtitulo || camp.descripcion), services: servicesArr, isHourly: false, isCampaign: true, campaignId: camp.id };
+                        }
+                    }
+                    if (it) {
+                        app.cart = [{...it, quantity: 1}];
+                        appliedCoupon = null;
+                        updateCartUI();
+                        bookingFormState = {};
+                        app.wizardStep = 1;
+                        setActiveSection('booking');
+                        window.scrollTo(0, 0);
+                    }
+                    break;
                 }
                 case 'remove-from-cart': removeFromCart(itemId); break;
                 case 'empty-cart': {
