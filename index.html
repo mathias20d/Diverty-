@@ -5645,7 +5645,7 @@ body[data-theme="christmas"] .catalog-category-cta{
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
@@ -5663,7 +5663,9 @@ body[data-theme="christmas"] .catalog-category-cta{
         ];
         
         let db, auth; 
-        let bookedEvents = []; 
+        let bookedEvents = [];
+        const bookedEventsMonthCache = new Map();
+        let bookedEventsRequestSeq = 0;
         let currentCalDate = new Date(); 
         let bookingFormState = {}; 
         let selectedCalendarDate = null; 
@@ -6857,6 +6859,105 @@ body[data-theme="christmas"] .catalog-category-cta{
             setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative"><img src="${cleanStr(i.image)}" loading="lazy" decoding="async" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
         }
 
+        // FIRESTORE OPTIMIZADO: el calendario solo consulta las reservas del mes visible.
+        // Antes se descargaba TODA la colección "eventos" en cada visita.
+        const getMonthRange = (date) => {
+            const y = date.getFullYear();
+            const m = date.getMonth();
+            const start = `${y}-${String(m + 1).padStart(2, '0')}-01`;
+            const last = new Date(y, m + 1, 0).getDate();
+            const end = `${y}-${String(m + 1).padStart(2, '0')}-${String(last).padStart(2, '0')}`;
+            const key = `${y}-${String(m + 1).padStart(2, '0')}`;
+            return { start, end, key };
+        };
+
+        const isBlockingEvent = (ev) => {
+            if (!ev || ev.deletedLocally === true) return false;
+            const estado = cleanStr(ev.estado).toLowerCase();
+            return !['cancelado', 'rechazada', 'cot'].some(s => estado.includes(s));
+        };
+
+        async function loadBookedEventsForMonth(date, { force = false } = {}) {
+            if (!db) return [];
+            const { start, end, key } = getMonthRange(date);
+
+            if (!force && bookedEventsMonthCache.has(key)) {
+                bookedEvents = bookedEventsMonthCache.get(key);
+                return bookedEvents;
+            }
+
+            const requestSeq = ++bookedEventsRequestSeq;
+            try {
+                const eventsRef = collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos');
+                const monthQuery = query(
+                    eventsRef,
+                    where('fecha', '>=', start),
+                    where('fecha', '<=', end)
+                );
+                const snap = await fetchWithTimeout(getDocs(monthQuery), 8000);
+                const monthEvents = snap.docs.map(d => d.data()).filter(isBlockingEvent);
+                bookedEventsMonthCache.set(key, monthEvents);
+
+                // Evita que una respuesta antigua reemplace el mes que el usuario ya cambió.
+                if (requestSeq === bookedEventsRequestSeq || getMonthRange(currentCalDate).key === key) {
+                    bookedEvents = monthEvents;
+                }
+                return monthEvents;
+            } catch (e) {
+                console.warn('No se pudo cargar disponibilidad del mes:', e);
+                return bookedEventsMonthCache.get(key) || [];
+            }
+        }
+
+        function phoneVariants(value) {
+            const digits = String(value || '').replace(/\D/g, '').replace(/^00507/, '').replace(/^507/, '');
+            if (digits.length < 6) return { digits, variants: [] };
+            const dashed = digits.length === 8 ? `${digits.slice(0,4)}-${digits.slice(4)}` : digits;
+            const spaced = digits.length === 8 ? `${digits.slice(0,4)} ${digits.slice(4)}` : digits;
+            const variants = [
+                digits, dashed, spaced,
+                `507${digits}`, `+507${digits}`, `00507${digits}`,
+                `507 ${digits}`, `+507 ${digits}`,
+                `507 ${dashed}`, `+507 ${dashed}`,
+                `507-${dashed}`, `+507-${dashed}`
+            ];
+            return { digits, variants: [...new Set(variants)].slice(0, 30) };
+        }
+
+        async function findReservationsByPhone(value) {
+            if (!db) return [];
+            const { digits, variants } = phoneVariants(value);
+            if (digits.length < 6) return [];
+            const eventsRef = collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos');
+            const found = new Map();
+
+            // Reservas nuevas guardan telefonoBusqueda normalizado: esta será la consulta principal.
+            try {
+                const normalizedSnap = await fetchWithTimeout(
+                    getDocs(query(eventsRef, where('telefonoBusqueda', '==', digits))),
+                    8000
+                );
+                normalizedSnap.docs.forEach(d => found.set(d.id, { id: d.id, ...d.data() }));
+            } catch (e) {
+                console.warn('Búsqueda normalizada no disponible:', e);
+            }
+
+            // Compatibilidad con reservas antiguas que solo tienen el campo telefono.
+            if (found.size === 0 && variants.length) {
+                try {
+                    const legacySnap = await fetchWithTimeout(
+                        getDocs(query(eventsRef, where('telefono', 'in', variants))),
+                        8000
+                    );
+                    legacySnap.docs.forEach(d => found.set(d.id, { id: d.id, ...d.data() }));
+                } catch (e) {
+                    console.warn('Búsqueda de teléfono anterior no disponible:', e);
+                }
+            }
+
+            return [...found.values()].filter(isBlockingEvent);
+        }
+
         function renderCalendar() {
             const grid = document.getElementById('availability-calendar-grid'); if(!grid) return;
             const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth();
@@ -6923,14 +7024,15 @@ body[data-theme="christmas"] .catalog-category-cta{
             setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-black/5 border border-[var(--s-primary)] rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm season-text-primary"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold season-text-title font-nunito tracking-tight">Portal del Cliente</h2><p class="season-text-muted mt-2 font-medium text-sm">Consulta el estado de tu evento de forma rápida.</p></div><div class="glass-panel card-alive p-6 sm:p-10 shadow-sm"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 season-text-muted w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-black/5 border border-black/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold season-text-title outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" required></div><button type="submit" class="w-full season-btn font-bold py-3.5 rounded-2xl flex justify-center items-center gap-2 text-sm transition-transform active:scale-95"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-black/10 rounded-2xl bg-black/5"><p class="season-text-muted font-semibold">Ingresa tu número para ver tus reservas activas.</p></div></div></div></section></div>`);
             const form = document.getElementById('portalSearchForm');
             if(form){
-                form.onsubmit = (e) => {
+                form.onsubmit = async (e) => {
                     e.preventDefault();
                     const sp = document.getElementById('searchPhone'); if(!sp) return;
                     const cleanPhone = (p) => String(p||'').replace(/\D/g, '').replace(/^00507/, '').replace(/^507/, '');
                     const pi = cleanPhone(sp.value);
                     const rc = document.getElementById('portalResults'); if(!rc) return;
                     if(pi.length<6){ rc.innerHTML=`<div class="text-center p-8 bg-amber-500/10 rounded-2xl border border-amber-500/20"><p class="text-amber-500 font-bold">Número inválido.</p></div>`; return; }
-                    const res = bookedEvents.filter(ev => { const ep=cleanPhone(ev.telefono); return ep && (ep===pi || ep.includes(pi) || pi.includes(ep)); });
+                    rc.innerHTML=`<div class="text-center p-8 bg-black/5 rounded-2xl border border-black/10"><div class="loading-spinner !w-6 !h-6 !border-2 mx-auto mb-3"></div><p class="season-text-muted font-bold">Buscando tu reserva...</p></div>`;
+                    const res = await findReservationsByPhone(sp.value);
                     if(res.length===0) rc.innerHTML=`<div class="text-center p-8 bg-rose-500/10 rounded-2xl border border-rose-500/20"><p class="text-rose-500 font-bold">No encontramos reservas.</p></div>`;
                     else rc.innerHTML = res.map(getPortalResultCard).join('');
                     if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -7168,9 +7270,19 @@ body[data-theme="christmas"] .catalog-category-cta{
             showToast('Plan eliminado', 'info'); 
         }
 
-        function handleGlobalClick(e) {
-            if (e.target.closest('#prevMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() - 1); renderCalendar(); return; }
-            if (e.target.closest('#nextMonth')) { currentCalDate.setMonth(currentCalDate.getMonth() + 1); renderCalendar(); return; }
+        async function handleGlobalClick(e) {
+            if (e.target.closest('#prevMonth')) {
+                currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+                await loadBookedEventsForMonth(new Date(currentCalDate));
+                renderCalendar();
+                return;
+            }
+            if (e.target.closest('#nextMonth')) {
+                currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+                await loadBookedEventsForMonth(new Date(currentCalDate));
+                renderCalendar();
+                return;
+            }
 
             const navLink = e.target.closest('.nav-action');
             if(navLink) {
@@ -7351,7 +7463,7 @@ body[data-theme="christmas"] .catalog-category-cta{
                 const ft = sub - dv + tc;
                 const lo = locations.find(l=>l.value===app.location);
                 const dataToSave = {
-                    id: `web-${Date.now()}`, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: fd.get('date')||'', hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>({ id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:cleanStr(i.description)||'' })), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
+                    id: `web-${Date.now()}`, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: fd.get('date')||'', hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>({ id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:cleanStr(i.description)||'' })), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
                 };
                 
                 await fetchWithTimeout(setDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos', dataToSave.id), dataToSave), 6000);
@@ -7481,7 +7593,7 @@ body[data-theme="christmas"] .catalog-category-cta{
                 (async () => { try { const gs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')), T_OUT); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); } catch(e){} })(),
                 (async () => { try { const rs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')), T_OUT); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){} })(),
                 (async () => { try { const cs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web')), T_OUT); activeCoupons = cs.docs.map(d=>d.data()).filter(c=>c.active===true||c.activo===true); } catch(e){} })(),
-                (async () => { try { const es = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos')), T_OUT); bookedEvents = es.docs.map(d=>d.data()).filter(ev=>ev.deletedLocally!==true && !['cancelado','rechazada','cot'].some(s=>(cleanStr(ev.estado)).toLowerCase().includes(s))); } catch(e){} })()
+                loadBookedEventsForMonth(new Date(currentCalDate))
             ]).then(() => {
                 if (app.activeSection === 'home') {
                     if (customerReviews.length > 0 || bookedEvents.length > 0) renderHome();
