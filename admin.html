@@ -250,7 +250,7 @@
                     <div class="flex items-center justify-between mb-4">
                         <div>
                             <h2 class="text-xl font-bold text-white mb-1">Catálogos de Servicios</h2>
-                            <p class="text-sm text-slate-400">Gestiona las secciones principales.</p>
+                            <p class="text-sm text-slate-400">Gestiona las secciones principales. Cada catálogo puede tener una portada propia e independiente de sus paquetes.</p>
                         </div>
                         <button onclick="window.openCategoryModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-colors shadow-lg shadow-indigo-500/20 flex items-center gap-2">
                             <i data-lucide="plus" class="w-4 h-4"></i> <span class="hidden sm:inline">Nuevo Catálogo</span>
@@ -475,6 +475,28 @@
         <div class="modal-content bg-[#0F172A] border border-slate-700 rounded-3xl shadow-2xl p-6 w-full max-w-sm mx-4 text-left">
             <h3 class="text-lg font-bold text-white mb-4" id="catModalTitle">Catálogo</h3>
             <input type="text" id="catName" class="saas-input bg-slate-900 mb-4" placeholder="Nombre de la categoría...">
+
+            <div class="mb-5">
+                <div class="flex items-center justify-between mb-2">
+                    <label class="saas-label !mb-0">Foto independiente del catálogo</label>
+                    <span class="text-[10px] font-bold text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-lg">Explora categorías</span>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="catImage" class="saas-input bg-slate-900 text-xs flex-1" placeholder="Sube una foto..." readonly>
+                    <label class="w-12 h-12 shrink-0 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl relative flex items-center justify-center cursor-pointer shadow-lg shadow-indigo-500/20" title="Subir o cambiar foto">
+                        <input type="file" id="catImageFileNative" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
+                        <i data-lucide="camera" class="w-5 h-5 text-white"></i>
+                    </label>
+                </div>
+                <div id="catImagePreviewBox" class="hidden mt-3 h-40 rounded-2xl bg-slate-950 overflow-hidden border border-slate-700 relative">
+                    <img id="catImagePreview" class="w-full h-full object-cover" alt="Vista previa del catálogo">
+                    <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 to-transparent px-3 pt-8 pb-2">
+                        <span class="text-[10px] font-bold text-white/90">Así se usará en “Explora por categorías”</span>
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2">Esta portada pertenece SOLO al catálogo de “Explora por categorías”. No modifica ninguna foto, precio, servicio ni información de los paquetes.</p>
+            </div>
+
             <div class="mb-5">
                 <div class="flex items-center justify-between mb-2"><label class="saas-label !mb-0">Icono del catálogo</label><span id="catIconLabel" class="text-[10px] font-bold text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 px-2 py-1 rounded-lg">Automático</span></div>
                 <input type="hidden" id="catIcon" value="">
@@ -837,10 +859,21 @@
                 const cat = window.categoriasLocales.find(c => c.id === id);
                 document.getElementById('catName').value = cat ? cat.nombre : '';
                 window.selectCategoryIcon(cat && cat.icono ? cat.icono : '');
+                const catImg = cat && (cat.imagen || cat.image) ? (cat.imagen || cat.image) : '';
+                document.getElementById('catImage').value = catImg;
+                const catPreviewBox = document.getElementById('catImagePreviewBox');
+                const catPreview = document.getElementById('catImagePreview');
+                if (catImg) { catPreview.src = catImg; catPreviewBox.classList.remove('hidden'); }
+                else { catPreview.src = ''; catPreviewBox.classList.add('hidden'); }
+                document.getElementById('catImageFileNative').value = '';
                 document.getElementById('catModalTitle').textContent = "Editar Catálogo";
             } else {
                 document.getElementById('catName').value = '';
                 window.selectCategoryIcon('');
+                document.getElementById('catImage').value = '';
+                document.getElementById('catImagePreview').src = '';
+                document.getElementById('catImagePreviewBox').classList.add('hidden');
+                document.getElementById('catImageFileNative').value = '';
                 document.getElementById('catModalTitle').textContent = "Nuevo Catálogo";
             }
             document.getElementById('categoryModal').classList.add('show');
@@ -855,17 +888,18 @@
         window.saveCategory = async () => {
             const nombre = document.getElementById('catName').value.trim();
             const icono = (document.getElementById('catIcon')?.value || '').trim();
+            const imagen = (document.getElementById('catImage')?.value || '').trim();
             if(!nombre) return showToast("Escribe un nombre para el catálogo", "error");
 
             try {
                 if (editingCategoryId) {
-                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', editingCategoryId), { nombre, icono });
+                    await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', editingCategoryId), { nombre, icono, imagen });
                     showToast("Catálogo actualizado", "success");
                 } else {
                     const newId = nombre.toLowerCase().replace(/[^a-z0-9]/g, '-');
                     const orden = window.categoriasLocales.length + 1;
                     await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', newId), {
-                        id: newId, nombre, icono, orden, visible: true
+                        id: newId, nombre, icono, imagen, orden, visible: true
                     });
                     showToast("Catálogo creado exitosamente", "success");
                 }
@@ -911,11 +945,15 @@
                         <div class="category-item flex justify-between items-center bg-[#0F172A] p-3 md:p-4 rounded-xl border border-slate-700 shadow-sm relative w-full" data-id="${c.id}">
                             <div class="flex items-center gap-2 pl-2 flex-1">
                                 <div class="drag-handle-cat p-1.5 cursor-grab -ml-2 text-slate-500 hover:text-white transition-colors"><i data-lucide="grip-vertical" class="w-5 h-5"></i></div>
-                                <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0"><i data-lucide="${c.icono || 'folder'}" class="w-5 h-5 text-indigo-300"></i></div>
-                                 <div class="flex-1 min-w-0"><h4 class="text-white font-bold text-sm truncate">${c.nombre}</h4><p class="text-[10px] text-slate-500 mt-0.5">${c.icono ? 'Icono: '+c.icono : 'Icono automático en la web'}</p></div>
+                                <div class="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden flex items-center justify-center shrink-0">${c.imagen ? `<img src="${c.imagen}" class="w-full h-full object-cover" alt="${c.nombre}">` : `<i data-lucide="${c.icono || 'folder'}" class="w-5 h-5 text-indigo-300"></i>`}</div>
+                                 <div class="flex-1 min-w-0"><h4 class="text-white font-bold text-sm truncate">${c.nombre}</h4><p class="text-[10px] text-slate-500 mt-0.5">${c.imagen ? 'Foto personalizada activa' : (c.icono ? 'Icono: '+c.icono : 'Sin foto personalizada')}</p></div>
                             </div>
                             <div class="flex gap-2">
-                                <button onclick="window.openCategoryModal('${c.id}')" class="text-slate-400 hover:text-white p-2 bg-slate-800 rounded-lg transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                                <label class="text-indigo-300 hover:text-white p-2 bg-indigo-500/10 hover:bg-indigo-600 rounded-lg transition-colors cursor-pointer relative" title="Cambiar foto">
+                                    <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="window.quickChangeCategoryImage('${c.id}', this)">
+                                    <i data-lucide="camera" class="w-4 h-4 pointer-events-none"></i>
+                                </label>
+                                <button onclick="window.openCategoryModal('${c.id}')" class="text-slate-400 hover:text-white p-2 bg-slate-800 rounded-lg transition-colors" title="Editar catálogo"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
                                 <button onclick="window.deleteCategory('${c.id}')" class="text-rose-400 hover:text-white p-2 bg-slate-800 hover:bg-rose-600/20 rounded-lg transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </div>
                         </div>`;
@@ -1041,6 +1079,10 @@
                                 </div>
                             </div>
                             <div class="flex gap-2 mt-4 pt-4 border-t border-slate-800/80 w-full pointer-events-auto">
+                                <label class="flex-1 bg-indigo-500/10 hover:bg-indigo-600 text-indigo-300 hover:text-white text-xs font-bold py-2.5 rounded-xl border border-indigo-500/20 flex justify-center items-center gap-2 transition-colors cursor-pointer relative" title="Cambiar foto del paquete">
+                                    <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="window.quickChangePackageImage('${item.id}', this)">
+                                    <i data-lucide="camera" class="w-3.5 h-3.5 pointer-events-none"></i> Foto
+                                </label>
                                 <button onclick="window.editPackage('${item.id}')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 rounded-xl border border-slate-700 flex justify-center items-center gap-2 transition-colors"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button>
                                 <button onclick="window.deletePackage('${item.id}')" class="w-11 h-11 shrink-0 bg-rose-500/10 text-rose-500 rounded-xl flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                             </div>
@@ -1079,6 +1121,16 @@
         
         // El FileInput general (usado en Paquetes)
         document.getElementById('imageFileNative').addEventListener('change', async (e) => window.uploadToCloudinaryGeneral(e.target.files[0], document.getElementById('imagen'), document.getElementById('imagePreviewBox'), document.getElementById('previewImg')));
+
+        // Foto independiente para las tarjetas de “Explora por categorías”
+        document.getElementById('catImageFileNative').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const input = document.getElementById('catImage');
+            const box = document.getElementById('catImagePreviewBox');
+            const img = document.getElementById('catImagePreview');
+            await window.uploadToCloudinaryGeneral(file, input, box, img);
+        });
 
         document.getElementById('submitBtn').addEventListener('click', async (e) => {
             const nombre = document.getElementById('nombre').value; const precio = Number(document.getElementById('precio').value);
@@ -1765,6 +1817,58 @@
             }
         });
 
+        // Subida reutilizable: devuelve la URL final de Cloudinary
+        window.uploadImageAndGetUrl = async function(file) {
+            if(!file) return '';
+            const compressed = await compressImage(file);
+            const formData = new FormData();
+            formData.append('file', compressed);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+            const res = await fetch(CLOUDINARY_URL, {method:'POST', body:formData});
+            const data = await res.json();
+            if(!res.ok || !data.secure_url) throw new Error(data?.error?.message || 'No se pudo subir la imagen');
+            return data.secure_url;
+        };
+
+        // Cambio rápido de foto de un catálogo, sin abrir el formulario completo
+        window.quickChangeCategoryImage = async function(id, input) {
+            const file = input?.files?.[0];
+            if(!file) return;
+            const label = input.parentElement;
+            try {
+                label.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>';
+                lucide.createIcons();
+                const url = await window.uploadImageAndGetUrl(file);
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', id), { imagen: url, updatedAt: new Date().toISOString() });
+                showToast('Portada independiente del catálogo actualizada', 'success');
+                await window.loadCategories();
+            } catch(e) {
+                console.error(e);
+                showToast('No se pudo cambiar la foto', 'error');
+                await window.loadCategories();
+            }
+        };
+
+        // Cambio rápido de foto de cualquier paquete (incluye los planes de payasos)
+        window.quickChangePackageImage = async function(id, input) {
+            const file = input?.files?.[0];
+            if(!file) return;
+            const label = input.parentElement;
+            try {
+                label.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Cargando...</span>';
+                lucide.createIcons();
+                const url = await window.uploadImageAndGetUrl(file);
+                await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web', id), { imagen: url, updatedAt: new Date().toISOString() });
+                if(paquetesLocales[id]) paquetesLocales[id].imagen = url;
+                showToast('Foto del paquete actualizada; la portada del catálogo no cambió', 'success');
+                await window.loadCatalog();
+            } catch(e) {
+                console.error(e);
+                showToast('No se pudo cambiar la foto', 'error');
+                await window.loadCatalog();
+            }
+        };
+
         // Util general de subida (mantenido para Paquetes / Galeria donde se usaba originalmente)
         window.uploadToCloudinaryGeneral = async function(file, inputUrl, box, img) { 
             if(!file)return;
@@ -1780,9 +1884,14 @@
                 if(data.secure_url){
                     inputUrl.value=data.secure_url;
                     showToast("Imagen subida","success");
+                    return data.secure_url;
                 }
+                showToast("No se pudo completar la subida", "error");
+                return null;
             }catch(e){
+                console.error(e);
                 showToast("Error subiendo imagen general","error");
+                return null;
             } 
         };
         
