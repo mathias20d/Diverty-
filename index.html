@@ -6934,6 +6934,7 @@ body.cart-open #cartSummary{display:none!important;}
             setContent(`
               <div class="catalog-grid-page">
                 <section class="catalog-grid-section">
+                <button type="button" data-action="back-to-catalog" class="catalog-detail-back" style="margin-bottom:18px"><i data-lucide="arrow-left"></i><span>Volver al explorador</span></button>
                   <div class="catalog-grid-heading">
                     <div>
                       <p>Selecciona una opción</p>
@@ -6954,6 +6955,7 @@ body.cart-open #cartSummary{display:none!important;}
           setContent(`
             <div class="catalog-grid-page">
               <section class="catalog-grid-section">
+                <button type="button" data-action="back-to-catalog" class="catalog-detail-back" style="margin-bottom:18px"><i data-lucide="arrow-left"></i><span>Volver al explorador</span></button>
                 <div class="catalog-grid-heading">
                   <div>
                     <p>Selecciona una opción</p>
@@ -7425,8 +7427,10 @@ body.cart-open #cartSummary{display:none!important;}
                         else m.classList.remove('show');
                     });
                     toggleMobileMenu(false);
-                    if (targetSec.startsWith('cat_')) setDirectRoute('categoria', targetSec.replace('cat_', ''));
-                    else setDirectRoute('', '');
+                    if (targetSec.startsWith('cat_')) {
+                        if (app.activeSection === 'catalog') catalogNavMemory.save('catalog');
+                        setDirectRoute('categoria', targetSec.replace('cat_', ''));
+                    } else setDirectRoute('', '');
                     if(app.activeSection !== targetSec) setActiveSection(targetSec);
                     else if(targetSec.startsWith('cat_')) renderCategory(targetSec.replace('cat_', ''));
                     return; 
@@ -7461,6 +7465,15 @@ body.cart-open #cartSummary{display:none!important;}
                     const itemForNav = app.catalog.find(i => i.id === itemId);
                     if (itemForNav?.categoria) catalogNavMemory.save(itemForNav.categoria);
                     renderItemDetail(itemId);
+                    break;
+                }
+                case 'back-to-catalog': {
+                    e.preventDefault();
+                    if (app.activeSection && app.activeSection.startsWith('cat_')) catalogNavMemory.save(app.activeSection.replace('cat_', ''));
+                    setDirectRoute('', '');
+                    app.activeSection = 'catalog';
+                    renderAllCatalog();
+                    catalogNavMemory.restore('catalog');
                     break;
                 }
                 case 'back-to-category': {
@@ -7832,10 +7845,11 @@ body.cart-open #cartSummary{display:none!important;}
 
         let catalogScrollSaveTimer = null;
         window.addEventListener('scroll', () => {
-            if (!app.activeSection || !app.activeSection.startsWith('cat_')) return;
+            if (!app.activeSection || (app.activeSection !== 'catalog' && !app.activeSection.startsWith('cat_'))) return;
             clearTimeout(catalogScrollSaveTimer);
             catalogScrollSaveTimer = setTimeout(() => {
-                catalogNavMemory.save(app.activeSection.replace('cat_', ''));
+                const memoryKey = app.activeSection === 'catalog' ? 'catalog' : app.activeSection.replace('cat_', '');
+                catalogNavMemory.save(memoryKey);
             }, 120);
         }, { passive:true });
 
