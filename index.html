@@ -4201,6 +4201,123 @@ body.cart-open #hero-video{
 }
 </style>
 
+
+<style id="diverty-featured-like-campaign-v4">
+/* Oferta destacada: misma presencia visual que Gran Promoción */
+#home-featured-wrapper{
+    width:100%!important;
+    max-width:720px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+}
+#home-featured-wrapper .home-featured-track{
+    width:100%!important;
+    display:flex!important;
+    align-items:stretch!important;
+    justify-content:center!important;
+    gap:16px!important;
+    overflow-x:auto!important;
+    padding-left:0!important;
+    padding-right:0!important;
+    scroll-snap-type:x mandatory;
+}
+#home-featured-wrapper .featured-offer-shell{
+    width:min(92vw,620px)!important;
+    max-width:620px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+}
+#home-featured-wrapper .featured-offer-card{
+    width:100%!important;
+    border-radius:1.55rem!important;
+    padding:12px!important;
+}
+#home-featured-wrapper .featured-offer-card > .relative{
+    width:100%!important;
+}
+#home-featured-wrapper .featured-offer-card .relative.w-full.h-40{
+    height:205px!important;
+    min-height:205px!important;
+    max-height:205px!important;
+    margin-bottom:12px!important;
+    border-radius:1.2rem!important;
+}
+#home-featured-wrapper .featured-offer-card .relative.w-full.h-40 img{
+    min-height:205px!important;
+    max-height:205px!important;
+    border-radius:1.2rem!important;
+}
+#home-featured-wrapper .featured-offer-card h3{
+    font-size:1.65rem!important;
+    line-height:1.02!important;
+}
+#home-featured-wrapper .featured-offer-benefits{
+    background:color-mix(in srgb,var(--s-glass-bg) 82%,transparent)!important;
+    box-shadow:none!important;
+}
+#home-featured-wrapper .featured-offer-benefits > summary{
+    min-height:58px!important;
+}
+#home-featured-wrapper .featured-offer-benefits-list{
+    max-height:330px;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
+}
+#home-featured-wrapper .featured-offer-card [data-action="add-to-cart"]{
+    min-height:58px!important;
+    border-radius:1.1rem!important;
+    font-size:12px!important;
+}
+#home-featured-wrapper .featured-offer-card .season-gradient-text{
+    font-size:2.2rem!important;
+}
+
+/* Al abrir los beneficios, no cambia bruscamente el ancho de la tarjeta. */
+#home-featured-wrapper .offer-benefits-details[open]{
+    width:100%!important;
+}
+
+@media(max-width:767px){
+    #home-featured-wrapper{
+        padding-left:10px!important;
+        padding-right:10px!important;
+    }
+    #home-featured-wrapper .home-featured-track{
+        padding-top:8px!important;
+        justify-content:flex-start!important;
+    }
+    #home-featured-wrapper .featured-offer-shell{
+        width:100%!important;
+        max-width:100%!important;
+        flex:0 0 100%!important;
+    }
+    #home-featured-wrapper .featured-offer-card .relative.w-full.h-40,
+    #home-featured-wrapper .featured-offer-card .relative.w-full.h-40 img{
+        height:190px!important;
+        min-height:190px!important;
+        max-height:190px!important;
+    }
+    #home-featured-wrapper .featured-offer-card h3{
+        font-size:1.55rem!important;
+    }
+    #home-featured-wrapper .featured-offer-card .season-gradient-text{
+        font-size:2.05rem!important;
+    }
+}
+
+/* En pantallas muy pequeñas sigue respirando sin salirse. */
+@media(max-width:390px){
+    #home-featured-wrapper{padding-left:6px!important;padding-right:6px!important;}
+    #home-featured-wrapper .featured-offer-card .relative.w-full.h-40,
+    #home-featured-wrapper .featured-offer-card .relative.w-full.h-40 img{
+        height:180px!important;
+        min-height:180px!important;
+        max-height:180px!important;
+    }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -5064,17 +5181,24 @@ body.cart-open #hero-video{
             let sl='';
             if(item.services&&item.services.length>0){
                 const services = item.services.filter(s => cleanStr(s) !== '');
-                const visibleServices = services.slice(0, 4);
-                const hiddenServices = services.slice(4);
                 const benefitItem = (service) => `<li class="flex items-start text-[11px] sm:text-xs season-text-muted font-bold leading-snug"><div class="mt-0.5 mr-2.5 shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-white shadow-sm" style="background: var(--s-btn-grad);"><i data-lucide="check" class="w-2.5 h-2.5 stroke-[3]"></i></div><span class="flex-1 pt-0.5">${cleanStr(service)}</span></li>`;
-                sl=`<div class="mb-4 relative z-20 w-full rounded-[1.15rem] border border-[var(--s-glass-border)] bg-[color-mix(in_srgb,var(--s-glass-bg)_88%,transparent)] overflow-hidden shadow-sm">
-                    <div class="flex items-center justify-between gap-3 px-4 pt-3.5 pb-3">
-                        <div class="flex items-center gap-2 min-w-0"><span class="w-8 h-8 rounded-xl flex items-center justify-center season-text-primary shrink-0" style="background: color-mix(in srgb, var(--s-primary) 12%, transparent);"><i data-lucide="sparkles" class="w-4 h-4"></i></span><div><p class="season-text-title text-[12px] sm:text-[13px] font-black leading-tight">Todo lo que incluye</p><p class="season-text-muted text-[9px] font-bold mt-0.5">${services.length} beneficios para tu celebración</p></div></div>
-                        <span class="text-[9px] font-black uppercase tracking-wider season-text-primary px-2.5 py-1 rounded-full border border-[var(--s-glass-border)] bg-black/5 shrink-0">Completo</span>
-                    </div>
-                    <ul class="space-y-2 px-4 pb-3">${visibleServices.map(benefitItem).join('')}</ul>
-                    ${hiddenServices.length ? `<details class="offer-benefits-details border-t border-[var(--s-glass-border)]"><summary class="list-none cursor-pointer select-none px-4 py-3 flex items-center justify-between gap-3 season-text-primary text-[10px] sm:text-[11px] font-black uppercase tracking-wide active:opacity-70"><span class="flex items-center gap-2"><i data-lucide="list-checks" class="w-4 h-4"></i> Ver todo lo que incluye</span><i data-lucide="chevron-down" class="benefits-chevron w-4 h-4 transition-transform duration-200"></i></summary><ul class="space-y-2 px-4 pb-4 pt-1">${hiddenServices.map(benefitItem).join('')}</ul></details>` : ''}
-                </div>`;
+
+                sl=`<details class="offer-benefits-details featured-offer-benefits mb-3 relative z-20 w-full rounded-[1rem] border border-[var(--s-glass-border)] overflow-hidden">
+                    <summary class="list-none cursor-pointer select-none px-3.5 py-3 flex items-center justify-between gap-3 active:opacity-80">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-8 h-8 rounded-xl flex items-center justify-center season-text-primary shrink-0" style="background: color-mix(in srgb, var(--s-primary) 12%, transparent);"><i data-lucide="sparkles" class="w-4 h-4"></i></span>
+                            <div class="min-w-0 text-left">
+                                <p class="season-text-title text-[12px] sm:text-[13px] font-black leading-tight">Todo lo que incluye</p>
+                                <p class="season-text-muted text-[9px] sm:text-[10px] font-bold mt-0.5">${services.length} beneficios para tu celebración</p>
+                            </div>
+                        </div>
+                        <span class="flex items-center gap-1.5 season-text-primary text-[9px] font-black uppercase tracking-wide shrink-0">
+                            Ver todo
+                            <i data-lucide="chevron-down" class="benefits-chevron w-4 h-4 transition-transform duration-200"></i>
+                        </span>
+                    </summary>
+                    <ul class="featured-offer-benefits-list space-y-2 px-4 pb-4 pt-2 border-t border-[var(--s-glass-border)]">${services.map(benefitItem).join('')}</ul>
+                </details>`;
             }
 
             const ic=app.cart.find(i=>i.id===item.id); const iq=ic?ic.quantity:1;
@@ -5087,8 +5211,8 @@ body.cart-open #hero-video{
             }
             
             return `
-            <div class="w-[85vw] max-w-[380px] md:w-full snap-center flex-shrink-0 h-full snap-container relative pt-4 pb-2">
-                <div class="glass-panel card-alive p-4 sm:p-5 pb-5 flex flex-col h-full group group-hover-playful relative">
+            <div class="featured-offer-shell w-[92vw] max-w-[620px] md:w-full snap-center flex-shrink-0 h-full snap-container relative pt-4 pb-2 mx-auto">
+                <div class="featured-offer-card glass-panel card-alive p-3 sm:p-4 pb-4 flex flex-col h-full group group-hover-playful relative">
                     <div class="relative z-10 flex flex-col h-full">${imgBlock}${sl}${pd}${ab}</div>
                 </div>
             </div>`;
