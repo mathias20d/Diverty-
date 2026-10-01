@@ -6140,6 +6140,66 @@ body[data-theme="christmas"] .catalog-category-cta{
             setActiveSection(app.activeSection);
         }
 
+        // --- ENLACES DIRECTOS PREMIUM: paquetes y categorías ---
+        function getDirectRoute() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                planId: (params.get('plan') || '').trim(),
+                categoryId: (params.get('categoria') || '').trim()
+            };
+        }
+
+        function setDirectRoute(kind = '', id = '', mode = 'push') {
+            try {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('plan');
+                url.searchParams.delete('categoria');
+                if (kind === 'plan' && id) url.searchParams.set('plan', id);
+                if (kind === 'categoria' && id) url.searchParams.set('categoria', id);
+                const next = url.pathname + (url.search || '') + (url.hash || '');
+                if (mode === 'replace') history.replaceState({ divertyRoute: true }, '', next);
+                else history.pushState({ divertyRoute: true }, '', next);
+            } catch (e) {}
+        }
+
+        function openDirectRouteFromUrl({ invalidFallback = true } = {}) {
+            if (!isFirebaseLoaded) return false;
+            const { planId, categoryId } = getDirectRoute();
+
+            if (planId) {
+                const item = app.catalog.find(i => i.id === planId);
+                if (item) {
+                    app.activeSection = `cat_${item.categoria}`;
+                    renderItemDetail(planId, false);
+                    window.scrollTo(0, 0);
+                    return true;
+                }
+                if (invalidFallback) {
+                    setDirectRoute('', '', 'replace');
+                    renderHome();
+                    setTimeout(() => showToast('Este plan no está disponible en este momento.', 'info'), 120);
+                    return true;
+                }
+            }
+
+            if (categoryId) {
+                const cat = dynamicCategories.find(c => c.id === categoryId && isCategoryCurrentlyVisible(c));
+                if (cat) {
+                    app.activeSection = `cat_${categoryId}`;
+                    renderCategory(categoryId);
+                    window.scrollTo(0, 0);
+                    return true;
+                }
+                if (invalidFallback) {
+                    setDirectRoute('', '', 'replace');
+                    renderAllCatalog();
+                    setTimeout(() => showToast('Este catálogo no está disponible en este momento.', 'info'), 120);
+                    return true;
+                }
+            }
+            return false;
+        }
+
         function setActiveSection(sectionId) {
             if (!sectionId) sectionId = 'home';
             if (sectionId === 'booking' && !sessionStorage.getItem('bookingNoticeShown')) { sessionStorage.setItem('bookingNoticeShown', 'true'); }
@@ -6645,9 +6705,10 @@ body[data-theme="christmas"] .catalog-category-cta{
           `;
         }
 
-        function renderItemDetail(itemId) {
+        function renderItemDetail(itemId, syncUrl = true) {
             const item = app.catalog.find(i => i.id === itemId);
             if (!item) return;
+            if (syncUrl) setDirectRoute('plan', itemId);
 
             const cat = dynamicCategories.find(c => c.id === item.categoria);
             const categoryTitle = cat ? cat.nombre : 'Catálogo';
@@ -7121,7 +7182,10 @@ body[data-theme="christmas"] .catalog-category-cta{
                         else m.classList.remove('show');
                     });
                     toggleMobileMenu(false);
+                    if (targetSec.startsWith('cat_')) setDirectRoute('categoria', targetSec.replace('cat_', ''));
+                    else setDirectRoute('', '');
                     if(app.activeSection !== targetSec) setActiveSection(targetSec);
+                    else if(targetSec.startsWith('cat_')) renderCategory(targetSec.replace('cat_', ''));
                     return; 
                 }
             }
@@ -7158,6 +7222,7 @@ body[data-theme="christmas"] .catalog-category-cta{
                     e.preventDefault();
                     const categoryId = target.dataset.categoryId;
                     if (categoryId) {
+                        setDirectRoute('categoria', categoryId);
                         app.activeSection = `cat_${categoryId}`;
                         renderCategory(categoryId);
                         window.scrollTo(0, 0);
@@ -7400,8 +7465,13 @@ body[data-theme="christmas"] .catalog-category-cta{
             buildDynamicNav();
             isFirebaseLoaded = true;
             
-            if (app.activeSection === 'home') renderHome(); 
-            else setActiveSection(app.activeSection);
+            // Si el visitante llegó desde un enlace compartido, abre exactamente ese contenido
+            // después de que Firebase y las reglas de temporada hayan terminado de cargar.
+            const directOpened = openDirectRouteFromUrl();
+            if (!directOpened) {
+                if (app.activeSection === 'home') renderHome();
+                else setActiveSection(app.activeSection);
+            }
             
             updateCartUI();
             finishThemeBoot();
@@ -7420,6 +7490,15 @@ body[data-theme="christmas"] .catalog-category-cta{
                 }
             });
         }
+
+        window.addEventListener('popstate', () => {
+            if (!isFirebaseLoaded) return;
+            if (!openDirectRouteFromUrl({ invalidFallback: false })) {
+                app.activeSection = 'home';
+                renderHome();
+                window.scrollTo(0, 0);
+            }
+        });
 
         function setupEventListeners() {
             if (window.location.hash) { history.replaceState(null, null, ' '); }
