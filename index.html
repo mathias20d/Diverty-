@@ -7677,7 +7677,17 @@ body.cart-open #cartSummary{display:none!important;}
                     await loadBookedEventsForMonth(new Date(currentCalDate));
                     showToast(`Ese horario ya alcanzó el máximo de ${capacidadSimultanea} eventos. Elige otra hora disponible.`, 'error');
                 } else {
-                    showToast('Aún no se confirmó el envío. Puedes reintentar aquí sin duplicarlo; conserva esta página abierta.', 'error');
+                    const rawCode = String(err?.code || err?.name || 'UNKNOWN_ERROR');
+                    const rawMessage = String(err?.message || 'Sin detalle').replace(/\s+/g,' ').trim();
+                    const diagnosticCode = rawCode.replace(/^FirebaseError:\s*/i,'').replace(/^firestore\//i,'');
+                    console.error('[DIVERTY BOOKING DIAGNOSTIC]', {
+                        code: diagnosticCode,
+                        message: rawMessage,
+                        requestId: pendingBooking?.id || null,
+                        uid: auth?.currentUser?.uid || null,
+                        online: navigator.onLine
+                    });
+                    showToast(`DIAGNÓSTICO FIREBASE: ${diagnosticCode} — ${rawMessage.slice(0,120)}. ID: ${pendingBooking?.id || 'sin-id'}`, 'error');
                 }
             } 
             finally{ sBtn.disabled=false; sBtn.innerHTML=obh; }
