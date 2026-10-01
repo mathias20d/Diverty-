@@ -5737,7 +5737,7 @@ body.cart-open #cartSummary{display:none!important;}
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
@@ -7629,15 +7629,67 @@ body.cart-open #cartSummary{display:none!important;}
                     id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: fd.get('date')||'', hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
                 };
                 
-                // Retain one immutable request while a commit is pending; no duplicate on retry.
+                // FASE 1: capacidad simultánea configurable desde Administrador > Ajustes.
+                // Se consulta al confirmar para que un cambio de capacidad se aplique sin volver a publicar la Web.
+                let capacidadSimultanea = 3;
+                try {
+                    const capacitySnap = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
+                    const configuredCapacity = Number(capacitySnap.exists() ? capacitySnap.data()?.capacidadSimultanea : 3);
+                    if (Number.isInteger(configuredCapacity) && configuredCapacity >= 1 && configuredCapacity <= 100) capacidadSimultanea = configuredCapacity;
+                } catch (_) {}
+
+                // El documento slot_* funciona como contador transaccional. Firestore serializa
+                // confirmaciones concurrentes para que nunca se supere la capacidad configurada.
                 if (!pendingBooking) pendingBooking = {id:dataToSave.id, data:dataToSave};
                 const request = pendingBooking;
                 if (!request.promise) {
-                    const batch = writeBatch(db);
-                    batch.set(doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',request.id),request.data);
-                    batch.set(doc(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web',request.id),{fecha:request.data.fecha,hora:request.data.hora});
-                    batch.set(doc(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente',request.id), Object.fromEntries(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'].map(key=>[key,String(request.data[key]??'')])));
-                    request.promise = batch.commit().catch(err => { request.promise=null; throw err; });
+                    request.promise = (async () => {
+                        const sameDateSnap = await getDocs(query(
+                            collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web'),
+                            where('fecha','==',request.data.fecha)
+                        ));
+                        const sameTimeDocs = sameDateSnap.docs.filter(d =>
+                            !d.id.startsWith('slot_') && d.id !== request.id &&
+                            String(d.data()?.hora || '') === String(request.data.hora || '')
+                        );
+                        const existingCount = sameTimeDocs.length;
+                        if (existingCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
+
+                        const safeSlot = `${request.data.fecha}_${String(request.data.hora||'').replace(':','-')}`.replace(/[^0-9A-Za-z_-]/g,'');
+                        const slotRef = doc(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web',`slot_${safeSlot}`);
+                        const eventRef = doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',request.id);
+                        const availabilityRef = doc(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web',request.id);
+                        const customerRef = doc(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente',request.id);
+
+                        await runTransaction(db, async tx => {
+                            const lockSnap = await tx.get(slotRef);
+                            const lock = lockSnap.exists() ? (lockSnap.data() || {}) : {};
+                            const ids = Array.isArray(lock.reservationIds) ? lock.reservationIds.map(String) : [];
+
+                            // Reintentar la misma solicitud nunca consume un segundo cupo.
+                            if (!ids.includes(request.id)) {
+                                // Si el contador todavía no existía, parte de las reservas que ya estaban
+                                // guardadas para ese horario. Si existe, su contador es la autoridad atómica.
+                                const currentCount = lockSnap.exists()
+                                    ? Math.max(Number(lock.count || ids.length || 0), ids.length)
+                                    : existingCount;
+                                if (currentCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
+                                ids.push(request.id);
+                                tx.set(slotRef,{
+                                    fecha:request.data.fecha,
+                                    hora:request.data.hora,
+                                    count:currentCount + 1,
+                                    capacity:capacidadSimultanea,
+                                    reservationIds:ids,
+                                    updatedAt:new Date().toISOString()
+                                });
+                            }
+
+                            tx.set(eventRef,request.data);
+                            tx.set(availabilityRef,{fecha:request.data.fecha,hora:request.data.hora});
+                            tx.set(customerRef,Object.fromEntries(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'].map(key=>[key,String(request.data[key]??'')])));
+                        });
+                    })().catch(err => { request.promise=null; throw err; });
                 }
                 await fetchWithTimeout(request.promise,15000);
                 pendingBooking = null;
@@ -7647,7 +7699,17 @@ body.cart-open #cartSummary{display:none!important;}
 
                 showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
                 app.cart=[]; appliedCoupon=null; bookingFormState={}; app.wizardStep=1; updateCartUI(); renderBooking();
-            } catch(err){ console.error(err); showToast('Aún no se confirmó el envío. Puedes reintentar aquí sin duplicarlo; conserva esta página abierta.', 'error'); } 
+            } catch(err){
+                console.error(err);
+                if (err?.message === 'SLOT_FULL') {
+                    pendingBooking = null;
+                    bookedEventsMonthCache.clear();
+                    await loadBookedEventsForMonth(new Date(currentCalDate));
+                    showToast(`Ese horario ya alcanzó el máximo de ${capacidadSimultanea} eventos. Elige otra hora disponible.`, 'error');
+                } else {
+                    showToast('Aún no se confirmó el envío. Puedes reintentar aquí sin duplicarlo; conserva esta página abierta.', 'error');
+                }
+            } 
             finally{ sBtn.disabled=false; sBtn.innerHTML=obh; }
         }
 
@@ -7675,6 +7737,19 @@ body.cart-open #cartSummary{display:none!important;}
             let sectionVersions = {};
             let refreshStaticContent = null;
             let bootComplete = false, refreshPending = false, refreshing = false;
+            // FASE 1 / PASO 4: acumula únicamente las colecciones que cambiaron.
+            // Así una edición de catálogo no obliga a volver a leer galería, reseñas,
+            // transporte, cupones, campañas y tema al mismo tiempo.
+            const pendingSyncSections = new Set();
+            const queueChangedSections = (previous, next, globalChanged) => {
+                const keys = new Set([...Object.keys(previous || {}), ...Object.keys(next || {})]);
+                keys.forEach(key => {
+                    if (String(previous?.[key] ?? '') !== String(next?.[key] ?? '')) pendingSyncSections.add(key);
+                });
+                // Compatibilidad con administradores antiguos que solo incrementaban
+                // la versión global y no informaban qué colección había cambiado.
+                if (globalChanged && keys.size === 0) pendingSyncSections.add('*');
+            };
             const cacheVersion = name => String(sectionVersions[name === 'config_global' ? 'config_web' : name] ?? (Object.keys(sectionVersions).length ? 0 : 'legacy:' + currentWebSyncVersion));
             const readCachedCollection = name => {
                 try {const parsed=JSON.parse(localStorage.getItem(WEB_CACHE_PREFIX+name)); return Array.isArray(parsed?.data) && parsed.version===cacheVersion(name) ? parsed.data : null;} catch(_) {return null;}
@@ -7704,7 +7779,10 @@ body.cart-open #cartSummary{display:none!important;}
             const initialSyncReady=new Promise(resolve=>{resolveInitialSync=resolve;});
             onSnapshot(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','web_sync'),snap=>{
                 const next=snap.data()||{}, version=String(next.version||'0'), sections=next.versions||{};
-                const changed=version!==currentWebSyncVersion || JSON.stringify(sections)!==JSON.stringify(sectionVersions);
+                const previousSections = sectionVersions;
+                const globalChanged = version !== currentWebSyncVersion;
+                const changed = globalChanged || JSON.stringify(sections)!==JSON.stringify(previousSections);
+                if (changed && currentWebSyncVersion !== '') queueChangedSections(previousSections, sections, globalChanged);
                 currentWebSyncVersion=version; sectionVersions=sections;
                 resolveInitialSync(); if(changed){refreshPending=true; drainRefresh();}
             },error=>{console.warn('Sincronización pública no disponible',error); resolveInitialSync();});
@@ -7782,30 +7860,61 @@ body.cart-open #cartSummary{display:none!important;}
                 } catch(e) {}
             };
 
-            const loadSecondary = async () => {
-                await Promise.allSettled([
-                    (async()=>{locations=await fetchStaticCollection('transporte_web'); populateLocationSelects(); updateCartBadgeAndTotals();})(),
-                    (async()=>{gallery=(await fetchStaticCollection('galeria_web')).map(d=>({image:d.image,alt:'Diverty'}));})(),
-                    (async()=>{customerReviews=await fetchStaticCollection('resenas_web');})(),
-                    (async()=>{activeCoupons=(await fetchStaticCollection('cupones_web')).filter(c=>c.active!==false && c.activo!==false); if(appliedCoupon){appliedCoupon=activeCoupons.find(c=>c.code===appliedCoupon.code)||null;}})()
-                ]);
+            const loadTransport = async () => { locations=await fetchStaticCollection('transporte_web'); populateLocationSelects(); updateCartBadgeAndTotals(); };
+            const loadGallery = async () => { gallery=(await fetchStaticCollection('galeria_web')).map(d=>({image:d.image,alt:'Diverty'})); };
+            const loadReviews = async () => { customerReviews=await fetchStaticCollection('resenas_web'); };
+            const loadCoupons = async () => { activeCoupons=(await fetchStaticCollection('cupones_web')).filter(c=>c.active!==false && c.activo!==false); if(appliedCoupon){appliedCoupon=activeCoupons.find(c=>c.code===appliedCoupon.code)||null;} };
+            const loadSecondary = async () => { await Promise.allSettled([loadTransport(),loadGallery(),loadReviews(),loadCoupons()]); };
+
+            const normalizeCatalogVisibility = () => {
+                const visibleCategoryIds = new Set(dynamicCategories.map(c => c.id));
+                app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria));
+                allPurchasableItems = [...app.catalog];
+            };
+            const rerenderAfterSelectiveSync = changed => {
+                const affectsNav = changed.has('categorias_web');
+                const affectsCatalog = affectsNav || changed.has('catalogo_web');
+                const affectsHome = affectsCatalog || changed.has('campanas_web') || changed.has('resenas_web') || changed.has('galeria_web');
+                if (affectsNav) buildDynamicNav();
+
+                // Mantiene el detalle abierto si llegó por WhatsApp/enlace directo.
+                if (affectsCatalog && openDirectRouteFromUrl({ invalidFallback:false })) { updateCartUI(); return; }
+
+                if (app.activeSection === 'home' && affectsHome) renderHome();
+                else if (app.activeSection === 'catalog' && affectsCatalog) renderAllCatalog();
+                else if (app.activeSection?.startsWith('cat_') && affectsCatalog) renderCategory(app.activeSection.replace('cat_',''));
+                else if (app.activeSection === 'gallery' && changed.has('galeria_web')) renderGallery();
+                else if (app.activeSection === 'booking' && (affectsCatalog || changed.has('transporte_web') || changed.has('cupones_web'))) renderBooking();
+                updateCartUI();
             };
             refreshStaticContent = async () => {
                 try {
-                    await Promise.allSettled([loadTheme(), loadCategories(), loadCatalog(), loadBanner(), loadCampaigns(), loadSecondary()]);
-                    const visibleCategoryIds = new Set(dynamicCategories.map(c => c.id));
-                    app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria));
-                    allPurchasableItems = [...app.catalog];
-                    buildDynamicNav();
-                    // IMPORTANTE: si la URL corresponde a un plan/categoría compartido,
-                    // no permitimos que una actualización en tiempo real vuelva a pintar
-                    // el catálogo encima del detalle que abrió el enlace directo.
-                    const directRouteKept = openDirectRouteFromUrl({ invalidFallback: false });
-                    if (!directRouteKept) {
-                        if (app.activeSection === 'home') renderHome();
-                        else setActiveSection(app.activeSection);
-                    }
-                    updateCartUI();
+                    const changed = new Set(pendingSyncSections);
+                    pendingSyncSections.clear();
+                    // Si no conocemos la sección exacta, conservamos el refresco completo
+                    // para no romper compatibilidad con datos/versiones anteriores.
+                    const full = changed.size === 0 || changed.has('*');
+                    const jobs = [];
+                    if (full || changed.has('temas_web') || changed.has('config_web')) jobs.push(loadTheme());
+                    if (full || changed.has('config_web')) jobs.push(loadBanner());
+                    if (full || changed.has('categorias_web')) jobs.push(loadCategories());
+                    if (full || changed.has('catalogo_web')) jobs.push(loadCatalog());
+                    if (full || changed.has('campanas_web')) jobs.push(loadCampaigns());
+                    if (full || changed.has('transporte_web')) jobs.push(loadTransport());
+                    if (full || changed.has('galeria_web')) jobs.push(loadGallery());
+                    if (full || changed.has('resenas_web')) jobs.push(loadReviews());
+                    if (full || changed.has('cupones_web')) jobs.push(loadCoupons());
+                    await Promise.allSettled(jobs);
+
+                    if (full || changed.has('categorias_web') || changed.has('catalogo_web')) normalizeCatalogVisibility();
+                    if (full) {
+                        buildDynamicNav();
+                        const directRouteKept = openDirectRouteFromUrl({ invalidFallback:false });
+                        if (!directRouteKept) {
+                            if (app.activeSection === 'home') renderHome(); else setActiveSection(app.activeSection);
+                        }
+                        updateCartUI();
+                    } else rerenderAfterSelectiveSync(changed);
                 } catch (e) { console.warn('No se pudo refrescar contenido web:', e); }
             };
 
