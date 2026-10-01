@@ -5507,6 +5507,23 @@ body.cart-open #cartSummary{display:none!important;}
 .direct-booking-btn svg{width:16px;height:16px;}
 @media(max-width:380px){.direct-booking-actions{grid-template-columns:1fr;}.direct-booking-btn{min-height:44px;}}
 </style>
+
+<style id="diverty-booking-mobile-ux-v1">
+@media (max-width:767px){
+  #bookingForm{padding:1rem!important;border-radius:22px!important;}
+  #bookingForm .wizard-content h3{margin-bottom:1rem!important;padding-bottom:.75rem!important;font-size:1.08rem!important;}
+  #bookingForm .form-group{margin-bottom:.7rem!important;}
+  #bookingForm input,#bookingForm select,#bookingForm textarea{font-size:16px!important;min-height:50px!important;}
+  #bookingForm textarea{min-height:88px!important;}
+  #bookingForm #btn-prev,#bookingForm #btn-next,#bookingForm #btn-submit{min-height:50px!important;padding:.75rem 1.15rem!important;font-size:.9rem!important;}
+  #bookingForm #btn-submit{flex:1 1 auto!important;}
+  #bookingForm .wizard-step .wizard-text{font-size:9px!important;}
+  #bookingForm .wizard-step .wizard-icon{width:34px!important;height:34px!important;}
+  #booking-cart-summary{max-height:42vh;overflow:auto;-webkit-overflow-scrolling:touch;}
+  body.booking-keyboard-open #whatsapp-float,body.booking-keyboard-open #scrollToTopBtn{opacity:0!important;pointer-events:none!important;}
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <script>
@@ -7205,9 +7222,13 @@ body.cart-open #cartSummary{display:none!important;}
                 if(bn) bn.onclick=()=>{
                     const inp = document.getElementById(`step-${cs}`)?.querySelectorAll('input[required],select[required],textarea[required]')||[];
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
-                    if(val){ cs++; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); updUI(); }
+                    if(val){ cs++; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>{ const first=document.getElementById(`step-${cs}`)?.querySelector('input:not([type=hidden]),select,textarea'); if(first && window.innerWidth<=767){ try{ first.focus({preventScroll:true}); }catch(e){ first.focus(); } } },360); }); }
                 };
-                if(bp) bp.onclick=()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); updUI(); } };
+                if(bp) bp.onclick=()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
+                if(bForm){
+                    bForm.addEventListener('focusin',()=>{ if(window.innerWidth<=767) document.body.classList.add('booking-keyboard-open'); });
+                    bForm.addEventListener('focusout',()=>{ setTimeout(()=>{ if(!bForm.contains(document.activeElement)) document.body.classList.remove('booking-keyboard-open'); },120); });
+                }
 
                 const savedData = localStorage.getItem('datosClienteDiverty');
                 if (savedData) {
