@@ -5645,7 +5645,7 @@ body[data-theme="christmas"] .catalog-category-cta{
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
@@ -7488,14 +7488,69 @@ body[data-theme="christmas"] .catalog-category-cta{
                 }
             } catch(e) { console.error("Error Auth:", e); }
 
-            const T_OUT = 8000; 
+            const T_OUT = 8000;
+
+            // DIVERTY FIRESTORE OPTIMIZER
+            // Un solo documento pequeño indica si el administrador cambió contenido web.
+            // Las colecciones públicas se conservan en localStorage entre visitas y solo
+            // vuelven a descargarse cuando cambia esta versión.
+            const WEB_CACHE_PREFIX = 'diverty_web_cache_v3_';
+            const WEB_SYNC_KEY = WEB_CACHE_PREFIX + 'syncVersion';
+            let currentWebSyncVersion = localStorage.getItem(WEB_SYNC_KEY) || '';
+            let initialSyncResolved = false;
+            let refreshStaticContent = null;
+            let resolveInitialSync;
+            const initialSyncReady = new Promise(resolve => { resolveInitialSync = resolve; });
+
+            const readCachedCollection = (name) => {
+                try {
+                    const raw = localStorage.getItem(WEB_CACHE_PREFIX + name);
+                    if (!raw) return null;
+                    const parsed = JSON.parse(raw);
+                    return Array.isArray(parsed?.data) && parsed.version === currentWebSyncVersion ? parsed.data : null;
+                } catch (_) { return null; }
+            };
+            const saveCachedCollection = (name, data) => {
+                try { localStorage.setItem(WEB_CACHE_PREFIX + name, JSON.stringify({ version: currentWebSyncVersion, data })); } catch (_) {}
+            };
+            const fetchStaticCollection = async (name) => {
+                const cached = readCachedCollection(name);
+                if (cached) return cached;
+                const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', name)), T_OUT);
+                const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                saveCachedCollection(name, rows);
+                return rows;
+            };
+            const clearStaticCaches = () => {
+                ['campanas_web','categorias_web','catalogo_web','temas_web','transporte_web','galeria_web','resenas_web','cupones_web','config_global'].forEach(k => localStorage.removeItem(WEB_CACHE_PREFIX + k));
+            };
+
+            // Este es el único listener realtime añadido a la web pública.
+            // Escucha 1 documento, no colecciones completas.
+            onSnapshot(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'web_sync'), snap => {
+                const nextVersion = snap.exists() ? String(snap.data()?.version || snap.data()?.updatedAt || '') : '0';
+                const changedAfterBoot = initialSyncResolved && currentWebSyncVersion && nextVersion !== currentWebSyncVersion;
+                if (currentWebSyncVersion && nextVersion !== currentWebSyncVersion) clearStaticCaches();
+                currentWebSyncVersion = nextVersion;
+                try { localStorage.setItem(WEB_SYNC_KEY, currentWebSyncVersion); } catch (_) {}
+                if (!initialSyncResolved) { initialSyncResolved = true; resolveInitialSync(); }
+                else if (changedAfterBoot && refreshStaticContent) refreshStaticContent();
+            }, () => {
+                if (!initialSyncResolved) { initialSyncResolved = true; resolveInitialSync(); }
+            });
+            await Promise.race([initialSyncReady, new Promise(r => setTimeout(r, 1500))]);
 
             const loadBanner = async () => {
                 try {
-                    const docSnap = await fetchWithTimeout(getDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global')), T_OUT);
+                    let bannerData = readCachedCollection('config_global')?.[0] || null;
+                    if (!bannerData) {
+                        const docSnap = await fetchWithTimeout(getDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global')), T_OUT);
+                        bannerData = docSnap.exists() ? docSnap.data() : {};
+                        saveCachedCollection('config_global', [bannerData]);
+                    }
                     const bannerEl = document.getElementById('topAnnouncementBanner');
-                    if (docSnap.exists() && docSnap.data().bannerActive === true && docSnap.data().bannerText) {
-                        document.getElementById('bannerTextSpan').textContent = cleanStr(docSnap.data().bannerText);
+                    if (bannerData.bannerActive === true && bannerData.bannerText) {
+                        document.getElementById('bannerTextSpan').textContent = cleanStr(bannerData.bannerText);
                         bannerEl.style.display = 'flex'; 
                     } else { bannerEl.style.display = 'none'; }
                 } catch(e) {}
@@ -7503,9 +7558,9 @@ body[data-theme="christmas"] .catalog-category-cta{
 
             const loadCampaigns = async () => {
                 try {
-                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'campanas_web')), T_OUT);
+                    const rows = await fetchStaticCollection('campanas_web');
                     const todayStr = new Date().toISOString().split('T')[0];
-                    app.campaigns = snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => {
+                    app.campaigns = rows.filter(c => {
                         if (c.activo !== true) return false;
                         if (c.fechaInicio && todayStr < cleanStr(c.fechaInicio)) return false;
                         if (c.fechaFin && todayStr > cleanStr(c.fechaFin)) return false;
@@ -7516,17 +7571,16 @@ body[data-theme="christmas"] .catalog-category-cta{
 
             const loadCategories = async () => {
                 try {
-                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'categorias_web')), T_OUT);
-                    dynamicCategories = !snap.empty ? snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => isCategoryCurrentlyVisible(c)).sort((a, b) => (a.orden || 0) - (b.orden || 0)) : [];
+                    const rows = await fetchStaticCollection('categorias_web');
+                    dynamicCategories = rows.filter(c => isCategoryCurrentlyVisible(c)).sort((a, b) => (a.orden || 0) - (b.orden || 0));
                 } catch(e) { dynamicCategories = []; }
             };
 
             const loadCatalog = async () => {
                 try {
-                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'catalogo_web')), T_OUT);
-                    if(!snap.empty) {
-                        const cd = snap.docs.map(d => { 
-                            const dt=d.data(); 
+                    const rows = await fetchStaticCollection('catalogo_web');
+                    if(rows.length) {
+                        const cd = rows.map(dt => { 
                             return { id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, cardImage:dt.imagenTarjeta || dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], tipoCobro:dt.tipoCobro||'paquete', isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria, orden: dt.orden }; 
                         });
                         if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
@@ -7542,9 +7596,8 @@ body[data-theme="christmas"] .catalog-category-cta{
 
             const loadTheme = async () => {
                 try {
-                    const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'temas_web')), T_OUT);
-                    if (!snap.empty) {
-                        const themes = snap.docs.map(d => ({id: d.id, ...d.data()}));
+                    const themes = await fetchStaticCollection('temas_web');
+                    if (themes.length) {
                         
                         // Busca EXACTAMENTE el tema que marcaste como activo en tu administrador
                         let sel = themes.find(t => t.activo === true);
@@ -7554,6 +7607,18 @@ body[data-theme="christmas"] .catalog-category-cta{
                         if (sel) { app.theme = sel; applyThemeColors(app.theme); }
                     }
                 } catch(e) {}
+            };
+
+            refreshStaticContent = async () => {
+                try {
+                    await Promise.allSettled([loadTheme(), loadCategories(), loadCatalog(), loadBanner(), loadCampaigns()]);
+                    const visibleCategoryIds = new Set(dynamicCategories.map(c => c.id));
+                    app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria));
+                    allPurchasableItems = [...app.catalog];
+                    buildDynamicNav();
+                    if (app.activeSection === 'home') renderHome(); else setActiveSection(app.activeSection);
+                    updateCartUI();
+                } catch (e) { console.warn('No se pudo refrescar contenido web:', e); }
             };
 
             // Carga primero la temporada activa para que la pantalla inicial
@@ -7589,10 +7654,10 @@ body[data-theme="christmas"] .catalog-category-cta{
             finishThemeBoot();
 
             Promise.allSettled([
-                (async () => { try { const ts = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'transporte_web')), T_OUT); if(!ts.empty) { locations = ts.docs.map(d=>d.data()); populateLocationSelects(); updateCartBadgeAndTotals(); } } catch(e){} })(),
-                (async () => { try { const gs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'galeria_web')), T_OUT); if(!gs.empty) gallery = gs.docs.map(d=>({ image:d.data().image, alt:'Diverty' })); } catch(e){} })(),
-                (async () => { try { const rs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'resenas_web')), T_OUT); if(!rs.empty) customerReviews = rs.docs.map(d=>d.data()); } catch(e){} })(),
-                (async () => { try { const cs = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'cupones_web')), T_OUT); activeCoupons = cs.docs.map(d=>d.data()).filter(c=>c.active===true||c.activo===true); } catch(e){} })(),
+                (async () => { try { const rows = await fetchStaticCollection('transporte_web'); if(rows.length) { locations = rows; populateLocationSelects(); updateCartBadgeAndTotals(); } } catch(e){} })(),
+                (async () => { try { const rows = await fetchStaticCollection('galeria_web'); if(rows.length) gallery = rows.map(d=>({ image:d.image, alt:'Diverty' })); } catch(e){} })(),
+                (async () => { try { const rows = await fetchStaticCollection('resenas_web'); if(rows.length) customerReviews = rows; } catch(e){} })(),
+                (async () => { try { const rows = await fetchStaticCollection('cupones_web'); activeCoupons = rows.filter(c=>c.active===true||c.activo===true); } catch(e){} })(),
                 loadBookedEventsForMonth(new Date(currentCalDate))
             ]).then(() => {
                 if (app.activeSection === 'home') {
