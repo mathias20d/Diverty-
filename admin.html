@@ -156,6 +156,25 @@
                         <p class="text-sm text-slate-400">Resumen general de tu aplicación web.</p>
                     </div>
 
+                    <!-- ACCESO DESTACADO: FOTOS DE CATEGORÍAS -->
+                    <button type="button" onclick="document.querySelector('[data-tab=\'categories\']').click()" class="group w-full mb-5 text-left rounded-3xl p-[1px] bg-gradient-to-r from-fuchsia-500 via-purple-500 to-indigo-500 shadow-xl shadow-purple-950/20 active:scale-[0.99] transition-transform">
+                        <div class="rounded-[23px] bg-[#0B1120] px-4 py-4 sm:px-5 sm:py-5 flex items-center gap-4">
+                            <div class="w-14 h-14 shrink-0 rounded-2xl bg-gradient-to-br from-fuchsia-500 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-fuchsia-500/20">
+                                <i data-lucide="images" class="w-7 h-7"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap mb-1">
+                                    <h3 class="text-base sm:text-lg font-black text-white">Fotos de categorías</h3>
+                                    <span class="text-[9px] font-black uppercase tracking-wider text-emerald-300 bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 rounded-full">Independientes</span>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">Cambia las portadas que aparecen en <strong class="text-slate-200">Explora por categorías</strong> sin modificar las fotos ni la información de tus paquetes.</p>
+                            </div>
+                            <div class="w-10 h-10 shrink-0 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-fuchsia-300 group-hover:bg-white/10 transition-colors">
+                                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                    </button>
+
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
                         <div onclick="document.querySelector('[data-tab=\'catalog\']').click()" class="cursor-pointer hover:scale-[1.02] transition-transform bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 rounded-2xl p-4">
                             <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center mb-3 text-purple-400"><i data-lucide="package" class="w-4 h-4"></i></div>
@@ -165,7 +184,7 @@
                         <div onclick="document.querySelector('[data-tab=\'categories\']').click()" class="cursor-pointer hover:scale-[1.02] transition-transform bg-gradient-to-br from-indigo-500/10 to-transparent border border-indigo-500/20 rounded-2xl p-4">
                             <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center mb-3 text-indigo-400"><i data-lucide="layers" class="w-4 h-4"></i></div>
                             <p class="text-3xl font-black text-white" id="stat-catalogos">0</p>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Catálogos</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Catálogos / Fotos</p>
                         </div>
                         <div onclick="document.querySelector('[data-tab=\'themes\']').click()" class="cursor-pointer hover:scale-[1.02] transition-transform bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/20 rounded-2xl p-4">
                             <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center mb-3 text-amber-400"><i data-lucide="calendar-clock" class="w-4 h-4"></i></div>
