@@ -7783,7 +7783,14 @@ body.cart-open #cartSummary{display:none!important;}
                     app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria));
                     allPurchasableItems = [...app.catalog];
                     buildDynamicNav();
-                    if (app.activeSection === 'home') renderHome(); else setActiveSection(app.activeSection);
+                    // IMPORTANTE: si la URL corresponde a un plan/categoría compartido,
+                    // no permitimos que una actualización en tiempo real vuelva a pintar
+                    // el catálogo encima del detalle que abrió el enlace directo.
+                    const directRouteKept = openDirectRouteFromUrl({ invalidFallback: false });
+                    if (!directRouteKept) {
+                        if (app.activeSection === 'home') renderHome();
+                        else setActiveSection(app.activeSection);
+                    }
                     updateCartUI();
                 } catch (e) { console.warn('No se pudo refrescar contenido web:', e); }
             };
