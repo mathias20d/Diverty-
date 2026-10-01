@@ -4318,6 +4318,100 @@ body.cart-open #hero-video{
 }
 </style>
 
+
+<style id="diverty-benefits-scroll-fix-v5">
+/* =========================================================
+   BENEFICIOS ABIERTOS: UN SOLO SCROLL, EL DE LA PÁGINA
+   ========================================================= */
+
+/* La lista ya no crea una segunda zona de scroll dentro de la tarjeta. */
+#home-featured-wrapper .featured-offer-benefits-list{
+    max-height:none!important;
+    height:auto!important;
+    overflow:visible!important;
+    overscroll-behavior:auto!important;
+    touch-action:pan-y!important;
+    scrollbar-width:none!important;
+}
+#home-featured-wrapper .featured-offer-benefits-list::-webkit-scrollbar{
+    display:none!important;
+}
+
+/* Details y tarjeta pueden crecer libremente. */
+#home-featured-wrapper .featured-offer-benefits,
+#home-featured-wrapper .featured-offer-benefits[open],
+#home-featured-wrapper .featured-offer-card,
+#home-featured-wrapper .featured-offer-shell{
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+}
+
+/* Mientras los beneficios están abiertos, el carrusel deja de capturar
+   el gesto horizontal: el dedo controla el scroll vertical de la página. */
+#home-featured-wrapper .home-featured-track:has(.featured-offer-benefits[open]){
+    overflow-x:visible!important;
+    overflow-y:visible!important;
+    scroll-snap-type:none!important;
+    overscroll-behavior:auto!important;
+    touch-action:pan-y!important;
+}
+
+/* Todo el contenido abierto responde al gesto vertical. */
+#home-featured-wrapper .featured-offer-benefits[open],
+#home-featured-wrapper .featured-offer-benefits[open] *{
+    touch-action:pan-y!important;
+}
+
+/* El summary sigue siendo un botón táctil normal. */
+#home-featured-wrapper .featured-offer-benefits > summary{
+    touch-action:manipulation!important;
+}
+
+/* En móvil, elimina cualquier altura heredada del carrusel/tarjeta. */
+@media(max-width:767px){
+    #home-featured-wrapper,
+    #home-featured-wrapper .home-featured-track,
+    #home-featured-wrapper .featured-offer-shell,
+    #home-featured-wrapper .featured-offer-card,
+    #home-featured-wrapper .featured-offer-card > .relative{
+        min-height:0!important;
+        height:auto!important;
+        max-height:none!important;
+    }
+
+    #home-featured-wrapper .home-featured-track{
+        overflow-y:visible!important;
+        touch-action:pan-y pan-x!important;
+    }
+
+    #home-featured-wrapper .home-featured-track:has(.featured-offer-benefits[open]){
+        width:100%!important;
+        margin-left:0!important;
+        margin-right:0!important;
+        touch-action:pan-y!important;
+    }
+}
+</style>
+
+
+<style id="diverty-benefits-scroll-fallback-v5">
+#home-featured-wrapper .home-featured-track.benefits-expanded{
+    overflow-x:visible!important;
+    overflow-y:visible!important;
+    scroll-snap-type:none!important;
+    overscroll-behavior:auto!important;
+    touch-action:pan-y!important;
+}
+@media(max-width:767px){
+    #home-featured-wrapper .home-featured-track.benefits-expanded{
+        width:100%!important;
+        margin-left:0!important;
+        margin-right:0!important;
+    }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -6298,5 +6392,27 @@ setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoo
 <script id="diverty-home-swipe-guard">
 document.addEventListener('dragstart', function(e){ if(e.target.closest && e.target.closest('.home-swipe-track')) e.preventDefault(); }, {passive:false});
 </script>
+
+<script id="diverty-benefits-scroll-js-v5">
+(function(){
+    if(window.__divertyBenefitsScrollFix) return;
+    window.__divertyBenefitsScrollFix = true;
+
+    document.addEventListener('toggle', function(e){
+        const details = e.target;
+        if(!details || !details.classList || !details.classList.contains('featured-offer-benefits')) return;
+
+        const track = details.closest('.home-featured-track');
+        if(!track) return;
+
+        if(details.open){
+            track.classList.add('benefits-expanded');
+        } else if(!track.querySelector('.featured-offer-benefits[open]')){
+            track.classList.remove('benefits-expanded');
+        }
+    }, true);
+})();
+</script>
+
 </body>
 </html>
