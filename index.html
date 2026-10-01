@@ -6035,12 +6035,35 @@ body[data-theme="christmas"] .catalog-category-cta{
             return 'sparkles';
         }
 
+        function getLocalDateISO() {
+            const d = new Date();
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function isCategoryCurrentlyVisible(cat) {
+            if (!cat) return false;
+            if (cat.activo === false || cat.visible === false) return false;
+            const mode = String(cat.visibilidad || 'activo').toLowerCase();
+            if (mode === 'oculto') return false;
+            if (mode === 'temporada') {
+                const today = getLocalDateISO();
+                const start = cleanStr(cat.fechaInicio || cat.inicioTemporada || '');
+                const end = cleanStr(cat.fechaFin || cat.finTemporada || '');
+                if (!start || !end) return false;
+                if (today < start || today > end) return false;
+            }
+            return true;
+        }
+
         function buildDynamicNav() {
             const dNav = document.getElementById('desktopNav');
             if (dNav) {
                 let dHtml = `<button id="navHome" data-target-section="home" class="nav-link nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 season-text-primary"></i>Inicio</button>`;
                 dynamicCategories.forEach(c => {
-                    if (c.activo !== false) dHtml += `<button id="navCat_${c.id}" data-target-section="cat_${c.id}" class="nav-link nav-action"><i data-lucide="${getCatalogIcon(c)}" class="w-4 h-4 mr-2 season-text-primary"></i>${c.nombre}</button>`;
+                    if (isCategoryCurrentlyVisible(c)) dHtml += `<button id="navCat_${c.id}" data-target-section="cat_${c.id}" class="nav-link nav-action"><i data-lucide="${getCatalogIcon(c)}" class="w-4 h-4 mr-2 season-text-primary"></i>${c.nombre}</button>`;
                 });
                 dHtml += `<button id="navGallery" data-target-section="gallery" class="nav-link nav-action"><i data-lucide="image" class="w-4 h-4 mr-2 text-emerald-500"></i>Galería</button>
                           <button id="navBooking" data-target-section="booking" class="season-btn nav-action text-white shadow-md ml-2 py-2 px-4 rounded-full flex items-center font-bold text-sm"><i data-lucide="calendar-check" class="w-4 h-4 mr-1.5"></i>Reservar</button>`;
@@ -6061,7 +6084,7 @@ body[data-theme="christmas"] .catalog-category-cta{
                     <i data-lucide="chevron-right" class="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:text-[var(--s-primary)] transition-colors"></i>
                 </button>`;
                 dynamicCategories.forEach(c => {
-                    if (c.activo !== false) {
+                    if (isCategoryCurrentlyVisible(c)) {
                         mHtml += `
                         <button id="mobileCat_${c.id}" data-target-section="cat_${c.id}" class="w-full mobile-nav-link nav-action group">
                             <div class="mobile-nav-icon-box mr-3"><i data-lucide="${getCatalogIcon(c)}" class="w-4 h-4 text-[var(--s-text-muted)] group-hover:text-[var(--s-primary)] transition-colors"></i></div>
@@ -6083,7 +6106,7 @@ body[data-theme="christmas"] .catalog-category-cta{
             if (fNav) {
                 let fHtml = `<a href="#home" data-target-section="home" class="nav-action transition-colors">Inicio</a>`;
                 dynamicCategories.forEach(c => {
-                    if (c.activo !== false) fHtml += `<a href="#cat_${c.id}" data-target-section="cat_${c.id}" class="nav-action transition-colors">${c.nombre}</a>`;
+                    if (isCategoryCurrentlyVisible(c)) fHtml += `<a href="#cat_${c.id}" data-target-section="cat_${c.id}" class="nav-action transition-colors">${c.nombre}</a>`;
                 });
                 fHtml += `
                     <a href="#gallery" data-target-section="gallery" class="nav-action transition-colors">Galería</a>
@@ -6468,7 +6491,7 @@ body[data-theme="christmas"] .catalog-category-cta{
           }
 
           const categories = dynamicCategories
-            .filter(c => c.activo !== false)
+            .filter(c => isCategoryCurrentlyVisible(c))
             .map(c => {
               const items = app.catalog
                 .filter(i => i.categoria === c.id)
@@ -6573,7 +6596,7 @@ body[data-theme="christmas"] .catalog-category-cta{
 
               <div class="catalog-tile-image-wrap">
                 <img
-                  src="${cleanStr(item.image)}"
+                  src="${cleanStr(item.cardImage || item.image)}"
                   alt="${itemName}"
                   class="catalog-tile-image"
                   loading="lazy"
@@ -7296,7 +7319,7 @@ body[data-theme="christmas"] .catalog-category-cta{
             const loadCategories = async () => {
                 try {
                     const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'categorias_web')), T_OUT);
-                    dynamicCategories = !snap.empty ? snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => c.activo !== false).sort((a, b) => (a.orden || 0) - (b.orden || 0)) : [];
+                    dynamicCategories = !snap.empty ? snap.docs.map(d => ({id: d.id, ...d.data()})).filter(c => isCategoryCurrentlyVisible(c)).sort((a, b) => (a.orden || 0) - (b.orden || 0)) : [];
                 } catch(e) { dynamicCategories = []; }
             };
 
@@ -7306,7 +7329,7 @@ body[data-theme="christmas"] .catalog-category-cta{
                     if(!snap.empty) {
                         const cd = snap.docs.map(d => { 
                             const dt=d.data(); 
-                            return { id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria, orden: dt.orden }; 
+                            return { id:d.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, cardImage:dt.imagenTarjeta || dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria, orden: dt.orden }; 
                         });
                         if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
                         catalogLoaded = true; window.catalogLoaded = true;
@@ -7345,6 +7368,13 @@ body[data-theme="christmas"] .catalog-category-cta{
                 loadBanner(), 
                 loadCampaigns() 
             ]);
+
+            // La visibilidad del catálogo se aplica a TODA la web, no solo al explorador.
+            // Así un catálogo oculto o fuera de temporada tampoco deja paquetes sueltos
+            // en destacados, búsquedas, páginas de categoría o acciones de compra.
+            const visibleCategoryIds = new Set(dynamicCategories.map(c => c.id));
+            app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria));
+            allPurchasableItems = [...app.catalog];
 
             buildDynamicNav();
             isFirebaseLoaded = true;
