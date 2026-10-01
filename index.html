@@ -5554,7 +5554,7 @@ body.cart-open #cartSummary{display:none!important;}
                 <div class="relative p-2 rounded-full" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="shopping-cart" class="w-5 h-5"></i><span id="summaryCartBadge" class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-blue-600 text-white text-[10px] font-black flex items-center justify-center shadow-md border border-white">0</span></div>
                 <div class="flex flex-col leading-tight"><span class="text-[10px] season-text-muted uppercase">Total (<span id="itemCount" class="font-bold season-text-title">0</span>)</span><span id="totalPrice" class="font-black text-base season-text-title">$0.00</span></div>
             </div>
-            <button id="viewCartSummary" type="button" onclick="showModal('cartModal')" class="season-btn font-bold text-xs py-2.5 px-4 rounded-xl shadow-md" aria-label="Abrir carrito">Ver Carrito</button>
+            <button id="viewCartSummary" type="button" class="season-btn font-bold text-xs py-2.5 px-4 rounded-xl shadow-md" aria-label="Abrir carrito">Ver Carrito</button>
         </div>
     </div>
 
@@ -7759,6 +7759,14 @@ body.cart-open #cartSummary{display:none!important;}
                 vc.setAttribute('aria-expanded', 'false');
                 vc.onclick = () => toggleCartDrawer();
             }
+            const vcs = document.getElementById('viewCartSummary');
+            if(vcs) {
+                vcs.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleCartDrawer(true);
+                };
+            }
             
             let ticking = false;
             window.addEventListener('scroll', () => { 
@@ -8005,11 +8013,6 @@ html.dv-page-hidden *{animation-play-state:paused!important;}
     if(document.hidden&&video&&!video.paused) video.pause();
   },{passive:true});
 
-  /* Compatibilidad con el botón legado del resumen del carrito, ya con ID único. */
-  const summaryCart=document.getElementById('viewCartSummary');
-  if(summaryCart) summaryCart.addEventListener('click',()=>{
-    if(typeof toggleCartDrawer==='function') toggleCartDrawer(true);
-  },{passive:true});
 })();
 </script>
 
