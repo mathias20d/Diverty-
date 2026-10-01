@@ -1,4 +1,3 @@
-
 const FIREBASE_API_KEY = "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0";
 const FIREBASE_PROJECT_ID = "diverty-eventos";
 const APP_ID = "diverty-oficial";
