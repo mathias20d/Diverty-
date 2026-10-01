@@ -7592,6 +7592,15 @@ body.cart-open #cartSummary{display:none!important;}
                 case 'scroll-to-catalog': {
                     e.preventDefault();
                     if (!catalogLoaded) showToast("Cargando nuestros paquetes...", "info");
+                    // Guardamos el Explorador como una pantalla real del historial.
+                    // Así: Explorador -> Categoría -> Atrás vuelve al Explorador, no a Inicio.
+                    try {
+                        const url = new URL(window.location.href);
+                        url.searchParams.delete('plan');
+                        url.searchParams.delete('categoria');
+                        const next = url.pathname + (url.search || '') + (url.hash || '');
+                        history.pushState({ divertyRoute: true, divertySection: 'catalog' }, '', next);
+                    } catch (err) {}
                     setActiveSection('catalog');
                     break;
                 }
@@ -7833,8 +7842,18 @@ body.cart-open #cartSummary{display:none!important;}
 
         }
 
-        window.addEventListener('popstate', () => {
+        window.addEventListener('popstate', (event) => {
             if (!isFirebaseLoaded) return;
+
+            // Si la entrada anterior del historial era el Explorador, regresamos allí.
+            // Esto conserva la navegación natural: Explorador -> Categoría -> Atrás -> Explorador.
+            if (event.state?.divertySection === 'catalog') {
+                app.activeSection = 'catalog';
+                renderAllCatalog();
+                catalogNavMemory.restore('catalog');
+                return;
+            }
+
             if (!openDirectRouteFromUrl({ invalidFallback: false })) {
                 app.activeSection = 'home';
                 renderHome();
