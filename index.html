@@ -6963,10 +6963,16 @@ body.cart-open #cartSummary{display:none!important;}
             return !['cancelado', 'rechazada', 'cot'].some(s => estado.includes(s));
         };
 
+        let availabilityStatusCache = { at: 0, ready: false };
         async function loadBookedEventsForMonth(date, { force = false } = {}) {
             if (!db) return [];
-            const status = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','disponibilidad')).catch(() => null);
-            availabilityReady = status?.data()?.lista === true;
+            // El indicador de disponibilidad cambia muy poco. Evita releerlo al pasar de un
+            // mes a otro repetidamente; force=true sigue permitiendo una comprobación inmediata.
+            if (force || Date.now() - availabilityStatusCache.at > 60000) {
+                const status = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','disponibilidad')).catch(() => null);
+                availabilityStatusCache = { at: Date.now(), ready: status?.data()?.lista === true };
+            }
+            availabilityReady = availabilityStatusCache.ready;
             if (!availabilityReady) { bookedEvents = []; return []; }
             const { start, end, key } = getMonthRange(date);
 
@@ -7738,13 +7744,10 @@ body.cart-open #cartSummary{display:none!important;}
 
             const loadBanner = async () => {
                 try {
-                    let bannerData = readCachedCollection('config_global')?.[0] || null;
-                    if (!bannerData) {
-                        const bannerVersion=cacheVersion('config_global');
-                        const docSnap = await fetchWithTimeout(getDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global')), T_OUT);
-                        bannerData = docSnap.exists() ? docSnap.data() : {};
-                        saveCachedCollection('config_global', [bannerData],bannerVersion);
-                    }
+                    // config_web ya se usa para el tema. Reutilizamos la misma colección/cache
+                    // en lugar de hacer una segunda lectura independiente del documento global.
+                    const configRows = await fetchStaticCollection('config_web');
+                    const bannerData = configRows.find(row => row.id === 'global') || {};
                     const bannerEl = document.getElementById('topAnnouncementBanner');
                     if (bannerData.bannerActive === true && bannerData.bannerText) {
                         document.getElementById('bannerTextSpan').textContent = cleanStr(bannerData.bannerText);
