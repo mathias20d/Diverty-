@@ -1,6 +1,3 @@
-[build]
-  edge_functions = ".edge"
-
 [[edge_functions]]
   function = "share-meta"
   path = "/"
