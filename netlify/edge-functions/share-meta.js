@@ -30,6 +30,14 @@ function field(fields, name, fallback = "") {
   return fallback;
 }
 
+function firstField(fields, names, fallback = "") {
+  for (const name of names) {
+    const value = field(fields, name, "");
+    if (value !== "" && value !== null && value !== undefined) return value;
+  }
+  return fallback;
+}
+
 function cleanText(value = "") {
   return String(value)
     .replace(/<[^>]*>/g, " ")
@@ -43,6 +51,73 @@ function shortDescription(value, fallback) {
   return text.length > 180
     ? text.slice(0, 177).trimEnd() + "..."
     : text;
+}
+
+function formatPrice(value) {
+  if (value === "" || value === null || value === undefined) return "";
+  const number = Number(value);
+  if (!Number.isFinite(number)) return "";
+  return `$${number.toFixed(2)}`;
+}
+
+function looksLikeDuration(value = "") {
+  return /\b\d+\s*(hora|horas|hr|hrs|minuto|minutos|min)\b/i.test(
+    cleanText(value)
+  );
+}
+
+function buildPlanDescription(fields, name) {
+  const price = firstField(fields, ["precio", "price"], "");
+  const priceText = formatPrice(price);
+
+  const duration = cleanText(
+    firstField(
+      fields,
+      ["duracion", "duración", "duration", "tiempo", "horas"],
+      ""
+    )
+  );
+
+  const rawDescription = cleanText(
+    firstField(
+      fields,
+      [
+        "descripcionCompleta",
+        "descripcion_completa",
+        "detalle",
+        "detalles",
+        "resumen",
+        "descripcion",
+        "description"
+      ],
+      ""
+    )
+  );
+
+  const durationText =
+    duration || (looksLikeDuration(rawDescription) ? rawDescription : "");
+
+  const commercialText =
+    rawDescription && !looksLikeDuration(rawDescription)
+      ? rawDescription
+      : "";
+
+  const parts = [];
+  if (durationText) parts.push(durationText);
+  if (priceText) parts.push(priceText);
+
+  let result = parts.join(" • ");
+
+  if (commercialText) {
+    result += `${result ? " — " : ""}${commercialText}`;
+  } else {
+    result += `${result ? " — " : ""}Conoce todo lo que incluye ${name} con Diverty Panamá.`;
+  }
+
+  return shortDescription(
+    result,
+    `${name}${priceText ? ` • ${priceText}` : ""}. Conoce todos los detalles con Diverty Panamá.`
+  );
 }
 
 async function getAnonymousToken() {
@@ -116,7 +191,7 @@ async function getFirestoreDoc(collectionName, id) {
     return null;
   }
 
-  const cache = await caches.open("diverty-social-preview-v2");
+  const cache = await caches.open("diverty-social-preview-v3");
 
   const cacheKey =
     `https://diverty-cache.local/${collectionName}/${id}`;
@@ -180,7 +255,7 @@ function injectMeta(html, meta) {
   html = removeExistingSocialMeta(html);
 
   const tags = `
-    <!-- DIVERTY SOCIAL PREVIEW V2 -->
+    <!-- DIVERTY SOCIAL PREVIEW V3 -->
     <link rel="canonical" href="${esc(meta.url)}">
 
     <meta property="og:type" content="website">
@@ -253,25 +328,11 @@ export default async function handler(request, context) {
           )
         );
 
-        const price = field(
-          doc.fields,
-          "precio",
-          ""
-        );
-
         title = `${name} | ${SITE_NAME}`;
 
-        description = shortDescription(
-          field(
-            doc.fields,
-            "descripcion",
-            ""
-          ),
-          `${name}${
-            price !== ""
-              ? ` desde $${Number(price).toFixed(2)}`
-              : ""
-          }. Conoce todos los detalles con Diverty Panamá.`
+        description = buildPlanDescription(
+          doc.fields,
+          name
         );
 
         image =
@@ -373,8 +434,8 @@ export default async function handler(request, context) {
     headers.set(
       "x-diverty-social-preview",
       planId
-        ? "plan-v2"
-        : "categoria-v2"
+        ? "plan-v3"
+        : "categoria-v3"
     );
 
     return new Response(
