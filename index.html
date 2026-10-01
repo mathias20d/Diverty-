@@ -6251,7 +6251,8 @@ body.cart-open #cartSummary{display:none!important;}
             const params = new URLSearchParams(window.location.search);
             return {
                 planId: (params.get('plan') || '').trim(),
-                categoryId: (params.get('categoria') || '').trim()
+                categoryId: (params.get('categoria') || '').trim(),
+                view: (params.get('vista') || '').trim()
             };
         }
 
@@ -6260,17 +6261,20 @@ body.cart-open #cartSummary{display:none!important;}
                 const url = new URL(window.location.href);
                 url.searchParams.delete('plan');
                 url.searchParams.delete('categoria');
+                url.searchParams.delete('vista');
                 if (kind === 'plan' && id) url.searchParams.set('plan', id);
                 if (kind === 'categoria' && id) url.searchParams.set('categoria', id);
+                if (kind === 'section' && id && id !== 'home') url.searchParams.set('vista', id);
                 const next = url.pathname + (url.search || '') + (url.hash || '');
-                if (mode === 'replace') history.replaceState({ divertyRoute: true }, '', next);
-                else history.pushState({ divertyRoute: true }, '', next);
+                const state = { divertyRoute: true, kind, id: id || 'home' };
+                if (mode === 'replace') history.replaceState(state, '', next);
+                else history.pushState(state, '', next);
             } catch (e) {}
         }
 
         function openDirectRouteFromUrl({ invalidFallback = true } = {}) {
             if (!isFirebaseLoaded) return false;
-            const { planId, categoryId } = getDirectRoute();
+            const { planId, categoryId, view } = getDirectRoute();
 
             if (planId) {
                 const item = app.catalog.find(i => i.id === planId);
@@ -6297,11 +6301,18 @@ body.cart-open #cartSummary{display:none!important;}
                     return true;
                 }
                 if (invalidFallback) {
-                    setDirectRoute('', '', 'replace');
+                    setDirectRoute('section', 'catalog', 'replace');
+                    app.activeSection = 'catalog';
                     renderAllCatalog();
                     setTimeout(() => showToast('Este catálogo no está disponible en este momento.', 'info'), 120);
                     return true;
                 }
+            }
+
+            if (['catalog','gallery','booking','portal'].includes(view)) {
+                setActiveSection(view);
+                if (view === 'catalog') catalogNavMemory.restore('catalog');
+                return true;
             }
             return false;
         }
@@ -7413,7 +7424,7 @@ body.cart-open #cartSummary{display:none!important;}
                     if (targetSec.startsWith('cat_')) {
                         if (app.activeSection === 'catalog') catalogNavMemory.save('catalog');
                         setDirectRoute('categoria', targetSec.replace('cat_', ''));
-                    } else setDirectRoute('', '');
+                    } else setDirectRoute('section', targetSec);
                     if(app.activeSection !== targetSec) setActiveSection(targetSec);
                     else if(targetSec.startsWith('cat_')) renderCategory(targetSec.replace('cat_', ''));
                     return; 
@@ -7436,6 +7447,7 @@ body.cart-open #cartSummary{display:none!important;}
                 }
                 case 'select-date': selectedCalendarDate = date; renderCalendar(); break;
                 case 'confirm-date':
+                    setDirectRoute('section', 'booking');
                     setActiveSection('booking');
                     requestAnimationFrame(() => {
                         const focusEl = document.getElementById('bookingForm') || document.getElementById('empty-booking-state'); 
@@ -7453,7 +7465,7 @@ body.cart-open #cartSummary{display:none!important;}
                 case 'back-to-catalog': {
                     e.preventDefault();
                     if (app.activeSection && app.activeSection.startsWith('cat_')) catalogNavMemory.save(app.activeSection.replace('cat_', ''));
-                    setDirectRoute('', '');
+                    setDirectRoute('section', 'catalog');
                     app.activeSection = 'catalog';
                     renderAllCatalog();
                     catalogNavMemory.restore('catalog');
@@ -7592,15 +7604,8 @@ body.cart-open #cartSummary{display:none!important;}
                 case 'scroll-to-catalog': {
                     e.preventDefault();
                     if (!catalogLoaded) showToast("Cargando nuestros paquetes...", "info");
-                    // Guardamos el Explorador como una pantalla real del historial.
-                    // Así: Explorador -> Categoría -> Atrás vuelve al Explorador, no a Inicio.
-                    try {
-                        const url = new URL(window.location.href);
-                        url.searchParams.delete('plan');
-                        url.searchParams.delete('categoria');
-                        const next = url.pathname + (url.search || '') + (url.hash || '');
-                        history.pushState({ divertyRoute: true, divertySection: 'catalog' }, '', next);
-                    } catch (err) {}
+                    // El Explorador es una ruta real del historial.
+                    setDirectRoute('section', 'catalog');
                     setActiveSection('catalog');
                     break;
                 }
@@ -7842,18 +7847,8 @@ body.cart-open #cartSummary{display:none!important;}
 
         }
 
-        window.addEventListener('popstate', (event) => {
+        window.addEventListener('popstate', () => {
             if (!isFirebaseLoaded) return;
-
-            // Si la entrada anterior del historial era el Explorador, regresamos allí.
-            // Esto conserva la navegación natural: Explorador -> Categoría -> Atrás -> Explorador.
-            if (event.state?.divertySection === 'catalog') {
-                app.activeSection = 'catalog';
-                renderAllCatalog();
-                catalogNavMemory.restore('catalog');
-                return;
-            }
-
             if (!openDirectRouteFromUrl({ invalidFallback: false })) {
                 app.activeSection = 'home';
                 renderHome();
