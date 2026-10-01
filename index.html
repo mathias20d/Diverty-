@@ -4705,6 +4705,359 @@ body[data-theme="halloween"] #home-campaigns-wrapper .campaign-main-title{
 }
 </style>
 
+
+<style id="diverty-catalogo-visual-premium-v4">
+/* ---------- CONTENEDOR ---------- */
+.catalog-grid-page{
+  width:100%!important;
+  min-height:100vh;
+  padding:118px 18px 72px!important;
+}
+.catalog-grid-section{
+  width:100%;
+  max-width:1120px;
+  margin:0 auto;
+}
+
+/* ---------- ENCABEZADOS ---------- */
+.catalog-grid-heading{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  margin:0 2px 24px!important;
+}
+.catalog-grid-heading p{
+  margin:0 0 5px!important;
+  color:var(--s-text-muted)!important;
+  font-size:11px!important;
+  line-height:1.2!important;
+  font-weight:900!important;
+  text-transform:uppercase!important;
+  letter-spacing:.16em!important;
+}
+.catalog-grid-heading h2{
+  margin:0!important;
+  color:var(--s-text-title)!important;
+  font-family:'Poppins',sans-serif!important;
+  font-size:clamp(28px,7vw,42px)!important;
+  line-height:1.02!important;
+  font-weight:900!important;
+  letter-spacing:-.045em!important;
+}
+.catalog-heading-gradient{
+  background:var(--s-btn-grad);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.catalog-grid-count{
+  flex:none;
+  padding-bottom:3px;
+  color:var(--s-text-muted)!important;
+  font-size:12px!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+  white-space:nowrap;
+}
+
+/* =========================================================
+   EXPLORA POR CATEGORÍAS
+   Mismo estilo limpio de la referencia aprobada
+========================================================= */
+.catalog-categories-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:28px 16px!important;
+  margin-top:0!important;
+}
+.catalog-category-card{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:inherit!important;
+  text-align:left!important;
+  overflow:visible!important;
+  cursor:pointer!important;
+  transform:translateZ(0);
+  transition:transform .16s ease!important;
+}
+.catalog-category-card:active{
+  transform:scale(.975)!important;
+}
+.catalog-category-media{
+  position:relative!important;
+  width:100%!important;
+  aspect-ratio:1/1!important;
+  overflow:hidden!important;
+  border-radius:22px!important;
+  background:color-mix(in srgb,var(--s-primary) 10%,var(--s-bg-color))!important;
+  border:1px solid color-mix(in srgb,var(--s-glass-border) 85%,white 15%)!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.18)!important;
+}
+.catalog-category-media img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  transition:transform .3s ease!important;
+}
+.catalog-category-card:active .catalog-category-media img{
+  transform:scale(1.025);
+}
+.catalog-category-shade{
+  position:absolute!important;
+  inset:auto 0 0!important;
+  height:38%!important;
+  background:linear-gradient(to top,rgba(3,5,12,.54),transparent)!important;
+  pointer-events:none!important;
+}
+.catalog-category-icon{
+  position:absolute!important;
+  left:12px!important;
+  bottom:12px!important;
+  width:42px!important;
+  height:42px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:14px!important;
+  color:#fff!important;
+  background:var(--s-btn-grad)!important;
+  border:1px solid rgba(255,255,255,.24)!important;
+  box-shadow:0 8px 20px rgba(0,0,0,.24)!important;
+}
+.catalog-category-icon svg{
+  width:20px!important;
+  height:20px!important;
+}
+.catalog-category-info{
+  min-height:0!important;
+  padding:11px 5px 0!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:space-between!important;
+  gap:7px!important;
+}
+.catalog-category-info > div{
+  min-width:0;
+}
+.catalog-category-info h3{
+  margin:0 0 4px!important;
+  color:var(--s-text-title)!important;
+  font-family:'Poppins',sans-serif!important;
+  font-size:clamp(15px,4.2vw,22px)!important;
+  line-height:1.08!important;
+  font-weight:900!important;
+  letter-spacing:-.035em!important;
+}
+.catalog-category-info p{
+  margin:0!important;
+  color:var(--s-text-muted)!important;
+  font-size:11px!important;
+  line-height:1.2!important;
+  font-weight:800!important;
+}
+.catalog-category-arrow{
+  flex:none!important;
+  width:32px!important;
+  height:32px!important;
+  margin-top:1px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:11px!important;
+  color:var(--s-primary)!important;
+  background:color-mix(in srgb,var(--s-primary) 12%,transparent)!important;
+}
+.catalog-category-arrow svg{
+  width:17px!important;
+  height:17px!important;
+}
+
+/* =========================================================
+   PLANES / PRODUCTOS
+   Foto grande + nombre + precio, sin caja pesada
+========================================================= */
+.catalog-products-grid{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:30px 16px!important;
+}
+.catalog-tile{
+  appearance:none!important;
+  -webkit-appearance:none!important;
+  display:block!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:inherit!important;
+  text-align:center!important;
+  cursor:pointer!important;
+  transform:translateZ(0);
+  transition:transform .16s ease!important;
+}
+.catalog-tile:active{
+  transform:scale(.975)!important;
+}
+.catalog-tile-image-wrap{
+  position:relative!important;
+  width:100%!important;
+  aspect-ratio:1/1!important;
+  overflow:hidden!important;
+  border-radius:22px!important;
+  background:color-mix(in srgb,var(--s-primary) 9%,var(--s-bg-color))!important;
+  border:1px solid color-mix(in srgb,var(--s-glass-border) 85%,white 15%)!important;
+  box-shadow:0 12px 28px rgba(0,0,0,.18)!important;
+}
+.catalog-tile-image{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  transition:transform .3s ease!important;
+}
+.catalog-tile:active .catalog-tile-image{
+  transform:scale(1.025);
+}
+.catalog-tile-offer{
+  position:absolute!important;
+  top:11px!important;
+  left:11px!important;
+  z-index:3!important;
+  padding:7px 12px!important;
+  border-radius:999px!important;
+  background:linear-gradient(135deg,#ec4899,#e11d48)!important;
+  color:#fff!important;
+  border:1px solid rgba(255,255,255,.35)!important;
+  box-shadow:0 8px 20px rgba(0,0,0,.22)!important;
+  font-size:9px!important;
+  line-height:1!important;
+  font-weight:900!important;
+  letter-spacing:.11em!important;
+}
+.catalog-tile-body{
+  padding:11px 4px 0!important;
+  text-align:center!important;
+}
+.catalog-tile-name{
+  margin:0 0 7px!important;
+  color:var(--s-text-title)!important;
+  font-family:'Poppins',sans-serif!important;
+  font-size:clamp(15px,4.2vw,22px)!important;
+  line-height:1.08!important;
+  font-weight:900!important;
+  letter-spacing:-.035em!important;
+  text-transform:uppercase!important;
+}
+.catalog-price-row{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:5px 8px;
+}
+.catalog-tile-old-price{
+  margin:0!important;
+  color:var(--s-text-muted)!important;
+  opacity:.72!important;
+  font-size:11px!important;
+  line-height:1!important;
+  font-weight:800!important;
+  text-decoration:line-through!important;
+}
+.catalog-tile-price{
+  margin:0!important;
+  color:var(--s-primary)!important;
+  font-size:clamp(16px,4.5vw,22px)!important;
+  line-height:1.05!important;
+  font-weight:900!important;
+  letter-spacing:-.02em!important;
+}
+.catalog-tile-unit{
+  font-size:.62em!important;
+  opacity:.78;
+}
+
+/* Halloween */
+body[data-theme="halloween"] .catalog-category-media,
+body[data-theme="halloween"] .catalog-tile-image-wrap{
+  border-color:rgba(249,115,22,.24)!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.36),0 0 0 1px rgba(126,34,206,.08)!important;
+}
+body[data-theme="halloween"] .catalog-tile-price{
+  color:#f97316!important;
+}
+
+/* Navidad */
+body[data-theme="christmas"] .catalog-category-media,
+body[data-theme="christmas"] .catalog-tile-image-wrap{
+  border-color:rgba(253,230,138,.24)!important;
+  box-shadow:0 12px 30px rgba(0,0,0,.34),0 0 0 1px rgba(34,197,94,.06)!important;
+}
+body[data-theme="christmas"] .catalog-tile-price{
+  color:#f4c95d!important;
+}
+
+/* ---------- MÓVIL ---------- */
+@media(max-width:480px){
+  .catalog-grid-page{
+    padding:112px 16px 64px!important;
+  }
+  .catalog-grid-heading{
+    margin-bottom:22px!important;
+  }
+  .catalog-grid-heading h2{
+    font-size:clamp(27px,8vw,35px)!important;
+  }
+  .catalog-grid-count{
+    font-size:11px!important;
+  }
+  .catalog-categories-grid,
+  .catalog-products-grid{
+    gap:27px 14px!important;
+  }
+  .catalog-category-media,
+  .catalog-tile-image-wrap{
+    border-radius:21px!important;
+  }
+  .catalog-category-info h3,
+  .catalog-tile-name{
+    font-size:15px!important;
+  }
+  .catalog-tile-price{
+    font-size:18px!important;
+  }
+}
+
+/* ---------- TABLET / DESKTOP ---------- */
+@media(min-width:768px){
+  .catalog-categories-grid,
+  .catalog-products-grid{
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:36px 24px!important;
+  }
+}
+@media(min-width:1100px){
+  .catalog-categories-grid,
+  .catalog-products-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  }
+}
+</style>
+
 </head>
 <body class="flex flex-col relative min-h-screen">
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
@@ -5739,104 +6092,110 @@ body[data-theme="halloween"] #home-campaigns-wrapper .campaign-main-title{
         }
 
         function renderAllCatalog() {
-            if(!isFirebaseLoaded || !catalogLoaded){
-                setContent(`
-                    <div class="catalog-grid-page all-catalog-page">
-                        <section class="catalog-grid-section">
-                            <div class="catalog-grid-heading">
-                                <div>
-                                    <p>Estamos preparando todo</p>
-                                    <h2>Explora por categorías</h2>
-                                </div>
-                            </div>
-                            <div class="catalog-loading-light">
-                                <i data-lucide="loader-2"></i>
-                                <span>Cargando categorías...</span>
-                            </div>
-                        </section>
-                    </div>
-                `);
-                if(typeof lucide !== 'undefined') lucide.createIcons();
-                return;
-            }
-
-            const categories = dynamicCategories
-                .filter(c => c.activo !== false)
-                .map(c => {
-                    const items = app.catalog
-                        .filter(i => i.categoria === c.id)
-                        .sort((a,b) => (a.orden || 0) - (b.orden || 0));
-                    return { ...c, items, count: items.length };
-                })
-                .filter(c => c.count > 0);
-
-            if(categories.length === 0){
-                setContent(`
-                    <div class="catalog-grid-page all-catalog-page">
-                        <section class="catalog-grid-section">
-                            <div class="catalog-grid-heading">
-                                <div>
-                                    <p>Catálogo</p>
-                                    <h2>Explora por categorías</h2>
-                                </div>
-                            </div>
-                            <div class="catalog-empty-light">
-                                <i data-lucide="package-open"></i>
-                                <h3>Próximamente más opciones</h3>
-                            </div>
-                        </section>
-                    </div>
-                `);
-                if(typeof lucide !== 'undefined') lucide.createIcons();
-                return;
-            }
-
-            const cards = categories.map(cat => {
-                const firstItem = cat.items[0];
-                const cover = cleanStr(cat.imagen || cat.image || firstItem?.image || '');
-                const icon = getCatalogIcon(cat);
-                const countLabel = `${cat.count} ${cat.count === 1 ? 'opción' : 'opciones'}`;
-
-                return `
-                    <button type="button"
-                        data-target-section="cat_${cat.id}"
-                        class="nav-action catalog-category-card"
-                        aria-label="Ver ${cleanStr(cat.nombre)}">
-                        <div class="catalog-category-media">
-                            ${cover
-                                ? `<img src="${cover}" alt="" loading="lazy" decoding="async">`
-                                : `<div class="catalog-category-placeholder"><i data-lucide="${icon}"></i></div>`
-                            }
-                            <div class="catalog-category-shade"></div>
-                            <span class="catalog-category-icon"><i data-lucide="${icon}"></i></span>
-                        </div>
-                        <div class="catalog-category-info">
-                            <div>
-                                <h3>${cleanStr(cat.nombre)}</h3>
-                                <p>${countLabel}</p>
-                            </div>
-                            <span class="catalog-category-arrow"><i data-lucide="chevron-right"></i></span>
-                        </div>
-                    </button>
-                `;
-            }).join('');
-
+          if(!isFirebaseLoaded || !catalogLoaded){
             setContent(`
-                <div class="catalog-grid-page all-catalog-page">
-                    <section class="catalog-grid-section">
-                        <div class="catalog-grid-heading">
-                            <div>
-                                <p>Elige lo que estás buscando</p>
-                                <h2>Explora por categorías</h2>
-                            </div>
-                            <span class="catalog-grid-count">${categories.length} ${categories.length === 1 ? 'categoría' : 'categorías'}</span>
-                        </div>
-                        <div class="catalog-categories-grid">${cards}</div>
-                    </section>
-                </div>
+              <div class="catalog-grid-page all-catalog-page">
+                <section class="catalog-grid-section">
+                  <div class="catalog-grid-heading">
+                    <div>
+                      <p>Estamos preparando todo</p>
+                      <h2>Explora por <span class="catalog-heading-gradient">categorías</span></h2>
+                    </div>
+                  </div>
+                  <div class="catalog-loading-light">
+                    <i data-lucide="loader-2"></i>
+                    <span>Cargando categorías...</span>
+                  </div>
+                </section>
+              </div>
             `);
-
             if(typeof lucide !== 'undefined') lucide.createIcons();
+            return;
+          }
+
+          const categories = dynamicCategories
+            .filter(c => c.activo !== false)
+            .map(c => {
+              const items = app.catalog
+                .filter(i => i.categoria === c.id)
+                .sort((a,b) => (a.orden || 0) - (b.orden || 0));
+              return { ...c, items, count: items.length };
+            })
+            .filter(c => c.count > 0);
+
+          if(categories.length === 0){
+            setContent(`
+              <div class="catalog-grid-page all-catalog-page">
+                <section class="catalog-grid-section">
+                  <div class="catalog-grid-heading">
+                    <div>
+                      <p>Catálogo</p>
+                      <h2>Explora por <span class="catalog-heading-gradient">categorías</span></h2>
+                    </div>
+                  </div>
+                  <div class="catalog-empty-light">
+                    <i data-lucide="package-open"></i>
+                    <h3>Próximamente más opciones</h3>
+                  </div>
+                </section>
+              </div>
+            `);
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+            return;
+          }
+
+          const cards = categories.map(cat => {
+            const firstItem = cat.items[0];
+            const cover = cleanStr(cat.imagen || cat.image || firstItem?.image || '');
+            const icon = getCatalogIcon(cat);
+            const countLabel = `${cat.count} ${cat.count === 1 ? 'opción' : 'opciones'}`;
+
+            return `
+              <button type="button"
+                data-target-section="cat_${cat.id}"
+                class="nav-action catalog-category-card"
+                aria-label="Ver ${cleanStr(cat.nombre)}">
+                <div class="catalog-category-media">
+                  ${cover
+                    ? `<img src="${cover}" alt="${cleanStr(cat.nombre)}" loading="lazy" decoding="async">`
+                    : `<div class="catalog-category-placeholder"><i data-lucide="${icon}"></i></div>`
+                  }
+                  <div class="catalog-category-shade"></div>
+                  <span class="catalog-category-icon"><i data-lucide="${icon}"></i></span>
+                </div>
+
+                <div class="catalog-category-info">
+                  <div>
+                    <h3>${cleanStr(cat.nombre)}</h3>
+                    <p>${countLabel}</p>
+                  </div>
+                  <span class="catalog-category-arrow">
+                    <i data-lucide="chevron-right"></i>
+                  </span>
+                </div>
+              </button>
+            `;
+          }).join('');
+
+          setContent(`
+            <div class="catalog-grid-page all-catalog-page">
+              <section class="catalog-grid-section">
+                <div class="catalog-grid-heading">
+                  <div>
+                    <p>Elige lo que estás buscando</p>
+                    <h2>Explora por <span class="catalog-heading-gradient">categorías</span></h2>
+                  </div>
+                  <span class="catalog-grid-count">
+                    ${categories.length} ${categories.length === 1 ? 'categoría' : 'categorías'}
+                  </span>
+                </div>
+
+                <div class="catalog-categories-grid">${cards}</div>
+              </section>
+            </div>
+          `);
+
+          if(typeof lucide !== 'undefined') lucide.createIcons();
         }
 
         function renderCategory(catId) {
@@ -5847,31 +6206,42 @@ body[data-theme="halloween"] #home-campaigns-wrapper .campaign-main-title{
         }
 
         function createCatalogTileHTML(item) {
-            const price = Number(item.price || 0);
-            const oldPrice = Number(item.originalPrice || 0);
-            const hasOffer = (item.discountApplied || item.oferta) && oldPrice > price;
-            const unit = item.isHourly ? '<span class="catalog-tile-unit">/hr</span>' : '';
+          const price = Number(item.price || 0);
+          const oldPrice = Number(item.originalPrice || 0);
+          const hasOffer = (item.discountApplied || item.oferta) && oldPrice > price;
+          const unit = item.isHourly ? '<span class="catalog-tile-unit">/hr</span>' : '';
+          const itemName = cleanStr(item.name || item.title || '');
 
-            return `
-                <button type="button"
-                    data-action="open-item-detail"
-                    data-item-id="${item.id}"
-                    class="catalog-tile animate-slide-up"
-                    aria-label="Ver ${cleanStr(item.name || item.title)}">
-                    <div class="catalog-tile-image-wrap">
-                        <img src="${cleanStr(item.image)}"
-                             alt="${cleanStr(item.name || item.title)}"
-                             class="catalog-tile-image"
-                             loading="lazy"
-                             decoding="async">
-                        ${hasOffer ? `<span class="catalog-tile-offer">OFERTA</span>` : ''}
-                    </div>
-                    <div class="catalog-tile-body">
-                        <h3 class="catalog-tile-name">${cleanStr(item.name || item.title)}</h3>
-                        ${hasOffer ? `<div class="catalog-tile-old-price">$${oldPrice.toFixed(2)}</div>` : ''}
-                        <div class="catalog-tile-price">$${price.toFixed(2)} ${unit}</div>
-                    </div>
-                </button>`;
+          return `
+            <button type="button"
+              data-action="open-item-detail"
+              data-item-id="${item.id}"
+              class="catalog-tile animate-slide-up"
+              aria-label="Ver ${itemName}">
+
+              <div class="catalog-tile-image-wrap">
+                <img
+                  src="${cleanStr(item.image)}"
+                  alt="${itemName}"
+                  class="catalog-tile-image"
+                  loading="lazy"
+                  decoding="async">
+                ${hasOffer ? `<span class="catalog-tile-offer">OFERTA</span>` : ''}
+              </div>
+
+              <div class="catalog-tile-body">
+                <h3 class="catalog-tile-name">${itemName}</h3>
+
+                <div class="catalog-price-row">
+                  ${hasOffer
+                    ? `<div class="catalog-tile-old-price">$${oldPrice.toFixed(2)}</div>`
+                    : ''
+                  }
+                  <div class="catalog-tile-price">$${price.toFixed(2)} ${unit}</div>
+                </div>
+              </div>
+            </button>
+          `;
         }
 
         function renderItemDetail(itemId) {
@@ -5963,36 +6333,62 @@ body[data-theme="halloween"] #home-campaigns-wrapper .campaign-main-title{
             window.scrollTo(0, 0);
         }
 
-        function renderSection(items, title, icon) { 
-            if(!isFirebaseLoaded){
-                setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p class="font-bold text-sm tracking-widest uppercase">Cargando...</p></div>`);
-                return;
-            }
-
-            if(items.length===0){
-                setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-12 season-text-title font-nunito flex justify-center items-center gap-3">${title} <i data-lucide="${icon}" class="w-8 h-8 opacity-50"></i></h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="folder-open" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Próximamente más opciones.</p></div></section></div>`);
-                return;
-            }
-
+        function renderSection(items, title, icon) {
+          if(!isFirebaseLoaded){
             setContent(`
-                <div class="catalog-grid-page">
-                    <section class="catalog-grid-section">
-                        <div class="catalog-grid-heading">
-                            <div>
-                                <p>Selecciona una opción</p>
-                                <h2>${title}</h2>
-                            </div>
-                            <span class="catalog-grid-count">${items.length} ${items.length === 1 ? 'opción' : 'opciones'}</span>
-                        </div>
-
-                        <div class="catalog-products-grid">
-                            ${items.map(createCatalogTileHTML).join('')}
-                        </div>
-                    </section>
-                </div>
+              <div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted">
+                <i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i>
+                <p class="font-bold text-sm tracking-widest uppercase">Cargando...</p>
+              </div>
             `);
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+            return;
+          }
+
+          if(items.length === 0){
+            setContent(`
+              <div class="catalog-grid-page">
+                <section class="catalog-grid-section">
+                  <div class="catalog-grid-heading">
+                    <div>
+                      <p>Selecciona una opción</p>
+                      <h2>${cleanStr(title)}</h2>
+                    </div>
+                  </div>
+                  <div class="catalog-empty-light">
+                    <i data-lucide="folder-open"></i>
+                    <h3>Próximamente más opciones</h3>
+                  </div>
+                </section>
+              </div>
+            `);
+            if(typeof lucide !== 'undefined') lucide.createIcons();
+            return;
+          }
+
+          setContent(`
+            <div class="catalog-grid-page">
+              <section class="catalog-grid-section">
+                <div class="catalog-grid-heading">
+                  <div>
+                    <p>Selecciona una opción</p>
+                    <h2>${cleanStr(title)}</h2>
+                  </div>
+                  <span class="catalog-grid-count">
+                    ${items.length} ${items.length === 1 ? 'opción' : 'opciones'}
+                  </span>
+                </div>
+
+                <div class="catalog-products-grid">
+                  ${items.map(createCatalogTileHTML).join('')}
+                </div>
+              </section>
+            </div>
+          `);
+
+          if(typeof lucide !== 'undefined') lucide.createIcons();
         }
-        
+
         function renderGallery() {
             if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p>Cargando Galería...</p></div>`); return; }
             if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
