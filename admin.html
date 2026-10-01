@@ -464,6 +464,13 @@
                         <label class="saas-label">Mensaje</label>
                         <input type="text" id="bannerText" class="saas-input bg-slate-900 w-full" placeholder="Texto superior...">
                     </div>
+
+                    <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-5 w-full">
+                        <h3 class="text-sm font-bold text-emerald-400 mb-2 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4"></i> Capacidad de Eventos</h3>
+                        <p class="text-xs text-slate-400 mb-4 leading-relaxed">Máximo de eventos que Diverty puede atender en la misma fecha y a la misma hora. Puedes cambiarlo cuando aumente o disminuya tu personal.</p>
+                        <label class="saas-label">Máximo de eventos simultáneos</label>
+                        <input type="number" id="capacidadSimultanea" min="1" max="100" step="1" value="3" class="saas-input bg-slate-900 w-full" inputmode="numeric">
+                    </div>
                     <button onclick="window.saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2">
                         <i data-lucide="save" class="w-5 h-5"></i> Guardar Todos los Ajustes Web
                     </button>
@@ -1432,6 +1439,8 @@
                     const d = docSnap.data(); 
                     document.getElementById('bannerActive').checked = d.bannerActive || false; 
                     document.getElementById('bannerText').value = d.bannerText || ''; 
+                    const capacityInput = document.getElementById('capacidadSimultanea');
+                    if (capacityInput) capacityInput.value = (Number.isInteger(Number(d.capacidadSimultanea)) && Number(d.capacidadSimultanea) >= 1) ? Number(d.capacidadSimultanea) : 3;
                 }
             } catch(e) { console.error("Error al cargar Ajustes", e); } 
         }
@@ -1440,7 +1449,9 @@
             try {
                 const bannerActive = document.getElementById('bannerActive').checked;
                 const bannerText = document.getElementById('bannerText').value;
-                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive, bannerText }, {merge: true});  
+                const capacidadSimultanea = Number(document.getElementById('capacidadSimultanea')?.value || 3);
+                if (!Number.isInteger(capacidadSimultanea) || capacidadSimultanea < 1 || capacidadSimultanea > 100) return showToast('La capacidad debe ser un número entero entre 1 y 100.', 'error');
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive, bannerText, capacidadSimultanea }, {merge: true});  
                 showToast("Ajustes Guardados", "success"); 
             } catch(error) { showToast("Error guardando ajustes", "error"); }
         };
