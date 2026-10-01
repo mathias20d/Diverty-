@@ -5737,7 +5737,7 @@ body.cart-open #cartSummary{display:none!important;}
 
     <script type="module">
         import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
@@ -5756,6 +5756,8 @@ body.cart-open #cartSummary{display:none!important;}
         
         let db, auth; 
         let bookedEvents = [];
+        let availabilityReady = false;
+        let pendingBooking = null;
         const bookedEventsMonthCache = new Map();
         let bookedEventsRequestSeq = 0;
         let currentCalDate = new Date(); 
@@ -6329,7 +6331,9 @@ body.cart-open #cartSummary{display:none!important;}
         function createInput(label, name, type, extra='') { return `<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase tracking-wider mb-1.5 block">${label} *</label><input type="${type}" name="${name}" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" ${extra}></div>`; }
         function createWizardStep(step, icon, text, opacity) { return `<div class="wizard-step flex flex-col items-center relative z-10 ${opacity}"><div class="w-10 h-10 rounded-full ${opacity ? 'bg-black/5 season-text-muted border border-black/10' : 'season-btn text-white'} flex items-center justify-center font-bold shadow-sm"><i data-lucide="${icon}" class="w-5 h-5"></i></div><span class="text-xs font-bold ${opacity ? 'season-text-muted' : 'season-text-primary'} mt-2">${text}</span></div>`; }
         
-        function getPortalResultCard(ev) {
+        function getPortalResultCard(input) {
+            const escapeText=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            const ev={...input}; for(const key of ['cliente','estado','servicio','fecha','hora']) ev[key]=escapeText(ev[key]);
             const tot = parseFloat(ev.total||0), abo = parseFloat(ev.abono||0), saldo = Math.max(0, tot-abo);
             let color = 'bg-amber-500/20 text-amber-500 border-amber-500/30';
             if(ev.estado.toLowerCase()==='confirmado') color = 'bg-blue-500/20 text-blue-500 border-blue-500/30';
@@ -7002,16 +7006,19 @@ body.cart-open #cartSummary{display:none!important;}
 
         async function loadBookedEventsForMonth(date, { force = false } = {}) {
             if (!db) return [];
+            const status = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','disponibilidad')).catch(() => null);
+            availabilityReady = status?.data()?.lista === true;
+            if (!availabilityReady) { bookedEvents = []; return []; }
             const { start, end, key } = getMonthRange(date);
 
-            if (!force && bookedEventsMonthCache.has(key)) {
-                bookedEvents = bookedEventsMonthCache.get(key);
+            if (!force && bookedEventsMonthCache.has(key) && Date.now()-bookedEventsMonthCache.get(key).at<60000) {
+                bookedEvents = bookedEventsMonthCache.get(key).rows;
                 return bookedEvents;
             }
 
             const requestSeq = ++bookedEventsRequestSeq;
             try {
-                const eventsRef = collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos');
+                const eventsRef = collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'disponibilidad_web');
                 const monthQuery = query(
                     eventsRef,
                     where('fecha', '>=', start),
@@ -7019,7 +7026,7 @@ body.cart-open #cartSummary{display:none!important;}
                 );
                 const snap = await fetchWithTimeout(getDocs(monthQuery), 8000);
                 const monthEvents = snap.docs.map(d => d.data()).filter(isBlockingEvent);
-                bookedEventsMonthCache.set(key, monthEvents);
+                bookedEventsMonthCache.set(key, {at:Date.now(),rows:monthEvents});
 
                 // Evita que una respuesta antigua reemplace el mes que el usuario ya cambió.
                 if (requestSeq === bookedEventsRequestSeq || getMonthRange(currentCalDate).key === key) {
@@ -7027,8 +7034,8 @@ body.cart-open #cartSummary{display:none!important;}
                 }
                 return monthEvents;
             } catch (e) {
-                console.warn('No se pudo cargar disponibilidad del mes:', e);
-                return bookedEventsMonthCache.get(key) || [];
+                availabilityReady = false; console.warn('No se pudo cargar disponibilidad del mes:', e);
+                return bookedEventsMonthCache.get(key)?.rows || [];
             }
         }
 
@@ -7048,37 +7055,12 @@ body.cart-open #cartSummary{display:none!important;}
         }
 
         async function findReservationsByPhone(value) {
-            if (!db) return [];
-            const { digits, variants } = phoneVariants(value);
+            if (!db || !auth.currentUser) return [];
+            const {digits} = phoneVariants(value);
             if (digits.length < 6) return [];
-            const eventsRef = collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos');
-            const found = new Map();
-
-            // Reservas nuevas guardan telefonoBusqueda normalizado: esta será la consulta principal.
-            try {
-                const normalizedSnap = await fetchWithTimeout(
-                    getDocs(query(eventsRef, where('telefonoBusqueda', '==', digits))),
-                    8000
-                );
-                normalizedSnap.docs.forEach(d => found.set(d.id, { id: d.id, ...d.data() }));
-            } catch (e) {
-                console.warn('Búsqueda normalizada no disponible:', e);
-            }
-
-            // Compatibilidad con reservas antiguas que solo tienen el campo telefono.
-            if (found.size === 0 && variants.length) {
-                try {
-                    const legacySnap = await fetchWithTimeout(
-                        getDocs(query(eventsRef, where('telefono', 'in', variants))),
-                        8000
-                    );
-                    legacySnap.docs.forEach(d => found.set(d.id, { id: d.id, ...d.data() }));
-                } catch (e) {
-                    console.warn('Búsqueda de teléfono anterior no disponible:', e);
-                }
-            }
-
-            return [...found.values()].filter(isBlockingEvent);
+            const ref = collection(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente');
+            const snap = await getDocs(query(ref,where('ownerUid','==',auth.currentUser.uid)));
+            return snap.docs.map(d => ({...d.data(),id:d.id})).filter(e => phoneVariants(e.telefono).digits === digits && isBlockingEvent(e));
         }
 
         function renderCalendar() {
@@ -7117,6 +7099,7 @@ body.cart-open #cartSummary{display:none!important;}
                 }
             }
             grid.innerHTML = html;
+            if (!availabilityReady) grid.insertAdjacentHTML('beforeend','<p style="grid-column:1/-1">Disponibilidad por confirmar. Puedes enviar tu solicitud.</p>');
             const mn = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentCalDate);
             const cmy = document.getElementById('cal-month-year'); if(cmy) cmy.textContent = mn.charAt(0).toUpperCase() + mn.slice(1);
             
@@ -7144,7 +7127,7 @@ body.cart-open #cartSummary{display:none!important;}
         }
 
         function renderPortal() {
-            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-black/5 border border-[var(--s-primary)] rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm season-text-primary"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold season-text-title font-nunito tracking-tight">Portal del Cliente</h2><p class="season-text-muted mt-2 font-medium text-sm">Consulta el estado de tu evento de forma rápida.</p></div><div class="glass-panel card-alive p-6 sm:p-10 shadow-sm"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 season-text-muted w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-black/5 border border-black/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold season-text-title outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" required></div><button type="submit" class="w-full season-btn font-bold py-3.5 rounded-2xl flex justify-center items-center gap-2 text-sm transition-transform active:scale-95"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-black/10 rounded-2xl bg-black/5"><p class="season-text-muted font-semibold">Ingresa tu número para ver tus reservas activas.</p></div></div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-black/5 border border-[var(--s-primary)] rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm season-text-primary"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold season-text-title font-nunito tracking-tight">Portal del Cliente</h2><p class="season-text-muted mt-2 font-medium text-sm">Consulta el estado de tu evento de forma rápida.</p></div><div class="glass-panel card-alive p-6 sm:p-10 shadow-sm"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 season-text-muted w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-black/5 border border-black/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold season-text-title outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" required></div><button type="submit" class="w-full season-btn font-bold py-3.5 rounded-2xl flex justify-center items-center gap-2 text-sm transition-transform active:scale-95"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-black/10 rounded-2xl bg-black/5"><p class="season-text-muted font-semibold">Consulta las solicitudes creadas desde este navegador. Para reservas anteriores o desde otro dispositivo, contáctanos por WhatsApp.</p></div></div></div></section></div>`);
             const form = document.getElementById('portalSearchForm');
             if(form){
                 form.onsubmit = async (e) => {
@@ -7155,7 +7138,7 @@ body.cart-open #cartSummary{display:none!important;}
                     const rc = document.getElementById('portalResults'); if(!rc) return;
                     if(pi.length<6){ rc.innerHTML=`<div class="text-center p-8 bg-amber-500/10 rounded-2xl border border-amber-500/20"><p class="text-amber-500 font-bold">Número inválido.</p></div>`; return; }
                     rc.innerHTML=`<div class="text-center p-8 bg-black/5 rounded-2xl border border-black/10"><div class="loading-spinner !w-6 !h-6 !border-2 mx-auto mb-3"></div><p class="season-text-muted font-bold">Buscando tu reserva...</p></div>`;
-                    const res = await findReservationsByPhone(sp.value);
+                    let res; try { res = await findReservationsByPhone(sp.value); } catch (_) { rc.textContent='No se pudo consultar. Reintenta con conexión o contáctanos por WhatsApp.'; return; }
                     if(res.length===0) rc.innerHTML=`<div class="text-center p-8 bg-rose-500/10 rounded-2xl border border-rose-500/20"><p class="text-rose-500 font-bold">No encontramos reservas.</p></div>`;
                     else rc.innerHTML = res.map(getPortalResultCard).join('');
                     if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -7168,7 +7151,7 @@ body.cart-open #cartSummary{display:none!important;}
             const count = app.cart.reduce((s, i) => s + i.quantity, 0);
             const tCost = count > 0 ? calculateTransportCost(app.location) : 0;
             let dVal = 0; if(appliedCoupon && count>0){ dVal = appliedCoupon.type==='percent' ? subtotal*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount); }
-            const fTot = subtotal - dVal + tCost;
+            dVal=Math.min(subtotal,Math.max(0,dVal)); const fTot = subtotal - dVal + tCost;
             const cs = app.cart.length===0?`<div class="text-center py-10 animate-slide-up"><p class="mb-8 season-text-muted">Carrito Vacío</p></div>`:app.cart.map(i=>`<div class="flex flex-col bg-black/5 p-3.5 rounded-xl shadow-sm mb-2.5 border border-black/5"><div class="flex justify-between items-center"><span class="font-semibold season-text-title text-sm pr-2">${i.name} <span class="season-text-muted text-xs font-normal">x${i.quantity}</span></span><span class="font-extrabold season-text-primary text-sm">$${(Number(i.price)*i.quantity).toFixed(2)}</span></div></div>`).join('');
             const lo = locations.map(o=>`<option value="${o.value}" ${app.location===o.value?'selected':''}>${o.label}</option>`).join('');
             
@@ -7195,10 +7178,10 @@ body.cart-open #cartSummary{display:none!important;}
                     <div class="w-10 h-10 bg-[var(--s-glass-bg)] border border-emerald-500/50 text-emerald-500 rounded-full flex items-center justify-center shrink-0 shadow-sm"><i data-lucide="calendar-check" class="w-5 h-5"></i></div>
                     <div class="flex-1">
                         <label class="font-bold text-emerald-600 text-[10px] uppercase tracking-wider block">Fecha Reservada *</label>
-                        <input type="date" name="date" required class="bg-transparent border-none text-emerald-600 font-black text-lg p-0 w-full outline-none focus:ring-0" min="${new Date().toISOString().split('T')[0]}" value="${selectedCalendarDate}">
+                        <input type="date" name="date" required class="bg-transparent border-none text-emerald-600 font-black text-lg p-0 w-full outline-none focus:ring-0" min="${new Intl.DateTimeFormat('en-CA',{timeZone:'America/Panama',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}" value="${selectedCalendarDate}">
                     </div>
                 </div>` : 
-                `<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Fecha *</label><input type="date" name="date" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="${new Date().toISOString().split('T')[0]}"></div>`;
+                `<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Fecha *</label><input type="date" name="date" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="${new Intl.DateTimeFormat('en-CA',{timeZone:'America/Panama',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}"></div>`;
 
             let exploreButtons = '';
             if (dynamicCategories.length > 0) {
@@ -7269,7 +7252,7 @@ body.cart-open #cartSummary{display:none!important;}
             const tc = count > 0 ? calculateTransportCost(app.location) : 0;
             
             let dv = 0; if(appliedCoupon && count>0) dv = appliedCoupon.type==='percent' ? sub*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount);
-            const ft = sub - dv + tc;
+            dv=Math.min(sub,Math.max(0,dv)); const ft = sub - dv + tc;
 
             const ice = document.getElementById('itemCount');
             const tpe = document.getElementById('totalPrice');
@@ -7626,23 +7609,36 @@ body.cart-open #cartSummary{display:none!important;}
                 const count = app.cart.reduce((s,i)=>s+i.quantity,0);
                 const tc = count > 0 ? calculateTransportCost(app.location) : 0;
                 let dv = 0; if(appliedCoupon) dv = appliedCoupon.type==='percent' ? sub*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount);
-                const ft = sub - dv + tc;
+                dv=Math.min(sub,Math.max(0,dv)); const ft = sub - dv + tc;
                 const lo = locations.find(l=>l.value===app.location);
                 const dataToSave = {
-                    id: `web-${Date.now()}`, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: fd.get('date')||'', hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
+                    id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: fd.get('date')||'', hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
                 };
                 
-                await fetchWithTimeout(setDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'eventos', dataToSave.id), dataToSave), 6000);
-                localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: fd.get('name') || '', email: fd.get('email') || '', telefono: fd.get('phone') || '' }));
+                // Retain one immutable request while a commit is pending; no duplicate on retry.
+                if (!pendingBooking) pendingBooking = {id:dataToSave.id, data:dataToSave};
+                const request = pendingBooking;
+                if (!request.promise) {
+                    const batch = writeBatch(db);
+                    batch.set(doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',request.id),request.data);
+                    batch.set(doc(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web',request.id),{fecha:request.data.fecha,hora:request.data.hora});
+                    batch.set(doc(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente',request.id), Object.fromEntries(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'].map(key=>[key,String(request.data[key]??'')])));
+                    request.promise = batch.commit().catch(err => { request.promise=null; throw err; });
+                }
+                await fetchWithTimeout(request.promise,15000);
+                pendingBooking = null;
+                bookedEventsMonthCache.clear();
+
+                try { localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: fd.get('name') || '', email: fd.get('email') || '', telefono: fd.get('phone') || '' })); } catch (_) {}
 
                 showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
                 app.cart=[]; appliedCoupon=null; bookingFormState={}; app.wizardStep=1; updateCartUI(); renderBooking();
-            } catch(err){ console.error(err); showToast('El entorno bloqueó la escritura, pero procesamos la solicitud.', 'error'); } 
+            } catch(err){ console.error(err); showToast('Aún no se confirmó el envío. Puedes reintentar aquí sin duplicarlo; conserva esta página abierta.', 'error'); } 
             finally{ sBtn.disabled=false; sBtn.innerHTML=obh; }
         }
 
         async function initFirebaseAndData() {
-            const fbApp = getApps().length===0 ? initializeApp(firebaseConfig, "DivertyWeb") : getApp("DivertyWeb");
+            const fbApp = getApps().some(a => a.name === "DivertyWeb") ? getApp("DivertyWeb") : initializeApp(firebaseConfig, "DivertyWeb");
             db = getFirestore(fbApp); auth = getAuth(fbApp);
             
             try { 
@@ -7660,59 +7656,54 @@ body.cart-open #cartSummary{display:none!important;}
             // Un solo documento pequeño indica si el administrador cambió contenido web.
             // Las colecciones públicas se conservan en localStorage entre visitas y solo
             // vuelven a descargarse cuando cambia esta versión.
-            const WEB_CACHE_PREFIX = 'diverty_web_cache_v3_';
-            const WEB_SYNC_KEY = WEB_CACHE_PREFIX + 'syncVersion';
-            let currentWebSyncVersion = localStorage.getItem(WEB_SYNC_KEY) || '';
-            let initialSyncResolved = false;
+            const WEB_CACHE_PREFIX = 'diverty_web_cache_v4_';
+            let currentWebSyncVersion = '';
+            let sectionVersions = {};
             let refreshStaticContent = null;
+            let bootComplete = false, refreshPending = false, refreshing = false;
+            const cacheVersion = name => String(sectionVersions[name === 'config_global' ? 'config_web' : name] ?? (Object.keys(sectionVersions).length ? 0 : 'legacy:' + currentWebSyncVersion));
+            const readCachedCollection = name => {
+                try {const parsed=JSON.parse(localStorage.getItem(WEB_CACHE_PREFIX+name)); return Array.isArray(parsed?.data) && parsed.version===cacheVersion(name) ? parsed.data : null;} catch(_) {return null;}
+            };
+            const saveCachedCollection = (name,data,version=cacheVersion(name)) => {
+                if(version!==cacheVersion(name)) return;
+                try {localStorage.setItem(WEB_CACHE_PREFIX+name,JSON.stringify({version,data}));} catch(_) {}
+            };
+            const inFlight=new Map();
+            const fetchStaticCollection=async name=>{
+                const cached=readCachedCollection(name); if(cached) return cached;
+                const version=cacheVersion(name), key=name+':'+version;
+                if(inFlight.has(key)) return inFlight.get(key);
+                const request=(async()=>{
+                    const snap=await fetchWithTimeout(getDocs(collection(db,'artifacts',CRM_APP_ID,'public','data',name)),T_OUT);
+                    if(version!==cacheVersion(name)) return fetchStaticCollection(name);
+                    const rows=snap.docs.map(d=>({...d.data(),id:d.id})); saveCachedCollection(name,rows,version); return rows;
+                })();
+                inFlight.set(key,request); try{return await request;} finally{inFlight.delete(key);}
+            };
+            async function drainRefresh(){
+                if(!bootComplete || refreshing || !refreshStaticContent) return;
+                refreshing=true;
+                try {while(refreshPending){refreshPending=false; await refreshStaticContent();}} finally{refreshing=false;}
+            }
             let resolveInitialSync;
-            const initialSyncReady = new Promise(resolve => { resolveInitialSync = resolve; });
-
-            const readCachedCollection = (name) => {
-                try {
-                    const raw = localStorage.getItem(WEB_CACHE_PREFIX + name);
-                    if (!raw) return null;
-                    const parsed = JSON.parse(raw);
-                    return Array.isArray(parsed?.data) && parsed.version === currentWebSyncVersion ? parsed.data : null;
-                } catch (_) { return null; }
-            };
-            const saveCachedCollection = (name, data) => {
-                try { localStorage.setItem(WEB_CACHE_PREFIX + name, JSON.stringify({ version: currentWebSyncVersion, data })); } catch (_) {}
-            };
-            const fetchStaticCollection = async (name) => {
-                const cached = readCachedCollection(name);
-                if (cached) return cached;
-                const snap = await fetchWithTimeout(getDocs(collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', name)), T_OUT);
-                const rows = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                saveCachedCollection(name, rows);
-                return rows;
-            };
-            const clearStaticCaches = () => {
-                ['campanas_web','categorias_web','catalogo_web','temas_web','transporte_web','galeria_web','resenas_web','cupones_web','config_global'].forEach(k => localStorage.removeItem(WEB_CACHE_PREFIX + k));
-            };
-
-            // Este es el único listener realtime añadido a la web pública.
-            // Escucha 1 documento, no colecciones completas.
-            onSnapshot(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'web_sync'), snap => {
-                const nextVersion = snap.exists() ? String(snap.data()?.version || snap.data()?.updatedAt || '') : '0';
-                const changedAfterBoot = initialSyncResolved && currentWebSyncVersion && nextVersion !== currentWebSyncVersion;
-                if (currentWebSyncVersion && nextVersion !== currentWebSyncVersion) clearStaticCaches();
-                currentWebSyncVersion = nextVersion;
-                try { localStorage.setItem(WEB_SYNC_KEY, currentWebSyncVersion); } catch (_) {}
-                if (!initialSyncResolved) { initialSyncResolved = true; resolveInitialSync(); }
-                else if (changedAfterBoot && refreshStaticContent) refreshStaticContent();
-            }, () => {
-                if (!initialSyncResolved) { initialSyncResolved = true; resolveInitialSync(); }
-            });
-            await Promise.race([initialSyncReady, new Promise(r => setTimeout(r, 1500))]);
+            const initialSyncReady=new Promise(resolve=>{resolveInitialSync=resolve;});
+            onSnapshot(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','web_sync'),snap=>{
+                const next=snap.data()||{}, version=String(next.version||'0'), sections=next.versions||{};
+                const changed=version!==currentWebSyncVersion || JSON.stringify(sections)!==JSON.stringify(sectionVersions);
+                currentWebSyncVersion=version; sectionVersions=sections;
+                resolveInitialSync(); if(changed){refreshPending=true; drainRefresh();}
+            },error=>{console.warn('Sincronización pública no disponible',error); resolveInitialSync();});
+            await Promise.race([initialSyncReady,new Promise(resolve=>setTimeout(resolve,T_OUT))]);
 
             const loadBanner = async () => {
                 try {
                     let bannerData = readCachedCollection('config_global')?.[0] || null;
                     if (!bannerData) {
+                        const bannerVersion=cacheVersion('config_global');
                         const docSnap = await fetchWithTimeout(getDoc(doc(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'config_web', 'global')), T_OUT);
                         bannerData = docSnap.exists() ? docSnap.data() : {};
-                        saveCachedCollection('config_global', [bannerData]);
+                        saveCachedCollection('config_global', [bannerData],bannerVersion);
                     }
                     const bannerEl = document.getElementById('topAnnouncementBanner');
                     if (bannerData.bannerActive === true && bannerData.bannerText) {
@@ -7725,7 +7716,7 @@ body.cart-open #cartSummary{display:none!important;}
             const loadCampaigns = async () => {
                 try {
                     const rows = await fetchStaticCollection('campanas_web');
-                    const todayStr = new Date().toISOString().split('T')[0];
+                    const todayStr = new Intl.DateTimeFormat('en-CA',{timeZone:'America/Panama',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
                     app.campaigns = rows.filter(c => {
                         if (c.activo !== true) return false;
                         if (c.fechaInicio && todayStr < cleanStr(c.fechaInicio)) return false;
@@ -7766,7 +7757,9 @@ body.cart-open #cartSummary{display:none!important;}
                     if (themes.length) {
                         
                         // Busca EXACTAMENTE el tema que marcaste como activo en tu administrador
-                        let sel = themes.find(t => t.activo === true);
+                        let themeConfig=(await fetchStaticCollection('config_web')).find(t=>t.id==='tema_global')||{};
+                        const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Panama',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+                        let sel = themeConfig.modo==='manual' ? themes.find(t=>t.id===themeConfig.temaManualActivo) : themes.find(t=>t.fechaInicio && t.fechaFin && today>=t.fechaInicio && today<=t.fechaFin);
                         if (!sel) sel = themes.find(t => t.isDefault === true);
                         if (!sel) sel = themes[0];
                         
@@ -7775,9 +7768,17 @@ body.cart-open #cartSummary{display:none!important;}
                 } catch(e) {}
             };
 
+            const loadSecondary = async () => {
+                await Promise.allSettled([
+                    (async()=>{locations=await fetchStaticCollection('transporte_web'); populateLocationSelects(); updateCartBadgeAndTotals();})(),
+                    (async()=>{gallery=(await fetchStaticCollection('galeria_web')).map(d=>({image:d.image,alt:'Diverty'}));})(),
+                    (async()=>{customerReviews=await fetchStaticCollection('resenas_web');})(),
+                    (async()=>{activeCoupons=(await fetchStaticCollection('cupones_web')).filter(c=>c.active!==false && c.activo!==false); if(appliedCoupon){appliedCoupon=activeCoupons.find(c=>c.code===appliedCoupon.code)||null;}})()
+                ]);
+            };
             refreshStaticContent = async () => {
                 try {
-                    await Promise.allSettled([loadTheme(), loadCategories(), loadCatalog(), loadBanner(), loadCampaigns()]);
+                    await Promise.allSettled([loadTheme(), loadCategories(), loadCatalog(), loadBanner(), loadCampaigns(), loadSecondary()]);
                     const visibleCategoryIds = new Set(dynamicCategories.map(c => c.id));
                     app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria));
                     allPurchasableItems = [...app.catalog];
@@ -7819,19 +7820,10 @@ body.cart-open #cartSummary{display:none!important;}
             updateCartUI();
             finishThemeBoot();
 
-            Promise.allSettled([
-                (async () => { try { const rows = await fetchStaticCollection('transporte_web'); if(rows.length) { locations = rows; populateLocationSelects(); updateCartBadgeAndTotals(); } } catch(e){} })(),
-                (async () => { try { const rows = await fetchStaticCollection('galeria_web'); if(rows.length) gallery = rows.map(d=>({ image:d.image, alt:'Diverty' })); } catch(e){} })(),
-                (async () => { try { const rows = await fetchStaticCollection('resenas_web'); if(rows.length) customerReviews = rows; } catch(e){} })(),
-                (async () => { try { const rows = await fetchStaticCollection('cupones_web'); activeCoupons = rows.filter(c=>c.active===true||c.activo===true); } catch(e){} })(),
-                loadBookedEventsForMonth(new Date(currentCalDate))
-            ]).then(() => {
-                if (app.activeSection === 'home') {
-                    if (customerReviews.length > 0 || bookedEvents.length > 0) renderHome();
-                } else if (app.activeSection === 'booking') {
-                    renderBooking();
-                }
-            });
+            await Promise.allSettled([loadSecondary(),loadBookedEventsForMonth(new Date(currentCalDate))]);
+            if(app.activeSection==='home') renderHome(); else if(app.activeSection==='booking') renderBooking();
+            bootComplete=true; await drainRefresh();
+
         }
 
         window.addEventListener('popstate', () => {
