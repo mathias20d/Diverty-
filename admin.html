@@ -893,6 +893,32 @@
             }
         };
 
+        // --- ENLACES DIRECTOS DE LA WEB ---
+        const DIVERTY_PUBLIC_URL = 'https://divertypanama.netlify.app/';
+
+        window.copyDivertyLink = async function(kind, id, label = '') {
+            try {
+                const url = new URL(DIVERTY_PUBLIC_URL);
+                if (kind === 'plan') url.searchParams.set('plan', id);
+                else if (kind === 'categoria') url.searchParams.set('categoria', id);
+                const link = url.toString();
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    await navigator.clipboard.writeText(link);
+                } else {
+                    const ta = document.createElement('textarea');
+                    ta.value = link;
+                    ta.setAttribute('readonly', '');
+                    ta.style.position = 'fixed'; ta.style.opacity = '0';
+                    document.body.appendChild(ta); ta.select();
+                    document.execCommand('copy'); ta.remove();
+                }
+                showToast(`Enlace de ${label || (kind === 'plan' ? 'paquete' : 'catálogo')} copiado`, 'success');
+            } catch (e) {
+                showToast('No se pudo copiar el enlace', 'error');
+            }
+        };
+
         // --- 7. CATEGORÍAS ---
         let editingCategoryId = null;
 
@@ -1036,6 +1062,7 @@
                                  <div class="flex-1 min-w-0"><div class="flex items-center gap-2 flex-wrap"><h4 class="text-white font-bold text-sm truncate">${c.nombre}</h4><span class="text-[9px] font-black px-2 py-0.5 rounded-full border ${c.visibilidad === 'oculto' || c.activo === false || c.visible === false ? 'bg-rose-500/10 text-rose-300 border-rose-500/20' : c.visibilidad === 'temporada' ? 'bg-amber-500/10 text-amber-300 border-amber-500/20' : 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20'}">${c.visibilidad === 'oculto' || c.activo === false || c.visible === false ? 'OCULTO' : c.visibilidad === 'temporada' ? 'TEMPORADA' : 'ACTIVO'}</span></div><p class="text-[10px] text-slate-500 mt-0.5">${c.visibilidad === 'temporada' ? ((c.fechaInicio || '—') + ' → ' + (c.fechaFin || '—')) : (c.imagen ? 'Foto personalizada activa' : (c.icono ? 'Icono: '+c.icono : 'Sin foto personalizada'))}</p></div>
                             </div>
                             <div class="flex gap-2">
+                                <button onclick="window.copyDivertyLink('categoria','${c.id}')" class="text-cyan-300 hover:text-white p-2 bg-cyan-500/10 hover:bg-cyan-600 rounded-lg transition-colors" title="Copiar enlace directo del catálogo"><i data-lucide="link-2" class="w-4 h-4"></i></button>
                                 <label class="text-indigo-300 hover:text-white p-2 bg-indigo-500/10 hover:bg-indigo-600 rounded-lg transition-colors cursor-pointer relative" title="Cambiar foto">
                                     <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="window.quickChangeCategoryImage('${c.id}', this)">
                                     <i data-lucide="camera" class="w-4 h-4 pointer-events-none"></i>
@@ -1168,13 +1195,16 @@
                                     <span class="text-[9px] text-slate-500 uppercase tracking-widest font-bold mt-1 block truncate">${catNombre}</span>
                                 </div>
                             </div>
-                            <div class="flex gap-2 mt-4 pt-4 border-t border-slate-800/80 w-full pointer-events-auto">
+                            <div class="mt-4 pt-4 border-t border-slate-800/80 w-full pointer-events-auto">
+                                <button onclick="window.copyDivertyLink('plan','${item.id}')" class="w-full mb-2.5 bg-cyan-500/10 hover:bg-cyan-600 text-cyan-300 hover:text-white text-[11px] font-black py-2.5 px-3 rounded-xl border border-cyan-500/20 flex justify-center items-center gap-2 transition-colors" title="Copiar enlace directo de este paquete"><i data-lucide="link-2" class="w-4 h-4"></i> Copiar enlace del plan</button>
+                                <div class="flex gap-2 w-full">
                                 <label class="flex-[1.35] bg-orange-500/10 hover:bg-orange-600 text-orange-300 hover:text-white text-[11px] font-bold py-2.5 px-2 rounded-xl border border-orange-500/20 flex justify-center items-center gap-1.5 transition-colors cursor-pointer relative text-center" title="Cambiar SOLO la portada de esta tarjeta">
                                     <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer w-full h-full" onchange="window.quickChangePackageCardImage('${item.id}', this)">
                                     <i data-lucide="image-up" class="w-3.5 h-3.5 pointer-events-none shrink-0"></i> Portada tarjeta
                                 </label>
                                 <button onclick="window.editPackage('${item.id}')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold py-2.5 rounded-xl border border-slate-700 flex justify-center items-center gap-2 transition-colors"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Editar</button>
                                 <button onclick="window.deletePackage('${item.id}')" class="w-11 h-11 shrink-0 bg-rose-500/10 text-rose-500 rounded-xl flex items-center justify-center hover:bg-rose-600 hover:text-white transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                </div>
                             </div>
                         </div>`;
                 });
