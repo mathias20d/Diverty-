@@ -7220,7 +7220,7 @@ body.cart-open #cartSummary{display:none!important;}
                         <i data-lucide="locate-fixed" class="w-5 h-5"></i> Usar mi ubicación actual
                     </button>
                     <p id="christmas-location-status" class="text-xs season-text-muted mt-2">Tu teléfono te pedirá permiso para compartir la ubicación.</p>
-                    <textarea name="address" required class="hidden" rows="1"></textarea>
+                    <input type="hidden" name="address" value="">
                 </div>
                 <div class="form-group">
                     <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Referencia del lugar *</label>
@@ -7680,6 +7680,14 @@ body.cart-open #cartSummary{display:none!important;}
                 const validChristmasDates = new Set(['2026-12-24', '2026-12-25']);
                 if (!validChristmasDates.has(christmasDate)) {
                     return showToast('Para Entregas de Nochebuena selecciona el 24 o 25 de diciembre de 2026.', 'error');
+                }
+                const christmasAddress = cleanStr(christmasFormData.get('address'));
+                const christmasReference = cleanStr(christmasFormData.get('christmasReference'));
+                if (!christmasAddress) {
+                    return showToast('Comparte la ubicación exacta donde debe llegar Santa.', 'error');
+                }
+                if (!christmasReference) {
+                    return showToast('Escribe una referencia corta del lugar.', 'error');
                 }
                 const christmasTime = cleanStr(christmasFormData.get('time'));
                 const timeMatch = christmasTime.match(/^(\d{2}):(\d{2})$/);
