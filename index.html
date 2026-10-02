@@ -7597,6 +7597,18 @@ body.cart-open #cartSummary{display:none!important;}
         async function handleBookingSubmit(e) {
             e.preventDefault();
             if(app.cart.length===0) return showToast('Selecciona al menos un servicio', 'error');
+
+            // NAVIDAD FASE 2 SEGURA — validación final obligatoria antes de Firebase.
+            // Aunque el campo conserve una fecha previa, Nochebuena solo acepta 24 o 25/12/2026.
+            if (isChristmasEveBooking()) {
+                const christmasFormData = new FormData(e.target);
+                const christmasDate = cleanStr(christmasFormData.get('date'));
+                const validChristmasDates = new Set(['2026-12-24', '2026-12-25']);
+                if (!validChristmasDates.has(christmasDate)) {
+                    return showToast('Para Entregas de Nochebuena selecciona el 24 o 25 de diciembre de 2026.', 'error');
+                }
+            }
+
             const sBtn = e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
             const obh = sBtn.innerHTML; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-[var(--s-primary)] inline-block align-middle mr-2"></div> Conectando...';
             try {
