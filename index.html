@@ -7175,10 +7175,17 @@ body.cart-open #cartSummary{display:none!important;}
                 }
                 return html;
             };
+            const normalizeChristmasDate = (value) => {
+                const raw = cleanStr(value);
+                if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+                const m = raw.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+                return m ? `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}` : raw;
+            };
             let bookingTimeOptions = makeTimeOptions(8 * 60, 23 * 60 + 30);
             if (isChristmasEveBooking()) {
-                if (selectedCalendarDate === '2026-12-24') bookingTimeOptions = makeTimeOptions(16 * 60, 23 * 60 + 30);
-                else if (selectedCalendarDate === '2026-12-25') bookingTimeOptions = makeTimeOptions(0, 18 * 60);
+                const christmasSelectedDate = normalizeChristmasDate(selectedCalendarDate || bookingFormState.date || '');
+                if (christmasSelectedDate === '2026-12-24') bookingTimeOptions = makeTimeOptions(16 * 60, 23 * 60 + 30);
+                else if (christmasSelectedDate === '2026-12-25') bookingTimeOptions = makeTimeOptions(0, 18 * 60);
                 else bookingTimeOptions = '<option value="" style="color:black">Primero selecciona 24 o 25 de diciembre</option>';
             }
 
@@ -7211,6 +7218,13 @@ body.cart-open #cartSummary{display:none!important;}
                 if(bForm) bForm.onsubmit = handleBookingSubmit;
                 const locSel = document.querySelector('select[name="location"]');
                 if(locSel) locSel.onchange = e => { if(bForm) bookingFormState=Object.fromEntries(new FormData(bForm).entries()); app.location=e.target.value; bookingFormState.location=e.target.value; updateCartUI(); renderBooking(); };
+                const dateSel = bForm ? bForm.elements['date'] : null;
+                if (dateSel && isChristmasEveBooking()) dateSel.onchange = e => {
+                    if (bForm) bookingFormState = Object.fromEntries(new FormData(bForm).entries());
+                    selectedCalendarDate = normalizeChristmasDate(e.target.value);
+                    bookingFormState.date = selectedCalendarDate;
+                    renderBooking();
+                };
                 if(bForm && Object.keys(bookingFormState).length>0){ for(let k in bookingFormState){ if(bForm.elements[k]) bForm.elements[k].value=bookingFormState[k]; } }
                 let cs = app.wizardStep;
                 const updUI = () => {
@@ -7623,7 +7637,7 @@ body.cart-open #cartSummary{display:none!important;}
             // Aunque el campo conserve una fecha previa, Nochebuena solo acepta 24 o 25/12/2026.
             if (isChristmasEveBooking()) {
                 const christmasFormData = new FormData(e.target);
-                const christmasDate = cleanStr(christmasFormData.get('date'));
+                const christmasDate = normalizeChristmasDate(christmasFormData.get('date'));
                 const validChristmasDates = new Set(['2026-12-24', '2026-12-25']);
                 if (!validChristmasDates.has(christmasDate)) {
                     return showToast('Para Entregas de Nochebuena selecciona el 24 o 25 de diciembre de 2026.', 'error');
