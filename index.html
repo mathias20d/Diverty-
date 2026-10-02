@@ -5728,6 +5728,18 @@ body.cart-open #cartSummary{display:none!important;}
             return String(val).trim();
         };
 
+        // NAVIDAD FASE 1 — detección aislada.
+        // No modifica calendario, disponibilidad, Firebase ni el guardado de reservas.
+        const normalizeBookingName = (value) => cleanStr(value)
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+        const isChristmasEveBooking = () => app.cart.some(item => {
+            const name = normalizeBookingName(item?.name);
+            return name.includes('entregas de nochebuena') || name.includes('entregas de noche buena');
+        });
+
         function setContent(html) { 
             const mc = document.getElementById('mainContent'); 
             if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); setupSliders(); } 
