@@ -7733,7 +7733,7 @@ body.cart-open #cartSummary{display:none!important;}
                 }
             }
 
-            const sBtn = e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
+            const sBtn = e.target.querySelector('#btn-submit') || e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
             const obh = sBtn.innerHTML; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-[var(--s-primary)] inline-block align-middle mr-2"></div> Conectando...';
             try {
                 const fd = new FormData(e.target);
