@@ -7062,7 +7062,18 @@ body.cart-open #cartSummary{display:none!important;}
                 
                 let c = "w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-[10px] flex items-center justify-center font-bold text-[12px] sm:text-[13px] transition-all duration-300 cursor-pointer border border-transparent ";
                 
-                if(currentDate<today) { 
+                // NAVIDAD FASE 2 — calendario aislado para Entregas de Nochebuena.
+                // No cambia la disponibilidad ni la capacidad de los servicios normales.
+                const christmasEveMode = isChristmasEveBooking();
+                const isChristmasBookingDate = dateStr === '2026-12-24' || dateStr === '2026-12-25';
+
+                if(christmasEveMode && !isChristmasBookingDate) {
+                    html += `<div class="flex items-center justify-center pointer-events-none"><div class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-[var(--s-text-muted)] opacity-25 font-medium cursor-not-allowed">${d}</div></div>`;
+                }
+                else if(christmasEveMode && isChristmasBookingDate) {
+                    html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'season-btn ring-4 ring-[var(--s-primary)]/30 scale-110 text-white shadow-lg':'bg-emerald-500/15 text-emerald-600 border-emerald-500/30 active:scale-95 shadow-md'}">${d}</div></div>`;
+                }
+                else if(currentDate<today) { 
                     html += `<div class="flex items-center justify-center"><div class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-[var(--s-text-muted)] opacity-30 font-medium">${d}</div></div>`; 
                 }
                 else if(eventsThisDay>=3){ 
@@ -7411,7 +7422,12 @@ body.cart-open #cartSummary{display:none!important;}
                     else { showToast("Cupón inválido o expirado", "error"); appliedCoupon=null; updateCartUI(); }
                     break;
                 }
-                case 'select-date': selectedCalendarDate = date; renderCalendar(); break;
+                case 'select-date':
+                    if (isChristmasEveBooking() && date !== '2026-12-24' && date !== '2026-12-25') {
+                        showToast('Este servicio está disponible únicamente el 24 y 25 de diciembre.', 'info');
+                        break;
+                    }
+                    selectedCalendarDate = date; renderCalendar(); break;
                 case 'confirm-date':
                     setDirectRoute('section', 'booking');
                     setActiveSection('booking');
