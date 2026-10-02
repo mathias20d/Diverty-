@@ -7281,6 +7281,17 @@ body.cart-open #cartSummary{display:none!important;}
                 };
                 updUI();
                 const bn=document.getElementById('btn-next'), bp=document.getElementById('btn-prev');
+                const christmasSubmitBtn = document.getElementById('btn-submit');
+                if (christmasSubmitBtn && isChristmasEveBooking()) {
+                    // NAVIDAD: en móvil evitamos depender del submit/constraint-validation nativo.
+                    // handleBookingSubmit conserva todas las validaciones explícitas antes de Firebase.
+                    christmasSubmitBtn.type = 'button';
+                    christmasSubmitBtn.onclick = async () => {
+                        if (!bForm || christmasSubmitBtn.disabled) return;
+                        bookingFormState = Object.fromEntries(new FormData(bForm).entries());
+                        await handleBookingSubmit({ preventDefault(){}, target: bForm, currentTarget: bForm });
+                    };
+                }
                 if(bn) bn.onclick=()=>{
                     const inp = document.getElementById(`step-${cs}`)?.querySelectorAll('input[required],select[required],textarea[required]')||[];
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
