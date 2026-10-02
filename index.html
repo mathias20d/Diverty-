@@ -1,6 +1,6 @@
-<!DOCTYPE html>
+M<!DOCTYPE html>
 <html lang="es">
-<head>
+<head
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBYYJTHTEF"></script>
     <script>
@@ -7662,6 +7662,18 @@ body.cart-open #cartSummary{display:none!important;}
                         throw submitErr;
                     }
                 }
+                // Aviso push al CRM: se ejecuta solo después de confirmar que la reserva existe.
+                // Si el servicio de notificaciones falla, la reserva permanece guardada normalmente.
+                try {
+                    await fetchWithTimeout(fetch('https://diverty-notificaciones.divertypty.workers.dev', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reservationId: request.id })
+                    }), 7000);
+                } catch (notifyErr) {
+                    console.warn('Reserva guardada, pero no se pudo enviar la notificación push:', notifyErr);
+                }
+
                 pendingBooking = null;
                 bookedEventsMonthCache.clear();
 
