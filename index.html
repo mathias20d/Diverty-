@@ -7624,9 +7624,10 @@ body.cart-open #cartSummary{display:none!important;}
                             if (!ids.includes(request.id)) {
                                 // Si el contador todavía no existía, parte de las reservas que ya estaban
                                 // guardadas para ese horario. Si existe, su contador es la autoridad atómica.
-                                const currentCount = lockSnap.exists()
-                                    ? Math.max(Number(lock.count || ids.length || 0), ids.length)
-                                    : existingCount;
+                                // La disponibilidad real siempre se vuelve a comprobar al enviar.
+                                // existingCount viene de los documentos individuales actuales; el slot
+                                // protege además contra dos confirmaciones simultáneas.
+                                const currentCount = Math.max(existingCount, ids.length);
                                 if (currentCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
                                 ids.push(request.id);
                                 tx.set(slotRef,{
