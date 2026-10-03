@@ -7749,17 +7749,27 @@ body.cart-open #cartSummary{display:none!important;}
                     }
                 }
                 const dataToSave = {
-                    id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: isChristmasEveBooking() ? normalizeChristmasDateForSubmit(fd.get('date')||'') : (fd.get('date')||''), hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : '', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
+                    id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: isChristmasEveBooking() ? normalizeChristmasDateForSubmit(fd.get('date')||'') : (fd.get('date')||''), hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : '', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa',
+                    esNavidad: isChristmasEveBooking(),
+                    recursoNavidad: isChristmasEveBooking() ? 'Santa' : '' 
                 };
                 
                 // FASE 1: capacidad simultánea configurable desde Administrador > Ajustes.
                 // Se consulta al confirmar para que un cambio de capacidad se aplique sin volver a publicar la Web.
                 let capacidadSimultanea = 3;
+                const reservaNavidad = isChristmasEveBooking();
                 try {
                     const capacitySnap = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
-                    const configuredCapacity = Number(capacitySnap.exists() ? capacitySnap.data()?.capacidadSimultanea : 3);
+                    const configCapacity = capacitySnap.exists() ? (capacitySnap.data() || {}) : {};
+                    const configuredCapacity = Number(
+                        reservaNavidad
+                            ? (configCapacity.capacidadSanta ?? 1)
+                            : (configCapacity.capacidadSimultanea ?? 3)
+                    );
                     if (Number.isInteger(configuredCapacity) && configuredCapacity >= 1 && configuredCapacity <= 100) capacidadSimultanea = configuredCapacity;
-                } catch (_) {}
+                } catch (_) {
+                    capacidadSimultanea = reservaNavidad ? 1 : 3;
+                }
 
                 // El documento slot_* funciona como contador transaccional. Firestore serializa
                 // confirmaciones concurrentes para que nunca se supere la capacidad configurada.
@@ -7771,15 +7781,19 @@ body.cart-open #cartSummary{display:none!important;}
                             collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web'),
                             where('fecha','==',request.data.fecha)
                         ));
-                        const sameTimeDocs = sameDateSnap.docs.filter(d =>
-                            !d.id.startsWith('slot_') && d.id !== request.id &&
-                            String(d.data()?.hora || '') === String(request.data.hora || '')
-                        );
+                        const sameTimeDocs = sameDateSnap.docs.filter(d => {
+                            if (d.id.startsWith('slot_') || d.id === request.id) return false;
+                            const row = d.data() || {};
+                            const sameTime = String(row.hora || '') === String(request.data.hora || '');
+                            const rowChristmas = row.esNavidad === true || /entregas de nochebuena/i.test(String(row.servicio || ''));
+                            return sameTime && (reservaNavidad ? rowChristmas : !rowChristmas);
+                        });
                         const existingCount = sameTimeDocs.length;
                         if (existingCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
 
                         const safeSlot = `${request.data.fecha}_${String(request.data.hora||'').replace(':','-')}`.replace(/[^0-9A-Za-z_-]/g,'');
-                        const slotRef = doc(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web',`slot_${safeSlot}`);
+                        const slotPrefix = reservaNavidad ? 'slot_santa_' : 'slot_';
+                        const slotRef = doc(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web',`${slotPrefix}${safeSlot}`);
                         const eventRef = doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',request.id);
                         const availabilityRef = doc(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web',request.id);
                         const customerRef = doc(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente',request.id);
@@ -7857,7 +7871,12 @@ body.cart-open #cartSummary{display:none!important;}
                     pendingBooking = null;
                     bookedEventsMonthCache.clear();
                     await loadBookedEventsForMonth(new Date(currentCalDate));
-                    showToast(`Ese horario ya alcanzó el máximo de ${capacidadSimultanea} eventos. Elige otra hora disponible.`, 'error');
+                    showToast(
+                        isChristmasEveBooking()
+                            ? `Ese horario de Santa ya alcanzó el máximo de ${capacidadSimultanea} reserva${capacidadSimultanea === 1 ? '' : 's'}. Elige otra hora disponible.`
+                            : `Ese horario ya alcanzó el máximo de ${capacidadSimultanea} eventos. Elige otra hora disponible.`,
+                        'error'
+                    );
                 } else {
                     const rawCode = String(err?.code || err?.name || 'UNKNOWN_ERROR');
                     const rawMessage = String(err?.message || 'Sin detalle').replace(/\s+/g,' ').trim();
