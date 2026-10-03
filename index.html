@@ -7041,7 +7041,12 @@ body.cart-open #cartSummary{display:none!important;}
                                 const m = raw.match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
                                 if (m) { lat = Number(m[1]); lng = Number(m[2]); }
                             }
-                            return Number.isFinite(lat) && Number.isFinite(lng) ? {...ev, lat, lng} : ev;
+                            const direccion = String(data.direccion || data.address || ev.direccion || '').trim();
+                            return {
+                                ...ev,
+                                ...(direccion ? { direccion } : {}),
+                                ...(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : {})
+                            };
                         } catch (_) { return ev; }
                     }));
                     const byId = new Map(hydrated.map(ev => [String(ev._availabilityId), ev]));
@@ -7435,40 +7440,30 @@ body.cart-open #cartSummary{display:none!important;}
                     if (d <= 18) return 40;
                     return Math.min(70, 40 + Math.ceil((d - 18) * 2));
                 };
-                const christmasRouteDiagnostic = (date) => {
-                    const gps = parseChristmasGps();
-                    const sameDay = bookedEvents.filter(ev => {
-                        const id = String(ev._availabilityId || '');
-                        return id && !id.startsWith('slot_') && String(ev.fecha || '') === String(date);
-                    });
-                    const withGps = sameDay.filter(ev => Number.isFinite(Number(ev.lat)) && Number.isFinite(Number(ev.lng)));
-                    const lines = [
-                        `DIAGNÓSTICO: ubicación cliente ${gps ? 'OK' : 'NO DETECTADA'}`,
-                        `reservas del día ${sameDay.length}`,
-                        `reservas con GPS ${withGps.length}/${sameDay.length}`
-                    ];
-                    if (gps && withGps.length) {
-                        const distances = withGps.map(ev => {
-                            const km = geoDistanceKm(gps.lat, gps.lng, Number(ev.lat), Number(ev.lng));
-                            return `${String(ev.hora || '?')}=${km.toFixed(2)} km`;
-                        });
-                        lines.push(`distancias: ${distances.join(' | ')}`);
-                    }
-                    if (sameDay.length && !withGps.length) {
-                        lines.push(`IDs sin GPS: ${sameDay.slice(0,4).map(ev => String(ev._availabilityId || '?')).join(', ')}`);
-                    }
-                    return lines.join(' · ');
-                };
                 const routeRecommendation = (date, time) => {
                     const gps = parseChristmasGps();
                     const t = timeMinutes(time);
                     if (!gps || t === null) return null;
+                    const currentAddress = String(bForm?.elements?.address?.value || bookingFormState.address || '').trim();
+                    const normalizeAddress = value => String(value || '')
+                        .trim().toLowerCase().replace(/\s+/g,'');
+                    const currentAddressKey = normalizeAddress(currentAddress);
                     const anchors = bookedEvents.map(ev => {
                         const id=String(ev._availabilityId||'');
                         if (!id || id.startsWith('slot_') || String(ev.fecha||'') !== String(date)) return null;
-                        const lat=Number(ev.lat), lng=Number(ev.lng), et=timeMinutes(ev.hora);
-                        if (!Number.isFinite(lat)||!Number.isFinite(lng)||et===null) return null;
-                        const km=geoDistanceKm(gps.lat,gps.lng,lat,lng);
+                        const et=timeMinutes(ev.hora);
+                        if (et===null) return null;
+                        const lat=Number(ev.lat), lng=Number(ev.lng);
+                        let km = null;
+                        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                            km=geoDistanceKm(gps.lat,gps.lng,lat,lng);
+                        } else {
+                            // Compatibilidad con reservas antiguas: si no guardaron GPS pero la
+                            // dirección registrada es exactamente la misma, la distancia es 0 km.
+                            const oldAddressKey = normalizeAddress(ev.direccion || ev.address || '');
+                            if (currentAddressKey && oldAddressKey && currentAddressKey === oldAddressKey) km = 0;
+                        }
+                        if (!Number.isFinite(km)) return null;
                         return {time:et, km, travel:estimateChristmasTravelMinutes(km)};
                     }).filter(Boolean).sort((a,b)=>a.time-b.time);
                     if (!anchors.length) return {recommended:false, reason:'first'};
@@ -7548,7 +7543,7 @@ body.cart-open #cartSummary{display:none!important;}
                         });
                         if (christmasTimeSelect.value && christmasTimeIsUnavailable()) christmasTimeSelect.value = '';
                         renderChristmasTimeCards(christmasDate, capacity);
-                        if (christmasTimeMessage) christmasTimeMessage.textContent = `✓ Horarios calculados para tu ubicación. ⭐ indica los horarios que mejor encajan con entregas cercanas ya reservadas.\n\n${christmasRouteDiagnostic(christmasDate)}`;
+                        if (christmasTimeMessage) christmasTimeMessage.textContent = '✓ Horarios calculados para tu ubicación. ⭐ indica los horarios que mejor encajan con entregas cercanas ya reservadas.';
                         if (christmasTimeMessage) christmasTimeMessage.style.whiteSpace = 'pre-line';
                     } catch (_) {
                         if (christmasTimeMessage) christmasTimeMessage.textContent = 'No pudimos actualizar los cupos ahora. Se volverán a validar al confirmar.';
