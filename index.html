@@ -7345,7 +7345,8 @@ body.cart-open #cartSummary{display:none!important;}
                 </div>` : `
                 <div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Dirección o Link de Waze/Maps *</label><textarea name="address" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej: Pega tu link de Waze aquí..."></textarea></div>`;
 
-            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span>$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : ``}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Ubicación *</label><select name="location" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option style="color:black">${lo}</option></select></div>${bookingLocationFields}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Confirmar Reserva</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span>$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="routeDiagnostic" style="margin:0 0 12px;padding:12px;border:2px solid #f59e0b;border-radius:14px;background:#fffbeb;color:#78350f;font-size:12px;line-height:1.45;white-space:pre-wrap;word-break:break-word">DIAGNÓSTICO: esperando cálculo…</div>
+<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : ``}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Ubicación *</label><select name="location" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option style="color:black">${lo}</option></select></div>${bookingLocationFields}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Confirmar Reserva</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
             
             if(app.cart.length>0){
                 // NAVIDAD RUTAS FASE 1 — GPS primero.
@@ -7497,45 +7498,66 @@ body.cart-open #cartSummary{display:none!important;}
                 const routeRecommendation = (date, time) => {
                     const gps = parseChristmasGps();
                     const t = timeMinutes(time);
-                    if (!gps || t === null) return null;
                     const currentAddress = String(bForm?.elements?.address?.value || bookingFormState.address || '').trim();
-                    const normalizeAddress = value => String(value || '')
-                        .trim().toLowerCase().replace(/\s+/g,'');
+                    const normalizeAddress = value => String(value || '').trim().toLowerCase().replace(/\s+/g,'');
                     const currentAddressKey = normalizeAddress(currentAddress);
-                    const anchors = routeEvents.map(ev => {
+                    const sameDate=(Array.isArray(routeEvents)?routeEvents:[]).filter(ev=>String(ev.fecha||'')===String(date));
+                    const anchors = sameDate.map(ev => {
                         const id=String(ev._eventId || ev.id || '');
-                        if (!id || String(ev.fecha||'') !== String(date)) return null;
                         const et=timeMinutes(ev.hora);
-                        if (et===null) return null;
+                        if (!id || et===null) return null;
                         const rawLat=String(ev.lat ?? '').trim(), rawLng=String(ev.lng ?? '').trim();
                         const lat=Number(rawLat), lng=Number(rawLng);
-                        const validGps = rawLat !== '' && rawLng !== '' &&
-                            Number.isFinite(lat) && Number.isFinite(lng) &&
-                            Math.abs(lat) <= 90 && Math.abs(lng) <= 180 &&
-                            !(lat === 0 && lng === 0);
-                        let km = null;
-                        if (validGps) {
-                            km=geoDistanceKm(gps.lat,gps.lng,lat,lng);
-                        } else {
-                            // Compatibilidad con reservas antiguas: si no guardaron GPS pero la
-                            // dirección registrada es exactamente la misma, la distancia es 0 km.
-                            const oldAddressKey = normalizeAddress(ev.direccion || ev.address || '');
-                            if (currentAddressKey && oldAddressKey && currentAddressKey === oldAddressKey) km = 0;
+                        const validGps = rawLat !== '' && rawLng !== '' && Number.isFinite(lat) && Number.isFinite(lng) &&
+                            Math.abs(lat)<=90 && Math.abs(lng)<=180 && !(lat===0&&lng===0);
+                        let km=null;
+                        if(validGps && gps) km=geoDistanceKm(gps.lat,gps.lng,lat,lng);
+                        else {
+                            const oldAddressKey=normalizeAddress(ev.direccion || ev.address || '');
+                            if(currentAddressKey && oldAddressKey && currentAddressKey===oldAddressKey) km=0;
                         }
-                        if (!Number.isFinite(km)) return null;
-                        return {time:et, km, travel:estimateChristmasTravelMinutes(km)};
+                        if(!Number.isFinite(km)) return null;
+                        return {id,time:et,hora:String(ev.hora||''),km,travel:estimateChristmasTravelMinutes(km),lat:validGps?lat:null,lng:validGps?lng:null};
                     }).filter(Boolean).sort((a,b)=>a.time-b.time);
-                    if (!anchors.length) return {recommended:false, reason:'first'};
 
-                    const previous=[...anchors].filter(a=>a.time<t).sort((a,b)=>b.time-a.time)[0] || null;
-                    const next=anchors.filter(a=>a.time>t).sort((a,b)=>a.time-b.time)[0] || null;
-                    // 25 min de visita + 5 min de margen + traslado estimado.
-                    const SERVICE_AND_BUFFER=30;
-                    const fitsPrevious=!previous || previous.time + SERVICE_AND_BUFFER + previous.travel <= t;
-                    const fitsNext=!next || t + SERVICE_AND_BUFFER + next.travel <= next.time;
-                    const nearby=anchors.filter(a=>a.km<=7).sort((a,b)=>a.km-b.km)[0] || null;
-                    const recommended=!!nearby && fitsPrevious && fitsNext && Math.abs(nearby.time-t)<=120;
-                    return {recommended, fitsPrevious, fitsNext, km:nearby?.km ?? null};
+                    let result;
+                    if(!gps || t===null) result={recommended:false,reason:!gps?'sin GPS cliente':'hora inválida'};
+                    else if(!anchors.length) result={recommended:false,reason:'0 anclas válidas'};
+                    else {
+                        const previous=[...anchors].filter(a=>a.time<t).sort((a,b)=>b.time-a.time)[0]||null;
+                        const next=anchors.filter(a=>a.time>t).sort((a,b)=>a.time-b.time)[0]||null;
+                        const SERVICE_AND_BUFFER=30;
+                        const fitsPrevious=!previous || previous.time+SERVICE_AND_BUFFER+previous.travel<=t;
+                        const fitsNext=!next || t+SERVICE_AND_BUFFER+next.travel<=next.time;
+                        const nearby=anchors.filter(a=>a.km<=7).sort((a,b)=>a.km-b.km)[0]||null;
+                        const recommended=!!nearby && fitsPrevious && fitsNext && Math.abs(nearby.time-t)<=120;
+                        result={recommended,fitsPrevious,fitsNext,km:nearby?.km??null,
+                            reason:recommended?'OK':!nearby?'ninguna ancla ≤7 km':!fitsPrevious?'no cabe después de anterior':!fitsNext?'no cabe antes de siguiente':Math.abs(nearby.time-t)>120?'fuera de ±120 min':'descartado'};
+                    }
+
+                    // Acumula diagnóstico de cada hora y lo muestra en pantalla.
+                    window.__divertyRouteDiag=window.__divertyRouteDiag||{};
+                    window.__divertyRouteDiag[String(time)]=result;
+                    const diag=document.getElementById('routeDiagnostic');
+                    if(diag){
+                        const validGps=sameDate.filter(ev=>{
+                            const a=Number(ev.lat),b=Number(ev.lng);
+                            return String(ev.lat??'').trim()!==''&&String(ev.lng??'').trim()!==''&&Number.isFinite(a)&&Number.isFinite(b)&&!(a===0&&b===0);
+                        });
+                        const hourLines=Object.entries(window.__divertyRouteDiag).map(([h,r])=>`${h}: ${r.recommended?'⭐ SÍ':'NO'} — ${r.reason||''}${Number.isFinite(r.km)?` (${r.km.toFixed(2)} km)`:''}`).join('\n');
+                        diag.textContent=`DIAGNÓSTICO RUTAS
+Fecha: ${date||'—'}
+GPS cliente: ${gps?`${gps.lat.toFixed(6)}, ${gps.lng.toFixed(6)}`:'NO DISPONIBLE'}
+eventos cargados: ${Array.isArray(routeEvents)?routeEvents.length:0}
+eventos de esta fecha: ${sameDate.length}
+eventos con lat/lng: ${validGps.length}
+anclas utilizables: ${anchors.length}
+${anchors.slice(0,8).map(a=>`• ${a.hora} | ${a.km.toFixed(2)} km | ${a.id}`).join('\n')}
+
+RESULTADO POR HORA
+${hourLines}`;
+                    }
+                    return result;
                 };
                 const renderChristmasTimeCards = (date, capacity) => {
                     const wrap=document.getElementById('christmas-time-cards');
