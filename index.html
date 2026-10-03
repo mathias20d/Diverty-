@@ -7670,8 +7670,15 @@ body.cart-open #cartSummary{display:none!important;}
             }
         }
 
+        // NAVIDAD — normalizador disponible también para el submit global.
+        function normalizeChristmasDateForSubmit(value) {
+            const raw = String(value ?? '').trim();
+            if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+            const m = raw.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})$/);
+            return m ? `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}` : raw;
+        }
+
         async function handleBookingSubmit(e) {
-            window.__divertyDebug?.('3 FUNCIÓN: handleBookingSubmit inició');
             e.preventDefault();
             if(app.cart.length===0) return showToast('Selecciona al menos un servicio', 'error');
 
@@ -7699,7 +7706,7 @@ body.cart-open #cartSummary{display:none!important;}
                 if (christmasZoneText.includes('arraijan') || christmasZoneText.includes('chorrera')) {
                     return showToast('Entregas de Nochebuena está disponible únicamente en Ciudad de Panamá.', 'error');
                 }
-                const christmasDate = normalizeChristmasDate(christmasFormData.get('date'));
+                const christmasDate = normalizeChristmasDateForSubmit(christmasFormData.get('date'));
                 const validChristmasDates = new Set(['2026-12-24', '2026-12-25']);
                 if (!validChristmasDates.has(christmasDate)) {
                     return showToast('Para Entregas de Nochebuena selecciona el 24 o 25 de diciembre de 2026.', 'error');
@@ -7725,8 +7732,7 @@ body.cart-open #cartSummary{display:none!important;}
                 }
             }
 
-            window.__divertyDebug?.('4 VALIDACIÓN: superada; preparando envío');
-            const sBtn = e.target.querySelector('#btn-submit') || e.target.querySelector('button[type="submit"]'); if(!sBtn) { window.__divertyDebug?.('ERROR: no se encontró btn-submit'); return; }
+            const sBtn = e.target.querySelector('#btn-submit') || e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
             const obh = sBtn.innerHTML; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-[var(--s-primary)] inline-block align-middle mr-2"></div> Conectando...';
             try {
                 const fd = new FormData(e.target);
@@ -7743,7 +7749,7 @@ body.cart-open #cartSummary{display:none!important;}
                     }
                 }
                 const dataToSave = {
-                    id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: fd.get('date')||'', hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: isChristmasEveBooking() ? [fd.get('address')||'', fd.get('christmasReference') ? `Referencia: ${fd.get('christmasReference')}` : ''].filter(Boolean).join('\n') : (fd.get('address')||''), comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
+                    id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: isChristmasEveBooking() ? normalizeChristmasDateForSubmit(fd.get('date')||'') : (fd.get('date')||''), hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: isChristmasEveBooking() ? [fd.get('address')||'', fd.get('christmasReference') ? `Referencia: ${fd.get('christmasReference')}` : ''].filter(Boolean).join('\n') : (fd.get('address')||''), comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa' 
                 };
                 
                 // FASE 1: capacidad simultánea configurable desde Administrador > Ajustes.
@@ -7810,9 +7816,7 @@ body.cart-open #cartSummary{display:none!important;}
                     })().catch(err => { request.promise=null; throw err; });
                 }
                 try {
-                    window.__divertyDebug?.('5 FIREBASE: enviando transacción');
                     await fetchWithTimeout(request.promise,15000);
-                    window.__divertyDebug?.('6 FIREBASE: transacción completada');
                 } catch (submitErr) {
                     // Una transacción puede haber llegado a Firestore aunque el cliente no reciba
                     // la confirmación antes del timeout. Verificamos el MISMO ID antes de pedir reintento.
@@ -8491,14 +8495,5 @@ html.dv-page-hidden video { visibility:hidden; }
 </style>
 
 
-
-<div id="diverty-submit-debug" style="display:none;position:fixed;left:10px;right:10px;bottom:10px;z-index:999999;background:#111;color:#fff;padding:12px 14px;border-radius:14px;font:12px/1.4 monospace;max-height:35vh;overflow:auto;box-shadow:0 8px 30px #0008"></div>
-<script>
-window.__divertyDebug=function(msg){const b=document.getElementById('diverty-submit-debug');if(!b)return;b.style.display='block';b.innerHTML += '<div>'+new Date().toLocaleTimeString()+' — '+String(msg).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'</div>';};
-document.addEventListener('click',function(e){const b=e.target&&e.target.closest&&e.target.closest('#btn-submit');if(b)window.__divertyDebug('1 BOTÓN: click recibido');},true);
-document.addEventListener('submit',function(e){if(e.target&&e.target.id==='bookingForm')window.__divertyDebug('2 SUBMIT: evento recibido');},true);
-window.addEventListener('error',e=>window.__divertyDebug('ERROR JS: '+(e.message||'desconocido')));
-window.addEventListener('unhandledrejection',e=>window.__divertyDebug('ERROR PROMISE: '+((e.reason&&e.reason.message)||e.reason||'desconocido')));
-</script>
 </body>
 </html>
