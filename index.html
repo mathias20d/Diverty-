@@ -7415,12 +7415,14 @@ body.cart-open #cartSummary{display:none!important;}
                 // NAVIDAD: usa el mismo submit estable de Diverty. El formulario ya lleva
                 // novalidate y handleBookingSubmit ejecuta las validaciones especiales explícitas.
                 if(bn) bn.onclick=async()=>{
-                    if (cs === 1 && isChristmasEveBooking()) await refreshChristmasTimeAvailability();
-                    if (cs === 2 && isChristmasEveBooking() && christmasTimeIsUnavailable()) {
-                        if (christmasTimeSelect) christmasTimeSelect.value = '';
-                        showToast('Ese horario no está disponible. Intenta con otro horario.', 'error');
-                        if (christmasTimeMessage) christmasTimeMessage.textContent = '⚠️ Ese horario ya no está disponible. Selecciona otro para continuar.';
-                        return;
+                    if (cs === 1 && isChristmasEveBooking()) {
+                        await refreshChristmasTimeAvailability();
+                        if (christmasTimeIsUnavailable()) {
+                            if (christmasTimeSelect) christmasTimeSelect.value = '';
+                            showToast('Ese horario no está disponible. Intenta con otro horario.', 'error');
+                            if (christmasTimeMessage) christmasTimeMessage.textContent = '⚠️ Ese horario ya no está disponible. Selecciona otro para continuar.';
+                            return;
+                        }
                     }
                     const inp = document.getElementById(`step-${cs}`)?.querySelectorAll('input[required],select[required],textarea[required]')||[];
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
