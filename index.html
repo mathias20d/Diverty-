@@ -7018,7 +7018,36 @@ body.cart-open #cartSummary{display:none!important;}
                     where('fecha', '<=', end)
                 );
                 const snap = await fetchWithTimeout(getDocs(monthQuery), 8000);
-                const monthEvents = snap.docs.map(d => ({ ...d.data(), _availabilityId: d.id })).filter(isBlockingEvent);
+                let monthEvents = snap.docs.map(d => ({ ...d.data(), _availabilityId: d.id })).filter(isBlockingEvent);
+
+                // RUTAS NAVIDAD: algunas reservas antiguas de disponibilidad_web no guardaron
+                // lat/lng aunque el documento original de eventos sí conserva la ubicación.
+                // Completa esas coordenadas antes de calcular los horarios recomendados.
+                const missingGps = monthEvents.filter(ev => {
+                    const id = String(ev._availabilityId || '');
+                    return id && !id.startsWith('slot_') &&
+                           (!Number.isFinite(Number(ev.lat)) || !Number.isFinite(Number(ev.lng)));
+                });
+                if (missingGps.length) {
+                    const hydrated = await Promise.all(missingGps.map(async ev => {
+                        try {
+                            const original = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',String(ev._availabilityId)));
+                            if (!original.exists()) return ev;
+                            const data = original.data() || {};
+                            let lat = Number(data.lat), lng = Number(data.lng);
+                            // Compatibilidad con reservas que solo conservaron el enlace de Google Maps.
+                            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                                const raw = String(data.direccion || data.address || '');
+                                const m = raw.match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
+                                if (m) { lat = Number(m[1]); lng = Number(m[2]); }
+                            }
+                            return Number.isFinite(lat) && Number.isFinite(lng) ? {...ev, lat, lng} : ev;
+                        } catch (_) { return ev; }
+                    }));
+                    const byId = new Map(hydrated.map(ev => [String(ev._availabilityId), ev]));
+                    monthEvents = monthEvents.map(ev => byId.get(String(ev._availabilityId)) || ev);
+                }
+
                 bookedEventsMonthCache.set(key, {at:Date.now(),rows:monthEvents});
 
                 // Evita que una respuesta antigua reemplace el mes que el usuario ya cambió.
