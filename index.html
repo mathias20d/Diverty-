@@ -7279,11 +7279,18 @@ body.cart-open #cartSummary{display:none!important;}
                     const contactStep = document.getElementById('step-1');
                     const eventStep = document.getElementById('step-2');
                     if (contactStep && eventStep) {
+                        // IMPORTANTE: el wizard avanza por el orden DOM de .wizard-content,
+                        // no solamente por sus IDs. Movemos físicamente Evento antes de Contacto.
+                        const parent = contactStep.parentNode;
                         contactStep.id = 'step-contact-temp';
                         eventStep.id = 'step-1';
                         contactStep.id = 'step-2';
+                        if (parent) parent.insertBefore(eventStep, contactStep);
                         eventStep.classList.add('active');
                         contactStep.classList.remove('active');
+                        // Navidad siempre empieza en Evento, aunque app.wizardStep haya quedado
+                        // guardado de una visita anterior.
+                        app.wizardStep = 1;
                     }
                     const wizardSteps = document.querySelectorAll('.wizard-step');
                     if (wizardSteps[0]) {
