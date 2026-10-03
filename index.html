@@ -5667,6 +5667,10 @@ body.cart-open #cartSummary{display:none!important;}
         
         let db, auth; 
         let bookedEvents = [];
+        // Reservas completas de `eventos`: fuente de verdad EXCLUSIVA para recomendaciones por zona.
+        // `bookedEvents` sigue reservado para cupos/slot_santa y no se mezcla con el motor de rutas.
+        let routeEvents = [];
+        const routeEventsMonthCache = new Map();
         let availabilityReady = false;
         let pendingBooking = null;
         const bookedEventsMonthCache = new Map();
@@ -7072,6 +7076,38 @@ body.cart-open #cartSummary{display:none!important;}
             }
         }
 
+
+        async function loadRouteEventsForMonth(date, { force = false } = {}) {
+            if (!db) return [];
+            const { start, end, key } = getMonthRange(date);
+            if (!force && routeEventsMonthCache.has(key) && Date.now() - routeEventsMonthCache.get(key).at < 60000) {
+                routeEvents = routeEventsMonthCache.get(key).rows;
+                return routeEvents;
+            }
+            try {
+                const ref = collection(db,'artifacts',CRM_APP_ID,'public','data','eventos');
+                const q = query(ref, where('fecha','>=',start), where('fecha','<=',end));
+                const snap = await fetchWithTimeout(getDocs(q), 8000);
+                const rows = snap.docs.map(d => ({ ...d.data(), _eventId:d.id }))
+                    .filter(isBlockingEvent)
+                    .filter(ev => {
+                        const rawLat=String(ev.lat ?? '').trim(), rawLng=String(ev.lng ?? '').trim();
+                        const lat=Number(rawLat), lng=Number(rawLng);
+                        return rawLat !== '' && rawLng !== '' &&
+                            Number.isFinite(lat) && Number.isFinite(lng) &&
+                            Math.abs(lat) <= 90 && Math.abs(lng) <= 180 &&
+                            !(lat === 0 && lng === 0);
+                    });
+                routeEventsMonthCache.set(key,{at:Date.now(),rows});
+                routeEvents = rows;
+                return rows;
+            } catch (e) {
+                console.warn('No se pudieron cargar eventos para rutas:', e);
+                routeEvents = routeEventsMonthCache.get(key)?.rows || [];
+                return routeEvents;
+            }
+        }
+
         function phoneVariants(value) {
             const digits = String(value || '').replace(/\D/g, '').replace(/^00507/, '').replace(/^507/, '');
             if (digits.length < 6) return { digits, variants: [] };
@@ -7409,7 +7445,8 @@ body.cart-open #cartSummary{display:none!important;}
                         if (window.lucide) lucide.createIcons();
                         // Recalcula inmediatamente los horarios con el GPS recién recibido.
                         // Antes, el paso Horario podía mostrarse con datos calculados antes de tener ubicación.
-                        bookedEventsMonthCache.clear();
+                        bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
+                        routeEventsMonthCache.clear();
                         refreshChristmasTimeAvailability().catch(()=>{});
                         showToast('Ubicación recibida correctamente.', 'success');
                     }, err => {
@@ -7427,6 +7464,13 @@ body.cart-open #cartSummary{display:none!important;}
                     return !!opt && (opt.disabled || /NO DISPONIBLE|AGOTADO/i.test(opt.textContent || ''));
                 };
                 const parseChristmasGps = () => {
+                    const stateLat = Number(bookingFormState.christmasLat);
+                    const stateLng = Number(bookingFormState.christmasLng);
+                    if (Number.isFinite(stateLat) && Number.isFinite(stateLng) &&
+                        Math.abs(stateLat) <= 90 && Math.abs(stateLng) <= 180 &&
+                        !(stateLat === 0 && stateLng === 0)) {
+                        return { lat:stateLat, lng:stateLng };
+                    }
                     const raw = String(bForm?.elements?.address?.value || bookingFormState.address || '');
                     const m = raw.match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
                     if (!m) return null;
@@ -7458,9 +7502,9 @@ body.cart-open #cartSummary{display:none!important;}
                     const normalizeAddress = value => String(value || '')
                         .trim().toLowerCase().replace(/\s+/g,'');
                     const currentAddressKey = normalizeAddress(currentAddress);
-                    const anchors = bookedEvents.map(ev => {
-                        const id=String(ev._availabilityId||'');
-                        if (!id || id.startsWith('slot_') || String(ev.fecha||'') !== String(date)) return null;
+                    const anchors = routeEvents.map(ev => {
+                        const id=String(ev._eventId || ev.id || '');
+                        if (!id || String(ev.fecha||'') !== String(date)) return null;
                         const et=timeMinutes(ev.hora);
                         if (et===null) return null;
                         const rawLat=String(ev.lat ?? '').trim(), rawLng=String(ev.lng ?? '').trim();
@@ -7531,7 +7575,10 @@ body.cart-open #cartSummary{display:none!important;}
                     const christmasDate = normalizeChristmasDateForSubmit(rawDate);
                     if (!christmasDate) return;
                     try {
-                        await loadBookedEventsForMonth(new Date(`${christmasDate}T12:00:00`));
+                        await Promise.all([
+                            loadBookedEventsForMonth(new Date(`${christmasDate}T12:00:00`)),
+                            loadRouteEventsForMonth(new Date(`${christmasDate}T12:00:00`))
+                        ]);
                         const configuredCapacity = await getChristmasCapacity();
                         const capacity = Math.max(1, Number(configuredCapacity) || 1);
                         Array.from(christmasTimeSelect.options).forEach(opt => {
@@ -7625,7 +7672,7 @@ body.cart-open #cartSummary{display:none!important;}
                         // Al pasar de Ubicación -> Horario en Navidad, recalcula AHORA,
                         // cuando el GPS del cliente ya existe. Este era el punto que faltaba.
                         if (isChristmasEveBooking() && cs === 2) {
-                            bookedEventsMonthCache.clear();
+                            bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
                             await refreshChristmasTimeAvailability();
                         }
                         try{ history.pushState({ ...(history.state || {}), divertyBookingWizard: true, bookingStep: cs }, '', window.location.href); }catch(_){}
@@ -8105,7 +8152,17 @@ body.cart-open #cartSummary{display:none!important;}
                     id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: isChristmasEveBooking() ? normalizeChristmasDateForSubmit(fd.get('date')||'') : (fd.get('date')||''), hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : '', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa',
                     esNavidad: isChristmasEveBooking(),
                     recursoNavidad: isChristmasEveBooking() ? 'Santa' : '',
-                    ...(isChristmasEveBooking() && (()=>{ const g=String(fd.get('address')||'').match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i); return g ? { lat:Number(g[1]), lng:Number(g[2]) } : {}; })())
+                    ...(isChristmasEveBooking() && (() => {
+                        let lat = Number(bookingFormState.christmasLat);
+                        let lng = Number(bookingFormState.christmasLng);
+                        if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                            const g=String(fd.get('address')||'').match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
+                            if (g) { lat=Number(g[1]); lng=Number(g[2]); }
+                        }
+                        return Number.isFinite(lat) && Number.isFinite(lng) &&
+                            Math.abs(lat)<=90 && Math.abs(lng)<=180 && !(lat===0 && lng===0)
+                            ? { lat, lng } : {};
+                    })())
                 };
                 
                 // FASE 1: capacidad simultánea configurable desde Administrador > Ajustes.
@@ -8234,7 +8291,7 @@ body.cart-open #cartSummary{display:none!important;}
                 }
 
                 pendingBooking = null;
-                bookedEventsMonthCache.clear();
+                bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
 
                 try { localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: fd.get('name') || '', email: fd.get('email') || '', telefono: fd.get('phone') || '' })); } catch (_) {}
 
@@ -8244,7 +8301,7 @@ body.cart-open #cartSummary{display:none!important;}
                 console.error(err);
                 if (err?.message === 'SLOT_FULL') {
                     pendingBooking = null;
-                    bookedEventsMonthCache.clear();
+                    bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
                     await loadBookedEventsForMonth(new Date(currentCalDate), { force: true });
                     if (isChristmasEveBooking()) renderBooking();
                     showToast(
