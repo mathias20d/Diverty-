@@ -5671,6 +5671,21 @@ body.cart-open #cartSummary{display:none!important;}
         let pendingBooking = null;
         const bookedEventsMonthCache = new Map();
         let bookedEventsRequestSeq = 0;
+        // NAVIDAD: capacidad cacheada para mostrar cupos antes de pedir datos al cliente.
+        // Se relee como máximo una vez por minuto para ahorrar operaciones de Firestore.
+        let christmasCapacityCache = { at: 0, value: 1 };
+        async function getChristmasCapacity({ force = false } = {}) {
+            if (!db) return Math.max(1, Number(christmasCapacityCache.value) || 1);
+            if (!force && Date.now() - christmasCapacityCache.at < 60000) {
+                return Math.max(1, Number(christmasCapacityCache.value) || 1);
+            }
+            try {
+                const snap = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
+                const n = Number(snap.exists() ? (snap.data()?.capacidadSanta ?? 1) : 1);
+                christmasCapacityCache = { at: Date.now(), value: Number.isInteger(n) && n >= 1 && n <= 100 ? n : 1 };
+            } catch (_) {}
+            return Math.max(1, Number(christmasCapacityCache.value) || 1);
+        }
         let currentCalDate = new Date(); 
         let bookingFormState = {}; 
         let selectedCalendarDate = null; 
@@ -7257,6 +7272,29 @@ body.cart-open #cartSummary{display:none!important;}
             setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span>$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : ``}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Ubicación *</label><select name="location" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option style="color:black">${lo}</option></select></div>${bookingLocationFields}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Confirmar Reserva</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
             
             if(app.cart.length>0){
+                // NAVIDAD UX: primero se elige FECHA/HORA y se comprueba el cupo.
+                // Así el cliente no pierde tiempo escribiendo nombre, email y teléfono
+                // para descubrir al final que el horario ya está completo.
+                if (isChristmasEveBooking()) {
+                    const contactStep = document.getElementById('step-1');
+                    const eventStep = document.getElementById('step-2');
+                    if (contactStep && eventStep) {
+                        contactStep.id = 'step-contact-temp';
+                        eventStep.id = 'step-1';
+                        contactStep.id = 'step-2';
+                        eventStep.classList.add('active');
+                        contactStep.classList.remove('active');
+                    }
+                    const wizardSteps = document.querySelectorAll('.wizard-step');
+                    if (wizardSteps[0]) {
+                        const t = wizardSteps[0].querySelector('span');
+                        if (t) t.textContent = 'Evento';
+                    }
+                    if (wizardSteps[1]) {
+                        const t = wizardSteps[1].querySelector('span');
+                        if (t) t.textContent = 'Contacto';
+                    }
+                }
                 const bForm = document.getElementById('bookingForm');
                 if(bForm) {
                     bForm.onsubmit = handleBookingSubmit;
@@ -7332,14 +7370,17 @@ body.cart-open #cartSummary{display:none!important;}
                             }).length;
                             const slotCount = slot ? Math.max(Number(slot.count)||0, Array.isArray(slot.reservationIds)?slot.reservationIds.length:0) : 0;
                             const count = Math.max(slotCount, individualCount);
-                            const capacity = Math.max(1, Number(slot?.capacity) || (count > 0 ? 1 : 1));
+                            // Usa la capacidad REAL configurada en Admin (Santa 1, Santa 2, etc.).
+                            // El slot puede conservar una capacidad anterior, por eso config manda.
+                            const configuredCapacity = await getChristmasCapacity();
+                            const capacity = Math.max(1, Number(configuredCapacity) || Number(slot?.capacity) || 1);
                             const full = count >= capacity;
                             opt.disabled = full;
                             const base = String(opt.textContent || '').split(' — ')[0];
                             opt.textContent = full ? `${base} — NO DISPONIBLE · elige otro horario` : (count > 0 ? `${base} — ${Math.max(0,capacity-count)} cupo${capacity-count===1?'':'s'}` : base);
                         });
                         if (christmasTimeSelect.value && christmasTimeIsUnavailable()) christmasTimeSelect.value = '';
-                        if (christmasTimeMessage) christmasTimeMessage.textContent = '✓ Disponibilidad actualizada.';
+                        if (christmasTimeMessage) christmasTimeMessage.textContent = `✓ Cupos actualizados para ${await getChristmasCapacity()} Santa${(await getChristmasCapacity()) === 1 ? '' : 's'}. Los horarios completos están bloqueados.`;
                     } catch (_) {
                         if (christmasTimeMessage) christmasTimeMessage.textContent = 'No pudimos actualizar los cupos ahora. Se volverán a validar al confirmar.';
                     }
@@ -7385,7 +7426,12 @@ body.cart-open #cartSummary{display:none!important;}
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
                     if(val){ cs++; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); try{ history.pushState({ ...(history.state || {}), divertyBookingWizard: true, bookingStep: cs }, '', window.location.href); }catch(_){} updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>{ const first=document.getElementById(`step-${cs}`)?.querySelector('input:not([type=hidden]),select,textarea'); if(first && window.innerWidth<=767){ try{ first.focus({preventScroll:true}); }catch(e){ first.focus(); } } },360); }); }
                 };
-                if(bp) bp.onclick=async()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); if(cs===2 && isChristmasEveBooking()) await refreshChristmasTimeAvailability(); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
+                if(bp) bp.onclick=async()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); if(cs===1 && isChristmasEveBooking()) await refreshChristmasTimeAvailability(); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
+                // Al abrir Navidad, muestra la disponibilidad ANTES de que el cliente escriba sus datos.
+                if (isChristmasEveBooking()) {
+                    if (christmasTimeMessage) christmasTimeMessage.textContent = '🎅 Consultando cupos disponibles…';
+                    refreshChristmasTimeAvailability();
+                }
                 if(bForm){
                     bForm.addEventListener('focusin',()=>{ if(window.innerWidth<=767) document.body.classList.add('booking-keyboard-open'); });
                     bForm.addEventListener('focusout',()=>{ setTimeout(()=>{ if(!bForm.contains(document.activeElement)) document.body.classList.remove('booking-keyboard-open'); },120); });
@@ -7859,11 +7905,11 @@ body.cart-open #cartSummary{display:none!important;}
                 let capacidadSimultanea = 3;
                 const reservaNavidad = isChristmasEveBooking();
                 try {
-                    const capacitySnap = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
-                    const configCapacity = capacitySnap.exists() ? (capacitySnap.data() || {}) : {};
+                    const capacitySnap = reservaNavidad ? null : await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
+                    const configCapacity = capacitySnap?.exists() ? (capacitySnap.data() || {}) : {};
                     const configuredCapacity = Number(
                         reservaNavidad
-                            ? (configCapacity.capacidadSanta ?? 1)
+                            ? await getChristmasCapacity()
                             : (configCapacity.capacidadSimultanea ?? 3)
                     );
                     if (Number.isInteger(configuredCapacity) && configuredCapacity >= 1 && configuredCapacity <= 100) capacidadSimultanea = configuredCapacity;
