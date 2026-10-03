@@ -7435,6 +7435,30 @@ body.cart-open #cartSummary{display:none!important;}
                     if (d <= 18) return 40;
                     return Math.min(70, 40 + Math.ceil((d - 18) * 2));
                 };
+                const christmasRouteDiagnostic = (date) => {
+                    const gps = parseChristmasGps();
+                    const sameDay = bookedEvents.filter(ev => {
+                        const id = String(ev._availabilityId || '');
+                        return id && !id.startsWith('slot_') && String(ev.fecha || '') === String(date);
+                    });
+                    const withGps = sameDay.filter(ev => Number.isFinite(Number(ev.lat)) && Number.isFinite(Number(ev.lng)));
+                    const lines = [
+                        `DIAGNÓSTICO: ubicación cliente ${gps ? 'OK' : 'NO DETECTADA'}`,
+                        `reservas del día ${sameDay.length}`,
+                        `reservas con GPS ${withGps.length}/${sameDay.length}`
+                    ];
+                    if (gps && withGps.length) {
+                        const distances = withGps.map(ev => {
+                            const km = geoDistanceKm(gps.lat, gps.lng, Number(ev.lat), Number(ev.lng));
+                            return `${String(ev.hora || '?')}=${km.toFixed(2)} km`;
+                        });
+                        lines.push(`distancias: ${distances.join(' | ')}`);
+                    }
+                    if (sameDay.length && !withGps.length) {
+                        lines.push(`IDs sin GPS: ${sameDay.slice(0,4).map(ev => String(ev._availabilityId || '?')).join(', ')}`);
+                    }
+                    return lines.join(' · ');
+                };
                 const routeRecommendation = (date, time) => {
                     const gps = parseChristmasGps();
                     const t = timeMinutes(time);
@@ -7524,7 +7548,8 @@ body.cart-open #cartSummary{display:none!important;}
                         });
                         if (christmasTimeSelect.value && christmasTimeIsUnavailable()) christmasTimeSelect.value = '';
                         renderChristmasTimeCards(christmasDate, capacity);
-                        if (christmasTimeMessage) christmasTimeMessage.textContent = `✓ Horarios calculados para tu ubicación. ⭐ indica los horarios que mejor encajan con entregas cercanas ya reservadas.`;
+                        if (christmasTimeMessage) christmasTimeMessage.textContent = `✓ Horarios calculados para tu ubicación. ⭐ indica los horarios que mejor encajan con entregas cercanas ya reservadas.\n\n${christmasRouteDiagnostic(christmasDate)}`;
+                        if (christmasTimeMessage) christmasTimeMessage.style.whiteSpace = 'pre-line';
                     } catch (_) {
                         if (christmasTimeMessage) christmasTimeMessage.textContent = 'No pudimos actualizar los cupos ahora. Se volverán a validar al confirmar.';
                     }
