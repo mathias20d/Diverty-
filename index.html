@@ -7281,8 +7281,19 @@ body.cart-open #cartSummary{display:none!important;}
                 };
                 updUI();
                 const bn=document.getElementById('btn-next'), bp=document.getElementById('btn-prev');
-                // NAVIDAD: usa el mismo submit estable de Diverty. El formulario ya lleva
-                // novalidate y handleBookingSubmit ejecuta las validaciones especiales explícitas.
+                // NAVIDAD: en algunos navegadores móviles el submit nativo no se dispara
+                // desde el último paso del wizard. Solo para Nochebuena usamos un click
+                // directo al mismo handleBookingSubmit, sin alterar las reservas normales.
+                const christmasSubmitBtn = document.getElementById('btn-submit');
+                if (christmasSubmitBtn && isChristmasEveBooking()) {
+                    christmasSubmitBtn.type = 'button';
+                    christmasSubmitBtn.onclick = (ev) => {
+                        ev.preventDefault();
+                        ev.stopPropagation();
+                        handleBookingSubmit({ preventDefault: () => {}, target: bForm });
+                    };
+                }
+                // NAVIDAD: usa el mismo guardado estable de Diverty y las validaciones especiales explícitas.
                 if(bn) bn.onclick=()=>{
                     const inp = document.getElementById(`step-${cs}`)?.querySelectorAll('input[required],select[required],textarea[required]')||[];
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
