@@ -7291,10 +7291,12 @@ body.cart-open #cartSummary{display:none!important;}
                             parent.insertBefore(locationStep, parent.firstElementChild);
                             parent.insertBefore(eventStep, contactStep);
                         }
-                        locationStep.classList.add('active');
-                        eventStep.classList.remove('active');
-                        contactStep.classList.remove('active');
-                        app.wizardStep = 1;
+                        // No fuerces el wizard a Ubicación en cada render.
+                        // Conserva el paso actual (GPS -> Horario -> Contacto).
+                        const preservedStep = Math.min(3, Math.max(1, Number(app.wizardStep) || 1));
+                        locationStep.classList.toggle('active', preservedStep === 1);
+                        eventStep.classList.toggle('active', preservedStep === 2);
+                        contactStep.classList.toggle('active', preservedStep === 3);
                     }
                     const wizardSteps = document.querySelectorAll('.wizard-step');
                     const labels = ['Ubicación', 'Horario', 'Contacto'];
@@ -7321,13 +7323,32 @@ body.cart-open #cartSummary{display:none!important;}
                     }
                 }
                 const locSel = document.querySelector('select[name="location"]');
-                if(locSel) locSel.onchange = e => { if(bForm) bookingFormState=Object.fromEntries(new FormData(bForm).entries()); app.location=e.target.value; bookingFormState.location=e.target.value; updateCartUI(); renderBooking(); };
+                if(locSel) locSel.onchange = e => {
+                    if(bForm) bookingFormState=Object.fromEntries(new FormData(bForm).entries());
+                    app.location=e.target.value;
+                    bookingFormState.location=e.target.value;
+                    updateCartUI();
+                    // Navidad no necesita reconstruir el formulario por cambiar la zona.
+                    // La reserva normal conserva su comportamiento histórico.
+                    if (!isChristmasEveBooking()) renderBooking();
+                };
                 const dateSel = bForm ? bForm.elements['date'] : null;
-                if (dateSel && isChristmasEveBooking()) dateSel.onchange = e => {
+                if (dateSel && isChristmasEveBooking()) dateSel.onchange = async e => {
+                    // Rendimiento: cambiar la fecha NO reconstruye toda la página.
+                    // Conserva GPS, referencia y paso actual; solo recalcula horas/cupos.
                     if (bForm) bookingFormState = Object.fromEntries(new FormData(bForm).entries());
                     selectedCalendarDate = normalizeChristmasDate(e.target.value);
                     bookingFormState.date = selectedCalendarDate;
-                    renderBooking();
+                    const timeSelect = bForm?.elements?.time;
+                    if (timeSelect) {
+                        const previousTime = String(bookingFormState.time || timeSelect.value || '');
+                        if (selectedCalendarDate === '2026-12-24') timeSelect.innerHTML = makeTimeOptions(16 * 60, 23 * 60 + 30, { christmasDate: selectedCalendarDate });
+                        else if (selectedCalendarDate === '2026-12-25') timeSelect.innerHTML = makeTimeOptions(0, 14 * 60, { christmasDate: selectedCalendarDate });
+                        else timeSelect.innerHTML = '<option value="" style="color:black">Selecciona 24 o 25 de diciembre</option>';
+                        if (previousTime && Array.from(timeSelect.options).some(o => o.value === previousTime && !o.disabled)) timeSelect.value = previousTime;
+                        else { timeSelect.value = ''; bookingFormState.time = ''; }
+                    }
+                    await refreshChristmasTimeAvailability();
                 };
                 const christmasLocationBtn = document.getElementById('christmas-use-location');
                 if (christmasLocationBtn && isChristmasEveBooking()) christmasLocationBtn.onclick = () => {
@@ -7534,7 +7555,7 @@ body.cart-open #cartSummary{display:none!important;}
                     }
                     const inp = document.getElementById(`step-${cs}`)?.querySelectorAll('input[required],select[required],textarea[required]')||[];
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
-                    if(val){ cs++; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); try{ history.pushState({ ...(history.state || {}), divertyBookingWizard: true, bookingStep: cs }, '', window.location.href); }catch(_){} updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>{ const first=document.getElementById(`step-${cs}`)?.querySelector('input:not([type=hidden]),select,textarea'); if(first && window.innerWidth<=767){ try{ first.focus({preventScroll:true}); }catch(e){ first.focus(); } } },360); }); }
+                    if(val){ cs++; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); try{ history.pushState({ ...(history.state || {}), divertyBookingWizard: true, bookingStep: cs }, '', window.location.href); }catch(_){} updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>{ const first=document.getElementById(`step-${cs}`)?.querySelector('input:not([type=hidden]),select,textarea'); if(first && window.innerWidth<=767 && !isChristmasEveBooking()){ try{ first.focus({preventScroll:true}); }catch(e){ first.focus(); } } },220); }); }
                 };
                 if(bp) bp.onclick=async()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); if(cs===2 && isChristmasEveBooking()) await refreshChristmasTimeAvailability(); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
                 // Navidad inicia por GPS. La disponibilidad se actualiza al llegar al paso Horario,
