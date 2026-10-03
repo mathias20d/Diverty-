@@ -7025,8 +7025,14 @@ body.cart-open #cartSummary{display:none!important;}
                 // Completa esas coordenadas antes de calcular los horarios recomendados.
                 const missingGps = monthEvents.filter(ev => {
                     const id = String(ev._availabilityId || '');
-                    return id && !id.startsWith('slot_') &&
-                           (!Number.isFinite(Number(ev.lat)) || !Number.isFinite(Number(ev.lng)));
+                    const rawLat = String(ev.lat ?? '').trim();
+                    const rawLng = String(ev.lng ?? '').trim();
+                    const lat = Number(rawLat), lng = Number(rawLng);
+                    const validGps = rawLat !== '' && rawLng !== '' &&
+                        Number.isFinite(lat) && Number.isFinite(lng) &&
+                        Math.abs(lat) <= 90 && Math.abs(lng) <= 180 &&
+                        !(lat === 0 && lng === 0);
+                    return id && !id.startsWith('slot_') && !validGps;
                 });
                 if (missingGps.length) {
                     const hydrated = await Promise.all(missingGps.map(async ev => {
@@ -7453,9 +7459,14 @@ body.cart-open #cartSummary{display:none!important;}
                         if (!id || id.startsWith('slot_') || String(ev.fecha||'') !== String(date)) return null;
                         const et=timeMinutes(ev.hora);
                         if (et===null) return null;
-                        const lat=Number(ev.lat), lng=Number(ev.lng);
+                        const rawLat=String(ev.lat ?? '').trim(), rawLng=String(ev.lng ?? '').trim();
+                        const lat=Number(rawLat), lng=Number(rawLng);
+                        const validGps = rawLat !== '' && rawLng !== '' &&
+                            Number.isFinite(lat) && Number.isFinite(lng) &&
+                            Math.abs(lat) <= 90 && Math.abs(lng) <= 180 &&
+                            !(lat === 0 && lng === 0);
                         let km = null;
-                        if (Number.isFinite(lat) && Number.isFinite(lng)) {
+                        if (validGps) {
                             km=geoDistanceKm(gps.lat,gps.lng,lat,lng);
                         } else {
                             // Compatibilidad con reservas antiguas: si no guardaron GPS pero la
