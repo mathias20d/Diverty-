@@ -7313,6 +7313,37 @@ body.cart-open #cartSummary{display:none!important;}
                     const opt = christmasTimeSelect.options[christmasTimeSelect.selectedIndex];
                     return !!opt && (opt.disabled || /NO DISPONIBLE|AGOTADO/i.test(opt.textContent || ''));
                 };
+                const refreshChristmasTimeAvailability = async () => {
+                    if (!isChristmasEveBooking() || !christmasTimeSelect) return;
+                    const rawDate = bForm?.elements?.date?.value || bookingFormState.date || '';
+                    const christmasDate = normalizeChristmasDateForSubmit(rawDate);
+                    if (!christmasDate) return;
+                    try {
+                        await loadBookedEventsForMonth(new Date(`${christmasDate}T12:00:00`), { force: true });
+                        Array.from(christmasTimeSelect.options).forEach(opt => {
+                            if (!opt.value) return;
+                            const safeSlot = `${christmasDate}_${String(opt.value).replace(':','-')}`.replace(/[^0-9A-Za-z_-]/g,'');
+                            const slotId = `slot_santa_${safeSlot}`;
+                            const slot = bookedEvents.find(ev => ev._availabilityId === slotId);
+                            const individualCount = bookedEvents.filter(ev => {
+                                const id = String(ev._availabilityId || '');
+                                if (!id || id.startsWith('slot_')) return false;
+                                return String(ev.fecha || '') === christmasDate && String(ev.hora || '') === String(opt.value);
+                            }).length;
+                            const slotCount = slot ? Math.max(Number(slot.count)||0, Array.isArray(slot.reservationIds)?slot.reservationIds.length:0) : 0;
+                            const count = Math.max(slotCount, individualCount);
+                            const capacity = Math.max(1, Number(slot?.capacity) || (count > 0 ? 1 : 1));
+                            const full = count >= capacity;
+                            opt.disabled = full;
+                            const base = String(opt.textContent || '').split(' — ')[0];
+                            opt.textContent = full ? `${base} — NO DISPONIBLE · elige otro horario` : (count > 0 ? `${base} — ${Math.max(0,capacity-count)} cupo${capacity-count===1?'':'s'}` : base);
+                        });
+                        if (christmasTimeSelect.value && christmasTimeIsUnavailable()) christmasTimeSelect.value = '';
+                        if (christmasTimeMessage) christmasTimeMessage.textContent = '✓ Disponibilidad actualizada.';
+                    } catch (_) {
+                        if (christmasTimeMessage) christmasTimeMessage.textContent = 'No pudimos actualizar los cupos ahora. Se volverán a validar al confirmar.';
+                    }
+                };
                 if (christmasTimeSelect && isChristmasEveBooking()) {
                     christmasTimeSelect.addEventListener('change', () => {
                         if (christmasTimeIsUnavailable()) {
@@ -7342,7 +7373,8 @@ body.cart-open #cartSummary{display:none!important;}
                 const bn=document.getElementById('btn-next'), bp=document.getElementById('btn-prev');
                 // NAVIDAD: usa el mismo submit estable de Diverty. El formulario ya lleva
                 // novalidate y handleBookingSubmit ejecuta las validaciones especiales explícitas.
-                if(bn) bn.onclick=()=>{
+                if(bn) bn.onclick=async()=>{
+                    if (cs === 1 && isChristmasEveBooking()) await refreshChristmasTimeAvailability();
                     if (cs === 2 && isChristmasEveBooking() && christmasTimeIsUnavailable()) {
                         if (christmasTimeSelect) christmasTimeSelect.value = '';
                         showToast('Ese horario no está disponible. Intenta con otro horario.', 'error');
@@ -7353,7 +7385,7 @@ body.cart-open #cartSummary{display:none!important;}
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
                     if(val){ cs++; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); try{ history.pushState({ ...(history.state || {}), divertyBookingWizard: true, bookingStep: cs }, '', window.location.href); }catch(_){} updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>{ const first=document.getElementById(`step-${cs}`)?.querySelector('input:not([type=hidden]),select,textarea'); if(first && window.innerWidth<=767){ try{ first.focus({preventScroll:true}); }catch(e){ first.focus(); } } },360); }); }
                 };
-                if(bp) bp.onclick=()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
+                if(bp) bp.onclick=async()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); if(cs===2 && isChristmasEveBooking()) await refreshChristmasTimeAvailability(); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
                 if(bForm){
                     bForm.addEventListener('focusin',()=>{ if(window.innerWidth<=767) document.body.classList.add('booking-keyboard-open'); });
                     bForm.addEventListener('focusout',()=>{ setTimeout(()=>{ if(!bForm.contains(document.activeElement)) document.body.classList.remove('booking-keyboard-open'); },120); });
