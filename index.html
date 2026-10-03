@@ -7178,9 +7178,20 @@ body.cart-open #cartSummary{display:none!important;}
                         const safeSlot = `${christmasDate}_${value.replace(':','-')}`.replace(/[^0-9A-Za-z_-]/g,'');
                         const slotId = `slot_santa_${safeSlot}`;
                         const slot = bookedEvents.find(ev => ev._availabilityId === slotId);
-                        if (slot) {
-                            const count = Math.max(Number(slot.count) || 0, Array.isArray(slot.reservationIds) ? slot.reservationIds.length : 0);
-                            const capacity = Math.max(1, Number(slot.capacity) || 1);
+                        // Reconciliación sin lecturas extra: loadBookedEventsForMonth() ya descargó
+                        // los documentos individuales del mes. Algunas reservas navideñas antiguas
+                        // existen allí pero fueron creadas antes de reservationIds en slot_santa_*.
+                        const individualCount = bookedEvents.filter(ev => {
+                            const id = String(ev._availabilityId || '');
+                            if (!id || id.startsWith('slot_')) return false;
+                            return String(ev.fecha || '') === christmasDate && String(ev.hora || '') === value;
+                        }).length;
+                        if (slot || individualCount > 0) {
+                            const slotCount = slot ? Math.max(Number(slot.count) || 0, Array.isArray(slot.reservationIds) ? slot.reservationIds.length : 0) : 0;
+                            const count = Math.max(slotCount, individualCount);
+                            // Los slots nuevos guardan capacity. Si es un registro legado sin slot,
+                            // usamos 1 de forma segura hasta que el primer submit lo reconcilie.
+                            const capacity = Math.max(1, Number(slot?.capacity) || 1);
                             disabled = count >= capacity;
                             if (disabled) suffix = ' — NO DISPONIBLE · elige otro horario';
                             else if (count > 0) suffix = ` — ${Math.max(0, capacity-count)} cupo${capacity-count === 1 ? '' : 's'}`;
@@ -7838,7 +7849,18 @@ body.cart-open #cartSummary{display:none!important;}
                         // Así evitamos descargar todas las reservas del día en cada confirmación.
                         // Reservas normales conservan la comprobación histórica para no alterar su lógica.
                         let existingCount = 0;
-                        if (!reservaNavidad) {
+                        if (reservaNavidad) {
+                            // Sin consulta adicional: reutiliza la disponibilidad mensual ya cargada.
+                            // Math.max con reservationIds dentro de la transacción evita doble conteo
+                            // y mantiene protección frente a confirmaciones simultáneas nuevas.
+                            existingCount = bookedEvents.filter(ev => {
+                                const id = String(ev._availabilityId || '');
+                                if (!id || id.startsWith('slot_') || id === request.id) return false;
+                                return String(ev.fecha || '') === String(request.data.fecha || '') &&
+                                       String(ev.hora || '') === String(request.data.hora || '');
+                            }).length;
+                            if (existingCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
+                        } else {
                             const sameDateSnap = await getDocs(query(
                                 collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web'),
                                 where('fecha','==',request.data.fecha)
@@ -7871,7 +7893,7 @@ body.cart-open #cartSummary{display:none!important;}
                                 // La disponibilidad real siempre se vuelve a comprobar al enviar.
                                 // existingCount viene de los documentos individuales actuales; el slot
                                 // protege además contra dos confirmaciones simultáneas.
-                                const currentCount = reservaNavidad ? ids.length : Math.max(existingCount, ids.length);
+                                const currentCount = Math.max(existingCount, ids.length);
                                 if (currentCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
                                 ids.push(request.id);
                                 tx.set(slotRef,{
@@ -7885,7 +7907,12 @@ body.cart-open #cartSummary{display:none!important;}
                             }
 
                             tx.set(eventRef,request.data);
-                            tx.set(availabilityRef,{fecha:request.data.fecha,hora:request.data.hora});
+                            tx.set(availabilityRef,{
+                                fecha:request.data.fecha,
+                                hora:request.data.hora,
+                                esNavidad:request.data.esNavidad === true,
+                                recursoNavidad:request.data.recursoNavidad || ''
+                            });
                             tx.set(customerRef,Object.fromEntries(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'].map(key=>[key,String(request.data[key]??'')])));
                         });
                     })().catch(err => { request.promise=null; throw err; });
