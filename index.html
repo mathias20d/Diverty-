@@ -5735,6 +5735,7 @@ body.cart-open #cartSummary{display:none!important;}
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '');
 
+        // NAVIDAD DISPONIBILIDAD V3 — slots Santa reutilizados para UI + confirmación de bajo consumo.
         const isChristmasEveBooking = () => app.cart.some(item => {
             const name = normalizeBookingName(item?.name);
             return name.includes('entregas de nochebuena') || name.includes('entregas de noche buena');
@@ -7002,7 +7003,7 @@ body.cart-open #cartSummary{display:none!important;}
                     where('fecha', '<=', end)
                 );
                 const snap = await fetchWithTimeout(getDocs(monthQuery), 8000);
-                const monthEvents = snap.docs.map(d => d.data()).filter(isBlockingEvent);
+                const monthEvents = snap.docs.map(d => ({ ...d.data(), _availabilityId: d.id })).filter(isBlockingEvent);
                 bookedEventsMonthCache.set(key, {at:Date.now(),rows:monthEvents});
 
                 // Evita que una respuesta antigua reemplace el mes que el usuario ya cambió.
@@ -7163,7 +7164,7 @@ body.cart-open #cartSummary{display:none!important;}
 
             // NAVIDAD FASE 3 — horarios exclusivos para Entregas de Nochebuena.
             // Reserva normal conserva exactamente su horario actual (08:00 a 23:30).
-            const makeTimeOptions = (startMinutes, endMinutes) => {
+            const makeTimeOptions = (startMinutes, endMinutes, { christmasDate = '' } = {}) => {
                 let html = '<option value="" style="color:black">Selecciona una hora</option>';
                 for (let mins = startMinutes; mins <= endMinutes; mins += 30) {
                     const h = Math.floor(mins / 60);
@@ -7171,7 +7172,21 @@ body.cart-open #cartSummary{display:none!important;}
                     const value = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
                     const hour12 = h % 12 || 12;
                     const label = `${hour12}:${String(m).padStart(2,'0')} ${h < 12 ? 'a. m.' : 'p. m.'}`;
-                    html += `<option value="${value}" style="color:black">${label}</option>`;
+                    let disabled = false;
+                    let suffix = '';
+                    if (christmasDate) {
+                        const safeSlot = `${christmasDate}_${value.replace(':','-')}`.replace(/[^0-9A-Za-z_-]/g,'');
+                        const slotId = `slot_santa_${safeSlot}`;
+                        const slot = bookedEvents.find(ev => ev._availabilityId === slotId);
+                        if (slot) {
+                            const count = Math.max(Number(slot.count) || 0, Array.isArray(slot.reservationIds) ? slot.reservationIds.length : 0);
+                            const capacity = Math.max(1, Number(slot.capacity) || 1);
+                            disabled = count >= capacity;
+                            if (disabled) suffix = ' — AGOTADO';
+                            else if (count > 0) suffix = ` — ${Math.max(0, capacity-count)} cupo${capacity-count === 1 ? '' : 's'}`;
+                        }
+                    }
+                    html += `<option value="${value}" style="color:black" ${disabled ? 'disabled' : ''}>${label}${suffix}</option>`;
                 }
                 return html;
             };
@@ -7184,8 +7199,8 @@ body.cart-open #cartSummary{display:none!important;}
             let bookingTimeOptions = makeTimeOptions(8 * 60, 23 * 60 + 30);
             if (isChristmasEveBooking()) {
                 const christmasSelectedDate = normalizeChristmasDate(selectedCalendarDate || bookingFormState.date || '');
-                if (christmasSelectedDate === '2026-12-24') bookingTimeOptions = makeTimeOptions(16 * 60, 23 * 60 + 30);
-                else if (christmasSelectedDate === '2026-12-25') bookingTimeOptions = makeTimeOptions(0, 14 * 60);
+                if (christmasSelectedDate === '2026-12-24') bookingTimeOptions = makeTimeOptions(16 * 60, 23 * 60 + 30, { christmasDate: christmasSelectedDate });
+                else if (christmasSelectedDate === '2026-12-25') bookingTimeOptions = makeTimeOptions(0, 14 * 60, { christmasDate: christmasSelectedDate });
                 else bookingTimeOptions = '<option value="" style="color:black">Primero selecciona 24 o 25 de diciembre</option>';
             }
 
@@ -7795,19 +7810,23 @@ body.cart-open #cartSummary{display:none!important;}
                 const request = pendingBooking;
                 if (!request.promise) {
                     request.promise = (async () => {
-                        const sameDateSnap = await getDocs(query(
-                            collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web'),
-                            where('fecha','==',request.data.fecha)
-                        ));
-                        const sameTimeDocs = sameDateSnap.docs.filter(d => {
-                            if (d.id.startsWith('slot_') || d.id === request.id) return false;
-                            const row = d.data() || {};
-                            const sameTime = String(row.hora || '') === String(request.data.hora || '');
-                            const rowChristmas = row.esNavidad === true || /entregas de nochebuena/i.test(String(row.servicio || ''));
-                            return sameTime && (reservaNavidad ? rowChristmas : !rowChristmas);
-                        });
-                        const existingCount = sameTimeDocs.length;
-                        if (existingCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
+                        // AHORRO FIRESTORE: Navidad usa directamente su contador slot_santa_*.
+                        // Así evitamos descargar todas las reservas del día en cada confirmación.
+                        // Reservas normales conservan la comprobación histórica para no alterar su lógica.
+                        let existingCount = 0;
+                        if (!reservaNavidad) {
+                            const sameDateSnap = await getDocs(query(
+                                collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web'),
+                                where('fecha','==',request.data.fecha)
+                            ));
+                            const sameTimeDocs = sameDateSnap.docs.filter(d => {
+                                if (d.id.startsWith('slot_') || d.id === request.id) return false;
+                                const row = d.data() || {};
+                                return String(row.hora || '') === String(request.data.hora || '');
+                            });
+                            existingCount = sameTimeDocs.length;
+                            if (existingCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
+                        }
 
                         const safeSlot = `${request.data.fecha}_${String(request.data.hora||'').replace(':','-')}`.replace(/[^0-9A-Za-z_-]/g,'');
                         const slotPrefix = reservaNavidad ? 'slot_santa_' : 'slot_';
@@ -7828,7 +7847,7 @@ body.cart-open #cartSummary{display:none!important;}
                                 // La disponibilidad real siempre se vuelve a comprobar al enviar.
                                 // existingCount viene de los documentos individuales actuales; el slot
                                 // protege además contra dos confirmaciones simultáneas.
-                                const currentCount = Math.max(existingCount, ids.length);
+                                const currentCount = reservaNavidad ? ids.length : Math.max(existingCount, ids.length);
                                 if (currentCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
                                 ids.push(request.id);
                                 tx.set(slotRef,{
@@ -7888,7 +7907,8 @@ body.cart-open #cartSummary{display:none!important;}
                 if (err?.message === 'SLOT_FULL') {
                     pendingBooking = null;
                     bookedEventsMonthCache.clear();
-                    await loadBookedEventsForMonth(new Date(currentCalDate));
+                    await loadBookedEventsForMonth(new Date(currentCalDate), { force: true });
+                    if (isChristmasEveBooking()) renderBooking();
                     showToast(
                         isChristmasEveBooking()
                             ? `Ese horario de Santa ya alcanzó el máximo de ${capacidadSimultanea} reserva${capacidadSimultanea === 1 ? '' : 's'}. Elige otra hora disponible.`
