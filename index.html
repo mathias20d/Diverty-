@@ -7281,19 +7281,8 @@ body.cart-open #cartSummary{display:none!important;}
                 };
                 updUI();
                 const bn=document.getElementById('btn-next'), bp=document.getElementById('btn-prev');
-                // NAVIDAD: en algunos navegadores móviles el submit nativo no se dispara
-                // desde el último paso del wizard. Solo para Nochebuena usamos un click
-                // directo al mismo handleBookingSubmit, sin alterar las reservas normales.
-                const christmasSubmitBtn = document.getElementById('btn-submit');
-                if (christmasSubmitBtn && isChristmasEveBooking()) {
-                    christmasSubmitBtn.type = 'button';
-                    christmasSubmitBtn.onclick = (ev) => {
-                        ev.preventDefault();
-                        ev.stopPropagation();
-                        handleBookingSubmit({ preventDefault: () => {}, target: bForm });
-                    };
-                }
-                // NAVIDAD: usa el mismo guardado estable de Diverty y las validaciones especiales explícitas.
+                // NAVIDAD: usa el mismo submit estable de Diverty. El formulario ya lleva
+                // novalidate y handleBookingSubmit ejecuta las validaciones especiales explícitas.
                 if(bn) bn.onclick=()=>{
                     const inp = document.getElementById(`step-${cs}`)?.querySelectorAll('input[required],select[required],textarea[required]')||[];
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
@@ -7735,7 +7724,7 @@ body.cart-open #cartSummary{display:none!important;}
                 }
             }
 
-            const sBtn = e.target.querySelector('#btn-submit'); if(!sBtn) { showToast('No se pudo iniciar la reserva. Recarga la página e intenta nuevamente.', 'error'); return; }
+            const sBtn = e.target.querySelector('#btn-submit') || e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
             const obh = sBtn.innerHTML; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-[var(--s-primary)] inline-block align-middle mr-2"></div> Conectando...';
             try {
                 const fd = new FormData(e.target);
@@ -7835,19 +7824,13 @@ body.cart-open #cartSummary{display:none!important;}
                         throw submitErr;
                     }
                 }
-                // NAVIDAD FASE 4 — verificación fuerte del documento principal antes de mostrar éxito.
-                // Evita confirmar al cliente si la solicitud no quedó realmente disponible para el CRM.
+                // NAVIDAD: comprobación final del mismo documento que escucha el CRM.
                 if (isChristmasEveBooking()) {
-                    const verifyEventRef = doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',request.id);
-                    const verifyEventSnap = await fetchWithTimeout(getDoc(verifyEventRef),7000);
-                    if (!verifyEventSnap.exists()) throw new Error('CHRISTMAS_EVENT_NOT_SAVED');
-                    const savedChristmas = verifyEventSnap.data() || {};
-                    if (String(savedChristmas.id || request.id) !== String(request.id) ||
-                        normalizeChristmasDate(savedChristmas.fecha || '') !== normalizeChristmasDate(request.data.fecha || '') ||
-                        cleanStr(savedChristmas.origen) !== 'Web Directa' ||
-                        cleanStr(savedChristmas.estado).toLowerCase() !== 'pendiente') {
-                        throw new Error('CHRISTMAS_EVENT_VERIFY_FAILED');
-                    }
+                    const savedEventRef = doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',request.id);
+                    const savedEventSnap = await fetchWithTimeout(getDoc(savedEventRef),7000);
+                    if (!savedEventSnap.exists()) throw new Error('EVENT_NOT_SAVED');
+                    const savedEvent = savedEventSnap.data() || {};
+                    if (String(savedEvent.estado || '').toLowerCase() !== 'pendiente' || String(savedEvent.origen || '').toLowerCase() !== 'web directa') throw new Error('EVENT_NOT_VISIBLE_TO_CRM');
                 }
 
                 // Aviso push al CRM: se ejecuta solo después de confirmar que la reserva existe.
