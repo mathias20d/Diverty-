@@ -7358,6 +7358,8 @@ body.cart-open #cartSummary{display:none!important;}
                     if (!christmasDate) return;
                     try {
                         await loadBookedEventsForMonth(new Date(`${christmasDate}T12:00:00`), { force: true });
+                        const configuredCapacity = await getChristmasCapacity();
+                        const capacity = Math.max(1, Number(configuredCapacity) || 1);
                         Array.from(christmasTimeSelect.options).forEach(opt => {
                             if (!opt.value) return;
                             const safeSlot = `${christmasDate}_${String(opt.value).replace(':','-')}`.replace(/[^0-9A-Za-z_-]/g,'');
@@ -7371,16 +7373,14 @@ body.cart-open #cartSummary{display:none!important;}
                             const slotCount = slot ? Math.max(Number(slot.count)||0, Array.isArray(slot.reservationIds)?slot.reservationIds.length:0) : 0;
                             const count = Math.max(slotCount, individualCount);
                             // Usa la capacidad REAL configurada en Admin (Santa 1, Santa 2, etc.).
-                            // El slot puede conservar una capacidad anterior, por eso config manda.
-                            const configuredCapacity = await getChristmasCapacity();
-                            const capacity = Math.max(1, Number(configuredCapacity) || Number(slot?.capacity) || 1);
+                            // Se obtuvo una sola vez antes del recorrido para evitar lecturas repetidas.
                             const full = count >= capacity;
                             opt.disabled = full;
                             const base = String(opt.textContent || '').split(' — ')[0];
                             opt.textContent = full ? `${base} — NO DISPONIBLE · elige otro horario` : (count > 0 ? `${base} — ${Math.max(0,capacity-count)} cupo${capacity-count===1?'':'s'}` : base);
                         });
                         if (christmasTimeSelect.value && christmasTimeIsUnavailable()) christmasTimeSelect.value = '';
-                        if (christmasTimeMessage) christmasTimeMessage.textContent = `✓ Cupos actualizados para ${await getChristmasCapacity()} Santa${(await getChristmasCapacity()) === 1 ? '' : 's'}. Los horarios completos están bloqueados.`;
+                        if (christmasTimeMessage) christmasTimeMessage.textContent = `✓ Cupos actualizados para ${capacity} Santa${capacity === 1 ? '' : 's'}. Los horarios completos están bloqueados.`;
                     } catch (_) {
                         if (christmasTimeMessage) christmasTimeMessage.textContent = 'No pudimos actualizar los cupos ahora. Se volverán a validar al confirmar.';
                     }
