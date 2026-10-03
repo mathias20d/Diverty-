@@ -471,6 +471,21 @@
                         <label class="saas-label">Máximo de eventos simultáneos</label>
                         <input type="number" id="capacidadSimultanea" min="1" max="100" step="1" value="3" class="saas-input bg-slate-900 w-full" inputmode="numeric">
                     </div>
+                    <div class="bg-gradient-to-br from-[#0B1120] to-[#17120B] p-5 rounded-2xl border border-amber-500/25 mb-5 w-full shadow-lg shadow-amber-950/10">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0 text-xl">🎅</div>
+                            <div>
+                                <h3 class="text-sm font-bold text-amber-300">Operación Navidad</h3>
+                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Capacidad exclusiva para “Entregas de Nochebuena”. Es independiente de los eventos normales.</p>
+                            </div>
+                        </div>
+                        <label class="saas-label">Cantidad de Santas disponibles</label>
+                        <input type="number" id="capacidadSanta" min="1" max="20" step="1" value="1" class="saas-input bg-slate-900 w-full text-amber-300 font-bold" inputmode="numeric">
+                        <div class="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/15 bg-amber-500/5 p-3">
+                            <i data-lucide="info" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">Ejemplo: con <strong class="text-white">1 Santa</strong> se acepta una reserva por horario. Cuando tengas <strong class="text-white">2 Santas</strong>, cambia este valor a 2 y guarda los ajustes.</p>
+                        </div>
+                    </div>
                     <button onclick="window.saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2">
                         <i data-lucide="save" class="w-5 h-5"></i> Guardar Todos los Ajustes Web
                     </button>
@@ -1441,6 +1456,8 @@
                     document.getElementById('bannerText').value = d.bannerText || ''; 
                     const capacityInput = document.getElementById('capacidadSimultanea');
                     if (capacityInput) capacityInput.value = (Number.isInteger(Number(d.capacidadSimultanea)) && Number(d.capacidadSimultanea) >= 1) ? Number(d.capacidadSimultanea) : 3;
+                    const santaCapacityInput = document.getElementById('capacidadSanta');
+                    if (santaCapacityInput) santaCapacityInput.value = (Number.isInteger(Number(d.capacidadSanta)) && Number(d.capacidadSanta) >= 1) ? Number(d.capacidadSanta) : 1;
                 }
             } catch(e) { console.error("Error al cargar Ajustes", e); } 
         }
@@ -1450,8 +1467,10 @@
                 const bannerActive = document.getElementById('bannerActive').checked;
                 const bannerText = document.getElementById('bannerText').value;
                 const capacidadSimultanea = Number(document.getElementById('capacidadSimultanea')?.value || 3);
-                if (!Number.isInteger(capacidadSimultanea) || capacidadSimultanea < 1 || capacidadSimultanea > 100) return showToast('La capacidad debe ser un número entero entre 1 y 100.', 'error');
-                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive, bannerText, capacidadSimultanea }, {merge: true});  
+                const capacidadSanta = Number(document.getElementById('capacidadSanta')?.value || 1);
+                if (!Number.isInteger(capacidadSimultanea) || capacidadSimultanea < 1 || capacidadSimultanea > 100) return showToast('La capacidad general debe ser un número entero entre 1 y 100.', 'error');
+                if (!Number.isInteger(capacidadSanta) || capacidadSanta < 1 || capacidadSanta > 20) return showToast('La cantidad de Santas debe ser un número entero entre 1 y 20.', 'error');
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive, bannerText, capacidadSimultanea, capacidadSanta }, {merge: true});  
                 showToast("Ajustes Guardados", "success"); 
             } catch(error) { showToast("Error guardando ajustes", "error"); }
         };
