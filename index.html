@@ -7407,6 +7407,10 @@ body.cart-open #cartSummary{display:none!important;}
                         christmasLocationBtn.innerHTML = '<i data-lucide="map-pin-check" class="w-5 h-5"></i> Ubicación recibida ✓';
                         if (status) status.textContent = '✓ Pin exacto guardado. Continúa para ver los horarios disponibles para tu ubicación.';
                         if (window.lucide) lucide.createIcons();
+                        // Recalcula inmediatamente los horarios con el GPS recién recibido.
+                        // Antes, el paso Horario podía mostrarse con datos calculados antes de tener ubicación.
+                        bookedEventsMonthCache.clear();
+                        refreshChristmasTimeAvailability().catch(()=>{});
                         showToast('Ubicación recibida correctamente.', 'success');
                     }, err => {
                         christmasLocationBtn.disabled = false;
@@ -7615,7 +7619,19 @@ body.cart-open #cartSummary{display:none!important;}
                     }
                     const inp = document.getElementById(`step-${cs}`)?.querySelectorAll('input[required],select[required],textarea[required]')||[];
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
-                    if(val){ cs++; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); try{ history.pushState({ ...(history.state || {}), divertyBookingWizard: true, bookingStep: cs }, '', window.location.href); }catch(_){} updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>{ const first=document.getElementById(`step-${cs}`)?.querySelector('input:not([type=hidden]),select,textarea'); if(first && window.innerWidth<=767 && !isChristmasEveBooking()){ try{ first.focus({preventScroll:true}); }catch(e){ first.focus(); } } },220); }); }
+                    if(val){
+                        cs++;
+                        if(bForm) bookingFormState=Object.fromEntries(new FormData(bForm).entries());
+                        // Al pasar de Ubicación -> Horario en Navidad, recalcula AHORA,
+                        // cuando el GPS del cliente ya existe. Este era el punto que faltaba.
+                        if (isChristmasEveBooking() && cs === 2) {
+                            bookedEventsMonthCache.clear();
+                            await refreshChristmasTimeAvailability();
+                        }
+                        try{ history.pushState({ ...(history.state || {}), divertyBookingWizard: true, bookingStep: cs }, '', window.location.href); }catch(_){}
+                        updUI();
+                        requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>{ const first=document.getElementById(`step-${cs}`)?.querySelector('input:not([type=hidden]),select,textarea'); if(first && window.innerWidth<=767 && !isChristmasEveBooking()){ try{ first.focus({preventScroll:true}); }catch(e){ first.focus(); } } },220); });
+                    }
                 };
                 if(bp) bp.onclick=async()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); if(cs===2 && isChristmasEveBooking()) await refreshChristmasTimeAvailability(); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
                 // Navidad inicia por GPS. La disponibilidad se actualiza al llegar al paso Horario,
