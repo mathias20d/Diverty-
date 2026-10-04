@@ -5784,6 +5784,8 @@ body.cart-open #cartSummary{display:none!important;}
         let bookingFormState = {}; 
         let selectedCalendarDate = null; 
         let christmasLocationState = { status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' };
+        let normalLocationState = { status:'pending', charge:null, label:'', displayName:'', lat:null, lng:null, source:'', zoneValue:'' };
+        let normalResourceCapacityCache = { at:0, value:{animadores:3,payasos:1} };
 
         const CHRISTMAS_WHATSAPP = '50766677965';
         const CHRISTMAS_REVIEW_TERMS = [
@@ -5857,6 +5859,144 @@ body.cart-open #cartSummary{display:none!important;}
             if(west||east||north) return {status:'surcharge',charge:5,label:'Cobertura con transporte adicional'};
             return {status:'review',charge:0,label:'Ubicación por confirmar',reason:'outside'};
         }
+        const NORMAL_RESTRICTED_TERMS = [
+            'barraza','chorrillo','calle 24','calle 25','san pedro','ciudad radial','villa del rey',
+            'rana de oro','san joaquin','nazareno','villa cecilia','villa lobos','monterico sector 7',
+            'monterico 7','cabuya','cabuyita','las mananitas sector 1','las mananitas sector 2','las mananitas sector 5',
+            'felipillo','garzas de pacora','las garzas','el martillo','samaria','mano de piedra','torrijos carter',
+            'santa marta','cerro batea','lago de los andes','coco solito','fatima','loma del cristo',
+            'nuevo veranillo','veranillo','santa cruz','santa rita','caminos de omar','santa librada',
+            'alcalde diaz','el trebol','nueva esperanza','jorge illueca','santa eduviges',
+            'rio abajo calle 4','rio abajo calle 6','rio abajo calle 11','rio abajo calle 17'
+        ];
+        const NORMAL_MANUAL_ZONES = [
+            {value:'ciudad-panama',label:'Ciudad de Panamá',cost:0},
+            {value:'costa-del-este',label:'Costa del Este',cost:5},
+            {value:'albrook-clayton',label:'Albrook / Clayton',cost:5},
+            {value:'panama-este',label:'Panamá Este (hasta Pacora)',cost:15},
+            {value:'panama-norte',label:'Panamá Norte (hasta Villa Grecia)',cost:15},
+            {value:'arraijan',label:'Arraiján',cost:15},
+            {value:'chorrera',label:'La Chorrera',cost:25}
+        ];
+        function evaluateNormalCoverage(lat,lng,label=''){
+            const text=normalizeChristmasPlace(label);
+            if(NORMAL_RESTRICTED_TERMS.some(term=>text.includes(term))) return {status:'blocked',charge:0,label:'Ubicación no disponible',reason:'security',zoneValue:'restringida'};
+            const named=[
+                {terms:['costa del este'],charge:5,label:'Costa del Este',zoneValue:'costa-del-este'},
+                {terms:['albrook','clayton','ciudad del saber'],charge:5,label:'Albrook / Clayton',zoneValue:'albrook-clayton'},
+                {terms:['la chorrera','chorrera'],charge:25,label:'La Chorrera',zoneValue:'chorrera'},
+                {terms:['arraijan','arraiján'],charge:15,label:'Arraiján',zoneValue:'arraijan'},
+                {terms:['pacora','tocumen','24 de diciembre','las mananitas','las mañanitas','don bosco','pedregal'],charge:15,label:'Panamá Este',zoneValue:'panama-este'},
+                {terms:['villa grecia','panama norte','panamá norte','las cumbres','villa zaita','ernesto cordoba','ernesto córdoba'],charge:15,label:'Panamá Norte',zoneValue:'panama-norte'}
+            ];
+            for(const z of named) if(z.terms.some(t=>text.includes(t))) return {status:'included',charge:z.charge,label:z.label,zoneValue:z.zoneValue};
+            const la=Number(lat),lo=Number(lng);
+            if(!Number.isFinite(la)||!Number.isFinite(lo)) return {status:'review',charge:0,label:'Ubicación por revisar',reason:'no-gps',zoneValue:''};
+            // Geocercas aproximadas como respaldo del nombre obtenido por GPS.
+            // Los nombres devueltos por el geocodificador tienen prioridad; estas líneas
+            // sirven para no depender de que el teléfono devuelva exactamente la barriada.
+            if(lo < -79.86 || lo > -79.275 || la < 8.84 || la > 9.16) return {status:'review',charge:0,label:'Fuera del área automática',reason:'outside',zoneValue:''};
+            // Oeste: Arraiján y La Chorrera. Más al oeste de La Chorrera pasa a revisión.
+            if(lo <= -79.72) return {status:'included',charge:25,label:'La Chorrera',zoneValue:'chorrera'};
+            if(lo < -79.60) return {status:'included',charge:15,label:'Arraiján',zoneValue:'arraijan'};
+            // Norte: extensión automática hasta el entorno de Villa Grecia (~9.106 N).
+            if(la > 9.115 && lo>=-79.62 && lo<=-79.49) return {status:'review',charge:0,label:'Después de Villa Grecia',reason:'outside-north',zoneValue:''};
+            if(la > 9.065 && la <= 9.115 && lo>=-79.62 && lo<=-79.49) return {status:'included',charge:15,label:'Panamá Norte',zoneValue:'panama-norte'};
+            // Este: Tocumen/24 de Diciembre/Pacora. Más allá de Pacora queda por revisar.
+            if(lo > -79.405 && lo <= -79.275) return {status:'included',charge:15,label:'Panamá Este',zoneValue:'panama-este'};
+            if(lo < -79.54 && la<9.08) return {status:'included',charge:5,label:'Albrook / Clayton',zoneValue:'albrook-clayton'};
+            return {status:'included',charge:0,label:'Ciudad de Panamá',zoneValue:'ciudad-panama'};
+        }
+        function normalTransportCost(){
+            if(isChristmasEveBooking()) return null;
+            const status=normalLocationState?.status || bookingFormState.normalCoverageStatus || '';
+            const n=Number(normalLocationState?.charge ?? bookingFormState.normalTransportCost);
+            if(status==='included' && Number.isFinite(n)) return Math.max(0,n);
+            // Fuera del rango automático la solicitud sí puede llegar al CRM, pero el
+            // transporte queda pendiente para que Diverty lo ajuste antes de aceptar.
+            if(status==='review' || status==='blocked') return 0;
+            return null;
+        }
+        async function getNormalResourceCapacity({force=false}={}){
+            if(!db) return normalResourceCapacityCache.value;
+            if(!force && Date.now()-normalResourceCapacityCache.at<60000) return normalResourceCapacityCache.value;
+            try{
+                const snap=await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
+                const cfg=snap.exists()?(snap.data()||{}):{};
+                const r=cfg.recursosDisponibles&&typeof cfg.recursosDisponibles==='object'?cfg.recursosDisponibles:{};
+                normalResourceCapacityCache={at:Date.now(),value:{animadores:Math.max(0,Number(r.animadores)||3),payasos:Math.max(0,Number(r.payasos)||1)}};
+            }catch(_){ normalResourceCapacityCache.at=Date.now(); }
+            return normalResourceCapacityCache.value;
+        }
+        function getCartResourceRequirements(){
+            const text=normalizeBookingName(app.cart.flatMap(i=>[i.name,i.description,...(Array.isArray(i.services)?i.services:[])]).join(' '));
+            const countWord=(word)=>{
+                const re=new RegExp(`(\\d+)\\s*${word}s?\\b`); const m=text.match(re);
+                if(m) return Math.max(0,Number(m[1])||0);
+                return new RegExp(`\\b${word}s?\\b`).test(text)?1:0;
+            };
+            let durationHours=0;
+            app.cart.forEach(i=>{
+                const raw=[i.description,...(Array.isArray(i.services)?i.services:[])].join(' ');
+                const m=raw.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i);
+                if(m) durationHours=Math.max(durationHours,Number(String(m[1]).replace(',','.'))||0);
+                const n=normalizeBookingName(i.name);
+                if(!durationHours && n.includes('plan recreativo')) durationHours=2;
+                if(!durationHours && n.includes('plan diverty')) durationHours=3;
+            });
+            return {animadores:countWord('animador'),payasos:countWord('payaso'),durationMinutes:Math.max(30,Math.round((durationHours||2)*60))};
+        }
+        const normalTimeMinutes=v=>{const m=String(v||'').match(/^(\d{1,2}):(\d{2})$/);return m?Number(m[1])*60+Number(m[2]):null;};
+        async function checkNormalResourceAvailability(date,time,{force=false}={}){
+            const req=getCartResourceRequirements();
+            const cap=await getNormalResourceCapacity({force});
+            if(!date||!time) return {feasible:true,needed:req,available:cap,capacity:cap,used:{animadores:0,payasos:0}};
+            let rows=[];
+            try{
+                const snap=await getDocs(query(collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web'),where('fecha','==',date)));
+                rows=snap.docs.map(d=>({...d.data(),_availabilityId:d.id})).filter(r=>!String(r._availabilityId||'').startsWith('slot_')&&r.esNavidad!==true);
+            }catch(_){}
+            const start=normalTimeMinutes(time), end=start===null?null:start+req.durationMinutes;
+            const used={animadores:0,payasos:0};
+            rows.forEach(row=>{
+                const rr=row.resourceRequirements&&typeof row.resourceRequirements==='object'?row.resourceRequirements:{};
+                const rs=normalTimeMinutes(row.hora); if(start===null||rs===null) return;
+                const rd=Math.max(30,Number(rr.durationMinutes||row.duracionMinutos)||120), re=rs+rd;
+                if(start<re && rs<end){ used.animadores+=Math.max(0,Number(rr.animadores)||0); used.payasos+=Math.max(0,Number(rr.payasos)||0); }
+            });
+            const available={animadores:Math.max(0,cap.animadores-used.animadores),payasos:Math.max(0,cap.payasos-used.payasos)};
+            return {feasible:req.animadores<=available.animadores&&req.payasos<=available.payasos,needed:req,available,capacity:cap,used};
+        }
+        function renderNormalCoverageStatus(){
+            const box=document.getElementById('normal-coverage-result'); if(!box) return;
+            const s=normalLocationState||{};
+            if(s.status==='included') box.innerHTML=`<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4"><p class="font-black text-emerald-600">✅ ${cleanStr(s.label)||'Ubicación verificada'}</p><p class="text-xs season-text-muted mt-1">Transporte: <b>$${Number(s.charge||0).toFixed(2)}</b></p></div>`;
+            else if(s.status==='blocked') box.innerHTML=`<div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4"><p class="font-black text-rose-600">Ubicación no disponible para reserva automática</p><p class="text-xs season-text-muted mt-1">Por seguridad, esta ubicación no se puede solicitar desde la web.</p></div>`;
+            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Transporte por confirmar</p><p class="text-xs season-text-muted mt-1">Puedes enviar la solicitud. Revisaremos esta ubicación en Diverty CRM y te contactaremos por WhatsApp con el transporte final antes de aceptar la reserva.</p></div>`;
+            const t=document.getElementById('booking-summary-transport'); if(t) t.textContent=s.status==='review'?'Por confirmar':`$${effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)).toFixed(2)}`;
+            const total=document.getElementById('booking-summary-total');
+            if(total){const sub=app.cart.reduce((a,i)=>a+(Number(i.price)*i.quantity),0);let dv=0;if(appliedCoupon)dv=appliedCoupon.type==='percent'?sub*(Number(appliedCoupon.discount)/100):Number(appliedCoupon.discount);dv=Math.min(sub,Math.max(0,dv));total.textContent=`$${Math.max(0,sub-dv+effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0))).toFixed(2)}`;}
+            updateCartBadgeAndTotals();
+        }
+        async function applyNormalLocation(lat,lng,{source='gps',displayName='',accuracy=null}={}){
+            const la=Number(lat),lo=Number(lng); if(!Number.isFinite(la)||!Number.isFinite(lo)) return false;
+            const rev=displayName?null:await reverseChristmasLocation(la,lo);
+            const resolved=String(displayName||rev?.display_name||'Ubicación GPS');
+            const coverage=evaluateNormalCoverage(la,lo,resolved);
+            normalLocationState={...coverage,displayName:resolved,lat:la,lng:lo,source,accuracy:Number.isFinite(Number(accuracy))?Number(accuracy):null};
+            bookingFormState.normalLat=la;bookingFormState.normalLng=lo;bookingFormState.normalTransportCost=coverage.charge;
+            bookingFormState.normalCoverageStatus=coverage.status;bookingFormState.normalCoverageLabel=coverage.label;bookingFormState.normalLocationName=resolved;bookingFormState.normalLocationSource=source;
+            app.location=coverage.zoneValue||app.location;
+            renderNormalCoverageStatus();
+            return coverage.status==='included';
+        }
+        function applyNormalManualZone(value){
+            const z=NORMAL_MANUAL_ZONES.find(x=>x.value===value); if(!z) return;
+            normalLocationState={status:'included',charge:z.cost,label:z.label,displayName:'',lat:null,lng:null,source:'manual-zone',zoneValue:z.value};
+            bookingFormState.normalTransportCost=z.cost;bookingFormState.normalCoverageStatus='included';bookingFormState.normalCoverageLabel=z.label;bookingFormState.normalLocationSource='manual-zone';
+            app.location=z.value;renderNormalCoverageStatus();
+        }
+
         function christmasTransportCost(){
             if(!isChristmasEveBooking()) return null;
             const n=Number(christmasLocationState?.charge ?? bookingFormState.christmasTransportCost ?? 0);
@@ -5865,7 +6005,9 @@ body.cart-open #cartSummary{display:none!important;}
         function effectiveTransportCost(count){
             if(!(Number(count)>0)) return 0;
             const xmas=christmasTransportCost();
-            return xmas===null ? calculateTransportCost(app.location) : xmas;
+            if(xmas!==null) return xmas;
+            const normal=normalTransportCost();
+            return normal===null ? calculateTransportCost(app.location) : normal;
         }
         function christmasWhatsappUrl(message='Quiero confirmar la ubicación para la entrega de Santa.'){
             return `https://wa.me/${CHRISTMAS_WHATSAPP}?text=${encodeURIComponent(message)}`;
@@ -7562,10 +7704,37 @@ body.cart-open #cartSummary{display:none!important;}
                     <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Referencia del lugar *</label>
                     <textarea name="christmasReference" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej: PH Costa View, torre 2, entrada por la garita principal"></textarea>
                 </div>` : `
-                <div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Dirección o Link de Waze/Maps *</label><textarea name="address" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej: Pega tu link de Waze aquí..."></textarea></div>`;
+                <input type="hidden" name="location" value="${cleanStr(bookingFormState.normalCoverageLabel||'')}">
+                <input type="hidden" name="address" value="${cleanStr(bookingFormState.address||'')}">
+                <div class="form-group">
+                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-2 block">📍 Ubicación del evento *</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <button type="button" data-normal-location-mode="gps" class="rounded-2xl border border-[var(--s-primary)] bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)] px-4 py-3 text-left font-black season-text-title"><span class="block text-sm">Usar ubicación actual</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Calculamos la zona y transporte</span></button>
+                        <button type="button" data-normal-location-mode="manual" class="rounded-2xl border border-[var(--s-glass-border)] bg-black/5 px-4 py-3 text-left font-black season-text-title"><span class="block text-sm">Escribir dirección</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Elige la zona y su precio</span></button>
+                    </div>
+                </div>
+                <div id="normal-gps-panel" class="form-group rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
+                    <button type="button" id="normal-use-location" class="w-full season-btn font-extrabold py-3.5 px-5 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2"><i data-lucide="locate-fixed" class="w-5 h-5"></i> Encontrar mi ubicación</button>
+                    <div id="normal-location-loader" class="hidden mt-3 rounded-2xl border border-violet-400/25 bg-violet-400/10 p-4 text-center overflow-hidden relative">
+                        <div class="text-3xl animate-bounce mb-2">🚐🎈</div>
+                        <div class="h-2 rounded-full bg-black/10 overflow-hidden"><div class="h-full bg-gradient-to-r from-pink-500 via-violet-500 to-cyan-400 animate-pulse" style="width:70%"></div></div>
+                        <p id="normal-location-loader-text" class="text-xs font-black season-text-title mt-3">Buscando tu ubicación…</p>
+                        <p class="text-[10px] season-text-muted mt-1">Estamos preparando la mejor ruta para tu evento ✨</p>
+                    </div>
+                    <p id="normal-location-status" class="text-xs season-text-muted mt-2">Activa la ubicación del teléfono para calcular el transporte automáticamente.</p>
+                </div>
+                <div id="normal-manual-panel" class="form-group hidden rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
+                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Dirección del evento *</label>
+                    <textarea id="normal-manual-address" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="3" placeholder="Ej. PH, barriada, calle, casa o enlace de Maps/Waze"></textarea>
+                    <label class="form-label font-bold season-text-muted text-xs uppercase mt-3 mb-1.5 block">Zona de transporte *</label>
+                    <select id="normal-manual-zone" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="">Selecciona la zona</option>${NORMAL_MANUAL_ZONES.map(z=>`<option value="${z.value}" style="color:black">${z.label} · $${z.cost.toFixed(2)}</option>`).join('')}</select>
+                    <p class="text-[10px] season-text-muted mt-2">Al recibir la solicitud verificaremos que la dirección corresponda con la zona seleccionada.</p>
+                </div>
+                <div id="normal-coverage-result"></div>
+                <div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">PH / barriada / referencia *</label><textarea name="normalReference" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej. PH Sunrise, torre B, casa 18, frente al parque"></textarea></div>`;
 
 
-            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : ``}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${isChristmasEveBooking()?'':`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Ubicación *</label><select name="location" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm">${lo}</select></div>`}${bookingLocationFields}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Confirmar Reserva</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : `<div id="normal-resource-message" class="mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted">Selecciona fecha y hora para comprobar el personal disponible.</div>`}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${bookingLocationFields}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Enviar solicitud</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
             
             if(app.cart.length>0){
                 // NAVIDAD RUTAS FASE 1 — GPS primero.
@@ -7628,6 +7797,78 @@ body.cart-open #cartSummary{display:none!important;}
                     // La reserva normal conserva su comportamiento histórico.
                     if (!isChristmasEveBooking()) renderBooking();
                 };
+                const normalGpsPanel=document.getElementById('normal-gps-panel');
+                const normalManualPanel=document.getElementById('normal-manual-panel');
+                const normalLocationBtn=document.getElementById('normal-use-location');
+                const normalLoader=document.getElementById('normal-location-loader');
+                const normalLoaderText=document.getElementById('normal-location-loader-text');
+                const normalStatus=document.getElementById('normal-location-status');
+                const normalManualZone=document.getElementById('normal-manual-zone');
+                const normalManualAddress=document.getElementById('normal-manual-address');
+                const setNormalLocationMode=mode=>{
+                    if(isChristmasEveBooking()) return;
+                    const manual=mode==='manual';
+                    normalGpsPanel?.classList.toggle('hidden',manual);
+                    normalManualPanel?.classList.toggle('hidden',!manual);
+                    document.querySelectorAll('[data-normal-location-mode]').forEach(btn=>{
+                        const active=btn.dataset.normalLocationMode===mode;
+                        btn.classList.toggle('border-[var(--s-primary)]',active);
+                        btn.classList.toggle('bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)]',active);
+                        btn.classList.toggle('border-[var(--s-glass-border)]',!active);
+                        btn.classList.toggle('bg-black/5',!active);
+                    });
+                };
+                document.querySelectorAll('[data-normal-location-mode]').forEach(btn=>btn.onclick=()=>setNormalLocationMode(btn.dataset.normalLocationMode||'gps'));
+                if(normalManualZone&&!isChristmasEveBooking()) normalManualZone.onchange=e=>{applyNormalManualZone(e.target.value); if(bForm?.elements?.location)bForm.elements.location.value=normalLocationState.label||'';};
+                if(normalManualAddress&&!isChristmasEveBooking()) normalManualAddress.oninput=e=>{bookingFormState.address=e.target.value;if(bForm?.elements?.address)bForm.elements.address.value=e.target.value;};
+                if(normalLocationBtn&&!isChristmasEveBooking()) normalLocationBtn.onclick=()=>{
+                    if(!navigator.geolocation) return showToast('Este dispositivo no permite obtener la ubicación automáticamente.','error');
+                    normalLocationBtn.disabled=true; normalLoader?.classList.remove('hidden');
+                    if(normalLoaderText) normalLoaderText.textContent='Buscando tu ubicación…';
+                    if(normalStatus) normalStatus.textContent='Estamos buscando el punto más preciso posible.';
+                    let best=null,watchId=null,finished=false,phaseTimer=null;
+                    const finish=async(ok=true)=>{
+                        if(finished)return;finished=true;if(watchId!==null)navigator.geolocation.clearWatch(watchId);clearInterval(phaseTimer);
+                        normalLoader?.classList.add('hidden');normalLocationBtn.disabled=false;
+                        if(!ok||!best){if(normalStatus)normalStatus.textContent='No pudimos obtener una ubicación precisa. Puedes escribir la dirección manualmente.';return;}
+                        const lat=Number(best.coords.latitude),lng=Number(best.coords.longitude),accuracy=Math.round(Number(best.coords.accuracy)||0);
+                        if(normalStatus)normalStatus.textContent=`✅ Ubicación encontrada${accuracy?` · precisión aproximada ±${accuracy} m`:''}. Verificando zona…`;
+                        normalLocationBtn.innerHTML='<i data-lucide="map-pin-check" class="w-5 h-5"></i> Ubicación encontrada ✓'; if(window.lucide)lucide.createIcons();
+                        await applyNormalLocation(lat,lng,{source:'gps',accuracy});
+                        const addr=bForm?.elements?.address;if(addr)addr.value=`https://www.google.com/maps?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
+                        bookingFormState.address=addr?.value||bookingFormState.address||'';
+                        if(bForm?.elements?.location)bForm.elements.location.value=normalLocationState.label||'';
+                        if(normalStatus)normalStatus.textContent=`✅ Ubicación encontrada${accuracy?` · precisión aproximada ±${accuracy} m`:''}.`;
+                        showToast(normalLocationState.status==='included'?'Ubicación encontrada y transporte calculado.':'Esta ubicación necesita revisión.','success');
+                    };
+                    const phases=['Buscando tu ubicación…','🗺️ Verificando la zona…','🚐 Calculando transporte…','✨ Casi listo…'];let idx=0;
+                    phaseTimer=setInterval(()=>{idx=Math.min(idx+1,phases.length-1);if(normalLoaderText)normalLoaderText.textContent=phases[idx];},1500);
+                    watchId=navigator.geolocation.watchPosition(pos=>{
+                        if(!best||Number(pos.coords.accuracy||99999)<Number(best.coords.accuracy||99999))best=pos;
+                        const acc=Math.round(Number(pos.coords.accuracy)||0); if(acc>0&&acc<=25)finish(true);
+                    },err=>{finish(false);showToast(err?.code===1?'Debes permitir el acceso a tu ubicación o usar dirección manual.':'No pudimos obtener tu ubicación. Usa la dirección manual.','error');},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
+                    setTimeout(()=>finish(!!best),9000);
+                };
+                if(!isChristmasEveBooking()) renderNormalCoverageStatus();
+
+                const normalResourceMessage=document.getElementById('normal-resource-message');
+                const refreshNormalResources=async()=>{
+                    if(isChristmasEveBooking()||!bForm)return true;
+                    const date=String(bForm.elements?.date?.value||'');const time=String(bForm.elements?.time?.value||'');
+                    if(!date||!time){if(normalResourceMessage)normalResourceMessage.textContent='Selecciona fecha y hora para comprobar el personal disponible.';return true;}
+                    if(normalResourceMessage){normalResourceMessage.textContent='Comprobando animadores y payasos disponibles…';normalResourceMessage.className='mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted';}
+                    const status=await checkNormalResourceAvailability(date,time);
+                    bookingFormState.resourceStatus=status;
+                    if(normalResourceMessage){
+                        const parts=[];if(status.needed.animadores)parts.push(`${status.needed.animadores} animador${status.needed.animadores===1?'':'es'}`);if(status.needed.payasos)parts.push(`${status.needed.payasos} payaso${status.needed.payasos===1?'':'s'}`);
+                        if(!parts.length){normalResourceMessage.textContent='✓ Este servicio no tiene un recurso de personal específico configurado.';}
+                        else if(status.feasible){normalResourceMessage.textContent=`✓ Personal disponible · requiere ${parts.join(' y ')}. Libres: ${status.available.animadores} animadores, ${status.available.payasos} payasos.`;normalResourceMessage.className='mt-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-600';}
+                        else{normalResourceMessage.textContent=`⚠️ No hay suficiente personal para esta hora. Disponibles: ${status.available.animadores} animadores y ${status.available.payasos} payasos. Elige otro horario.`;normalResourceMessage.className='mt-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[11px] font-bold text-rose-600';}
+                    }
+                    return status.feasible;
+                };
+                if(!isChristmasEveBooking()&&bForm?.elements?.time)bForm.elements.time.addEventListener('change',refreshNormalResources);
+                if(!isChristmasEveBooking()&&bForm?.elements?.date)bForm.elements.date.addEventListener('change',refreshNormalResources);
                 const dateSel = bForm ? bForm.elements['date'] : null;
                 if (dateSel && isChristmasEveBooking()) dateSel.onchange = async e => {
                     // Rendimiento: cambiar la fecha NO reconstruye toda la página.
@@ -7914,6 +8155,13 @@ body.cart-open #cartSummary{display:none!important;}
                             if (christmasTimeSelect) christmasTimeSelect.value = '';
                             showToast('Ese horario no está disponible. Intenta con otro horario.', 'error');
                             if (christmasTimeMessage) christmasTimeMessage.textContent = '⚠️ Ese horario ya no está disponible. Selecciona otro para continuar.';
+                            return;
+                        }
+                    }
+                    if (cs === 2 && !isChristmasEveBooking()) {
+                        const resourceOk = await refreshNormalResources();
+                        if (!resourceOk) {
+                            showToast('No hay suficiente personal disponible para ese horario. Elige otra hora.', 'error');
                             return;
                         }
                     }
@@ -8392,6 +8640,63 @@ body.cart-open #cartSummary{display:none!important;}
                 }
             }
 
+            // RESERVAS NORMALES — la solicitud solo puede salir cuando ubicación,
+            // referencia y personal han sido validados. El precio final todavía puede
+            // ser corregido por Diverty CRM antes de aceptar la reserva.
+            if (!isChristmasEveBooking()) {
+                const normalFormData = new FormData(e.target);
+                const requiredNormalFields = [
+                    ['name', 'Escribe tu nombre para continuar.'],
+                    ['email', 'Escribe tu correo para continuar.'],
+                    ['phone', 'Escribe tu teléfono para continuar.'],
+                    ['date', 'Selecciona la fecha del evento.'],
+                    ['time', 'Selecciona la hora del evento.'],
+                    ['eventType', 'Selecciona el tipo de evento.']
+                ];
+                for (const [field, message] of requiredNormalFields) {
+                    if (!cleanStr(normalFormData.get(field))) return showToast(message, 'error');
+                }
+                const normalEmail = cleanStr(normalFormData.get('email'));
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalEmail)) {
+                    return showToast('Escribe un correo válido para continuar.', 'error');
+                }
+                const normalReference = cleanStr(normalFormData.get('normalReference'));
+                if (!normalReference) return showToast('Escribe el PH, barriada o una referencia del lugar.', 'error');
+
+                const locationStatus = normalLocationState?.status || bookingFormState.normalCoverageStatus || 'pending';
+                const locationSource = normalLocationState?.source || bookingFormState.normalLocationSource || '';
+                const manualAddress = cleanStr(normalFormData.get('address'));
+                if (locationStatus === 'blocked') {
+                    renderNormalCoverageStatus();
+                    return showToast('Esta ubicación no está disponible para solicitudes desde la web.', 'error');
+                }
+                if (!['included','review'].includes(locationStatus)) {
+                    return showToast('Primero indica la ubicación del evento para calcular el transporte.', 'error');
+                }
+                if (locationStatus === 'review') renderNormalCoverageStatus();
+                if (locationSource === 'manual-zone' && !manualAddress) {
+                    return showToast('Escribe la dirección, PH o barriada donde será el evento.', 'error');
+                }
+                if (!cleanStr(normalFormData.get('location'))) {
+                    return showToast('Selecciona o verifica la zona del evento.', 'error');
+                }
+
+                const resourceCheck = await checkNormalResourceAvailability(
+                    cleanStr(normalFormData.get('date')),
+                    cleanStr(normalFormData.get('time')),
+                    { force:true }
+                );
+                bookingFormState.resourceStatus = resourceCheck;
+                if (!resourceCheck.feasible) {
+                    const msg = document.getElementById('normal-resource-message');
+                    if (msg) {
+                        msg.textContent = `⚠️ El personal para esta hora ya no está disponible. Libres: ${resourceCheck.available.animadores} animadores y ${resourceCheck.available.payasos} payasos.`;
+                        msg.className = 'mt-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[11px] font-bold text-rose-600';
+                    }
+                    return showToast('Ese horario ya no tiene suficiente personal disponible. Elige otra hora.', 'error');
+                }
+            }
+
             const sBtn = e.target.querySelector('#btn-submit') || e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
             const obh = sBtn.innerHTML; submitForm.dataset.sending = '1'; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-[var(--s-primary)] inline-block align-middle mr-2"></div> Enviando reserva...';
             try {
@@ -8433,12 +8738,32 @@ body.cart-open #cartSummary{display:none!important;}
                     christmasSmartSanta = smartRoute.bestSanta;
                 }
                 const dataToSave = {
-                    id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: isChristmasEveBooking() ? normalizeChristmasDateForSubmit(fd.get('date')||'') : (fd.get('date')||''), hora: fd.get('time')||'', ubicacion: isChristmasEveBooking() ? (bookingFormState.christmasLocationName || bookingFormState.christmasCoverageLabel || 'Ubicación GPS') : (lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro'), direccion: fd.get('address')||'', referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : '', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa',
+                    id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: isChristmasEveBooking() ? normalizeChristmasDateForSubmit(fd.get('date')||'') : (fd.get('date')||''), hora: fd.get('time')||'', ubicacion: isChristmasEveBooking()
+                        ? (bookingFormState.christmasLocationName || bookingFormState.christmasCoverageLabel || 'Ubicación GPS')
+                        : (normalLocationState.label || bookingFormState.normalCoverageLabel || 'Ubicación por revisar'),
+                    direccion: fd.get('address')||'',
+                    referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : (fd.get('normalReference')||''),
+                    ubicacionFuente: isChristmasEveBooking()
+                        ? (bookingFormState.christmasLocationSource || christmasLocationState.source || 'gps')
+                        : (bookingFormState.normalLocationSource || normalLocationState.source || 'manual-zone'),
+                    ubicacionDetectada: isChristmasEveBooking()
+                        ? (bookingFormState.christmasLocationName || christmasLocationState.displayName || '')
+                        : (bookingFormState.normalLocationName || normalLocationState.displayName || ''),
+                    comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa',
                     esNavidad: isChristmasEveBooking(),
                     recursoNavidad: isChristmasEveBooking() ? 'Santa' : '',
-                    ...(isChristmasEveBooking() && (() => {
-                        let lat = Number(bookingFormState.christmasLat);
-                        let lng = Number(bookingFormState.christmasLng);
+                    tipoReserva: isChristmasEveBooking() ? 'navidad' : 'normal',
+                    transporteOriginalWeb: tc.toString(),
+                    requiereRevisionUbicacion: isChristmasEveBooking()
+                        ? (christmasLocationState.status === 'review')
+                        : (normalLocationState.status !== 'included'),
+                    ...(!isChristmasEveBooking() ? (() => {
+                        const req = getCartResourceRequirements();
+                        return { resourceRequirements:req, duracionMinutos:req.durationMinutes };
+                    })() : {}),
+                    ...(() => {
+                        let lat = Number(isChristmasEveBooking() ? bookingFormState.christmasLat : bookingFormState.normalLat);
+                        let lng = Number(isChristmasEveBooking() ? bookingFormState.christmasLng : bookingFormState.normalLng);
                         if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
                             const g=String(fd.get('address')||'').match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
                             if (g) { lat=Number(g[1]); lng=Number(g[2]); }
@@ -8446,7 +8771,7 @@ body.cart-open #cartSummary{display:none!important;}
                         return Number.isFinite(lat) && Number.isFinite(lng) &&
                             Math.abs(lat)<=90 && Math.abs(lng)<=180 && !(lat===0 && lng===0)
                             ? { lat, lng } : {};
-                    })())
+                    })()
                 };
                 
                 // FASE 1: capacidad simultánea configurable desde Administrador > Ajustes.
@@ -8493,6 +8818,7 @@ body.cart-open #cartSummary{display:none!important;}
                             const sameTimeDocs = sameDateSnap.docs.filter(d => {
                                 if (d.id.startsWith('slot_') || d.id === request.id) return false;
                                 const row = d.data() || {};
+                                if (row.esNavidad === true || String(row.recursoNavidad || '').toLowerCase() === 'santa') return false;
                                 return String(row.hora || '') === String(request.data.hora || '');
                             });
                             existingReservationIds = sameTimeDocs.map(d => String(d.id));
@@ -8552,7 +8878,12 @@ body.cart-open #cartSummary{display:none!important;}
                                 hora:request.data.hora,
                                 esNavidad:request.data.esNavidad === true,
                                 recursoNavidad:request.data.recursoNavidad || '',
-                                ...(request.data.esNavidad === true && Number.isFinite(Number(request.data.lat)) && Number.isFinite(Number(request.data.lng)) ? { lat:Number(request.data.lat), lng:Number(request.data.lng) } : {})
+                                tipoReserva:request.data.tipoReserva || (request.data.esNavidad === true ? 'navidad' : 'normal'),
+                                ...(request.data.esNavidad !== true && request.data.resourceRequirements ? {
+                                    resourceRequirements:request.data.resourceRequirements,
+                                    duracionMinutos:Number(request.data.duracionMinutos || request.data.resourceRequirements?.durationMinutes || 120)
+                                } : {}),
+                                ...(Number.isFinite(Number(request.data.lat)) && Number.isFinite(Number(request.data.lng)) ? { lat:Number(request.data.lat), lng:Number(request.data.lng) } : {})
                             });
                             tx.set(customerRef,Object.fromEntries(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'].map(key=>[key,String(request.data[key]??'')])));
                         });
@@ -8593,7 +8924,7 @@ body.cart-open #cartSummary{display:none!important;}
                 try { localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: fd.get('name') || '', email: fd.get('email') || '', telefono: fd.get('phone') || '' })); } catch (_) {}
 
                 showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
-                app.cart=[]; appliedCoupon=null; bookingFormState={}; christmasLocationState={ status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' }; app.wizardStep=1; updateCartUI(); renderBooking();
+                app.cart=[]; appliedCoupon=null; bookingFormState={}; christmasLocationState={ status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' }; normalLocationState={ status:'pending', charge:null, label:'', displayName:'', lat:null, lng:null, source:'', zoneValue:'' }; app.wizardStep=1; updateCartUI(); renderBooking();
             } catch(err){
                 console.error(err);
                 if (err?.message === 'SLOT_FULL') {
