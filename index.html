@@ -7207,6 +7207,14 @@ body.cart-open #cartSummary{display:none!important;}
             return !['cancelado', 'rechazada', 'cot'].some(s => estado.includes(s));
         };
 
+        // Navidad comparte `disponibilidad_web` con las reservas normales. Para cupos
+        // y rutas de Santa solo cuentan documentos marcados como entrega navideña.
+        const isChristmasAvailabilityRow = (ev) => {
+            if (!ev) return false;
+            if (ev.esNavidad === true) return true;
+            return cleanStr(ev.recursoNavidad).toLowerCase() === 'santa';
+        };
+
         let availabilityStatusCache = { at: 0, ready: false };
         async function loadBookedEventsForMonth(date, { force = false } = {}) {
             if (!db) return [];
@@ -7267,7 +7275,7 @@ body.cart-open #cartSummary{display:none!important;}
                 .filter(ev => {
                     const id = String(ev._availabilityId || ev.id || '');
                     const fecha = String(ev.fecha || '').trim();
-                    return !!id && !id.startsWith('slot_') && fecha >= start && fecha <= end;
+                    return !!id && !id.startsWith('slot_') && isChristmasAvailabilityRow(ev) && fecha >= start && fecha <= end;
                 })
                 .map(ev => {
                     const lat=Number(ev.lat), lng=Number(ev.lng);
@@ -7456,7 +7464,7 @@ body.cart-open #cartSummary{display:none!important;}
                         // existen allí pero fueron creadas antes de reservationIds en slot_santa_*.
                         const individualCount = bookedEvents.filter(ev => {
                             const id = String(ev._availabilityId || '');
-                            if (!id || id.startsWith('slot_')) return false;
+                            if (!id || id.startsWith('slot_') || !isChristmasAvailabilityRow(ev)) return false;
                             return String(ev.fecha || '') === christmasDate && String(ev.hora || '') === value;
                         }).length;
                         // Para mostrar disponibilidad confiamos solo en reservas individuales reales.
@@ -7801,7 +7809,7 @@ body.cart-open #cartSummary{display:none!important;}
                             const slot = bookedEvents.find(ev => ev._availabilityId === slotId);
                             const individualCount = bookedEvents.filter(ev => {
                                 const id = String(ev._availabilityId || '');
-                                if (!id || id.startsWith('slot_')) return false;
+                                if (!id || id.startsWith('slot_') || !isChristmasAvailabilityRow(ev)) return false;
                                 return String(ev.fecha || '') === christmasDate && String(ev.hora || '') === String(opt.value);
                             }).length;
                             // La disponibilidad visible se calcula con reservas reales, no con el
@@ -8472,7 +8480,7 @@ body.cart-open #cartSummary{display:none!important;}
                             // Sin consulta adicional: reutiliza la disponibilidad mensual ya cargada.
                             existingReservationIds = bookedEvents.filter(ev => {
                                 const id = String(ev._availabilityId || ev.id || '');
-                                if (!id || id.startsWith('slot_') || id === request.id) return false;
+                                if (!id || id.startsWith('slot_') || id === request.id || !isChristmasAvailabilityRow(ev)) return false;
                                 return String(ev.fecha || '') === String(request.data.fecha || '') &&
                                        String(ev.hora || '') === String(request.data.hora || '');
                             }).map(ev => String(ev._availabilityId || ev.id || '')).filter(Boolean);
