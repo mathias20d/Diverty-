@@ -5881,6 +5881,27 @@ body.cart-open #cartSummary{display:none!important;}
             {value:'chorrera',label:'La Chorrera · fuera de 3 km de Costa Verde',cost:25},
             {value:'por-confirmar',label:'Otra ubicación / fuera de cobertura',cost:null,review:true}
         ];
+        // Si el administrador web tiene una tarifa guardada para una zona canónica,
+        // esa tarifa tiene prioridad. Los valores de arriba quedan como respaldo seguro.
+        // Esto evita que Administrador, Web y CRM muestren precios distintos.
+        const NORMAL_ZONE_ALIASES = {
+            'ciudad-panama':['ciudad de panama','panama centro'],
+            'punta-pacifica':['punta pacifica'],
+            'costa-del-este':['costa del este'],
+            'albrook-clayton':['albrook / clayton','albrook','clayton','ciudad del saber'],
+            'panama-este':['panama este'],
+            'panama-norte':['panama norte'],
+            'arraijan':['arraijan / panama pacifico','arraijan','panama pacifico'],
+            'costa-verde-3km':['costa verde / hasta 3 km','costa verde'],
+            'chorrera':['la chorrera','chorrera']
+        };
+        function normalConfiguredCost(zoneValue,fallback=0){
+            // Las tarifas operativas de reservas normales se administran desde Diverty CRM
+            // y este archivo contiene el respaldo vigente. `transporte_web` pertenece al
+            // administrador visual histórico y ya no puede sobrescribir silenciosamente
+            // los precios GPS, evitando diferencias entre Web y CRM.
+            return Math.max(0, Number(fallback) || 0);
+        }
         // Puntos operativos usados por el cálculo GPS de reservas normales.
         // Los precios siguen las reglas comerciales definidas por Diverty; estas
         // coordenadas solo sirven para ubicar los cortes geográficos con mayor precisión.
@@ -5899,20 +5920,20 @@ body.cart-open #cartSummary{display:none!important;}
             const hasGps=Number.isFinite(la)&&Number.isFinite(lo);
 
             // Recargos específicos dentro de Ciudad de Panamá.
-            if(text.includes('punta pacifica')) return {status:'included',charge:5,label:'Punta Pacífica',zoneValue:'punta-pacifica'};
-            if(text.includes('costa del este')) return {status:'included',charge:5,label:'Costa del Este',zoneValue:'costa-del-este'};
-            if(['albrook','clayton','ciudad del saber'].some(t=>text.includes(t))) return {status:'included',charge:5,label:'Albrook / Clayton',zoneValue:'albrook-clayton'};
+            if(text.includes('punta pacifica')) return {status:'included',charge:normalConfiguredCost('punta-pacifica',5),label:'Punta Pacífica',zoneValue:'punta-pacifica'};
+            if(text.includes('costa del este')) return {status:'included',charge:normalConfiguredCost('costa-del-este',5),label:'Costa del Este',zoneValue:'costa-del-este'};
+            if(['albrook','clayton','ciudad del saber'].some(t=>text.includes(t))) return {status:'included',charge:normalConfiguredCost('albrook-clayton',5),label:'Albrook / Clayton',zoneValue:'albrook-clayton'};
 
             // Panamá Oeste: Panamá Pacífico y Arraiján siempre usan la tarifa de $15.
-            if(['panama pacifico','arraijan'].some(t=>text.includes(t))) return {status:'included',charge:15,label:'Arraiján / Panamá Pacífico',zoneValue:'arraijan'};
+            if(['panama pacifico','arraijan'].some(t=>text.includes(t))) return {status:'included',charge:normalConfiguredCost('arraijan',15),label:'Arraiján / Panamá Pacífico',zoneValue:'arraijan'};
 
             // La Chorrera se calcula desde Costa Verde: hasta 3 km = $20;
             // más de 3 km, mientras siga dentro del área de La Chorrera = $25.
             const namedChorrera=['costa verde','la chorrera','distrito de la chorrera','barrio colon','el coco','puerto caimito'].some(t=>text.includes(t));
             if(hasGps && namedChorrera){
                 const km=normalDistanceKm(la,lo,NORMAL_COSTA_VERDE);
-                if(Number.isFinite(km) && km<=3) return {status:'included',charge:20,label:'Costa Verde · hasta 3 km',zoneValue:'costa-verde-3km',distanceKm:km};
-                return {status:'included',charge:25,label:'La Chorrera',zoneValue:'chorrera',distanceKm:km};
+                if(Number.isFinite(km) && km<=3) return {status:'included',charge:normalConfiguredCost('costa-verde-3km',20),label:'Costa Verde · hasta 3 km',zoneValue:'costa-verde-3km',distanceKm:km};
+                return {status:'included',charge:normalConfiguredCost('chorrera',25),label:'La Chorrera',zoneValue:'chorrera',distanceKm:km};
             }
 
             if(hasGps){
@@ -5925,28 +5946,28 @@ body.cart-open #cartSummary{display:none!important;}
                 // el nombre del distrito. Primero se calcula la distancia real a Costa Verde.
                 if(lo <= -79.70 && lo >= NORMAL_CHORRERA_WEST_LIMIT_LNG && la>=8.84 && la<=8.99){
                     const km=normalDistanceKm(la,lo,NORMAL_COSTA_VERDE);
-                    if(Number.isFinite(km) && km<=3) return {status:'included',charge:20,label:'Costa Verde · hasta 3 km',zoneValue:'costa-verde-3km',distanceKm:km};
-                    return {status:'included',charge:25,label:'La Chorrera',zoneValue:'chorrera',distanceKm:km};
+                    if(Number.isFinite(km) && km<=3) return {status:'included',charge:normalConfiguredCost('costa-verde-3km',20),label:'Costa Verde · hasta 3 km',zoneValue:'costa-verde-3km',distanceKm:km};
+                    return {status:'included',charge:normalConfiguredCost('chorrera',25),label:'La Chorrera',zoneValue:'chorrera',distanceKm:km};
                 }
 
                 // Arraiján: incluye Panamá Pacífico y el corredor previo a La Chorrera.
-                if(lo < -79.585 && lo > -79.70 && la>=8.87 && la<=9.02) return {status:'included',charge:15,label:'Arraiján / Panamá Pacífico',zoneValue:'arraijan'};
+                if(lo < -79.585 && lo > -79.70 && la>=8.87 && la<=9.02) return {status:'included',charge:normalConfiguredCost('arraijan',15),label:'Arraiján / Panamá Pacífico',zoneValue:'arraijan'};
 
                 // Panamá Norte: $15 hasta Villa Grecia. Más al norte queda por confirmar.
                 const northCorridor=lo>=-79.62 && lo<=-79.49;
-                if(northCorridor && la > 9.115) return {status:'review',charge:0,label:'Después de Villa Grecia',reason:'outside-north',zoneValue:''};
-                if(northCorridor && la > 9.065 && la <= 9.115) return {status:'included',charge:15,label:'Panamá Norte · hasta Villa Grecia',zoneValue:'panama-norte'};
+                if(northCorridor && la > NORMAL_VILLA_GRECIA.lat + 0.0085) return {status:'review',charge:0,label:'Después de Villa Grecia',reason:'outside-north',zoneValue:''};
+                if(northCorridor && la > 9.065 && la <= NORMAL_VILLA_GRECIA.lat + 0.0085) return {status:'included',charge:normalConfiguredCost('panama-norte',15),label:'Panamá Norte · hasta Villa Grecia',zoneValue:'panama-norte'};
 
                 // Panamá Este: Ciudad de Panamá es gratis hasta Megamall. El recargo de
                 // $15 empieza al pasar Megamall y termina en Pacora; después se revisa.
                 if(lo > NORMAL_MEGAMALL.lng && lo <= NORMAL_PACORA_EAST_LIMIT_LNG && la>=8.95 && la<=9.145){
-                    return {status:'included',charge:15,label:'Panamá Este · después de Megamall hasta Pacora',zoneValue:'panama-este'};
+                    return {status:'included',charge:normalConfiguredCost('panama-este',15),label:'Panamá Este · después de Megamall hasta Pacora',zoneValue:'panama-este'};
                 }
 
                 // Las Acacias, Don Bosco, Juan Díaz, El Crisol, Concepción, Panamá Viejo,
                 // Bella Vista, avenidas Perú/Brasil y demás sectores urbanos no tarifados
                 // específicamente permanecen con transporte incluido ($0).
-                return {status:'included',charge:0,label:'Ciudad de Panamá',zoneValue:'ciudad-panama'};
+                return {status:'included',charge:normalConfiguredCost('ciudad-panama',0),label:'Ciudad de Panamá',zoneValue:'ciudad-panama'};
             }
 
             // Sin GPS se intenta orientar por el texto; si no es inequívoco, se manda a revisión.
@@ -5961,7 +5982,7 @@ body.cart-open #cartSummary{display:none!important;}
                 {terms:['la chorrera','chorrera'],charge:25,label:'La Chorrera',zoneValue:'chorrera'},
                 {terms:['las acacias','don bosco','juan diaz','el crisol','concepcion','panama viejo','bella vista','avenida peru','avenida brasil','via brasil','tocumen'],charge:0,label:'Ciudad de Panamá',zoneValue:'ciudad-panama'}
             ];
-            for(const z of named) if(z.terms.some(t=>text.includes(t))) return {status:'included',charge:z.charge,label:z.label,zoneValue:z.zoneValue};
+            for(const z of named) if(z.terms.some(t=>text.includes(t))) return {status:'included',charge:normalConfiguredCost(z.zoneValue,z.charge),label:z.label,zoneValue:z.zoneValue};
             return {status:'review',charge:0,label:'Ubicación por revisar',reason:'no-gps',zoneValue:''};
         }
         function normalTransportCost(){
@@ -6050,7 +6071,7 @@ body.cart-open #cartSummary{display:none!important;}
         function applyNormalManualZone(value){
             const z=NORMAL_MANUAL_ZONES.find(x=>x.value===value); if(!z) return;
             const status=z.review?'review':'included';
-            const charge=z.review?0:Number(z.cost||0);
+            const charge=z.review?0:normalConfiguredCost(z.value,z.cost);
             normalLocationState={status,charge,label:z.label,displayName:'',lat:null,lng:null,source:'manual-zone',zoneValue:z.value};
             bookingFormState.normalTransportCost=charge;bookingFormState.normalCoverageStatus=status;bookingFormState.normalCoverageLabel=z.label;bookingFormState.normalLocationSource='manual-zone';
             app.location=z.value;renderNormalCoverageStatus();
@@ -7786,7 +7807,7 @@ body.cart-open #cartSummary{display:none!important;}
                     <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Dirección del evento *</label>
                     <textarea id="normal-manual-address" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="3" placeholder="Ej. PH, barriada, calle, casa o enlace de Maps/Waze"></textarea>
                     <label class="form-label font-bold season-text-muted text-xs uppercase mt-3 mb-1.5 block">Zona de transporte *</label>
-                    <select id="normal-manual-zone" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="">Selecciona la zona</option>${NORMAL_MANUAL_ZONES.map(z=>`<option value="${z.value}" style="color:black">${z.label}${z.review?' · precio por confirmar':` · $${Number(z.cost||0).toFixed(2)}`}</option>`).join('')}</select>
+                    <select id="normal-manual-zone" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="">Selecciona la zona</option>${NORMAL_MANUAL_ZONES.map(z=>`<option value="${z.value}" style="color:black">${z.label}${z.review?' · precio por confirmar':` · $${normalConfiguredCost(z.value,z.cost).toFixed(2)}`}</option>`).join('')}</select>
                     <p class="text-[10px] season-text-muted mt-2">Al recibir la solicitud verificaremos que la dirección corresponda con la zona seleccionada.</p>
                 </div>
                 <div id="normal-coverage-result"></div>
@@ -8725,6 +8746,15 @@ body.cart-open #cartSummary{display:none!important;}
                 const locationStatus = normalLocationState?.status || bookingFormState.normalCoverageStatus || 'pending';
                 const locationSource = normalLocationState?.source || bookingFormState.normalLocationSource || '';
                 const manualAddress = cleanStr(normalFormData.get('address'));
+                // La ubicación manual no debe servir para saltarse el filtro de seguridad.
+                // Si la dirección/referencia escrita coincide claramente con un sector restringido,
+                // detenemos la solicitud igual que cuando el GPS/reverse-geocoding lo detecta.
+                const manualSecurityText = normalizeChristmasPlace(`${manualAddress} ${normalReference}`);
+                if (NORMAL_RESTRICTED_TERMS.some(term => manualSecurityText.includes(term))) {
+                    normalLocationState = {status:'blocked',charge:0,label:'Ubicación no disponible',reason:'security-manual',source:locationSource||'manual'};
+                    renderNormalCoverageStatus();
+                    return showToast('Esta ubicación no está disponible para solicitudes desde la web.', 'error');
+                }
                 if (locationStatus === 'blocked') {
                     renderNormalCoverageStatus();
                     return showToast('Esta ubicación no está disponible para solicitudes desde la web.', 'error');
@@ -8821,8 +8851,8 @@ body.cart-open #cartSummary{display:none!important;}
                     })())
                 };
                 
-                // FASE 1: capacidad simultánea configurable desde Administrador > Ajustes.
-                // Se consulta al confirmar para que un cambio de capacidad se aplique sin volver a publicar la Web.
+                // Capacidad simultánea operativa configurada desde Diverty CRM.
+                // Se consulta al confirmar para que un cambio se aplique sin volver a publicar la Web.
                 let capacidadSimultanea = 3;
                 const reservaNavidad = isChristmasEveBooking();
                 try {
@@ -9143,7 +9173,16 @@ body.cart-open #cartSummary{display:none!important;}
                 } catch(e) {}
             };
 
-            const loadTransport = async () => { locations=await fetchStaticCollection('transporte_web'); populateLocationSelects(); updateCartBadgeAndTotals(); };
+            const loadTransport = async () => {
+                // La administración visual ya no gobierna las tarifas operativas. Cargamos
+                // exclusivamente la tabla comercial vigente para que ningún documento viejo
+                // de `transporte_web` pueda cambiar un precio del GPS sin que el CRM lo sepa.
+                locations = NORMAL_MANUAL_ZONES
+                    .filter(z => !z.review)
+                    .map(z => ({ value:z.value, label:z.label, cost:Number(z.cost)||0, pricingVersion:3 }));
+                populateLocationSelects();
+                updateCartBadgeAndTotals();
+            };
             const loadGallery = async () => { gallery=(await fetchStaticCollection('galeria_web')).map(d=>({image:d.image,alt:'Diverty'})); };
             const loadReviews = async () => { customerReviews=await fetchStaticCollection('resenas_web'); };
             const loadCoupons = async () => { activeCoupons=(await fetchStaticCollection('cupones_web')).filter(c=>c.active!==false && c.activo!==false); if(appliedCoupon){appliedCoupon=activeCoupons.find(c=>c.code===appliedCoupon.code)||null;} };
