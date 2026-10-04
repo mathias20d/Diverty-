@@ -116,9 +116,9 @@
             <button data-tab="form" class="nav-item tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
                 <i data-lucide="plus-circle" class="w-5 h-5 text-slate-500 transition-colors"></i> Crear Paquete
             </button>
-            <button data-tab="transport" class="nav-item tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
-                <i data-lucide="map" class="w-5 h-5 text-slate-500 transition-colors"></i> Transporte
-            </button>
+            <div class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-600 text-left" title="Las tarifas operativas se administran desde Diverty CRM">
+                <i data-lucide="map" class="w-5 h-5 text-slate-600"></i> Transporte · en CRM
+            </div>
             <button data-tab="gallery" class="nav-item tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800/50 hover:text-white transition-all text-left">
                 <i data-lucide="image" class="w-5 h-5 text-slate-500 transition-colors"></i> Galería Web
             </button>
@@ -223,10 +223,10 @@
                             <p class="text-3xl font-black text-white" id="stat-campanas">0</p>
                             <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Campañas</p>
                         </div>
-                        <div onclick="document.querySelector('[data-tab=\'transport\']').click()" class="cursor-pointer hover:scale-[1.02] transition-transform bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-2xl p-4">
-                            <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center mb-3 text-emerald-400"><i data-lucide="map-pin" class="w-4 h-4"></i></div>
-                            <p class="text-3xl font-black text-white" id="stat-zonas">0</p>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-1">Zonas Transp.</p>
+                        <div class="bg-gradient-to-br from-emerald-500/10 to-transparent border border-emerald-500/20 rounded-2xl p-4">
+                            <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center mb-3 text-emerald-400"><i data-lucide="shield-check" class="w-4 h-4"></i></div>
+                            <p class="text-sm font-black text-white leading-tight">Operación en CRM</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Transporte y cupos</p>
                         </div>
                         <div onclick="document.querySelector('[data-tab=\'coupons\']').click()" class="cursor-pointer hover:scale-[1.02] transition-transform bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 rounded-2xl p-4">
                             <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center mb-3 text-blue-400"><i data-lucide="ticket" class="w-4 h-4"></i></div>
@@ -401,20 +401,14 @@
                     </div>
                 </div>
 
-                <!-- 3. TRANSPORTE -->
+                <!-- 3. TRANSPORTE (SOLO INFORMATIVO) -->
                 <div id="view-transport" class="view-section w-full">
-                    <div class="bg-gradient-to-br from-[#0B1120] to-[#0F172A] p-5 rounded-2xl border border-emerald-500/20 shadow-lg mb-6 w-full">
-                        <h3 id="transportFormTitle" class="text-sm font-bold text-emerald-400 mb-4 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i> Añadir Zona de Transporte</h3>
-                        <div class="grid grid-cols-2 gap-3 mb-3">
-                            <div><label class="saas-label">Nombre</label><input type="text" id="transName" class="saas-input bg-slate-900" placeholder="Ej: San Miguelito"></div>
-                            <div><label class="saas-label">Costo ($)</label><input type="number" id="transCost" class="saas-input bg-slate-900" placeholder="0"></div>
-                        </div>
-                        <div class="flex gap-2 mt-3">
-                            <button type="button" id="cancelTransportEditBtn" onclick="window.cancelTransportEdit()" class="hidden flex-1 bg-slate-800 text-white font-bold py-3 rounded-xl border border-slate-700 text-sm">Cancelar</button>
-                            <button type="button" id="saveTransportBtn" onclick="window.saveTransport()" class="flex-[2] bg-emerald-600 text-white font-bold py-3 rounded-xl text-sm">Guardar Zona</button>
-                        </div>
+                    <div class="bg-gradient-to-br from-[#0B1120] to-[#0F172A] p-6 rounded-2xl border border-emerald-500/20 shadow-lg w-full">
+                        <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4"><i data-lucide="shield-check" class="w-6 h-6"></i></div>
+                        <h3 class="text-lg font-black text-white">Tarifas operativas protegidas</h3>
+                        <p class="text-sm text-slate-400 mt-2 leading-relaxed">Los precios de transporte, límites de cobertura, cupos simultáneos, personal disponible y cantidad de Santas se administran desde <strong class="text-white">Diverty CRM</strong>. Este administrador queda reservado para contenido visual, paquetes, campañas, fotos, temas, cupones y textos de la página.</p>
+                        <div class="mt-4 rounded-xl border border-amber-500/15 bg-amber-500/5 p-3 text-[11px] text-amber-200/80">Esto evita que un cambio visual accidental modifique precios o disponibilidad de las reservas.</div>
                     </div>
-                    <div id="transportList" class="space-y-2 w-full"></div>
                 </div>
 
                 <!-- 4. GALERÍA -->
@@ -465,29 +459,8 @@
                         <input type="text" id="bannerText" class="saas-input bg-slate-900 w-full" placeholder="Texto superior...">
                     </div>
 
-                    <div class="bg-[#0B1120] p-5 rounded-2xl border border-slate-800 mb-5 w-full">
-                        <h3 class="text-sm font-bold text-emerald-400 mb-2 flex items-center gap-2"><i data-lucide="users" class="w-4 h-4"></i> Capacidad de Eventos</h3>
-                        <p class="text-xs text-slate-400 mb-4 leading-relaxed">Máximo de eventos que Diverty puede atender en la misma fecha y a la misma hora. Puedes cambiarlo cuando aumente o disminuya tu personal.</p>
-                        <label class="saas-label">Máximo de eventos simultáneos</label>
-                        <input type="number" id="capacidadSimultanea" min="1" max="100" step="1" value="3" class="saas-input bg-slate-900 w-full" inputmode="numeric">
-                    </div>
-                    <div class="bg-gradient-to-br from-[#0B1120] to-[#17120B] p-5 rounded-2xl border border-amber-500/25 mb-5 w-full shadow-lg shadow-amber-950/10">
-                        <div class="flex items-start gap-3 mb-4">
-                            <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0 text-xl">🎅</div>
-                            <div>
-                                <h3 class="text-sm font-bold text-amber-300">Operación Navidad</h3>
-                                <p class="text-xs text-slate-400 mt-1 leading-relaxed">Capacidad exclusiva para “Entregas de Nochebuena”. Es independiente de los eventos normales.</p>
-                            </div>
-                        </div>
-                        <label class="saas-label">Cantidad de Santas disponibles</label>
-                        <input type="number" id="capacidadSanta" min="1" max="20" step="1" value="1" class="saas-input bg-slate-900 w-full text-amber-300 font-bold" inputmode="numeric">
-                        <div class="mt-3 flex items-start gap-2 rounded-xl border border-amber-500/15 bg-amber-500/5 p-3">
-                            <i data-lucide="info" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
-                            <p class="text-[11px] text-slate-400 leading-relaxed">Ejemplo: con <strong class="text-white">1 Santa</strong> se acepta una reserva por horario. Cuando tengas <strong class="text-white">2 Santas</strong>, cambia este valor a 2 y guarda los ajustes.</p>
-                        </div>
-                    </div>
                     <button onclick="window.saveSettings()" class="w-full bg-cyan-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2">
-                        <i data-lucide="save" class="w-5 h-5"></i> Guardar Todos los Ajustes Web
+                        <i data-lucide="save" class="w-5 h-5"></i> Guardar Ajustes Visuales
                     </button>
                 </div>
             </div>
@@ -869,7 +842,6 @@
             if(tab === 'campaigns') window.loadCampaigns();
             if(tab === 'categories') window.loadCategories();
             if(tab === 'catalog') { if(!window.categoriasLocales || window.categoriasLocales.length === 0) await window.loadCategories(); window.loadCatalog(); }
-            if(tab === 'transport') window.loadTransport();
             if(tab === 'gallery') window.loadGallery();
             if(tab === 'coupons') window.loadCoupons();
             if(tab === 'settings') window.loadSettings();
@@ -882,14 +854,12 @@
                 const cPack = await getCountFromServer(collection(db, 'artifacts', APP_ID, 'public', 'data', 'catalogo_web'));
                 const cThem = await getCountFromServer(collection(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web'));
                 const cCamp = await getCountFromServer(collection(db, 'artifacts', APP_ID, 'public', 'data', 'campanas_web'));
-                const cTrans = await getCountFromServer(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'));
                 const cCoup = await getCountFromServer(collection(db, 'artifacts', APP_ID, 'public', 'data', 'cupones_web'));
 
                 document.getElementById('stat-catalogos').textContent = cCat.data().count;
                 document.getElementById('stat-paquetes').textContent = cPack.data().count;
                 document.getElementById('stat-temas').textContent = cThem.data().count;
                 document.getElementById('stat-campanas').textContent = cCamp.data().count;
-                document.getElementById('stat-zonas').textContent = cTrans.data().count;
                 document.getElementById('stat-cupones').textContent = cCoup.data().count;
             } catch(e) {}
         }
@@ -1369,48 +1339,11 @@
         };
 
         // --- TRANSPORTE ---
-        let editingTransportId = null;
+        // Las tarifas/cobertura ya no se editan en este administrador visual.
+        // Se conserva una función no destructiva por compatibilidad con pestañas antiguas.
         window.loadTransport = async function() {
-            const container = document.getElementById('transportList'); if(!container) return;
-            const qSnap = await getDocs(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'));
-            container.innerHTML = '';
-            if(qSnap.empty) { container.innerHTML = `<div class="p-6 text-center text-slate-500">No hay zonas configuradas.</div>`; return; }
-            qSnap.forEach(d => {
-                const data = d.data();
-                const cleanLabel = data.label.split(' (')[0];
-                const costHtml = data.cost === 0 ? `<span class="text-emerald-400 font-bold text-xs bg-emerald-500/10 px-2 rounded">GRATIS</span>` : `<span class="text-emerald-400 font-bold">+$${data.cost}</span>`;
-                container.innerHTML += `<div class="flex justify-between items-center bg-[#0F172A] p-4 rounded-xl border border-slate-700 w-full"><div class="flex flex-col"><span class="text-white font-bold">${cleanLabel}</span>${costHtml}</div><div class="flex gap-2"><button onclick="window.editTransport('${d.id}', '${cleanLabel}', ${data.cost})" class="text-slate-400 p-2 bg-slate-800 rounded-lg"><i data-lucide="edit-3" class="w-4 h-4"></i></button><button onclick="window.deleteDocGen('transporte_web', '${d.id}', window.loadTransport)" class="text-rose-400 p-2 bg-slate-800 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button></div></div>`;
-            });
-            lucide.createIcons();
-        }
-
-        window.editTransport = (id, name, cost) => {
-            editingTransportId = id; document.getElementById('transName').value = name; document.getElementById('transCost').value = cost;
-            document.getElementById('transportFormTitle').innerHTML = '<i data-lucide="edit-3" class="w-4 h-4"></i> Editando Zona';
-            document.getElementById('saveTransportBtn').textContent = 'Guardar Cambios';
-            document.getElementById('cancelTransportEditBtn').classList.remove('hidden'); document.getElementById('cancelTransportEditBtn').classList.add('block');
-            lucide.createIcons();
-        };
-
-        window.cancelTransportEdit = () => {
-            editingTransportId = null; document.getElementById('transName').value = ''; document.getElementById('transCost').value = '';
-            document.getElementById('transportFormTitle').innerHTML = '<i data-lucide="map-pin" class="w-4 h-4"></i> Añadir Zona';
-            document.getElementById('saveTransportBtn').textContent = 'Guardar Zona';
-            document.getElementById('cancelTransportEditBtn').classList.add('hidden'); document.getElementById('cancelTransportEditBtn').classList.remove('block');
-            lucide.createIcons();
-        };
-
-        window.saveTransport = async () => {
-            const label = document.getElementById('transName').value, cost = Number(document.getElementById('transCost').value);
-            if(!label) return showToast("Escribe zona", "error");
-            const dataToSave = { label: cost === 0 ? `${label} (Gratis)` : `${label} (+$${cost})`, cost: cost, value: label.toLowerCase().replace(/ /g,'-') };
-            
-            try {
-                if (editingTransportId) { await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web', editingTransportId), dataToSave); showToast("Actualizado", "success"); } 
-                else { await addDoc(collection(db, 'artifacts', APP_ID, 'public', 'data', 'transporte_web'), dataToSave); showToast("Guardado", "success"); }
-                
-                window.cancelTransportEdit(); window.loadTransport(); loadDashboardStats();
-            } catch (e) {}
+            const container = document.getElementById('transportList');
+            if (container) container.innerHTML = '<div class="p-6 text-center text-slate-400">Gestiona transporte y cobertura desde Diverty CRM.</div>';
         };
 
         // --- GALERÍA Y CUPONES ---
@@ -1454,10 +1387,6 @@
                     const d = docSnap.data(); 
                     document.getElementById('bannerActive').checked = d.bannerActive || false; 
                     document.getElementById('bannerText').value = d.bannerText || ''; 
-                    const capacityInput = document.getElementById('capacidadSimultanea');
-                    if (capacityInput) capacityInput.value = (Number.isInteger(Number(d.capacidadSimultanea)) && Number(d.capacidadSimultanea) >= 1) ? Number(d.capacidadSimultanea) : 3;
-                    const santaCapacityInput = document.getElementById('capacidadSanta');
-                    if (santaCapacityInput) santaCapacityInput.value = (Number.isInteger(Number(d.capacidadSanta)) && Number(d.capacidadSanta) >= 1) ? Number(d.capacidadSanta) : 1;
                 }
             } catch(e) { console.error("Error al cargar Ajustes", e); } 
         }
@@ -1466,11 +1395,7 @@
             try {
                 const bannerActive = document.getElementById('bannerActive').checked;
                 const bannerText = document.getElementById('bannerText').value;
-                const capacidadSimultanea = Number(document.getElementById('capacidadSimultanea')?.value || 3);
-                const capacidadSanta = Number(document.getElementById('capacidadSanta')?.value || 1);
-                if (!Number.isInteger(capacidadSimultanea) || capacidadSimultanea < 1 || capacidadSimultanea > 100) return showToast('La capacidad general debe ser un número entero entre 1 y 100.', 'error');
-                if (!Number.isInteger(capacidadSanta) || capacidadSanta < 1 || capacidadSanta > 20) return showToast('La cantidad de Santas debe ser un número entero entre 1 y 20.', 'error');
-                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive, bannerText, capacidadSimultanea, capacidadSanta }, {merge: true});  
+                await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'config_web', 'global'), { bannerActive, bannerText }, {merge: true});  
                 showToast("Ajustes Guardados", "success"); 
             } catch(error) { showToast("Error guardando ajustes", "error"); }
         };
