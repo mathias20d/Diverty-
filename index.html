@@ -7337,12 +7337,12 @@ body.cart-open #cartSummary{display:none!important;}
                             if (!id || id.startsWith('slot_')) return false;
                             return String(ev.fecha || '') === christmasDate && String(ev.hora || '') === value;
                         }).length;
-                        if (slot || individualCount > 0) {
-                            const slotCount = slot ? Math.max(Number(slot.count) || 0, Array.isArray(slot.reservationIds) ? slot.reservationIds.length : 0) : 0;
-                            const count = Math.max(slotCount, individualCount);
-                            // Los slots nuevos guardan capacity. Si es un registro legado sin slot,
-                            // usamos 1 de forma segura hasta que el primer submit lo reconcilie.
-                            const capacity = Math.max(1, Number(slot?.capacity) || 1);
+                        // Para mostrar disponibilidad confiamos solo en reservas individuales reales.
+                        // `slot_santa_*` es un candado transaccional y puede quedar obsoleto si una
+                        // versión antigua eliminó una prueba sin limpiar el contador auxiliar.
+                        if (individualCount > 0) {
+                            const count = individualCount;
+                            const capacity = Math.max(1, Number(slot?.capacity) || Number(christmasCapacityCache.value) || 1);
                             disabled = count >= capacity;
                             if (disabled) suffix = ' — NO DISPONIBLE · elige otro horario';
                             else if (count > 0) suffix = ` — ${Math.max(0, capacity-count)} cupo${capacity-count === 1 ? '' : 's'}`;
@@ -7552,7 +7552,8 @@ body.cart-open #cartSummary{display:none!important;}
                         const full=!!opt.disabled;
                         const remainingMatch=String(opt.textContent||'').match(/(\d+) cupo/);
                         const remaining=remainingMatch ? Number(remainingMatch[1]) : capacity;
-                        return {value:opt.value,base,rank,full,remaining};
+                        const blockReason=/ruta no viable/i.test(opt.textContent||'')?'route':(/máximo de Santas/i.test(opt.textContent||'')?'capacity':'');
+                        return {value:opt.value,base,rank,full,remaining,blockReason};
                     });
                     rows.sort((a,b)=>(rankOrder[a.rank]??2)-(rankOrder[b.rank]??2)||timeMinutes(a.value)-timeMinutes(b.value));
                     wrap.innerHTML=rows.map(r=>{
@@ -7567,7 +7568,7 @@ body.cart-open #cartSummary{display:none!important;}
                               : isGood
                                 ? 'border-emerald-300/45 bg-emerald-400/10 shadow-sm'
                                 : 'border-white/15 bg-white/5';
-                        const badge=r.full ? 'NO DISPONIBLE' : isBest ? '⭐ MEJOR OPCIÓN' : isGood ? '✓ BUENA OPCIÓN' : (r.remaining<capacity ? `${r.remaining} CUPO${r.remaining===1?'':'S'}` : 'DISPONIBLE');
+                        const badge=r.full ? (r.blockReason==='route'?'NO DISPONIBLE · RUTA':'NO DISPONIBLE · CUPO') : isBest ? '⭐ MEJOR OPCIÓN' : isGood ? '✓ BUENA OPCIÓN' : (r.remaining<capacity ? `${r.remaining} CUPO${r.remaining===1?'':'S'}` : 'DISPONIBLE');
                         const badgeClass=isBest?'text-amber-300':isGood?'text-emerald-300':'season-text-muted';
                         return `<button type="button" data-christmas-time="${r.value}" ${r.full?'disabled':''} class="christmas-time-card min-h-[74px] rounded-2xl border px-3 py-3 text-left transition active:scale-[.98] ${cls}"><span class="block text-base font-black season-text-title">${r.base}</span><span class="mt-1 block text-[10px] font-extrabold tracking-wide ${badgeClass}">${badge}</span></button>`;
                     }).join('');
@@ -7597,8 +7598,10 @@ body.cart-open #cartSummary{display:none!important;}
                                 if (!id || id.startsWith('slot_')) return false;
                                 return String(ev.fecha || '') === christmasDate && String(ev.hora || '') === String(opt.value);
                             }).length;
-                            const slotCount = slot ? Math.max(Number(slot.count)||0, Array.isArray(slot.reservationIds)?slot.reservationIds.length:0) : 0;
-                            const count = Math.max(slotCount, individualCount);
+                            // La disponibilidad visible se calcula con reservas reales, no con el
+                            // contador auxiliar `slot_santa_*`. El slot sigue protegiendo la transacción
+                            // al confirmar, pero un slot huérfano ya no bloquea horarios en pantalla.
+                            const count = individualCount;
                             const fullByCapacity = count >= capacity;
                             const hint = !fullByCapacity ? routeRecommendation(christmasDate, opt.value, capacity) : null;
                             return {opt,count,fullByCapacity,hint,base:String(opt.textContent||'').split(' — ')[0]};
