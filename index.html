@@ -8802,27 +8802,15 @@ body.cart-open #cartSummary{display:none!important;}
                         : (normalLocationState.label || bookingFormState.normalCoverageLabel || 'Ubicación por revisar'),
                     direccion: fd.get('address')||'',
                     referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : (fd.get('normalReference')||''),
-                    ubicacionFuente: isChristmasEveBooking()
-                        ? (bookingFormState.christmasLocationSource || christmasLocationState.source || 'gps')
-                        : (bookingFormState.normalLocationSource || normalLocationState.source || 'manual-zone'),
-                    ubicacionDetectada: isChristmasEveBooking()
-                        ? (bookingFormState.christmasLocationName || christmasLocationState.displayName || '')
-                        : (bookingFormState.normalLocationName || normalLocationState.displayName || ''),
                     comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa',
                     esNavidad: isChristmasEveBooking(),
                     recursoNavidad: isChristmasEveBooking() ? 'Santa' : '',
-                    tipoReserva: isChristmasEveBooking() ? 'navidad' : 'normal',
-                    transporteOriginalWeb: tc.toString(),
-                    requiereRevisionUbicacion: isChristmasEveBooking()
-                        ? (christmasLocationState.status === 'review')
-                        : (normalLocationState.status !== 'included'),
-                    ...(!isChristmasEveBooking() ? (() => {
-                        const req = getCartResourceRequirements();
-                        return { resourceRequirements:req, duracionMinutos:req.durationMinutes };
-                    })() : {}),
-                    ...(() => {
-                        let lat = Number(isChristmasEveBooking() ? bookingFormState.christmasLat : bookingFormState.normalLat);
-                        let lng = Number(isChristmasEveBooking() ? bookingFormState.christmasLng : bookingFormState.normalLng);
+                    // Mantener el esquema público compatible con las reglas actuales.
+                    // Para reservas normales el GPS queda en `direccion` como enlace de Maps;
+                    // las coordenadas numéricas se guardan directamente solo en Navidad.
+                    ...(isChristmasEveBooking() && (() => {
+                        let lat = Number(bookingFormState.christmasLat);
+                        let lng = Number(bookingFormState.christmasLng);
                         if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
                             const g=String(fd.get('address')||'').match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
                             if (g) { lat=Number(g[1]); lng=Number(g[2]); }
@@ -8830,7 +8818,7 @@ body.cart-open #cartSummary{display:none!important;}
                         return Number.isFinite(lat) && Number.isFinite(lng) &&
                             Math.abs(lat)<=90 && Math.abs(lng)<=180 && !(lat===0 && lng===0)
                             ? { lat, lng } : {};
-                    })()
+                    })())
                 };
                 
                 // FASE 1: capacidad simultánea configurable desde Administrador > Ajustes.
@@ -8932,17 +8920,14 @@ body.cart-open #cartSummary{display:none!important;}
                             });
 
                             tx.set(eventRef,request.data);
+                            // El navegador público conserva el esquema histórico autorizado.
+                            // El CRM publica los metadatos operativos de personal después de aceptar.
                             tx.set(availabilityRef,{
                                 fecha:request.data.fecha,
                                 hora:request.data.hora,
                                 esNavidad:request.data.esNavidad === true,
                                 recursoNavidad:request.data.recursoNavidad || '',
-                                tipoReserva:request.data.tipoReserva || (request.data.esNavidad === true ? 'navidad' : 'normal'),
-                                ...(request.data.esNavidad !== true && request.data.resourceRequirements ? {
-                                    resourceRequirements:request.data.resourceRequirements,
-                                    duracionMinutos:Number(request.data.duracionMinutos || request.data.resourceRequirements?.durationMinutes || 120)
-                                } : {}),
-                                ...(Number.isFinite(Number(request.data.lat)) && Number.isFinite(Number(request.data.lng)) ? { lat:Number(request.data.lat), lng:Number(request.data.lng) } : {})
+                                ...(request.data.esNavidad === true && Number.isFinite(Number(request.data.lat)) && Number.isFinite(Number(request.data.lng)) ? { lat:Number(request.data.lat), lng:Number(request.data.lng) } : {})
                             });
                             tx.set(customerRef,Object.fromEntries(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'].map(key=>[key,String(request.data[key]??'')])));
                         });
