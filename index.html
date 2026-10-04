@@ -7077,6 +7077,8 @@ body.cart-open #cartSummary{display:none!important;}
         }
 
 
+        let divertyRouteDebug = { status:'NO EJECUTADO', total:0, dateRows:[], error:'' };
+
         async function loadRouteEventsForMonth(date, { force = false } = {}) {
             if (!db) return [];
             const { start, end, key } = getMonthRange(date);
@@ -7090,6 +7092,20 @@ body.cart-open #cartSummary{display:none!important;}
                 const eventsRef = collection(db,'artifacts',CRM_APP_ID,'public','data','eventos');
                 const snap = await fetchWithTimeout(getDocs(eventsRef), 10000);
                 const allEvents = snap.docs.map(d => ({...d.data(), id:d.id, _eventId:d.id}));
+                divertyRouteDebug = {
+                    status:'LECTURA OK',
+                    total: allEvents.length,
+                    range:`${start} → ${end}`,
+                    dateRows: allEvents.filter(ev => String(ev.fecha||'').trim() === '2026-12-24').map(ev => ({
+                        id:String(ev._eventId||ev.id||''),
+                        hora:String(ev.hora||''),
+                        lat:ev.lat ?? '',
+                        lng:ev.lng ?? '',
+                        direccion:String(ev.direccion || ev.address || ''),
+                        estado:String(ev.estado || ev.status || '')
+                    })),
+                    error:''
+                };
 
                 const rows = allEvents
                     .filter(ev => {
@@ -7118,6 +7134,7 @@ body.cart-open #cartSummary{display:none!important;}
                 return rows;
             } catch(e) {
                 console.error('DIVERTY route events error:', e);
+                divertyRouteDebug = {status:'ERROR',total:0,dateRows:[],error:String(e?.message || e)};
                 routeEvents=routeEventsMonthCache.get(key)?.rows || [];
                 return routeEvents;
             }
@@ -7620,6 +7637,38 @@ body.cart-open #cartSummary{display:none!important;}
                         });
                         if (christmasTimeSelect.value && christmasTimeIsUnavailable()) christmasTimeSelect.value = '';
                         renderChristmasTimeCards(christmasDate, capacity);
+                        let dbg=document.getElementById('diverty-route-debug-final');
+                        if(!dbg){
+                            dbg=document.createElement('div');
+                            dbg.id='diverty-route-debug-final';
+                            dbg.style.cssText='margin:14px 0;padding:14px;border:1px solid #f5b942;border-radius:12px;background:#120f17;color:#fff;font:12px/1.45 monospace;white-space:pre-wrap;word-break:break-word;';
+                            const cards=document.getElementById('christmas-time-cards');
+                            if(cards) cards.insertAdjacentElement('afterend',dbg);
+                        }
+                        if(dbg){
+                            const gps=parseChristmasGps();
+                            const d=divertyRouteDebug||{};
+                            const rows=(d.dateRows||[]);
+                            const four=rows.filter(x=>timeMinutes(x.hora)===16*60);
+                            dbg.textContent=[
+                                'DIAGNÓSTICO FINAL RUTAS',
+                                `Firestore eventos: ${d.status||'SIN DATO'}`,
+                                `Error: ${d.error||'ninguno'}`,
+                                `Total documentos: ${d.total ?? '?'}`,
+                                `Rango: ${d.range||'?'}`,
+                                `Reservas 24/12: ${rows.length}`,
+                                `Reservas 4:00 p. m.: ${four.length}`,
+                                `GPS cliente: ${gps ? gps.lat+', '+gps.lng : 'NO'}`,
+                                `Anclas válidas: ${routeEvents.length}`,
+                                '',
+                                ...four.map((x,i)=>`4PM #${i+1} | id=${x.id} | hora=${x.hora} | lat=${String(x.lat)} | lng=${String(x.lng)} | estado=${x.estado||'-'}`),
+                                '',
+                                ...Array.from(christmasTimeSelect.options).filter(o=>o.value).map(o=>{
+                                    const r=routeRecommendation(christmasDate,o.value);
+                                    return `${o.value}: ${r?.recommended?'⭐ SÍ':'NO'} | ${r ? `prev=${r.fitsPrevious} next=${r.fitsNext} km=${r.km ?? '-'}` : 'sin resultado'}`;
+                                })
+                            ].join('\n');
+                        }
                         if (christmasTimeMessage) christmasTimeMessage.textContent = '✓ Horarios calculados para tu ubicación. ⭐ indica los horarios que mejor encajan con entregas cercanas ya reservadas.';
                         if (christmasTimeMessage) christmasTimeMessage.style.whiteSpace = 'pre-line';
                     } catch (_) {
