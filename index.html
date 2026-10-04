@@ -5871,41 +5871,98 @@ body.cart-open #cartSummary{display:none!important;}
         ];
         const NORMAL_MANUAL_ZONES = [
             {value:'ciudad-panama',label:'Ciudad de Panamá',cost:0},
+            {value:'punta-pacifica',label:'Punta Pacífica',cost:5},
             {value:'costa-del-este',label:'Costa del Este',cost:5},
             {value:'albrook-clayton',label:'Albrook / Clayton',cost:5},
-            {value:'panama-este',label:'Panamá Este (hasta Pacora)',cost:15},
-            {value:'panama-norte',label:'Panamá Norte (hasta Villa Grecia)',cost:15},
-            {value:'arraijan',label:'Arraiján',cost:15},
-            {value:'chorrera',label:'La Chorrera',cost:25}
+            {value:'panama-este',label:'Panamá Este · después de Megamall hasta Pacora',cost:15},
+            {value:'panama-norte',label:'Panamá Norte · hasta Villa Grecia',cost:15},
+            {value:'arraijan',label:'Arraiján / Panamá Pacífico',cost:15},
+            {value:'costa-verde-3km',label:'Costa Verde / hasta 3 km',cost:20},
+            {value:'chorrera',label:'La Chorrera · fuera de 3 km de Costa Verde',cost:25},
+            {value:'por-confirmar',label:'Otra ubicación / fuera de cobertura',cost:null,review:true}
         ];
+        // Puntos operativos usados por el cálculo GPS de reservas normales.
+        // Los precios siguen las reglas comerciales definidas por Diverty; estas
+        // coordenadas solo sirven para ubicar los cortes geográficos con mayor precisión.
+        const NORMAL_MEGAMALL = {lat:9.10123,lng:-79.34058};
+        const NORMAL_PACORA = {lat:9.08252,lng:-79.28957};
+        const NORMAL_COSTA_VERDE = {lat:8.89486,lng:-79.75260};
+        const NORMAL_VILLA_GRECIA = {lat:9.10658,lng:-79.56163};
+        const NORMAL_PACORA_EAST_LIMIT_LNG = -79.275;
+        const NORMAL_CHORRERA_WEST_LIMIT_LNG = -79.86;
+        const normalDistanceKm = (lat,lng,point) => christmasRouteDistanceKm({lat:Number(lat),lng:Number(lng)},point);
         function evaluateNormalCoverage(lat,lng,label=''){
             const text=normalizeChristmasPlace(label);
             if(NORMAL_RESTRICTED_TERMS.some(term=>text.includes(term))) return {status:'blocked',charge:0,label:'Ubicación no disponible',reason:'security',zoneValue:'restringida'};
+
+            const la=Number(lat),lo=Number(lng);
+            const hasGps=Number.isFinite(la)&&Number.isFinite(lo);
+
+            // Recargos específicos dentro de Ciudad de Panamá.
+            if(text.includes('punta pacifica')) return {status:'included',charge:5,label:'Punta Pacífica',zoneValue:'punta-pacifica'};
+            if(text.includes('costa del este')) return {status:'included',charge:5,label:'Costa del Este',zoneValue:'costa-del-este'};
+            if(['albrook','clayton','ciudad del saber'].some(t=>text.includes(t))) return {status:'included',charge:5,label:'Albrook / Clayton',zoneValue:'albrook-clayton'};
+
+            // Panamá Oeste: Panamá Pacífico y Arraiján siempre usan la tarifa de $15.
+            if(['panama pacifico','arraijan'].some(t=>text.includes(t))) return {status:'included',charge:15,label:'Arraiján / Panamá Pacífico',zoneValue:'arraijan'};
+
+            // La Chorrera se calcula desde Costa Verde: hasta 3 km = $20;
+            // más de 3 km, mientras siga dentro del área de La Chorrera = $25.
+            const namedChorrera=['costa verde','la chorrera','distrito de la chorrera','barrio colon','el coco','puerto caimito'].some(t=>text.includes(t));
+            if(hasGps && namedChorrera){
+                const km=normalDistanceKm(la,lo,NORMAL_COSTA_VERDE);
+                if(Number.isFinite(km) && km<=3) return {status:'included',charge:20,label:'Costa Verde · hasta 3 km',zoneValue:'costa-verde-3km',distanceKm:km};
+                return {status:'included',charge:25,label:'La Chorrera',zoneValue:'chorrera',distanceKm:km};
+            }
+
+            if(hasGps){
+                // Fuera de los límites automáticos: la solicitud llega al CRM para revisión.
+                if(lo < NORMAL_CHORRERA_WEST_LIMIT_LNG || lo > NORMAL_PACORA_EAST_LIMIT_LNG || la < 8.84 || la > 9.16){
+                    return {status:'review',charge:0,label:'Fuera del área automática',reason:'outside',zoneValue:''};
+                }
+
+                // Fallback geográfico para La Chorrera cuando el geocodificador no devuelve
+                // el nombre del distrito. Primero se calcula la distancia real a Costa Verde.
+                if(lo <= -79.70 && lo >= NORMAL_CHORRERA_WEST_LIMIT_LNG && la>=8.84 && la<=8.99){
+                    const km=normalDistanceKm(la,lo,NORMAL_COSTA_VERDE);
+                    if(Number.isFinite(km) && km<=3) return {status:'included',charge:20,label:'Costa Verde · hasta 3 km',zoneValue:'costa-verde-3km',distanceKm:km};
+                    return {status:'included',charge:25,label:'La Chorrera',zoneValue:'chorrera',distanceKm:km};
+                }
+
+                // Arraiján: incluye Panamá Pacífico y el corredor previo a La Chorrera.
+                if(lo < -79.585 && lo > -79.70 && la>=8.87 && la<=9.02) return {status:'included',charge:15,label:'Arraiján / Panamá Pacífico',zoneValue:'arraijan'};
+
+                // Panamá Norte: $15 hasta Villa Grecia. Más al norte queda por confirmar.
+                const northCorridor=lo>=-79.62 && lo<=-79.49;
+                if(northCorridor && la > 9.115) return {status:'review',charge:0,label:'Después de Villa Grecia',reason:'outside-north',zoneValue:''};
+                if(northCorridor && la > 9.065 && la <= 9.115) return {status:'included',charge:15,label:'Panamá Norte · hasta Villa Grecia',zoneValue:'panama-norte'};
+
+                // Panamá Este: Ciudad de Panamá es gratis hasta Megamall. El recargo de
+                // $15 empieza al pasar Megamall y termina en Pacora; después se revisa.
+                if(lo > NORMAL_MEGAMALL.lng && lo <= NORMAL_PACORA_EAST_LIMIT_LNG && la>=8.95 && la<=9.145){
+                    return {status:'included',charge:15,label:'Panamá Este · después de Megamall hasta Pacora',zoneValue:'panama-este'};
+                }
+
+                // Las Acacias, Don Bosco, Juan Díaz, El Crisol, Concepción, Panamá Viejo,
+                // Bella Vista, avenidas Perú/Brasil y demás sectores urbanos no tarifados
+                // específicamente permanecen con transporte incluido ($0).
+                return {status:'included',charge:0,label:'Ciudad de Panamá',zoneValue:'ciudad-panama'};
+            }
+
+            // Sin GPS se intenta orientar por el texto; si no es inequívoco, se manda a revisión.
             const named=[
+                {terms:['punta pacifica'],charge:5,label:'Punta Pacífica',zoneValue:'punta-pacifica'},
                 {terms:['costa del este'],charge:5,label:'Costa del Este',zoneValue:'costa-del-este'},
                 {terms:['albrook','clayton','ciudad del saber'],charge:5,label:'Albrook / Clayton',zoneValue:'albrook-clayton'},
+                {terms:['panama pacifico','arraijan'],charge:15,label:'Arraiján / Panamá Pacífico',zoneValue:'arraijan'},
+                {terms:['pacora'],charge:15,label:'Panamá Este · después de Megamall hasta Pacora',zoneValue:'panama-este'},
+                {terms:['villa grecia','panama norte','las cumbres','villa zaita','ernesto cordoba'],charge:15,label:'Panamá Norte · hasta Villa Grecia',zoneValue:'panama-norte'},
+                {terms:['costa verde'],charge:20,label:'Costa Verde · hasta 3 km',zoneValue:'costa-verde-3km'},
                 {terms:['la chorrera','chorrera'],charge:25,label:'La Chorrera',zoneValue:'chorrera'},
-                {terms:['arraijan','arraiján'],charge:15,label:'Arraiján',zoneValue:'arraijan'},
-                {terms:['pacora','tocumen','24 de diciembre','las mananitas','las mañanitas','don bosco','pedregal'],charge:15,label:'Panamá Este',zoneValue:'panama-este'},
-                {terms:['villa grecia','panama norte','panamá norte','las cumbres','villa zaita','ernesto cordoba','ernesto córdoba'],charge:15,label:'Panamá Norte',zoneValue:'panama-norte'}
+                {terms:['las acacias','don bosco','juan diaz','el crisol','concepcion','panama viejo','bella vista','avenida peru','avenida brasil','via brasil','tocumen'],charge:0,label:'Ciudad de Panamá',zoneValue:'ciudad-panama'}
             ];
             for(const z of named) if(z.terms.some(t=>text.includes(t))) return {status:'included',charge:z.charge,label:z.label,zoneValue:z.zoneValue};
-            const la=Number(lat),lo=Number(lng);
-            if(!Number.isFinite(la)||!Number.isFinite(lo)) return {status:'review',charge:0,label:'Ubicación por revisar',reason:'no-gps',zoneValue:''};
-            // Geocercas aproximadas como respaldo del nombre obtenido por GPS.
-            // Los nombres devueltos por el geocodificador tienen prioridad; estas líneas
-            // sirven para no depender de que el teléfono devuelva exactamente la barriada.
-            if(lo < -79.86 || lo > -79.275 || la < 8.84 || la > 9.16) return {status:'review',charge:0,label:'Fuera del área automática',reason:'outside',zoneValue:''};
-            // Oeste: Arraiján y La Chorrera. Más al oeste de La Chorrera pasa a revisión.
-            if(lo <= -79.72) return {status:'included',charge:25,label:'La Chorrera',zoneValue:'chorrera'};
-            if(lo < -79.60) return {status:'included',charge:15,label:'Arraiján',zoneValue:'arraijan'};
-            // Norte: extensión automática hasta el entorno de Villa Grecia (~9.106 N).
-            if(la > 9.115 && lo>=-79.62 && lo<=-79.49) return {status:'review',charge:0,label:'Después de Villa Grecia',reason:'outside-north',zoneValue:''};
-            if(la > 9.065 && la <= 9.115 && lo>=-79.62 && lo<=-79.49) return {status:'included',charge:15,label:'Panamá Norte',zoneValue:'panama-norte'};
-            // Este: Tocumen/24 de Diciembre/Pacora. Más allá de Pacora queda por revisar.
-            if(lo > -79.405 && lo <= -79.275) return {status:'included',charge:15,label:'Panamá Este',zoneValue:'panama-este'};
-            if(lo < -79.54 && la<9.08) return {status:'included',charge:5,label:'Albrook / Clayton',zoneValue:'albrook-clayton'};
-            return {status:'included',charge:0,label:'Ciudad de Panamá',zoneValue:'ciudad-panama'};
+            return {status:'review',charge:0,label:'Ubicación por revisar',reason:'no-gps',zoneValue:''};
         }
         function normalTransportCost(){
             if(isChristmasEveBooking()) return null;
@@ -5973,7 +6030,7 @@ body.cart-open #cartSummary{display:none!important;}
             if(s.status==='included') box.innerHTML=`<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4"><p class="font-black text-emerald-600">✅ ${cleanStr(s.label)||'Ubicación verificada'}</p><p class="text-xs season-text-muted mt-1">Transporte: <b>$${Number(s.charge||0).toFixed(2)}</b></p></div>`;
             else if(s.status==='blocked') box.innerHTML=`<div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4"><p class="font-black text-rose-600">Ubicación no disponible para reserva automática</p><p class="text-xs season-text-muted mt-1">Por seguridad, esta ubicación no se puede solicitar desde la web.</p></div>`;
             else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Transporte por confirmar</p><p class="text-xs season-text-muted mt-1">Puedes enviar la solicitud. Revisaremos esta ubicación en Diverty CRM y te contactaremos por WhatsApp con el transporte final antes de aceptar la reserva.</p></div>`;
-            const t=document.getElementById('booking-summary-transport'); if(t) t.textContent=s.status==='review'?'Por confirmar':`$${effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)).toFixed(2)}`;
+            const t=document.getElementById('booking-summary-transport'); if(t) t.textContent=s.status==='blocked'?'No disponible':(s.status==='review'?'Por confirmar':`$${effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)).toFixed(2)}`);
             const total=document.getElementById('booking-summary-total');
             if(total){const sub=app.cart.reduce((a,i)=>a+(Number(i.price)*i.quantity),0);let dv=0;if(appliedCoupon)dv=appliedCoupon.type==='percent'?sub*(Number(appliedCoupon.discount)/100):Number(appliedCoupon.discount);dv=Math.min(sub,Math.max(0,dv));total.textContent=`$${Math.max(0,sub-dv+effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0))).toFixed(2)}`;}
             updateCartBadgeAndTotals();
@@ -5992,8 +6049,10 @@ body.cart-open #cartSummary{display:none!important;}
         }
         function applyNormalManualZone(value){
             const z=NORMAL_MANUAL_ZONES.find(x=>x.value===value); if(!z) return;
-            normalLocationState={status:'included',charge:z.cost,label:z.label,displayName:'',lat:null,lng:null,source:'manual-zone',zoneValue:z.value};
-            bookingFormState.normalTransportCost=z.cost;bookingFormState.normalCoverageStatus='included';bookingFormState.normalCoverageLabel=z.label;bookingFormState.normalLocationSource='manual-zone';
+            const status=z.review?'review':'included';
+            const charge=z.review?0:Number(z.cost||0);
+            normalLocationState={status,charge,label:z.label,displayName:'',lat:null,lng:null,source:'manual-zone',zoneValue:z.value};
+            bookingFormState.normalTransportCost=charge;bookingFormState.normalCoverageStatus=status;bookingFormState.normalCoverageLabel=z.label;bookingFormState.normalLocationSource='manual-zone';
             app.location=z.value;renderNormalCoverageStatus();
         }
 
@@ -7727,7 +7786,7 @@ body.cart-open #cartSummary{display:none!important;}
                     <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Dirección del evento *</label>
                     <textarea id="normal-manual-address" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="3" placeholder="Ej. PH, barriada, calle, casa o enlace de Maps/Waze"></textarea>
                     <label class="form-label font-bold season-text-muted text-xs uppercase mt-3 mb-1.5 block">Zona de transporte *</label>
-                    <select id="normal-manual-zone" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="">Selecciona la zona</option>${NORMAL_MANUAL_ZONES.map(z=>`<option value="${z.value}" style="color:black">${z.label} · $${z.cost.toFixed(2)}</option>`).join('')}</select>
+                    <select id="normal-manual-zone" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="">Selecciona la zona</option>${NORMAL_MANUAL_ZONES.map(z=>`<option value="${z.value}" style="color:black">${z.label}${z.review?' · precio por confirmar':` · $${Number(z.cost||0).toFixed(2)}`}</option>`).join('')}</select>
                     <p class="text-[10px] season-text-muted mt-2">Al recibir la solicitud verificaremos que la dirección corresponda con la zona seleccionada.</p>
                 </div>
                 <div id="normal-coverage-result"></div>
@@ -7861,9 +7920,9 @@ body.cart-open #cartSummary{display:none!important;}
                     bookingFormState.resourceStatus=status;
                     if(normalResourceMessage){
                         const parts=[];if(status.needed.animadores)parts.push(`${status.needed.animadores} animador${status.needed.animadores===1?'':'es'}`);if(status.needed.payasos)parts.push(`${status.needed.payasos} payaso${status.needed.payasos===1?'':'s'}`);
-                        if(!parts.length){normalResourceMessage.textContent='✓ Este servicio no tiene un recurso de personal específico configurado.';}
-                        else if(status.feasible){normalResourceMessage.textContent=`✓ Personal disponible · requiere ${parts.join(' y ')}. Libres: ${status.available.animadores} animadores, ${status.available.payasos} payasos.`;normalResourceMessage.className='mt-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-600';}
-                        else{normalResourceMessage.textContent=`⚠️ No hay suficiente personal para esta hora. Disponibles: ${status.available.animadores} animadores y ${status.available.payasos} payasos. Elige otro horario.`;normalResourceMessage.className='mt-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[11px] font-bold text-rose-600';}
+                        if(!parts.length){normalResourceMessage.textContent='✓ Horario disponible para solicitar.';normalResourceMessage.className='mt-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-600';}
+                        else if(status.feasible){normalResourceMessage.textContent='✓ Tenemos disponibilidad operativa para solicitar este horario.';normalResourceMessage.className='mt-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[11px] font-bold text-emerald-600';}
+                        else{normalResourceMessage.textContent='⚠️ Este horario ya no tiene disponibilidad operativa. Elige otra hora.';normalResourceMessage.className='mt-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[11px] font-bold text-rose-600';}
                     }
                     return status.feasible;
                 };
@@ -8690,10 +8749,10 @@ body.cart-open #cartSummary{display:none!important;}
                 if (!resourceCheck.feasible) {
                     const msg = document.getElementById('normal-resource-message');
                     if (msg) {
-                        msg.textContent = `⚠️ El personal para esta hora ya no está disponible. Libres: ${resourceCheck.available.animadores} animadores y ${resourceCheck.available.payasos} payasos.`;
+                        msg.textContent = '⚠️ Este horario ya no tiene disponibilidad operativa. Elige otra hora.';
                         msg.className = 'mt-2 rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-[11px] font-bold text-rose-600';
                     }
-                    return showToast('Ese horario ya no tiene suficiente personal disponible. Elige otra hora.', 'error');
+                    return showToast('Ese horario ya no está disponible. Elige otra hora.', 'error');
                 }
             }
 
