@@ -5690,6 +5690,96 @@ body.cart-open #cartSummary{display:none!important;}
             } catch (_) {}
             return Math.max(1, Number(christmasCapacityCache.value) || 1);
         }
+
+
+        // NAVIDAD — motor inteligente compartido por horarios y confirmación.
+        // Evalúa cada Santa por su ruta del día: 25 min de visita + 5 min de margen
+        // + traslado estimado. También simula reservas antiguas que aún no tengan Santa.
+        const CHRISTMAS_SERVICE_BUFFER_MINUTES = 30;
+        const christmasRouteTimeMinutes = value => {
+            const m=String(value||'').match(/^(\d{1,2}):(\d{2})/);
+            return m ? Number(m[1])*60+Number(m[2]) : null;
+        };
+        const christmasRouteDistanceKm = (a,b) => {
+            if (!a || !b) return null;
+            const R=6371, rad=Math.PI/180;
+            const dLat=(b.lat-a.lat)*rad, dLng=(b.lng-a.lng)*rad;
+            const x=Math.sin(dLat/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLng/2)**2;
+            return 2*R*Math.asin(Math.sqrt(x));
+        };
+        const christmasRouteTravelMinutes = km => {
+            const d=Math.max(0,Number(km)||0);
+            if(d<=2) return 10;
+            if(d<=5) return 15;
+            if(d<=8) return 22;
+            if(d<=12) return 30;
+            if(d<=18) return 40;
+            return Math.min(70,40+Math.ceil((d-18)*2));
+        };
+        const christmasRowGps = row => {
+            const lat=Number(row?.lat), lng=Number(row?.lng);
+            return Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180&&!(lat===0&&lng===0) ? {lat,lng} : null;
+        };
+        const christmasRouteLeg = (from,to) => {
+            const km=christmasRouteDistanceKm(christmasRowGps(from),christmasRowGps(to));
+            return {km,minutes:km===null?15:christmasRouteTravelMinutes(km),estimated:km===null};
+        };
+        const christmasRouteInsertion = (candidate,stops=[]) => {
+            const t=christmasRouteTimeMinutes(candidate?.hora);
+            if(t===null) return {feasible:false,score:9999,reason:'time'};
+            const sameDate=stops.filter(x=>x&&x.id!==candidate?.id&&String(x.fecha||'')===String(candidate?.fecha||''))
+                .filter(x=>christmasRouteTimeMinutes(x.hora)!==null)
+                .sort((a,b)=>christmasRouteTimeMinutes(a.hora)-christmasRouteTimeMinutes(b.hora));
+            if(sameDate.some(x=>christmasRouteTimeMinutes(x.hora)===t)) return {feasible:false,score:9999,reason:'same-time',anchors:sameDate.length};
+            const previous=[...sameDate].filter(x=>christmasRouteTimeMinutes(x.hora)<t).pop()||null;
+            const next=sameDate.find(x=>christmasRouteTimeMinutes(x.hora)>t)||null;
+            const legPrev=previous?christmasRouteLeg(previous,candidate):null;
+            const legNext=next?christmasRouteLeg(candidate,next):null;
+            const fitsPrevious=!previous||christmasRouteTimeMinutes(previous.hora)+CHRISTMAS_SERVICE_BUFFER_MINUTES+legPrev.minutes<=t;
+            const fitsNext=!next||t+CHRISTMAS_SERVICE_BUFFER_MINUTES+legNext.minutes<=christmasRouteTimeMinutes(next.hora);
+            let addedTravel=0;
+            if(previous&&next) addedTravel=Math.max(0,legPrev.minutes+legNext.minutes-christmasRouteLeg(previous,next).minutes);
+            else if(previous) addedTravel=legPrev.minutes;
+            else if(next) addedTravel=legNext.minutes;
+            const kms=[legPrev?.km,legNext?.km].filter(v=>Number.isFinite(v));
+            const nearestKm=kms.length?Math.min(...kms):null;
+            const timeGaps=[previous?Math.abs(t-christmasRouteTimeMinutes(previous.hora)):null,next?Math.abs(christmasRouteTimeMinutes(next.hora)-t):null].filter(v=>Number.isFinite(v));
+            const nearestTimeGap=timeGaps.length?Math.min(...timeGaps):null;
+            const startRoutePenalty=sameDate.length?0:25;
+            const nearbyBonus=nearestKm!==null&&nearestKm<=7?8:0;
+            const score=Math.max(0,addedTravel)+sameDate.length*2+startRoutePenalty-nearbyBonus;
+            return {feasible:fitsPrevious&&fitsNext,score,addedTravel,nearestKm,nearestTimeGap,anchors:sameDate.length,previous,next,legPrev,legNext};
+        };
+        function computeChristmasSmartRoute(date,time,capacity,gps,rows=routeEvents){
+            const t=christmasRouteTimeMinutes(time);
+            const cap=Math.max(1,Number(capacity)||1);
+            if(!gps||t===null) return null;
+            const santaNames=Array.from({length:cap},(_,i)=>`Santa ${i+1}`);
+            const dayRows=(Array.isArray(rows)?rows:[]).filter(ev=>{
+                const id=String(ev._eventId||ev.id||'');
+                const isSanta=ev.esNavidad===true||String(ev.recursoNavidad||'').toLowerCase()==='santa';
+                return id&&isSanta&&String(ev.fecha||'')===String(date)&&christmasRouteTimeMinutes(ev.hora)!==null;
+            }).map(ev=>({...ev,id:String(ev._eventId||ev.id||'')}));
+            const routes=new Map(santaNames.map(name=>[name,[]]));
+            const unassigned=[];
+            for(const ev of dayRows){
+                const santa=String(ev.santaAsignado||'').trim();
+                if(routes.has(santa)) routes.get(santa).push(ev); else unassigned.push(ev);
+            }
+            // Compatibilidad: si una reserva antigua no tenía Santa, la distribuimos virtualmente
+            // para que no desaparezca de la planificación mientras la app la reconcilia.
+            for(const ev of unassigned.sort((a,b)=>christmasRouteTimeMinutes(a.hora)-christmasRouteTimeMinutes(b.hora))){
+                const choices=santaNames.map(name=>({name,...christmasRouteInsertion(ev,routes.get(name))}))
+                    .filter(x=>x.feasible).sort((a,b)=>a.score-b.score||routes.get(a.name).length-routes.get(b.name).length);
+                const chosen=choices[0]?.name||santaNames.slice().sort((a,b)=>routes.get(a).length-routes.get(b).length)[0];
+                if(chosen) routes.get(chosen).push({...ev,santaAsignado:chosen});
+            }
+            const candidate={id:'__candidate__',fecha:String(date),hora:String(time),lat:Number(gps.lat),lng:Number(gps.lng)};
+            const choices=santaNames.map(name=>({name,load:routes.get(name).length,...christmasRouteInsertion(candidate,routes.get(name))}))
+                .filter(x=>x.feasible).sort((a,b)=>a.score-b.score||a.load-b.load||a.name.localeCompare(b.name,undefined,{numeric:true}));
+            const best=choices[0]||null;
+            return best ? {feasible:true,bestSanta:best.name,score:best.score,nearestKm:best.nearestKm,nearestTimeGap:best.nearestTimeGap,anchors:best.anchors,addedTravel:best.addedTravel} : {feasible:false,bestSanta:'',score:9999,nearestKm:null,nearestTimeGap:null,anchors:dayRows.length};
+        }
         let currentCalDate = new Date(); 
         let bookingFormState = {}; 
         let selectedCalendarDate = null; 
@@ -7055,23 +7145,18 @@ body.cart-open #cartSummary{display:none!important;}
                 .filter(ev => {
                     const id = String(ev._availabilityId || ev.id || '');
                     const fecha = String(ev.fecha || '').trim();
-                    if (!id || id.startsWith('slot_') || fecha < start || fecha > end) return false;
-
-                    const rawLat = String(ev.lat ?? '').trim();
-                    const rawLng = String(ev.lng ?? '').trim();
-                    const lat = Number(rawLat), lng = Number(rawLng);
-                    return rawLat !== '' && rawLng !== '' &&
-                        Number.isFinite(lat) && Number.isFinite(lng) &&
-                        Math.abs(lat) <= 90 && Math.abs(lng) <= 180 &&
-                        !(lat === 0 && lng === 0);
+                    return !!id && !id.startsWith('slot_') && fecha >= start && fecha <= end;
                 })
-                .map(ev => ({
-                    ...ev,
-                    id: String(ev._availabilityId || ev.id || ''),
-                    _eventId: String(ev._availabilityId || ev.id || ''),
-                    lat: Number(ev.lat),
-                    lng: Number(ev.lng)
-                }));
+                .map(ev => {
+                    const lat=Number(ev.lat), lng=Number(ev.lng);
+                    const validGps=Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180&&!(lat===0&&lng===0);
+                    return {
+                        ...ev,
+                        id: String(ev._availabilityId || ev.id || ''),
+                        _eventId: String(ev._availabilityId || ev.id || ''),
+                        ...(validGps ? {lat,lng} : {})
+                    };
+                });
 
             routeEventsMonthCache.set(key, { at: Date.now(), rows });
             routeEvents = rows;
@@ -7452,90 +7537,39 @@ body.cart-open #cartSummary{display:none!important;}
                     const lat = Number(m[1]), lng = Number(m[2]);
                     return Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : null;
                 };
-                const geoDistanceKm = (aLat, aLng, bLat, bLng) => {
-                    const R = 6371, rad = Math.PI / 180;
-                    const dLat = (bLat-aLat)*rad, dLng = (bLng-aLng)*rad;
-                    const x = Math.sin(dLat/2)**2 + Math.cos(aLat*rad)*Math.cos(bLat*rad)*Math.sin(dLng/2)**2;
-                    return 2*R*Math.asin(Math.sqrt(x));
-                };
-                const timeMinutes = value => { const m=String(value||'').match(/^(\d{1,2}):(\d{2})/); return m ? Number(m[1])*60+Number(m[2]) : null; };
-                const estimateChristmasTravelMinutes = km => {
-                    const d = Math.max(0, Number(km) || 0);
-                    // Estimación conservadora local; no pretende sustituir ETA con tráfico.
-                    if (d <= 2) return 10;
-                    if (d <= 5) return 15;
-                    if (d <= 8) return 22;
-                    if (d <= 12) return 30;
-                    if (d <= 18) return 40;
-                    return Math.min(70, 40 + Math.ceil((d - 18) * 2));
-                };
-                const routeRecommendation = (date, time) => {
-                    const gps = parseChristmasGps();
-                    const t = timeMinutes(time);
-                    if (!gps || t === null) return null;
-                    const currentAddress = String(bForm?.elements?.address?.value || bookingFormState.address || '').trim();
-                    const normalizeAddress = value => String(value || '')
-                        .trim().toLowerCase().replace(/\s+/g,'');
-                    const currentAddressKey = normalizeAddress(currentAddress);
-                    const anchors = routeEvents.map(ev => {
-                        const id=String(ev._eventId || ev.id || '');
-                        if (!id || String(ev.fecha||'') !== String(date)) return null;
-                        const et=timeMinutes(ev.hora);
-                        if (et===null) return null;
-                        const rawLat=String(ev.lat ?? '').trim(), rawLng=String(ev.lng ?? '').trim();
-                        const lat=Number(rawLat), lng=Number(rawLng);
-                        const validGps = rawLat !== '' && rawLng !== '' &&
-                            Number.isFinite(lat) && Number.isFinite(lng) &&
-                            Math.abs(lat) <= 90 && Math.abs(lng) <= 180 &&
-                            !(lat === 0 && lng === 0);
-                        let km = null;
-                        if (validGps) {
-                            km=geoDistanceKm(gps.lat,gps.lng,lat,lng);
-                        } else {
-                            // Compatibilidad con reservas antiguas: si no guardaron GPS pero la
-                            // dirección registrada es exactamente la misma, la distancia es 0 km.
-                            const oldAddressKey = normalizeAddress(ev.direccion || ev.address || '');
-                            if (currentAddressKey && oldAddressKey && currentAddressKey === oldAddressKey) km = 0;
-                        }
-                        if (!Number.isFinite(km)) return null;
-                        return {time:et, km, travel:estimateChristmasTravelMinutes(km)};
-                    }).filter(Boolean).sort((a,b)=>a.time-b.time);
-                    if (!anchors.length) return {recommended:false, reason:'first'};
-
-                    const previous=[...anchors].filter(a=>a.time<t).sort((a,b)=>b.time-a.time)[0] || null;
-                    const next=anchors.filter(a=>a.time>t).sort((a,b)=>a.time-b.time)[0] || null;
-                    // 25 min de visita + 5 min de margen + traslado estimado.
-                    const SERVICE_AND_BUFFER=30;
-                    const fitsPrevious=!previous || previous.time + SERVICE_AND_BUFFER + previous.travel <= t;
-                    const fitsNext=!next || t + SERVICE_AND_BUFFER + next.travel <= next.time;
-                    const nearby=anchors.filter(a=>a.km<=7).sort((a,b)=>a.km-b.km)[0] || null;
-                    const recommended=!!nearby && fitsPrevious && fitsNext && Math.abs(nearby.time-t)<=120;
-                    return {recommended, fitsPrevious, fitsNext, km:nearby?.km ?? null};
+                const timeMinutes = christmasRouteTimeMinutes;
+                const routeRecommendation = (date, time, capacity = christmasCapacityCache.value) => {
+                    return computeChristmasSmartRoute(date,time,capacity,parseChristmasGps(),routeEvents);
                 };
                 const renderChristmasTimeCards = (date, capacity) => {
                     const wrap=document.getElementById('christmas-time-cards');
                     if (!wrap || !christmasTimeSelect) return;
                     const selected=String(christmasTimeSelect.value||'');
+                    const rankOrder={best:0,good:1,available:2,blocked:3};
                     const rows=Array.from(christmasTimeSelect.options).filter(o=>o.value).map(opt=>{
                         const base=String(opt.textContent||'').split(' — ')[0];
-                        const recommended=/RECOMENDADO/i.test(opt.textContent||'');
+                        const rank=String(opt.dataset.routeRank||'available');
                         const full=!!opt.disabled;
                         const remainingMatch=String(opt.textContent||'').match(/(\d+) cupo/);
                         const remaining=remainingMatch ? Number(remainingMatch[1]) : capacity;
-                        return {value:opt.value,base,recommended,full,remaining};
+                        return {value:opt.value,base,rank,full,remaining};
                     });
-                    rows.sort((a,b)=>Number(b.recommended)-Number(a.recommended) || timeMinutes(a.value)-timeMinutes(b.value));
+                    rows.sort((a,b)=>(rankOrder[a.rank]??2)-(rankOrder[b.rank]??2)||timeMinutes(a.value)-timeMinutes(b.value));
                     wrap.innerHTML=rows.map(r=>{
                         const active=selected===r.value;
+                        const isBest=r.rank==='best', isGood=r.rank==='good';
                         const cls=r.full
                           ? 'opacity-45 cursor-not-allowed border-white/10 bg-white/5'
                           : active
                             ? 'ring-2 ring-amber-300 border-amber-300/70 bg-amber-400/20'
-                            : r.recommended
-                              ? 'border-amber-300/60 bg-amber-400/10 shadow-sm'
-                              : 'border-white/15 bg-white/5';
-                        const badge=r.full ? 'NO DISPONIBLE' : r.recommended ? '⭐ RECOMENDADO' : (r.remaining<capacity ? `${r.remaining} CUPO${r.remaining===1?'':'S'}` : 'DISPONIBLE');
-                        return `<button type="button" data-christmas-time="${r.value}" ${r.full?'disabled':''} class="christmas-time-card min-h-[74px] rounded-2xl border px-3 py-3 text-left transition active:scale-[.98] ${cls}"><span class="block text-base font-black season-text-title">${r.base}</span><span class="mt-1 block text-[10px] font-extrabold tracking-wide ${r.recommended?'text-amber-300':'season-text-muted'}">${badge}</span></button>`;
+                            : isBest
+                              ? 'border-amber-300/70 bg-amber-400/15 shadow-sm'
+                              : isGood
+                                ? 'border-emerald-300/45 bg-emerald-400/10 shadow-sm'
+                                : 'border-white/15 bg-white/5';
+                        const badge=r.full ? 'NO DISPONIBLE' : isBest ? '⭐ MEJOR OPCIÓN' : isGood ? '✓ BUENA OPCIÓN' : (r.remaining<capacity ? `${r.remaining} CUPO${r.remaining===1?'':'S'}` : 'DISPONIBLE');
+                        const badgeClass=isBest?'text-amber-300':isGood?'text-emerald-300':'season-text-muted';
+                        return `<button type="button" data-christmas-time="${r.value}" ${r.full?'disabled':''} class="christmas-time-card min-h-[74px] rounded-2xl border px-3 py-3 text-left transition active:scale-[.98] ${cls}"><span class="block text-base font-black season-text-title">${r.base}</span><span class="mt-1 block text-[10px] font-extrabold tracking-wide ${badgeClass}">${badge}</span></button>`;
                     }).join('');
                     wrap.querySelectorAll('[data-christmas-time]').forEach(btn=>btn.addEventListener('click',()=>{
                         if (btn.disabled) return;
@@ -7554,8 +7588,7 @@ body.cart-open #cartSummary{display:none!important;}
                         await loadRouteEventsForMonth(new Date(`${christmasDate}T12:00:00`));
                         const configuredCapacity = await getChristmasCapacity();
                         const capacity = Math.max(1, Number(configuredCapacity) || 1);
-                        Array.from(christmasTimeSelect.options).forEach(opt => {
-                            if (!opt.value) return;
+                        const optionInfos=Array.from(christmasTimeSelect.options).filter(opt=>opt.value).map(opt=>{
                             const safeSlot = `${christmasDate}_${String(opt.value).replace(':','-')}`.replace(/[^0-9A-Za-z_-]/g,'');
                             const slotId = `slot_santa_${safeSlot}`;
                             const slot = bookedEvents.find(ev => ev._availabilityId === slotId);
@@ -7566,19 +7599,40 @@ body.cart-open #cartSummary{display:none!important;}
                             }).length;
                             const slotCount = slot ? Math.max(Number(slot.count)||0, Array.isArray(slot.reservationIds)?slot.reservationIds.length:0) : 0;
                             const count = Math.max(slotCount, individualCount);
-                            // Usa la capacidad REAL configurada en Admin (Santa 1, Santa 2, etc.).
-                            // Se obtuvo una sola vez antes del recorrido para evitar lecturas repetidas.
-                            const full = count >= capacity;
-                            opt.disabled = full;
-                            const base = String(opt.textContent || '').split(' — ')[0];
-                            const routeHint = !full ? routeRecommendation(christmasDate, opt.value) : null;
-                            if (full) opt.textContent = `${base} — NO DISPONIBLE · elige otro horario`;
-                            else if (routeHint?.recommended) opt.textContent = `${base} — ⭐ RECOMENDADO PARA TU ZONA${count > 0 ? ` · ${Math.max(0,capacity-count)} cupo${capacity-count===1?'':'s'}` : ''}`;
-                            else opt.textContent = count > 0 ? `${base} — ${Math.max(0,capacity-count)} cupo${capacity-count===1?'':'s'}` : `${base} — Disponible`;
+                            const fullByCapacity = count >= capacity;
+                            const hint = !fullByCapacity ? routeRecommendation(christmasDate, opt.value, capacity) : null;
+                            return {opt,count,fullByCapacity,hint,base:String(opt.textContent||'').split(' — ')[0]};
+                        });
+
+                        const candidates=optionInfos.filter(x=>!x.fullByCapacity&&x.hint?.feasible&&x.hint.anchors>0&&Number.isFinite(x.hint.nearestKm)&&x.hint.nearestKm<=10&&Number.isFinite(x.hint.nearestTimeGap)&&x.hint.nearestTimeGap<=120)
+                            .sort((a,b)=>a.hint.score-b.hint.score||timeMinutes(a.opt.value)-timeMinutes(b.opt.value));
+                        const bestInfo=candidates[0]||null;
+                        const bestScore=bestInfo?.hint?.score ?? null;
+
+                        optionInfos.forEach(info=>{
+                            const {opt,count,fullByCapacity,hint,base}=info;
+                            const routeBlocked=!fullByCapacity&&hint&&hint.feasible===false;
+                            const isBest=!!bestInfo&&opt.value===bestInfo.opt.value;
+                            const isGood=!isBest&&!fullByCapacity&&!routeBlocked&&hint?.feasible&&hint.anchors>0&&Number.isFinite(hint.nearestKm)&&hint.nearestKm<=10&&Number.isFinite(hint.nearestTimeGap)&&hint.nearestTimeGap<=120&&bestScore!==null&&hint.score<=bestScore+12;
+                            opt.disabled=fullByCapacity||routeBlocked;
+                            opt.dataset.routeRank=opt.disabled?'blocked':isBest?'best':isGood?'good':'available';
+                            opt.dataset.santa=hint?.bestSanta||'';
+                            opt.dataset.routeScore=Number.isFinite(hint?.score)?String(hint.score):'';
+                            const remaining=Math.max(0,capacity-count);
+                            const cupos=count>0?` · ${remaining} cupo${remaining===1?'':'s'}`:'';
+                            if(fullByCapacity) opt.textContent=`${base} — NO DISPONIBLE · máximo de Santas`;
+                            else if(routeBlocked) opt.textContent=`${base} — NO DISPONIBLE · ruta no viable`;
+                            else if(isBest) opt.textContent=`${base} — ⭐ MEJOR OPCIÓN PARA TU ZONA${cupos}`;
+                            else if(isGood) opt.textContent=`${base} — ✓ BUENA OPCIÓN PARA TU ZONA${cupos}`;
+                            else opt.textContent=count>0?`${base} — ${remaining} cupo${remaining===1?'':'s'}`:`${base} — Disponible`;
                         });
                         if (christmasTimeSelect.value && christmasTimeIsUnavailable()) christmasTimeSelect.value = '';
+                        const selectedOpt=christmasTimeSelect.options[christmasTimeSelect.selectedIndex];
+                        bookingFormState.christmasSuggestedSanta=selectedOpt?.dataset?.santa||'';
                         renderChristmasTimeCards(christmasDate, capacity);
-                        if (christmasTimeMessage) christmasTimeMessage.textContent = '✓ Horarios calculados para tu ubicación. ⭐ indica los horarios que mejor encajan con entregas cercanas ya reservadas.';
+                        if (christmasTimeMessage) christmasTimeMessage.textContent = bestInfo
+                            ? '⭐ Mejor opción = menor recorrido estimado para el Santa disponible. ✓ Buena opción también mantiene una ruta eficiente.'
+                            : '✓ Horarios calculados con la disponibilidad y las rutas actuales de los Santas.';
                         if (christmasTimeMessage) christmasTimeMessage.style.whiteSpace = 'pre-line';
                     } catch (_) {
                         if (christmasTimeMessage) christmasTimeMessage.textContent = 'No pudimos actualizar los cupos ahora. Se volverán a validar al confirmar.';
@@ -7588,15 +7642,19 @@ body.cart-open #cartSummary{display:none!important;}
                     christmasTimeSelect.addEventListener('change', () => {
                         if (christmasTimeIsUnavailable()) {
                             christmasTimeSelect.value = '';
+                            bookingFormState.christmasSuggestedSanta='';
                             showToast('Ese horario no está disponible. Intenta con otro horario.', 'error');
-                            if (christmasTimeMessage) christmasTimeMessage.textContent = '⚠️ Ese horario ya no está disponible. Selecciona otro para continuar.';
+                            if (christmasTimeMessage) christmasTimeMessage.textContent = '⚠️ Ese horario ya no es viable para las rutas actuales. Selecciona otro.';
                         } else if (christmasTimeSelect.value && christmasTimeMessage) {
-                            const rawDate=bForm?.elements?.date?.value || bookingFormState.date || '';
-                            const date=normalizeChristmasDateForSubmit(rawDate);
-                            const hint=routeRecommendation(date,christmasTimeSelect.value);
-                            christmasTimeMessage.textContent = hint?.recommended
-                                ? '⭐ Excelente horario: encaja mejor con las entregas cercanas ya reservadas.'
-                                : '✓ Horario disponible. Los horarios con ⭐ ayudan a mantener una ruta más eficiente.';
+                            const opt=christmasTimeSelect.options[christmasTimeSelect.selectedIndex];
+                            bookingFormState.time=christmasTimeSelect.value;
+                            bookingFormState.christmasSuggestedSanta=opt?.dataset?.santa||'';
+                            const rank=String(opt?.dataset?.routeRank||'available');
+                            christmasTimeMessage.textContent = rank==='best'
+                                ? '⭐ Excelente: este es el horario que menos recorrido agrega a las rutas actuales.'
+                                : rank==='good'
+                                  ? '✓ Buena opción: este horario encaja bien con una ruta existente.'
+                                  : '✓ Horario disponible. Si aparece ⭐, esa opción ayuda más a reducir traslados.';
                         }
                     });
                 }
@@ -8115,16 +8173,38 @@ body.cart-open #cartSummary{display:none!important;}
                 let dv = 0; if(appliedCoupon) dv = appliedCoupon.type==='percent' ? sub*(Number(appliedCoupon.discount)/100) : Number(appliedCoupon.discount);
                 dv=Math.min(sub,Math.max(0,dv)); const ft = sub - dv + tc;
                 const lo = locations.find(l=>l.value===app.location);
+                let christmasSmartSanta = '';
+                let christmasSmartCapacity = null;
                 if (isChristmasEveBooking()) {
                     const zoneCheck = cleanStr(`${app.location} ${lo?.label || ''}`).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
                     if (zoneCheck.includes('arraijan') || zoneCheck.includes('chorrera')) {
                         return showToast('Entregas de Nochebuena está disponible únicamente en Ciudad de Panamá.', 'error');
                     }
+
+                    // Revalidación final de ruta justo antes de guardar. Así el Santa elegido
+                    // considera las reservas que pudieron entrar mientras el cliente llenaba el formulario.
+                    const smartDate = normalizeChristmasDateForSubmit(fd.get('date') || '');
+                    const smartTime = String(fd.get('time') || '');
+                    let smartLat = Number(bookingFormState.christmasLat);
+                    let smartLng = Number(bookingFormState.christmasLng);
+                    if (!Number.isFinite(smartLat) || !Number.isFinite(smartLng)) {
+                        const g=String(fd.get('address')||'').match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
+                        if (g) { smartLat=Number(g[1]); smartLng=Number(g[2]); }
+                    }
+                    const smartGps = Number.isFinite(smartLat) && Number.isFinite(smartLng) ? {lat:smartLat,lng:smartLng} : null;
+                    await loadRouteEventsForMonth(new Date(`${smartDate}T12:00:00`), {force:true});
+                    christmasSmartCapacity = await getChristmasCapacity({force:true});
+                    const smartRoute = computeChristmasSmartRoute(smartDate, smartTime, christmasSmartCapacity, smartGps, routeEvents);
+                    if (!smartRoute?.feasible || !smartRoute.bestSanta) {
+                        return showToast('Ese horario dejó de ser viable para las rutas de Santa. Elige otro horario disponible.', 'error');
+                    }
+                    christmasSmartSanta = smartRoute.bestSanta;
                 }
                 const dataToSave = {
                     id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: isChristmasEveBooking() ? normalizeChristmasDateForSubmit(fd.get('date')||'') : (fd.get('date')||''), hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : '', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa',
                     esNavidad: isChristmasEveBooking(),
                     recursoNavidad: isChristmasEveBooking() ? 'Santa' : '',
+                    santaAsignado: isChristmasEveBooking() ? christmasSmartSanta : '',
                     ...(isChristmasEveBooking() && (() => {
                         let lat = Number(bookingFormState.christmasLat);
                         let lng = Number(bookingFormState.christmasLng);
@@ -8147,7 +8227,7 @@ body.cart-open #cartSummary{display:none!important;}
                     const configCapacity = capacitySnap?.exists() ? (capacitySnap.data() || {}) : {};
                     const configuredCapacity = Number(
                         reservaNavidad
-                            ? await getChristmasCapacity()
+                            ? (christmasSmartCapacity ?? await getChristmasCapacity())
                             : (configCapacity.capacidadSimultanea ?? 3)
                     );
                     if (Number.isInteger(configuredCapacity) && configuredCapacity >= 1 && configuredCapacity <= 100) capacidadSimultanea = configuredCapacity;
@@ -8241,6 +8321,7 @@ body.cart-open #cartSummary{display:none!important;}
                                 hora:request.data.hora,
                                 esNavidad:request.data.esNavidad === true,
                                 recursoNavidad:request.data.recursoNavidad || '',
+                                santaAsignado:request.data.esNavidad === true ? (request.data.santaAsignado || '') : '',
                                 ...(request.data.esNavidad === true && Number.isFinite(Number(request.data.lat)) && Number.isFinite(Number(request.data.lng)) ? { lat:Number(request.data.lat), lng:Number(request.data.lng) } : {})
                             });
                             tx.set(customerRef,Object.fromEntries(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'].map(key=>[key,String(request.data[key]??'')])));
