@@ -7024,45 +7024,8 @@ body.cart-open #cartSummary{display:none!important;}
                 const snap = await fetchWithTimeout(getDocs(monthQuery), 8000);
                 let monthEvents = snap.docs.map(d => ({ ...d.data(), _availabilityId: d.id })).filter(isBlockingEvent);
 
-                // RUTAS NAVIDAD: algunas reservas antiguas de disponibilidad_web no guardaron
-                // lat/lng aunque el documento original de eventos sí conserva la ubicación.
-                // Completa esas coordenadas antes de calcular los horarios recomendados.
-                const missingGps = monthEvents.filter(ev => {
-                    const id = String(ev._availabilityId || '');
-                    const rawLat = String(ev.lat ?? '').trim();
-                    const rawLng = String(ev.lng ?? '').trim();
-                    const lat = Number(rawLat), lng = Number(rawLng);
-                    const validGps = rawLat !== '' && rawLng !== '' &&
-                        Number.isFinite(lat) && Number.isFinite(lng) &&
-                        Math.abs(lat) <= 90 && Math.abs(lng) <= 180 &&
-                        !(lat === 0 && lng === 0);
-                    return id && !id.startsWith('slot_') && !validGps;
-                });
-                if (missingGps.length) {
-                    const hydrated = await Promise.all(missingGps.map(async ev => {
-                        try {
-                            const original = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',String(ev._availabilityId)));
-                            if (!original.exists()) return ev;
-                            const data = original.data() || {};
-                            let lat = Number(data.lat), lng = Number(data.lng);
-                            // Compatibilidad con reservas que solo conservaron el enlace de Google Maps.
-                            if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-                                const raw = String(data.direccion || data.address || '');
-                                const m = raw.match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
-                                if (m) { lat = Number(m[1]); lng = Number(m[2]); }
-                            }
-                            const direccion = String(data.direccion || data.address || ev.direccion || '').trim();
-                            return {
-                                ...ev,
-                                ...(direccion ? { direccion } : {}),
-                                ...(Number.isFinite(lat) && Number.isFinite(lng) ? { lat, lng } : {})
-                            };
-                        } catch (_) { return ev; }
-                    }));
-                    const byId = new Map(hydrated.map(ev => [String(ev._availabilityId), ev]));
-                    monthEvents = monthEvents.map(ev => byId.get(String(ev._availabilityId)) || ev);
-                }
-
+                // RUTAS NAVIDAD: disponibilidad_web es la fuente pública autorizada.
+                // Las reservas nuevas ya guardan lat/lng aquí al confirmar la reserva.
                 bookedEventsMonthCache.set(key, {at:Date.now(),rows:monthEvents});
 
                 // Evita que una respuesta antigua reemplace el mes que el usuario ya cambió.
@@ -7077,67 +7040,42 @@ body.cart-open #cartSummary{display:none!important;}
         }
 
 
-        let divertyRouteDebug = { status:'NO EJECUTADO', total:0, dateRows:[], error:'' };
-
         async function loadRouteEventsForMonth(date, { force = false } = {}) {
-            if (!db) return [];
             const { start, end, key } = getMonthRange(date);
             if (!force && routeEventsMonthCache.has(key) && Date.now() - routeEventsMonthCache.get(key).at < 60000) {
                 routeEvents = routeEventsMonthCache.get(key).rows;
                 return routeEvents;
             }
-            try {
-                // Leer `eventos` directamente aquí. NO usar fetchStaticCollection:
-                // esa constante se inicializa más tarde en este mismo script.
-                const eventsRef = collection(db,'artifacts',CRM_APP_ID,'public','data','eventos');
-                const snap = await fetchWithTimeout(getDocs(eventsRef), 10000);
-                const allEvents = snap.docs.map(d => ({...d.data(), id:d.id, _eventId:d.id}));
-                divertyRouteDebug = {
-                    status:'LECTURA OK',
-                    total: allEvents.length,
-                    range:`${start} → ${end}`,
-                    dateRows: allEvents.filter(ev => String(ev.fecha||'').trim() === '2026-12-24').map(ev => ({
-                        id:String(ev._eventId||ev.id||''),
-                        hora:String(ev.hora||''),
-                        lat:ev.lat ?? '',
-                        lng:ev.lng ?? '',
-                        direccion:String(ev.direccion || ev.address || ''),
-                        estado:String(ev.estado || ev.status || '')
-                    })),
-                    error:''
-                };
 
-                const rows = allEvents
-                    .filter(ev => {
-                        const fecha=String(ev.fecha || '').trim();
-                        return fecha >= start && fecha <= end;
-                    })
-                    .filter(isBlockingEvent)
-                    .map(ev => {
-                        let rawLat=String(ev.lat ?? '').trim();
-                        let rawLng=String(ev.lng ?? '').trim();
-                        let lat=Number(rawLat), lng=Number(rawLng);
-                        if ((!rawLat || !rawLng || !Number.isFinite(lat) || !Number.isFinite(lng)) && (ev.direccion || ev.address)) {
-                            const m=String(ev.direccion || ev.address || '').match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
-                            if(m){ lat=Number(m[1]); lng=Number(m[2]); }
-                        }
-                        return {...ev,lat,lng};
-                    })
-                    .filter(ev =>
-                        Number.isFinite(Number(ev.lat)) && Number.isFinite(Number(ev.lng)) &&
-                        Math.abs(Number(ev.lat))<=90 && Math.abs(Number(ev.lng))<=180 &&
-                        !(Number(ev.lat)===0 && Number(ev.lng)===0)
-                    );
+            // IMPORTANTE: la web pública NO puede listar `eventos` (correcto por seguridad).
+            // Usamos `disponibilidad_web`, que es la misma fuente autorizada que ya calcula cupos.
+            // Primero aseguramos que el mes esté cargado; luego reutilizamos esos documentos.
+            const monthRows = await loadBookedEventsForMonth(date, { force });
+            const rows = (Array.isArray(monthRows) ? monthRows : [])
+                .filter(ev => {
+                    const id = String(ev._availabilityId || ev.id || '');
+                    const fecha = String(ev.fecha || '').trim();
+                    if (!id || id.startsWith('slot_') || fecha < start || fecha > end) return false;
 
-                routeEventsMonthCache.set(key,{at:Date.now(),rows});
-                routeEvents=rows;
-                return rows;
-            } catch(e) {
-                console.error('DIVERTY route events error:', e);
-                divertyRouteDebug = {status:'ERROR',total:0,dateRows:[],error:String(e?.message || e)};
-                routeEvents=routeEventsMonthCache.get(key)?.rows || [];
-                return routeEvents;
-            }
+                    const rawLat = String(ev.lat ?? '').trim();
+                    const rawLng = String(ev.lng ?? '').trim();
+                    const lat = Number(rawLat), lng = Number(rawLng);
+                    return rawLat !== '' && rawLng !== '' &&
+                        Number.isFinite(lat) && Number.isFinite(lng) &&
+                        Math.abs(lat) <= 90 && Math.abs(lng) <= 180 &&
+                        !(lat === 0 && lng === 0);
+                })
+                .map(ev => ({
+                    ...ev,
+                    id: String(ev._availabilityId || ev.id || ''),
+                    _eventId: String(ev._availabilityId || ev.id || ''),
+                    lat: Number(ev.lat),
+                    lng: Number(ev.lng)
+                }));
+
+            routeEventsMonthCache.set(key, { at: Date.now(), rows });
+            routeEvents = rows;
+            return rows;
         }
 
         function phoneVariants(value) {
@@ -7479,7 +7417,7 @@ body.cart-open #cartSummary{display:none!important;}
                         // Antes, el paso Horario podía mostrarse con datos calculados antes de tener ubicación.
                         bookedEventsMonthCache.clear();
                         routeEventsMonthCache.clear();
-                        loadRouteEventsForMonth(new Date(`${CHRISTMAS_DATE}T12:00:00`), {force:true}).then(()=>refreshChristmasTimeAvailability()).catch(()=>refreshChristmasTimeAvailability());
+                        refreshChristmasTimeAvailability();
                         showToast('Ubicación recibida correctamente.', 'success');
                     }, err => {
                         christmasLocationBtn.disabled = false;
@@ -7607,10 +7545,8 @@ body.cart-open #cartSummary{display:none!important;}
                     const christmasDate = normalizeChristmasDateForSubmit(rawDate);
                     if (!christmasDate) return;
                     try {
-                        await Promise.all([
-                            loadBookedEventsForMonth(new Date(`${christmasDate}T12:00:00`)),
-                            loadRouteEventsForMonth(new Date(`${christmasDate}T12:00:00`))
-                        ]);
+                        await loadBookedEventsForMonth(new Date(`${christmasDate}T12:00:00`));
+                        await loadRouteEventsForMonth(new Date(`${christmasDate}T12:00:00`));
                         const configuredCapacity = await getChristmasCapacity();
                         const capacity = Math.max(1, Number(configuredCapacity) || 1);
                         Array.from(christmasTimeSelect.options).forEach(opt => {
@@ -7637,38 +7573,6 @@ body.cart-open #cartSummary{display:none!important;}
                         });
                         if (christmasTimeSelect.value && christmasTimeIsUnavailable()) christmasTimeSelect.value = '';
                         renderChristmasTimeCards(christmasDate, capacity);
-                        let dbg=document.getElementById('diverty-route-debug-final');
-                        if(!dbg){
-                            dbg=document.createElement('div');
-                            dbg.id='diverty-route-debug-final';
-                            dbg.style.cssText='margin:14px 0;padding:14px;border:1px solid #f5b942;border-radius:12px;background:#120f17;color:#fff;font:12px/1.45 monospace;white-space:pre-wrap;word-break:break-word;';
-                            const cards=document.getElementById('christmas-time-cards');
-                            if(cards) cards.insertAdjacentElement('afterend',dbg);
-                        }
-                        if(dbg){
-                            const gps=parseChristmasGps();
-                            const d=divertyRouteDebug||{};
-                            const rows=(d.dateRows||[]);
-                            const four=rows.filter(x=>timeMinutes(x.hora)===16*60);
-                            dbg.textContent=[
-                                'DIAGNÓSTICO FINAL RUTAS',
-                                `Firestore eventos: ${d.status||'SIN DATO'}`,
-                                `Error: ${d.error||'ninguno'}`,
-                                `Total documentos: ${d.total ?? '?'}`,
-                                `Rango: ${d.range||'?'}`,
-                                `Reservas 24/12: ${rows.length}`,
-                                `Reservas 4:00 p. m.: ${four.length}`,
-                                `GPS cliente: ${gps ? gps.lat+', '+gps.lng : 'NO'}`,
-                                `Anclas válidas: ${routeEvents.length}`,
-                                '',
-                                ...four.map((x,i)=>`4PM #${i+1} | id=${x.id} | hora=${x.hora} | lat=${String(x.lat)} | lng=${String(x.lng)} | estado=${x.estado||'-'}`),
-                                '',
-                                ...Array.from(christmasTimeSelect.options).filter(o=>o.value).map(o=>{
-                                    const r=routeRecommendation(christmasDate,o.value);
-                                    return `${o.value}: ${r?.recommended?'⭐ SÍ':'NO'} | ${r ? `prev=${r.fitsPrevious} next=${r.fitsNext} km=${r.km ?? '-'}` : 'sin resultado'}`;
-                                })
-                            ].join('\n');
-                        }
                         if (christmasTimeMessage) christmasTimeMessage.textContent = '✓ Horarios calculados para tu ubicación. ⭐ indica los horarios que mejor encajan con entregas cercanas ya reservadas.';
                         if (christmasTimeMessage) christmasTimeMessage.style.whiteSpace = 'pre-line';
                     } catch (_) {
