@@ -7788,8 +7788,11 @@ body.cart-open #cartSummary{display:none!important;}
                     const christmasDate = normalizeChristmasDateForSubmit(rawDate);
                     if (!christmasDate) return;
                     try {
-                        await loadBookedEventsForMonth(new Date(`${christmasDate}T12:00:00`));
-                        await loadRouteEventsForMonth(new Date(`${christmasDate}T12:00:00`));
+                        // Navidad debe reflejar inmediatamente lo que la app acaba de aceptar,
+                        // rechazar o eliminar. Forzamos una lectura fresca para no mantener cupos
+                        // fantasma durante los 60 s del caché local del navegador.
+                        await loadBookedEventsForMonth(new Date(`${christmasDate}T12:00:00`), {force:true});
+                        await loadRouteEventsForMonth(new Date(`${christmasDate}T12:00:00`), {force:true});
                         const configuredCapacity = await getChristmasCapacity();
                         const capacity = Math.max(1, Number(configuredCapacity) || 1);
                         const optionInfos=Array.from(christmasTimeSelect.options).filter(opt=>opt.value).map(opt=>{
