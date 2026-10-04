@@ -7119,7 +7119,12 @@ body.cart-open #cartSummary{display:none!important;}
             for(let d=1; d<=daysInMonth; d++) {
                 const currentDate = new Date(year, month, d);
                 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                let eventsThisDay = bookedEvents.filter(ev => ev.fecha === dateStr).length;
+                // `slot_*` are internal transaction locks, not real reservations.
+                // Counting them here made the public calendar show ghost/duplicated occupancy.
+                let eventsThisDay = bookedEvents.filter(ev => {
+                    const id = String(ev._availabilityId || ev.id || '');
+                    return !id.startsWith('slot_') && String(ev.fecha || '').trim().slice(0,10) === dateStr;
+                }).length;
                 const isSelected = selectedCalendarDate === dateStr;
                 
                 let c = "w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-[10px] flex items-center justify-center font-bold text-[12px] sm:text-[13px] transition-all duration-300 cursor-pointer border border-transparent ";
@@ -8159,18 +8164,16 @@ body.cart-open #cartSummary{display:none!important;}
                         // AHORRO FIRESTORE: Navidad usa directamente su contador slot_santa_*.
                         // Así evitamos descargar todas las reservas del día en cada confirmación.
                         // Reservas normales conservan la comprobación histórica para no alterar su lógica.
-                        let existingCount = 0;
+                        let existingReservationIds = [];
                         if (reservaNavidad) {
                             // Sin consulta adicional: reutiliza la disponibilidad mensual ya cargada.
-                            // Math.max con reservationIds dentro de la transacción evita doble conteo
-                            // y mantiene protección frente a confirmaciones simultáneas nuevas.
-                            existingCount = bookedEvents.filter(ev => {
-                                const id = String(ev._availabilityId || '');
+                            existingReservationIds = bookedEvents.filter(ev => {
+                                const id = String(ev._availabilityId || ev.id || '');
                                 if (!id || id.startsWith('slot_') || id === request.id) return false;
                                 return String(ev.fecha || '') === String(request.data.fecha || '') &&
                                        String(ev.hora || '') === String(request.data.hora || '');
-                            }).length;
-                            if (existingCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
+                            }).map(ev => String(ev._availabilityId || ev.id || '')).filter(Boolean);
+                            if (existingReservationIds.length >= capacidadSimultanea) throw new Error('SLOT_FULL');
                         } else {
                             const sameDateSnap = await getDocs(query(
                                 collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web'),
@@ -8181,8 +8184,8 @@ body.cart-open #cartSummary{display:none!important;}
                                 const row = d.data() || {};
                                 return String(row.hora || '') === String(request.data.hora || '');
                             });
-                            existingCount = sameTimeDocs.length;
-                            if (existingCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
+                            existingReservationIds = sameTimeDocs.map(d => String(d.id));
+                            if (existingReservationIds.length >= capacidadSimultanea) throw new Error('SLOT_FULL');
                         }
 
                         const safeSlot = `${request.data.fecha}_${String(request.data.hora||'').replace(':','-')}`.replace(/[^0-9A-Za-z_-]/g,'');
@@ -8195,27 +8198,42 @@ body.cart-open #cartSummary{display:none!important;}
                         await runTransaction(db, async tx => {
                             const lockSnap = await tx.get(slotRef);
                             const lock = lockSnap.exists() ? (lockSnap.data() || {}) : {};
-                            const ids = Array.isArray(lock.reservationIds) ? lock.reservationIds.map(String) : [];
+                            const lockIds = Array.isArray(lock.reservationIds) ? lock.reservationIds.map(String) : [];
 
-                            // Reintentar la misma solicitud nunca consume un segundo cupo.
-                            if (!ids.includes(request.id)) {
-                                // Si el contador todavía no existía, parte de las reservas que ya estaban
-                                // guardadas para ese horario. Si existe, su contador es la autoridad atómica.
-                                // La disponibilidad real siempre se vuelve a comprobar al enviar.
-                                // existingCount viene de los documentos individuales actuales; el slot
-                                // protege además contra dos confirmaciones simultáneas.
-                                const currentCount = Math.max(existingCount, ids.length);
-                                if (currentCount >= capacidadSimultanea) throw new Error('SLOT_FULL');
-                                ids.push(request.id);
-                                tx.set(slotRef,{
-                                    fecha:request.data.fecha,
-                                    hora:request.data.hora,
-                                    count:currentCount + 1,
-                                    capacity:capacidadSimultanea,
-                                    reservationIds:ids,
-                                    updatedAt:new Date().toISOString()
-                                });
+                            // Validate IDs kept by the transaction lock. This makes the lock self-healing:
+                            // if an old app version deleted a reservation but left its slot_* ID behind,
+                            // that stale ID no longer consumes capacity.
+                            const validLockIds = [];
+                            for (const lockedId of [...new Set(lockIds)]) {
+                                if (!lockedId || lockedId === request.id || existingReservationIds.includes(lockedId)) continue;
+                                const lockedRef = doc(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web',lockedId);
+                                const lockedSnap = await tx.get(lockedRef);
+                                if (!lockedSnap.exists()) continue;
+                                const lockedData = lockedSnap.data() || {};
+                                if (!isBlockingEvent(lockedData)) continue;
+                                if (String(lockedData.fecha || '') !== String(request.data.fecha || '')) continue;
+                                if (String(lockedData.hora || '') !== String(request.data.hora || '')) continue;
+                                validLockIds.push(lockedId);
                             }
+
+                            const occupiedIds = new Set([
+                                ...existingReservationIds.map(String),
+                                ...validLockIds
+                            ].filter(x => x && x !== request.id));
+
+                            // Reintentar la misma solicitud nunca consume un segundo cupo. A la vez,
+                            // la unión conserva reservas detectadas por consulta y reservas concurrentes
+                            // ya confirmadas en el lock transaccional.
+                            if (occupiedIds.size >= capacidadSimultanea) throw new Error('SLOT_FULL');
+                            occupiedIds.add(request.id);
+                            tx.set(slotRef,{
+                                fecha:request.data.fecha,
+                                hora:request.data.hora,
+                                count:occupiedIds.size,
+                                capacity:capacidadSimultanea,
+                                reservationIds:[...occupiedIds],
+                                updatedAt:new Date().toISOString()
+                            });
 
                             tx.set(eventRef,request.data);
                             tx.set(availabilityRef,{
