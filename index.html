@@ -8198,13 +8198,15 @@ body.cart-open #cartSummary{display:none!important;}
                     if (!smartRoute?.feasible || !smartRoute.bestSanta) {
                         return showToast('Ese horario dejó de ser viable para las rutas de Santa. Elige otro horario disponible.', 'error');
                     }
+                    // La web pública usa este resultado solo para validar/recomendar la ruta.
+                    // La asignación definitiva se persiste desde la app administrativa,
+                    // porque las reglas de Firestore no permiten que el cliente escriba santaAsignado.
                     christmasSmartSanta = smartRoute.bestSanta;
                 }
                 const dataToSave = {
                     id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: isChristmasEveBooking() ? normalizeChristmasDateForSubmit(fd.get('date')||'') : (fd.get('date')||''), hora: fd.get('time')||'', ubicacion: lo?lo.label.replace(/📍 |\(\+\$\d+\)/g,'').trim():'Panamá Centro', direccion: fd.get('address')||'', referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : '', comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const textoDuracion = [descripcionBase, ...incluye].join(' '); const matchDuracion = textoDuracion.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/i); const nombreNorm = cleanStr(i.name).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,''); const duracionFallback = nombreNorm.includes('plan recreativo') ? 2 : (nombreNorm.includes('plan diverty') ? 3 : 0); const duracionHoras = matchDuracion ? Number(String(matchDuracion[1]).replace(',','.')) : duracionFallback; return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa',
                     esNavidad: isChristmasEveBooking(),
                     recursoNavidad: isChristmasEveBooking() ? 'Santa' : '',
-                    santaAsignado: isChristmasEveBooking() ? christmasSmartSanta : '',
                     ...(isChristmasEveBooking() && (() => {
                         let lat = Number(bookingFormState.christmasLat);
                         let lng = Number(bookingFormState.christmasLng);
@@ -8321,7 +8323,6 @@ body.cart-open #cartSummary{display:none!important;}
                                 hora:request.data.hora,
                                 esNavidad:request.data.esNavidad === true,
                                 recursoNavidad:request.data.recursoNavidad || '',
-                                santaAsignado:request.data.esNavidad === true ? (request.data.santaAsignado || '') : '',
                                 ...(request.data.esNavidad === true && Number.isFinite(Number(request.data.lat)) && Number.isFinite(Number(request.data.lng)) ? { lat:Number(request.data.lat), lng:Number(request.data.lng) } : {})
                             });
                             tx.set(customerRef,Object.fromEntries(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'].map(key=>[key,String(request.data[key]??'')])));
@@ -8388,7 +8389,7 @@ body.cart-open #cartSummary{display:none!important;}
                         uid: auth?.currentUser?.uid || null,
                         online: navigator.onLine
                     });
-                    showToast(`DIAGNÓSTICO FIREBASE: ${diagnosticCode} — ${rawMessage.slice(0,120)}. ID: ${pendingBooking?.id || 'sin-id'}`, 'error');
+                    showToast('No pudimos completar la reserva en este momento. Inténtalo nuevamente; si continúa, contáctanos por WhatsApp.', 'error');
                 }
             } 
             finally{ submitForm.dataset.sending = '0'; sBtn.disabled=false; sBtn.innerHTML=obh; }
