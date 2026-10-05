@@ -5833,31 +5833,58 @@ body.cart-open #cartSummary{display:none!important;}
                 return {lat,lng,displayName:String(row.display_name||q)};
             }catch(_){ return null; }
         }
+        // NAVIDAD — REGLAS DE COBERTURA PROTEGIDAS.
+        // No reutilizar los precios de reservas normales aquí. Santa tiene una política propia:
+        //   • Centro/interior de Ciudad de Panamá hasta Bella Vista, hasta Tocumen y hasta Villa Zaita: $0.
+        //   • Costa del Este y Punta Pacífica: recargo de $5.
+        //   • Después de Bella Vista hasta Albrook/Clayton, después de Tocumen hasta Pacora y
+        //     después de Villa Zaita hasta La Cabima: recargo único máximo de $5.
+        //   • Después de Albrook/Clayton, Pacora o La Cabima: confirmar por WhatsApp.
+        //   • Sectores de seguridad especiales: confirmar por WhatsApp, sin mostrar “zona roja” al cliente.
         function evaluateChristmasCoverage(lat,lng,label=''){
             const text=normalizeChristmasPlace(label);
             const special=CHRISTMAS_REVIEW_TERMS.some(term=>text.includes(term));
-            if(special) return {status:'review',charge:0,label:'Ubicación por confirmar',reason:'security'};
+            if(special) return {status:'review',charge:0,label:'Ubicación especial · confirmar',reason:'security'};
 
-            const includedNames=['bella vista','costa del este','chanis','villa lucre','el ingenio','tocumen','san francisco','parque lefevre','pueblo nuevo','betania','bethania','obarrio','marbella','punta pacifica','paitilla','carrasquilla','juan diaz'];
-            const surchargeNames=['albrook','clayton','ciudad del saber','pacora','24 de diciembre','la cabima'];
-            if(surchargeNames.some(x=>text.includes(x))) return {status:'surcharge',charge:5,label:'Cobertura con transporte adicional'};
-            if(includedNames.some(x=>text.includes(x)) || text.includes('villa zaita')) return {status:'included',charge:0,label:'Transporte incluido'};
+            const includedGroups = [
+                {terms:['tocumen'],label:'Panamá Este · hasta Tocumen'},
+                {terms:['villa zaita'],label:'Panamá Norte · hasta Villa Zaita'},
+                {terms:['bella vista'],label:'Panamá Centro · hasta Bella Vista'},
+                {terms:['chanis','villa lucre','el ingenio','san francisco','parque lefevre','pueblo nuevo','betania','bethania','obarrio','marbella','paitilla','carrasquilla','juan diaz','don bosco','el crisol','concepcion','panama viejo','las acacias'],label:'Ciudad de Panamá · transporte incluido'}
+            ];
+            const surchargeGroups = [
+                {terms:['costa del este'],label:'Costa del Este · transporte adicional'},
+                {terms:['punta pacifica'],label:'Punta Pacífica · transporte adicional'},
+                {terms:['albrook','clayton','ciudad del saber'],label:'Albrook / Clayton · transporte adicional'},
+                {terms:['pacora','24 de diciembre'],label:'Panamá Este · extensión hasta Pacora'},
+                {terms:['la cabima'],label:'Panamá Norte · extensión hasta La Cabima'}
+            ];
+            for(const group of surchargeGroups) if(group.terms.some(x=>text.includes(x))) return {status:'surcharge',charge:5,label:group.label};
+            for(const group of includedGroups) if(group.terms.some(x=>text.includes(x))) return {status:'included',charge:0,label:group.label};
 
             const la=Number(lat), lo=Number(lng);
             if(!Number.isFinite(la)||!Number.isFinite(lo)) return {status:'review',charge:0,label:'Ubicación por confirmar',reason:'no-gps'};
 
-            // Geocercas operativas aproximadas. El nombre geocodificado tiene prioridad arriba.
-            // Núcleo: Bella Vista -> Tocumen y hasta Villa Zaita, incluyendo las zonas interiores.
-            const core = la>=8.94 && la<=9.125 && lo>=-79.545 && lo<=-79.365;
-            // Extensión oeste: después de Bella Vista hasta Albrook/Clayton.
-            const west = la>=8.94 && la<=9.075 && lo>=-79.605 && lo<-79.545;
-            // Extensión este: después de Tocumen hasta Pacora.
-            const east = la>=8.95 && la<=9.145 && lo>-79.365 && lo>=-79.365 && lo<=-79.275;
-            // Extensión norte: después de Villa Zaita hasta La Cabima.
-            const north = la>9.125 && la<=9.185 && lo>=-79.61 && lo<=-79.47;
-            if(core) return {status:'included',charge:0,label:'Transporte incluido'};
-            if(west||east||north) return {status:'surcharge',charge:5,label:'Cobertura con transporte adicional'};
-            return {status:'review',charge:0,label:'Ubicación por confirmar',reason:'outside'};
+            // Geocercas específicas para recargos dentro de la ciudad. Se evalúan antes
+            // del polígono general para que el GPS no convierta Costa del Este o Punta Pacífica en $0
+            // cuando el geocodificador devuelve solamente "Juan Díaz" o "San Francisco".
+            const here={lat:la,lng:lo};
+            const puntaPacificaKm=christmasRouteDistanceKm(here,{lat:8.97644,lng:-79.50794});
+            const costaDelEsteKm=christmasRouteDistanceKm(here,{lat:9.01318,lng:-79.46807});
+            if(Number.isFinite(puntaPacificaKm) && puntaPacificaKm<=1.35) return {status:'surcharge',charge:5,label:'Punta Pacífica · transporte adicional'};
+            if(Number.isFinite(costaDelEsteKm) && costaDelEsteKm<=1.9) return {status:'surcharge',charge:5,label:'Costa del Este · transporte adicional'};
+
+            // Geocercas operativas aproximadas; sirven como respaldo cuando el geocodificador
+            // devuelve un nombre poco específico. Los nombres reconocidos arriba tienen prioridad.
+            const core = la>=8.94 && la<=9.125 && lo>=-79.545 && lo<=-79.365;   // Bella Vista -> Tocumen / Villa Zaita
+            const west = la>=8.94 && la<=9.075 && lo>=-79.605 && lo<-79.545;   // hasta Albrook/Clayton
+            const east = la>=8.95 && la<=9.145 && lo>-79.365 && lo<=-79.275;   // Tocumen -> Pacora
+            const north = la>9.125 && la<=9.185 && lo>=-79.61 && lo<=-79.47;   // Villa Zaita -> La Cabima
+            if(core) return {status:'included',charge:0,label:'Ciudad de Panamá · transporte incluido'};
+            if(west) return {status:'surcharge',charge:5,label:'Albrook / Clayton · transporte adicional'};
+            if(east) return {status:'surcharge',charge:5,label:'Panamá Este · extensión hasta Pacora'};
+            if(north) return {status:'surcharge',charge:5,label:'Panamá Norte · extensión hasta La Cabima'};
+            return {status:'review',charge:0,label:'Fuera de cobertura automática',reason:'outside'};
         }
         const NORMAL_RESTRICTED_TERMS = [
             'barraza','chorrillo','calle 24','calle 25','san pedro','ciudad radial','villa del rey',
@@ -6095,9 +6122,10 @@ body.cart-open #cartSummary{display:none!important;}
         function renderChristmasCoverageStatus(){
             const box=document.getElementById('christmas-coverage-result'); if(!box) return;
             const s=christmasLocationState||{};
-            if(s.status==='included') box.innerHTML='<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4"><p class="font-black text-emerald-600">✅ Ubicación dentro de cobertura</p><p class="text-xs season-text-muted mt-1">Transporte incluido · Total del servicio sin recargo.</p></div>';
-            else if(s.status==='surcharge') box.innerHTML='<div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4"><p class="font-black text-amber-600">📍 Ubicación disponible</p><p class="text-xs season-text-muted mt-1">Esta ubicación lleva un transporte adicional máximo de $5.</p></div>';
-            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Ubicación por confirmar</p><p class="text-xs season-text-muted mt-1">Esta ubicación requiere verificación antes de reservar.</p><a class="mt-3 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-black text-white" target="_blank" rel="noopener noreferrer" href="${christmasWhatsappUrl('Hola, quiero confirmar si tienen cobertura para mi entrega de Santa. Mi ubicación es: '+(s.displayName||''))}">Confirmar por WhatsApp</a></div>`;
+            const safeLabel=cleanStr(s.label||'');
+            if(s.status==='included') box.innerHTML=`<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4"><p class="font-black text-emerald-600">✅ ${safeLabel||'Ubicación dentro de cobertura'}</p><p class="text-xs season-text-muted mt-1">Transporte adicional: <b>$0.00</b> · El punto GPS se usará también para recomendar la mejor hora y organizar la ruta del Santa.</p></div>`;
+            else if(s.status==='surcharge') box.innerHTML=`<div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4"><p class="font-black text-amber-600">📍 ${safeLabel||'Ubicación disponible'}</p><p class="text-xs season-text-muted mt-1">Transporte adicional: <b>$5.00</b> · Este es el recargo máximo automático de Navidad.</p></div>`;
+            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Ubicación por confirmar</p><p class="text-xs season-text-muted mt-1">No asignaremos un precio ni un horario definitivo hasta verificar esta ubicación. Escríbenos por WhatsApp.</p><a class="mt-3 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-black text-white" target="_blank" rel="noopener noreferrer" href="${christmasWhatsappUrl('Hola, quiero confirmar si tienen cobertura para mi entrega de Santa. Mi ubicación es: '+(s.displayName||''))}">Confirmar por WhatsApp</a></div>`;
             else box.innerHTML='';
             const t=document.getElementById('booking-summary-transport'); if(t) t.textContent=`$${effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)).toFixed(2)}`;
             const total=document.getElementById('booking-summary-total');
@@ -7803,9 +7831,11 @@ body.cart-open #cartSummary{display:none!important;}
                     <button type="button" id="christmas-use-location" class="w-full season-btn font-extrabold py-3.5 px-5 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2">
                         <i data-lucide="locate-fixed" class="w-5 h-5"></i> Usar mi ubicación actual
                     </button>
-                    <div id="christmas-location-loader" class="hidden mt-3 rounded-xl border border-sky-400/25 bg-sky-400/10 p-3 text-center">
-                        <div class="loading-spinner !w-5 !h-5 !border-2 mx-auto mb-2"></div>
-                        <p id="christmas-location-loader-text" class="text-xs font-black season-text-title">Buscando tu ubicación…</p>
+                    <div id="christmas-location-loader" class="hidden mt-3 rounded-2xl border border-red-400/25 bg-gradient-to-br from-red-500/10 via-amber-400/10 to-emerald-400/10 p-4 text-center overflow-hidden relative">
+                        <div class="text-4xl animate-bounce mb-2">🎅🛷✨</div>
+                        <div class="h-2 rounded-full bg-black/10 overflow-hidden"><div class="h-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 animate-pulse" style="width:72%"></div></div>
+                        <p id="christmas-location-loader-text" class="text-xs font-black season-text-title mt-3">Buscando tu ubicación…</p>
+                        <p class="text-[10px] season-text-muted mt-1">Santa está revisando cobertura, transporte y la mejor ruta 🎄</p>
                     </div>
                     <p id="christmas-location-status" class="text-xs season-text-muted mt-2">Activa la ubicación del teléfono y trataremos de obtener el punto más preciso posible.</p>
                 </div>
@@ -7850,7 +7880,7 @@ body.cart-open #cartSummary{display:none!important;}
                 <div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">PH / barriada / referencia *</label><textarea name="normalReference" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej. PH Sunrise, torre B, casa 18, frente al parque"></textarea></div>`;
 
 
-            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">Reserva tu Evento</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : `<div id="normal-resource-message" class="mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted">Selecciona fecha y hora para comprobar el personal disponible.</div>`}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${bookingLocationFields}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Enviar solicitud</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">${isChristmasEveBooking()?'Reserva tu entrega con Santa 🎅':'Reserva tu Evento'}</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : `<div id="normal-resource-message" class="mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted">Selecciona fecha y hora para comprobar el personal disponible.</div>`}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${bookingLocationFields}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Enviar solicitud</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
             
             if(app.cart.length>0){
                 // NAVIDAD RUTAS FASE 1 — GPS primero.
@@ -7885,6 +7915,15 @@ body.cart-open #cartSummary{display:none!important;}
                         const t = step.querySelector('span');
                         if (t && labels[i]) t.textContent = labels[i];
                     });
+                    // Guardia de regresión: Navidad debe conservar SIEMPRE GPS, fechas 24/25,
+                    // tarjetas de hora inteligente, referencia y el resultado de cobertura.
+                    const requiredChristmasUi = ['christmas-use-location','christmas-time-cards','christmas-coverage-result'];
+                    const missingChristmasUi = requiredChristmasUi.filter(id=>!document.getElementById(id));
+                    const hasDates = document.querySelector('[data-christmas-date-choice="2026-12-24"]') && document.querySelector('[data-christmas-date-choice="2026-12-25"]');
+                    if (missingChristmasUi.length || !hasDates) {
+                        console.error('NAVIDAD: interfaz incompleta', {missingChristmasUi,hasDates:!!hasDates});
+                        showToast('No pudimos cargar completa la agenda de Navidad. Recarga la página.', 'error');
+                    }
                 }
                 const bForm = document.getElementById('bookingForm');
                 if(bForm) {
@@ -7905,7 +7944,7 @@ body.cart-open #cartSummary{display:none!important;}
                 }
                 const locSel = document.querySelector('select[name="location"]');
                 if(locSel) locSel.onchange = e => {
-                    if(bForm) bookingFormState=Object.fromEntries(new FormData(bForm).entries());
+                    if(bForm) bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(bForm).entries())};
                     app.location=e.target.value;
                     bookingFormState.location=e.target.value;
                     updateCartUI();
@@ -7989,7 +8028,7 @@ body.cart-open #cartSummary{display:none!important;}
                 if (dateSel && isChristmasEveBooking()) dateSel.onchange = async e => {
                     // Rendimiento: cambiar la fecha NO reconstruye toda la página.
                     // Conserva GPS, referencia y paso actual; solo recalcula horas/cupos.
-                    if (bForm) bookingFormState = Object.fromEntries(new FormData(bForm).entries());
+                    if (bForm) bookingFormState = {...bookingFormState,...Object.fromEntries(new FormData(bForm).entries())};
                     selectedCalendarDate = normalizeChristmasDate(e.target.value);
                     bookingFormState.date = selectedCalendarDate;
                     const timeSelect = bForm?.elements?.time;
@@ -8028,10 +8067,14 @@ body.cart-open #cartSummary{display:none!important;}
                     christmasLoader?.classList.remove('hidden');
                     if(christmasLoaderText) christmasLoaderText.textContent='Buscando tu ubicación…';
                     if(christmasStatus) christmasStatus.textContent='Estamos buscando el punto más preciso posible.';
-                    let best=null, watchId=null, finished=false;
+                    let best=null, watchId=null, finished=false, phaseTimer=null;
+                    const phases=['🎅 Buscando tu ubicación…','📍 Afinando el punto GPS…','🗺️ Verificando cobertura…','🚐 Calculando transporte…','✨ Preparando tus mejores horarios…'];
+                    let phaseIndex=0;
+                    phaseTimer=setInterval(()=>{ phaseIndex=Math.min(phaseIndex+1,phases.length-1); if(christmasLoaderText) christmasLoaderText.textContent=phases[phaseIndex]; },1400);
                     const finish=async(ok=true)=>{
                         if(finished) return; finished=true;
                         if(watchId!==null) navigator.geolocation.clearWatch(watchId);
+                        if(phaseTimer) clearInterval(phaseTimer);
                         christmasLoader?.classList.add('hidden');
                         christmasLocationBtn.disabled=false;
                         if(!ok||!best){ if(christmasStatus) christmasStatus.textContent='No pudimos obtener una ubicación precisa. Puedes intentar otra vez o usar Otra dirección.'; return; }
@@ -8046,7 +8089,7 @@ body.cart-open #cartSummary{display:none!important;}
                     watchId=navigator.geolocation.watchPosition(pos=>{
                         if(!best || Number(pos.coords.accuracy||99999)<Number(best.coords.accuracy||99999)) best=pos;
                         const acc=Math.round(Number(pos.coords.accuracy)||0);
-                        if(christmasLoaderText) christmasLoaderText.textContent=acc>35?`Afinando ubicación… ±${acc} m`:'Ubicación encontrada. Verificando…';
+                        if(christmasLoaderText && acc>0 && acc<=35) christmasLoaderText.textContent=`📍 Ubicación encontrada · precisión ±${acc} m. Verificando…`;
                         if(acc>0&&acc<=25) finish(true);
                     },err=>{
                         if(finished) return;
@@ -8285,7 +8328,7 @@ body.cart-open #cartSummary{display:none!important;}
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
                     if(val){
                         cs++;
-                        if(bForm) bookingFormState=Object.fromEntries(new FormData(bForm).entries());
+                        if(bForm) bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(bForm).entries())};
                         // Al pasar de Ubicación -> Horario en Navidad, recalcula AHORA,
                         // cuando el GPS del cliente ya existe. Este era el punto que faltaba.
                         if (isChristmasEveBooking() && cs === 2) {
@@ -8297,7 +8340,7 @@ body.cart-open #cartSummary{display:none!important;}
                         requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>{ const first=document.getElementById(`step-${cs}`)?.querySelector('input:not([type=hidden]),select,textarea'); if(first && window.innerWidth<=767 && !isChristmasEveBooking()){ try{ first.focus({preventScroll:true}); }catch(e){ first.focus(); } } },220); });
                     }
                 };
-                if(bp) bp.onclick=async()=>{ if(cs>1){ cs--; if(bForm)bookingFormState=Object.fromEntries(new FormData(bForm).entries()); if(cs===2 && isChristmasEveBooking()) await refreshChristmasTimeAvailability(); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
+                if(bp) bp.onclick=async()=>{ if(cs>1){ cs--; if(bForm)bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(bForm).entries())}; if(cs===2 && isChristmasEveBooking()) await refreshChristmasTimeAvailability(); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
                 // Navidad inicia por GPS. La disponibilidad se actualiza al llegar al paso Horario,
                 // después de conocer la ubicación exacta del cliente.
                 if (isChristmasEveBooking() && christmasTimeMessage) {
@@ -9327,7 +9370,7 @@ body.cart-open #cartSummary{display:none!important;}
             if (app.activeSection === 'booking' && Number(app.wizardStep || 1) > 1) {
                 event.stopImmediatePropagation();
                 const form = document.getElementById('bookingForm');
-                if (form) bookingFormState = Object.fromEntries(new FormData(form).entries());
+                if (form) bookingFormState = {...bookingFormState,...Object.fromEntries(new FormData(form).entries())};
                 app.wizardStep = Math.max(1, Number(app.wizardStep || 1) - 1);
                 renderBooking();
                 requestAnimationFrame(() => {
