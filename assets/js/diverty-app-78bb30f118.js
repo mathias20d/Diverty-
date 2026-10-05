@@ -4061,20 +4061,19 @@
                 } catch (e) { console.warn('No se pudo refrescar contenido web:', e); }
             };
 
-            // Carga primero la temporada activa para que la pantalla inicial
-            // use inmediatamente el tema correcto mientras carga el resto.
+            // Carga primero tema + banner. Ambos salen de config_web y comparten cache,
+            // así evitamos que el banner aparezca tarde y empuje toda la página (CLS).
             await loadTheme();
+            await loadBanner();
 
-            // FASE 6B: mostrar la portada inmediatamente después de conocer el tema.
-            // El catálogo, campañas y demás contenido continúan cargando en segundo plano.
-            // Así el visitante no espera esas consultas para ver y usar el inicio.
+            // FASE 6C: mostrar la portada apenas tema y banner están definidos.
+            // Catálogo y campañas continúan cargando en segundo plano.
             if (app.activeSection === 'home') renderHome();
             finishThemeBoot();
 
             await Promise.allSettled([ 
                 loadCategories(), 
                 loadCatalog(), 
-                loadBanner(), 
                 loadCampaigns() 
             ]);
 
