@@ -1,14 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-SBYYJTHTEF"></script>
+    <!-- Google Analytics: se conecta después del primer render para no competir con la carga principal -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-SBYYJTHTEF');
+      (function(){
+        let loaded = false;
+        function loadAnalytics(){
+          if (loaded) return;
+          loaded = true;
+          const s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-SBYYJTHTEF';
+          document.head.appendChild(s);
+        }
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(loadAnalytics, { timeout: 2500 });
+        } else {
+          setTimeout(loadAnalytics, 1800);
+        }
+      })();
     </script>
 
     <meta charset="UTF-8">
@@ -24,6 +38,8 @@
     <link rel="preconnect" href="https://firestore.googleapis.com">
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preload" as="image" href="./android-chrome-512x512.png" fetchpriority="high">
+    <link rel="preload" as="image" href="https://res.cloudinary.com/dv40hkeyz/video/upload/so_0,w_720,q_auto,f_jpg/v1723578146/20250813_151416_0001_p5lwst.jpg" fetchpriority="high">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
@@ -106,6 +122,7 @@
                 alt="Diverty Eventos"
                 class="w-28 h-16 sm:w-32 sm:h-18 object-contain scale-110"
                 loading="eager"
+                fetchpriority="high"
                 id="mainHeaderLogo"
                 onerror="this.onerror=null; this.src='https://placehold.co/100x100/7C3AED/ffffff?text=DE'">
         </button>
