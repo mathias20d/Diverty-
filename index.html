@@ -5412,6 +5412,16 @@ body.cart-open #cartSummary{display:none!important;}
   body.has-cart .whatsapp-container{bottom:112px!important;}
 }
 
+
+/* Ajuste final de detalle: selector separado de acciones para evitar controles encimados */
+.catalog-detail-actions .catalog-detail-qty{margin-bottom:16px;}
+.catalog-detail-button-row{margin-top:0;}
+@media(max-width:520px){
+  .catalog-detail-button-row{grid-template-columns:1fr;gap:10px;}
+  .catalog-detail-button-row .catalog-detail-cart,
+  .catalog-detail-button-row .direct-booking-btn{width:100%;min-height:52px;}
+}
+
 /* --- CSS consolidado: diverty-direct-booking-v1 --- */
 .direct-booking-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:8px;width:100%;}
 .direct-booking-btn{min-height:48px;border:1px solid color-mix(in srgb,var(--s-primary) 35%,transparent);background:color-mix(in srgb,var(--s-primary) 8%,var(--s-bg-color));color:var(--s-primary);border-radius:1rem;font-weight:900;font-size:11px;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .15s ease,background .15s ease;box-shadow:0 4px 14px rgba(0,0,0,.05);}
@@ -5822,16 +5832,113 @@ body.cart-open #cartSummary{display:none!important;}
                 const j=await r.json(); return j||null;
             }catch(_){ return null; }
         }
+        async function searchChristmasPlaces(value, placeType=''){
+            const coords=christmasCoordsFromText(value);
+            if(coords) return [{...coords,displayName:'Ubicación compartida por enlace',kind:'link'}];
+            const q=String(value||'').trim(); if(q.length<3) return [];
+            const kind=normalizeChristmasPlace(placeType);
+            const fetchRows=async queryText=>{
+                try{
+                    // Buscamos en Panamá y damos prioridad al corredor operativo de Navidad,
+                    // sin limitar por completo la respuesta: si el lugar queda fuera, se marca
+                    // "por confirmar" y la solicitud igual puede llegar al CRM.
+                    const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=7&countrycodes=pa&addressdetails=1&namedetails=1&accept-language=es&viewbox=-79.70,9.22,-79.23,8.88&bounded=0&q=${encodeURIComponent(queryText)}`;
+                    const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) return [];
+                    const rows=await r.json(); return Array.isArray(rows)?rows:[];
+                }catch(_){ return []; }
+            };
+            const queries=[];
+            const pushQuery=v=>{ const clean=String(v||'').trim(); if(clean && !queries.includes(clean)) queries.push(clean); };
+            if(kind==='ph'){
+                pushQuery(`PH ${q}, Panamá, Panamá`);
+                pushQuery(`${q}, Panamá, Panamá`);
+                pushQuery(`${q} edificio, Panamá`);
+            }else if(kind==='barriada'){
+                pushQuery(`Barriada ${q}, Panamá, Panamá`);
+                pushQuery(`Residencial ${q}, Panamá`);
+                pushQuery(`${q}, Panamá, Panamá`);
+            }else if(kind==='sala'){
+                pushQuery(`${q} sala de eventos, Panamá`);
+                pushQuery(`${q} salón de fiestas, Panamá`);
+                pushQuery(`${q} fiestas infantiles, Panamá`);
+                pushQuery(`${q}, Panamá, Panamá`);
+            }else{
+                // Si el cliente no sabe cómo está registrado, intentamos las tres categorías.
+                pushQuery(`${q}, Panamá, Panamá`);
+                pushQuery(`PH ${q}, Panamá`);
+                pushQuery(`Barriada ${q}, Panamá`);
+                pushQuery(`${q} sala de eventos, Panamá`);
+                pushQuery(`${q} fiestas infantiles, Panamá`);
+            }
+            const batches=[];
+            for(const queryText of queries.slice(0,5)){
+                const rows=await fetchRows(queryText);
+                batches.push(...rows);
+                // Evita hacer llamadas innecesarias cuando ya tenemos suficientes candidatos.
+                if(batches.length>=12) break;
+            }
+            if(!batches.length) batches.push(...await fetchRows(q));
+            const needle=normalizeChristmasPlace(q);
+            const terms=needle.split(' ').filter(x=>x.length>2);
+            const seen=new Set();
+            return batches.map(row=>{
+                const lat=Number(row.lat), lng=Number(row.lon);
+                const displayName=String(row.display_name||row.namedetails?.name||q).trim();
+                const normalized=normalizeChristmasPlace(displayName);
+                const matchScore=terms.reduce((score,t)=>score+(normalized.includes(t)?1:0),0);
+                const coverage=evaluateChristmasCoverage(lat,lng,displayName);
+                const coverageScore=coverage.status==='included'||coverage.status==='surcharge'?2:(coverage.status==='review'?1:0);
+                return {lat,lng,displayName,kind:String(row.type||row.category||'lugar'),matchScore,coverageScore};
+            }).filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&Math.abs(x.lat)<=90&&Math.abs(x.lng)<=180)
+              .filter(x=>{const key=`${x.lat.toFixed(5)},${x.lng.toFixed(5)}`;if(seen.has(key))return false;seen.add(key);return true;})
+              .sort((a,b)=>b.matchScore-a.matchScore||b.coverageScore-a.coverageScore||a.displayName.localeCompare(b.displayName,'es'))
+              .slice(0,8);
+        }
         async function geocodeChristmasAddress(value){
-            const coords=christmasCoordsFromText(value); if(coords) return {...coords,displayName:'Ubicación compartida por enlace'};
-            const q=String(value||'').trim(); if(q.length<5) return null;
-            try{
-                const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=pa&addressdetails=1&accept-language=es&q=${encodeURIComponent(q+', Panamá')}`;
-                const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) return null;
-                const rows=await r.json(); const row=Array.isArray(rows)?rows[0]:null; if(!row) return null;
-                const lat=Number(row.lat), lng=Number(row.lon); if(!Number.isFinite(lat)||!Number.isFinite(lng)) return null;
-                return {lat,lng,displayName:String(row.display_name||q)};
-            }catch(_){ return null; }
+            const rows=await searchChristmasPlaces(value);
+            return rows[0]||null;
+        }
+        async function searchNormalPlaces(value, placeType=''){
+            const coords=christmasCoordsFromText(value);
+            if(coords) return [{...coords,displayName:'Ubicación compartida por enlace',kind:'link'}];
+            const q=String(value||'').trim(); if(q.length<3) return [];
+            const kind=normalizeChristmasPlace(placeType);
+            const fetchRows=async queryText=>{
+                try{
+                    const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&countrycodes=pa&addressdetails=1&namedetails=1&accept-language=es&viewbox=-79.95,9.35,-79.15,8.75&bounded=0&q=${encodeURIComponent(queryText)}`;
+                    const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) return [];
+                    const rows=await r.json(); return Array.isArray(rows)?rows:[];
+                }catch(_){ return []; }
+            };
+            const queries=[];
+            const pushQuery=v=>{ const clean=String(v||'').trim(); if(clean && !queries.includes(clean)) queries.push(clean); };
+            if(kind==='ph'){
+                pushQuery(`PH ${q}, Panamá`); pushQuery(`${q}, Panamá`); pushQuery(`${q} edificio, Panamá`);
+            }else if(kind==='barriada'){
+                pushQuery(`Barriada ${q}, Panamá`); pushQuery(`Residencial ${q}, Panamá`); pushQuery(`${q}, Panamá`);
+            }else if(kind==='sala'){
+                pushQuery(`${q} sala de eventos, Panamá`); pushQuery(`${q} salón de fiestas, Panamá`); pushQuery(`${q} fiestas infantiles, Panamá`); pushQuery(`${q}, Panamá`);
+            }else{
+                pushQuery(`${q}, Panamá`); pushQuery(`PH ${q}, Panamá`); pushQuery(`Barriada ${q}, Panamá`); pushQuery(`${q} sala de eventos, Panamá`);
+            }
+            const batches=[];
+            for(const queryText of queries.slice(0,5)){
+                const rows=await fetchRows(queryText); batches.push(...rows); if(batches.length>=14) break;
+            }
+            if(!batches.length) batches.push(...await fetchRows(q));
+            const needle=normalizeChristmasPlace(q); const terms=needle.split(' ').filter(x=>x.length>2); const seen=new Set();
+            return batches.map(row=>{
+                const lat=Number(row.lat), lng=Number(row.lon);
+                const displayName=String(row.display_name||row.namedetails?.name||q).trim();
+                const normalized=normalizeChristmasPlace(displayName);
+                const matchScore=terms.reduce((score,t)=>score+(normalized.includes(t)?1:0),0);
+                const coverage=evaluateNormalCoverage(lat,lng,displayName);
+                const coverageScore=coverage.status==='included'?2:(coverage.status==='review'?1:0);
+                return {lat,lng,displayName,kind:String(row.type||row.category||'lugar'),matchScore,coverageScore};
+            }).filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&Math.abs(x.lat)<=90&&Math.abs(x.lng)<=180)
+              .filter(x=>{const key=`${x.lat.toFixed(5)},${x.lng.toFixed(5)}`;if(seen.has(key))return false;seen.add(key);return true;})
+              .sort((a,b)=>b.matchScore-a.matchScore||b.coverageScore-a.coverageScore||a.displayName.localeCompare(b.displayName,'es'))
+              .slice(0,8);
         }
         // NAVIDAD — REGLAS DE COBERTURA PROTEGIDAS.
         // No reutilizar los precios de reservas normales aquí. Santa tiene una política propia:
@@ -6125,9 +6232,9 @@ body.cart-open #cartSummary{display:none!important;}
             const safeLabel=cleanStr(s.label||'');
             if(s.status==='included') box.innerHTML=`<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4"><p class="font-black text-emerald-600">✅ ${safeLabel||'Ubicación dentro de cobertura'}</p><p class="text-xs season-text-muted mt-1">Transporte adicional: <b>$0.00</b> · El punto GPS se usará también para recomendar la mejor hora y organizar la ruta del Santa.</p></div>`;
             else if(s.status==='surcharge') box.innerHTML=`<div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4"><p class="font-black text-amber-600">📍 ${safeLabel||'Ubicación disponible'}</p><p class="text-xs season-text-muted mt-1">Transporte adicional: <b>$5.00</b> · Este es el recargo máximo automático de Navidad.</p></div>`;
-            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Ubicación por confirmar</p><p class="text-xs season-text-muted mt-1">No asignaremos un precio ni un horario definitivo hasta verificar esta ubicación. Escríbenos por WhatsApp.</p><a class="mt-3 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-4 py-2.5 text-xs font-black text-white" target="_blank" rel="noopener noreferrer" href="${christmasWhatsappUrl('Hola, quiero confirmar si tienen cobertura para mi entrega de Santa. Mi ubicación es: '+(s.displayName||''))}">Confirmar por WhatsApp</a></div>`;
+            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Ubicación por confirmar</p><p class="text-xs season-text-muted mt-1">Puedes continuar con la solicitud. Diverty revisará la ubicación y te contactará por WhatsApp antes de aceptar la reserva y confirmar el transporte.</p></div>`;
             else box.innerHTML='';
-            const t=document.getElementById('booking-summary-transport'); if(t) t.textContent=`$${effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)).toFixed(2)}`;
+            const t=document.getElementById('booking-summary-transport'); if(t) t.textContent=s.status==='review'?'Por confirmar':`$${effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)).toFixed(2)}`;
             const total=document.getElementById('booking-summary-total');
             if(total){
                 const sub=app.cart.reduce((a,i)=>a+(Number(i.price)*i.quantity),0); let dv=0;
@@ -6948,6 +7055,45 @@ body.cart-open #cartSummary{display:none!important;}
             return html;
         }
 
+        function getItemQuantityRule(item) {
+            const raw = item?._raw || {};
+            const mode = cleanStr(item?.tipoCobro || raw.tipoCobro || (item?.isHourly ? 'hora' : 'paquete')).toLowerCase();
+            const minCandidate = Number(item?.cantidadMinima ?? raw.cantidadMinima ?? raw.minCantidad ?? 1);
+            const maxCandidate = Number(item?.cantidadMaxima ?? raw.cantidadMaxima ?? raw.maxCantidad ?? 0);
+            const stepCandidate = Number(item?.incrementoCantidad ?? raw.incrementoCantidad ?? raw.pasoCantidad ?? 1);
+            const min = Number.isFinite(minCandidate) && minCandidate > 0 ? Math.floor(minCandidate) : 1;
+            const max = Number.isFinite(maxCandidate) && maxCandidate >= min ? Math.floor(maxCandidate) : null;
+            const step = Number.isFinite(stepCandidate) && stepCandidate > 0 ? Math.floor(stepCandidate) : 1;
+
+            if (mode === 'hora' || mode === 'horas') {
+                return { enabled:true, mode:'hora', min:Math.max(1,min), max, step, singular:'hora', plural:'horas' };
+            }
+            if (mode === 'nino' || mode === 'niño' || mode === 'ninos' || mode === 'niños') {
+                return { enabled:true, mode:'nino', min:Math.max(1,min), max, step, singular:'niño', plural:'niños' };
+            }
+            if (['unidad','unidades','cantidad','por unidad'].includes(mode)) {
+                const unitLabel = cleanStr(item?.unidadEtiqueta || raw.unidadEtiqueta || raw.unidad || 'unidad');
+                return { enabled:true, mode:'unidad', min:Math.max(1,min), max, step, singular:unitLabel, plural:unitLabel.endsWith('s') ? unitLabel : `${unitLabel}s` };
+            }
+            return { enabled:false, mode:'paquete', min:1, max:1, step:1, singular:'servicio', plural:'servicios' };
+        }
+
+        function clampItemQuantity(item, value) {
+            const rule = getItemQuantityRule(item);
+            if (!rule.enabled) return 1;
+            let q = Number.isFinite(Number(value)) ? Math.floor(Number(value)) : rule.min;
+            q = Math.max(rule.min, q);
+            if (rule.max) q = Math.min(rule.max, q);
+            return q;
+        }
+
+        function quantityLabelForCart(item) {
+            const rule = getItemQuantityRule(item);
+            if (!rule.enabled) return '1 servicio';
+            const q = clampItemQuantity(item, item?.quantity);
+            return `${q} ${q === 1 ? rule.singular : rule.plural}`;
+        }
+
         function createDetailedCardHTML(item) {
             const isPkg = !item.isHourly; 
             
@@ -6998,11 +7144,14 @@ body.cart-open #cartSummary{display:none!important;}
                 </details>`;
             }
 
-            const ic=app.cart.find(i=>i.id===item.id); const iq=ic?ic.quantity:1;
+            const ic=app.cart.find(i=>i.id===item.id);
+            const quantityRule=getItemQuantityRule(item);
+            const iq=ic?clampItemQuantity(item,ic.quantity):quantityRule.min;
             let ab='';
             
-            if(item.isHourly){
-                ab=`<div class="mt-auto w-full relative z-10 pb-2"><div class="flex items-center justify-between mb-3 bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[var(--s-glass-border)] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button><span id="qty-${item.id}" class="text-lg font-black season-text-title w-12 text-center">${iq}</span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div><button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'refresh':'none'}" class="season-btn ${btn} py-4 text-xs sm:text-sm text-white" style="${ic?'background: #F59E0B;':''}">${ic?`${S_ICONS.refresh} Actualizar Cantidad`:`${S_ICONS.cart} Añadir al Carrito`}</button></div>`;
+            if(quantityRule.enabled){
+                const unitLabel = iq === 1 ? quantityRule.singular : quantityRule.plural;
+                ab=`<div class="mt-auto w-full relative z-10 pb-2"><div class="flex items-center justify-between mb-3 bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[var(--s-glass-border)] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95" aria-label="Disminuir ${quantityRule.plural}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button><span class="min-w-[84px] text-center"><strong id="qty-${item.id}" class="block text-lg font-black season-text-title leading-none">${iq}</strong><small id="qty-label-${item.id}" class="block mt-1 text-[9px] uppercase tracking-widest font-black season-text-muted">${unitLabel}</small></span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95" aria-label="Aumentar ${quantityRule.plural}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div><div class="direct-booking-actions"><button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'refresh':'none'}" class="season-btn ${btn} py-3 text-[11px] sm:text-xs text-white" style="${ic?'background: #F59E0B;':''}">${ic?`${S_ICONS.refresh} Actualizar Cantidad`:`${S_ICONS.cart} Añadir al Carrito`}</button><button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button></div></div>`;
             } else {
                 ab=`<div class="mt-auto w-full relative z-10 pb-2 direct-booking-actions"><button data-action="add-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'selected':'none'}" class="season-btn ${btn} py-3 text-[11px] sm:text-xs text-white shadow-md" style="${ic?'background: #10B981;':''}">${ic?`${S_ICONS.check} Seleccionado`:`${S_ICONS.cart} Carrito`}</button><button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button></div>`;
             }
@@ -7330,8 +7479,6 @@ body.cart-open #cartSummary{display:none!important;}
             const oldPrice = Number(item.originalPrice || 0);
             const hasOffer = (item.discountApplied || item.oferta) && oldPrice > price;
             const inCart = app.cart.find(i => i.id === item.id);
-            const qty = inCart ? inCart.quantity : 1;
-
             const services = (item.services && item.services.length)
                 ? `<div class="catalog-detail-includes">
                     <h3><i data-lucide="sparkles"></i> Todo lo que incluye</h3>
@@ -7345,24 +7492,31 @@ body.cart-open #cartSummary{display:none!important;}
                    </div>`
                 : '';
 
-            const actionArea = item.isHourly
+            const detailQuantityRule = getItemQuantityRule(item);
+            const detailQty = inCart ? clampItemQuantity(item, inCart.quantity) : detailQuantityRule.min;
+            const actionArea = detailQuantityRule.enabled
                 ? `<div class="catalog-detail-actions">
                     <div class="catalog-detail-qty">
-                        <button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" aria-label="Disminuir cantidad"><i data-lucide="minus"></i></button>
-                        <span id="qty-${item.id}">${qty}</span>
-                        <button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" aria-label="Aumentar cantidad"><i data-lucide="plus"></i></button>
+                        <button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" aria-label="Disminuir ${detailQuantityRule.plural}"><i data-lucide="minus"></i></button>
+                        <span class="min-w-[76px] text-center"><strong id="qty-${item.id}" class="block">${detailQty}</strong><small id="qty-label-${item.id}" class="block text-[9px] uppercase tracking-widest font-black opacity-60">${detailQty===1?detailQuantityRule.singular:detailQuantityRule.plural}</small></span>
+                        <button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" aria-label="Aumentar ${detailQuantityRule.plural}"><i data-lucide="plus"></i></button>
                     </div>
-                    <button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${inCart ? 'refresh' : 'none'}" class="season-btn catalog-detail-cart">
-                        <i data-lucide="${inCart ? 'refresh-cw' : 'shopping-cart'}"></i>
-                        ${inCart ? 'Actualizar cantidad' : 'Añadir al carrito'}
-                    </button>
+                    <div class="direct-booking-actions catalog-detail-button-row">
+                        <button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${inCart ? 'refresh' : 'none'}" class="season-btn catalog-detail-cart">
+                            <i data-lucide="${inCart ? 'refresh-cw' : 'shopping-cart'}"></i>
+                            ${inCart ? 'Actualizar cantidad' : 'Añadir al carrito'}
+                        </button>
+                        <button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button>
+                    </div>
                    </div>`
-                : `<div class="catalog-detail-actions direct-booking-actions">
-                    <button data-action="add-to-cart" data-item-id="${item.id}" data-cart-state="${inCart ? 'selected' : 'none'}" class="season-btn catalog-detail-cart" style="${inCart ? 'background:#10B981!important;' : ''}">
-                        <i data-lucide="${inCart ? 'check' : 'shopping-cart'}"></i>
-                        ${inCart ? 'Seleccionado' : 'Carrito'}
-                    </button>
-                    <button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button>
+                : `<div class="catalog-detail-actions">
+                    <div class="direct-booking-actions catalog-detail-button-row">
+                        <button data-action="add-to-cart" data-item-id="${item.id}" data-cart-state="${inCart ? 'selected' : 'none'}" class="season-btn catalog-detail-cart" style="${inCart ? 'background:#10B981!important;' : ''}">
+                            <i data-lucide="${inCart ? 'check' : 'shopping-cart'}"></i>
+                            ${inCart ? 'Seleccionado' : 'Carrito'}
+                        </button>
+                        <button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button>
+                    </div>
                    </div>`;
 
             setContent(`
@@ -7641,6 +7795,9 @@ body.cart-open #cartSummary{display:none!important;}
                 else if(christmasEveMode && isChristmasBookingDate) {
                     html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'season-btn ring-4 ring-[var(--s-primary)]/30 scale-110 text-white shadow-lg':'bg-emerald-500/15 text-emerald-600 border-emerald-500/30 active:scale-95 shadow-md'}">${d}</div></div>`;
                 }
+                else if(!christmasEveMode && isChristmasBookingDate) {
+                    html += `<div class="flex items-center justify-center relative pointer-events-none" title="Reservado para entregas de Santa"><div class="${c} bg-red-500/10 text-red-400 border-red-500/20 cursor-not-allowed opacity-55">${d}</div><span class="absolute -top-1 -right-0 text-[9px]">🎅</span></div>`;
+                }
                 else if(currentDate<today) { 
                     html += `<div class="flex items-center justify-center"><div class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-[var(--s-text-muted)] opacity-30 font-medium">${d}</div></div>`; 
                 }
@@ -7703,6 +7860,11 @@ body.cart-open #cartSummary{display:none!important;}
         }
 
         function renderBooking() {
+            // El 24 y 25 de diciembre de 2026 quedan exclusivos para Entregas de Nochebuena.
+            if(!isChristmasEveBooking() && ['2026-12-24','2026-12-25'].includes(String(selectedCalendarDate||'').slice(0,10))){
+                selectedCalendarDate=null;
+                if(bookingFormState) bookingFormState.date='';
+            }
             const subtotal = app.cart.reduce((s, i) => s + (Number(i.price)*i.quantity), 0);
             const count = app.cart.reduce((s, i) => s + i.quantity, 0);
             const tCost = effectiveTransportCost(count);
@@ -7791,7 +7953,7 @@ body.cart-open #cartSummary{display:none!important;}
                         <button type="button" data-christmas-date-choice="2026-12-24" class="rounded-2xl border p-4 text-left transition active:scale-[.98] ${christmasSelectedForDisplay==='2026-12-24'?'border-emerald-500 bg-emerald-500/15 ring-2 ring-emerald-500/20':'border-[var(--s-glass-border)] bg-black/5'}"><span class="block text-xs font-black text-emerald-600">NOCHEBUENA</span><span class="block text-lg font-black season-text-title mt-1">24 de diciembre</span></button>
                         <button type="button" data-christmas-date-choice="2026-12-25" class="rounded-2xl border p-4 text-left transition active:scale-[.98] ${christmasSelectedForDisplay==='2026-12-25'?'border-emerald-500 bg-emerald-500/15 ring-2 ring-emerald-500/20':'border-[var(--s-glass-border)] bg-black/5'}"><span class="block text-xs font-black text-emerald-600">NAVIDAD</span><span class="block text-lg font-black season-text-title mt-1">25 de diciembre</span></button>
                     </div>
-                    <p class="mt-2 text-[11px] season-text-muted font-semibold">Este servicio solo está disponible el 24 y 25 de diciembre.</p>
+                    <p class="mt-2 text-[11px] season-text-muted font-semibold">Elige una fecha para la entrega: <b>24 de diciembre (Nochebuena)</b> o <b>25 de diciembre (Navidad)</b>. Toca una de las dos opciones para continuar.</p>
                 </div>` : (selectedCalendarDate ? 
                 `<div class="form-group col-span-1 md:col-span-2 bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-2xl flex items-center gap-3 shadow-sm">
                     <div class="w-10 h-10 bg-[var(--s-glass-bg)] border border-emerald-500/50 text-emerald-500 rounded-full flex items-center justify-center shrink-0 shadow-sm"><i data-lucide="calendar-check" class="w-5 h-5"></i></div>
@@ -7823,14 +7985,12 @@ body.cart-open #cartSummary{display:none!important;}
                 <div class="form-group">
                     <label class="form-label font-bold season-text-muted text-xs uppercase mb-2 block">📍 ¿Dónde será la entrega? *</label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        <button type="button" data-christmas-location-mode="gps" class="rounded-2xl border border-[var(--s-primary)] bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)] px-4 py-3 text-left font-black season-text-title"><span class="block text-sm">Estoy en el lugar</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Usar GPS del teléfono</span></button>
-                        <button type="button" data-christmas-location-mode="manual" class="rounded-2xl border border-[var(--s-glass-border)] bg-black/5 px-4 py-3 text-left font-black season-text-title"><span class="block text-sm">Otra dirección</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Buscarla o pegar Maps/Waze</span></button>
+                        <button type="button" data-christmas-location-mode="gps" class="rounded-2xl border border-[var(--s-primary)] bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)] px-4 py-3 text-left font-black season-text-title"><span class="flex items-center gap-2 text-sm"><i data-lucide="locate-fixed" class="w-4 h-4"></i> Estoy en el lugar</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Toca aquí y localizamos la entrega con el GPS</span></button>
+                        <button type="button" data-christmas-location-mode="manual" class="rounded-2xl border border-[var(--s-glass-border)] bg-black/5 px-4 py-3 text-left font-black season-text-title"><span class="flex items-center gap-2 text-sm"><i data-lucide="building-2" class="w-4 h-4"></i> Otra dirección</span><span class="block text-[10px] font-semibold season-text-muted mt-1">PH, barriada o sala de eventos</span></button>
                     </div>
                 </div>
                 <div id="christmas-gps-panel" class="form-group rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
-                    <button type="button" id="christmas-use-location" class="w-full season-btn font-extrabold py-3.5 px-5 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2">
-                        <i data-lucide="locate-fixed" class="w-5 h-5"></i> Usar mi ubicación actual
-                    </button>
+                    <button type="button" id="christmas-use-location" class="hidden" aria-hidden="true" tabindex="-1">Usar mi ubicación actual</button>
                     <div id="christmas-location-loader" class="hidden mt-3 rounded-2xl border border-red-400/25 bg-gradient-to-br from-red-500/10 via-amber-400/10 to-emerald-400/10 p-4 text-center overflow-hidden relative">
                         <div class="text-4xl animate-bounce mb-2">🎅🛷✨</div>
                         <div class="h-2 rounded-full bg-black/10 overflow-hidden"><div class="h-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 animate-pulse" style="width:72%"></div></div>
@@ -7840,10 +8000,19 @@ body.cart-open #cartSummary{display:none!important;}
                     <p id="christmas-location-status" class="text-xs season-text-muted mt-2">Activa la ubicación del teléfono y trataremos de obtener el punto más preciso posible.</p>
                 </div>
                 <div id="christmas-manual-panel" class="form-group hidden rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Dirección de entrega *</label>
-                    <textarea id="christmas-manual-address" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="3" placeholder="Ej: PH..., barriada..., o pega un enlace de Google Maps/Waze"></textarea>
-                    <button type="button" id="christmas-search-address" class="mt-3 w-full bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-black py-3 rounded-xl active:scale-95 transition flex items-center justify-center gap-2"><i data-lucide="search" class="w-4 h-4"></i> Buscar y verificar ubicación</button>
-                    <p class="text-[10px] season-text-muted mt-2">Si no podemos ubicarla con precisión, podrás confirmarla directamente por WhatsApp.</p>
+                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">¿Qué tipo de lugar es? *</label>
+                    <select id="christmas-place-type" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm mb-3">
+                        <option value="" style="color:black">Selecciona una opción</option>
+                        <option value="ph" style="color:black">🏢 PH / edificio</option>
+                        <option value="barriada" style="color:black">🏘️ Barriada / residencial</option>
+                        <option value="sala" style="color:black">🎈 Sala de eventos / fiestas infantiles</option>
+                    </select>
+                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Nombre del lugar *</label>
+                    <input id="christmas-manual-address" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" placeholder="Ej: PH Costa View, Brisas del Golf o Happy Kids">
+                    <p class="text-[10px] season-text-muted mt-2">Buscaremos el PH, barriada o sala dentro de nuestra cobertura para calcular el transporte. También puedes pegar un enlace de Google Maps/Waze.</p>
+                    <button type="button" id="christmas-search-address" class="mt-3 w-full bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-black py-3 rounded-xl active:scale-95 transition flex items-center justify-center gap-2"><i data-lucide="search" class="w-4 h-4"></i> Buscar lugar y calcular transporte</button>
+                    <div id="christmas-place-results" class="mt-3 space-y-2"></div>
+                    <p class="text-[10px] season-text-muted mt-2">Si no encontramos el lugar, igual podrás enviar la solicitud. Nosotros te contactaremos por WhatsApp antes de aceptarla.</p>
                 </div>
                 <div id="christmas-coverage-result"></div>
                 <div class="form-group">
@@ -7853,34 +8022,42 @@ body.cart-open #cartSummary{display:none!important;}
                 <input type="hidden" name="location" value="${cleanStr(bookingFormState.normalCoverageLabel||'')}">
                 <input type="hidden" name="address" value="${cleanStr(bookingFormState.address||'')}">
                 <div class="form-group">
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-2 block">📍 Ubicación del evento *</label>
+                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-2 block">📍 ¿Dónde será el evento? *</label>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        <button type="button" data-normal-location-mode="gps" class="rounded-2xl border border-[var(--s-primary)] bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)] px-4 py-3 text-left font-black season-text-title"><span class="block text-sm">Usar ubicación actual</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Calculamos la zona y transporte</span></button>
-                        <button type="button" data-normal-location-mode="manual" class="rounded-2xl border border-[var(--s-glass-border)] bg-black/5 px-4 py-3 text-left font-black season-text-title"><span class="block text-sm">Escribir dirección</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Elige la zona y su precio</span></button>
+                        <button type="button" data-normal-location-mode="gps" class="rounded-2xl border border-[var(--s-primary)] bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)] px-4 py-3 text-left font-black season-text-title"><span class="flex items-center gap-2 text-sm"><i data-lucide="locate-fixed" class="w-4 h-4"></i> Estoy en el lugar</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Toca aquí y localizamos el evento con el GPS</span></button>
+                        <button type="button" data-normal-location-mode="manual" class="rounded-2xl border border-[var(--s-glass-border)] bg-black/5 px-4 py-3 text-left font-black season-text-title"><span class="flex items-center gap-2 text-sm"><i data-lucide="building-2" class="w-4 h-4"></i> Otra dirección</span><span class="block text-[10px] font-semibold season-text-muted mt-1">PH, barriada o sala de eventos</span></button>
                     </div>
                 </div>
                 <div id="normal-gps-panel" class="form-group rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
-                    <button type="button" id="normal-use-location" class="w-full season-btn font-extrabold py-3.5 px-5 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2"><i data-lucide="locate-fixed" class="w-5 h-5"></i> Encontrar mi ubicación</button>
-                    <div id="normal-location-loader" class="hidden mt-3 rounded-2xl border border-violet-400/25 bg-violet-400/10 p-4 text-center overflow-hidden relative">
+                    <button type="button" id="normal-use-location" class="hidden">Encontrar mi ubicación</button>
+                    <div id="normal-location-loader" class="hidden rounded-2xl border border-violet-400/25 bg-violet-400/10 p-4 text-center overflow-hidden relative">
                         <div class="text-3xl animate-bounce mb-2">🚐🎈</div>
                         <div class="h-2 rounded-full bg-black/10 overflow-hidden"><div class="h-full bg-gradient-to-r from-pink-500 via-violet-500 to-cyan-400 animate-pulse" style="width:70%"></div></div>
                         <p id="normal-location-loader-text" class="text-xs font-black season-text-title mt-3">Buscando tu ubicación…</p>
                         <p class="text-[10px] season-text-muted mt-1">Estamos preparando la mejor ruta para tu evento ✨</p>
                     </div>
-                    <p id="normal-location-status" class="text-xs season-text-muted mt-2">Activa la ubicación del teléfono para calcular el transporte automáticamente.</p>
+                    <p id="normal-location-status" class="text-xs season-text-muted">Toca “Estoy en el lugar” y calcularemos el transporte automáticamente.</p>
                 </div>
                 <div id="normal-manual-panel" class="form-group hidden rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Dirección del evento *</label>
-                    <textarea id="normal-manual-address" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="3" placeholder="Ej. PH, barriada, calle, casa o enlace de Maps/Waze"></textarea>
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mt-3 mb-1.5 block">Zona de transporte *</label>
-                    <select id="normal-manual-zone" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="">Selecciona la zona</option>${NORMAL_MANUAL_ZONES.map(z=>`<option value="${z.value}" style="color:black">${z.label}${z.review?' · precio por confirmar':` · $${normalConfiguredCost(z.value,z.cost).toFixed(2)}`}</option>`).join('')}</select>
-                    <p class="text-[10px] season-text-muted mt-2">Al recibir la solicitud verificaremos que la dirección corresponda con la zona seleccionada.</p>
+                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">¿Qué tipo de lugar es? *</label>
+                    <select id="normal-place-type" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm mb-3">
+                        <option value="" style="color:black">Selecciona una opción</option>
+                        <option value="ph" style="color:black">🏢 PH / edificio</option>
+                        <option value="barriada" style="color:black">🏘️ Barriada / residencial</option>
+                        <option value="sala" style="color:black">🎈 Sala de eventos / fiestas infantiles</option>
+                    </select>
+                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Nombre del lugar *</label>
+                    <input id="normal-manual-address" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" placeholder="Ej: PH Sunrise, Brisas del Golf o Happy Kids">
+                    <p class="text-[10px] season-text-muted mt-2">Buscaremos el PH, barriada o sala para calcular automáticamente el transporte. También puedes pegar un enlace de Google Maps/Waze.</p>
+                    <button type="button" id="normal-search-address" class="mt-3 w-full bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-black py-3 rounded-xl active:scale-95 transition flex items-center justify-center gap-2"><i data-lucide="search" class="w-4 h-4"></i> Buscar lugar y calcular transporte</button>
+                    <div id="normal-place-results" class="mt-3 space-y-2"></div>
+                    <p class="text-[10px] season-text-muted mt-2">Si no encontramos el lugar, igual podrás enviar la solicitud. Revisaremos la dirección y te contactaremos por WhatsApp antes de aceptar la reserva.</p>
                 </div>
                 <div id="normal-coverage-result"></div>
                 <div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">PH / barriada / referencia *</label><textarea name="normalReference" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej. PH Sunrise, torre B, casa 18, frente al parque"></textarea></div>`;
 
 
-            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">${isChristmasEveBooking()?'Reserva tu entrega con Santa 🎅':'Reserva tu Evento'}</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}</div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : `<div id="normal-resource-message" class="mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted">Selecciona fecha y hora para comprobar el personal disponible.</div>`}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${bookingLocationFields}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentarios</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2"></textarea></div></div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Enviar solicitud</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">${isChristmasEveBooking()?'Reserva tu entrega con Santa 🎅':'Reserva tu Evento'}</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentario opcional</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2" placeholder="${isChristmasEveBooking()?'Ej: nombre del niño, indicación especial o detalle que debamos saber':'Ej: indicación especial, acceso al lugar o detalle importante del evento'}"></textarea></div></div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : `<div id="normal-resource-message" class="mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted">Selecciona fecha y hora para comprobar el personal disponible.</div>`}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${bookingLocationFields}</div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Enviar solicitud</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
             
             if(app.cart.length>0){
                 // NAVIDAD RUTAS FASE 1 — GPS primero.
@@ -7973,7 +8150,11 @@ body.cart-open #cartSummary{display:none!important;}
                         btn.classList.toggle('bg-black/5',!active);
                     });
                 };
-                document.querySelectorAll('[data-normal-location-mode]').forEach(btn=>btn.onclick=()=>setNormalLocationMode(btn.dataset.normalLocationMode||'gps'));
+                document.querySelectorAll('[data-normal-location-mode]').forEach(btn=>btn.onclick=()=>{
+                    const mode=btn.dataset.normalLocationMode||'gps';
+                    setNormalLocationMode(mode);
+                    if(mode==='gps' && normalLocationBtn) normalLocationBtn.click();
+                });
                 if(normalManualZone&&!isChristmasEveBooking()) normalManualZone.onchange=e=>{applyNormalManualZone(e.target.value); if(bForm?.elements?.location)bForm.elements.location.value=normalLocationState.label||'';};
                 if(normalManualAddress&&!isChristmasEveBooking()) normalManualAddress.oninput=e=>{bookingFormState.address=e.target.value;if(bForm?.elements?.address)bForm.elements.address.value=e.target.value;};
                 if(normalLocationBtn&&!isChristmasEveBooking()) normalLocationBtn.onclick=()=>{
@@ -8004,6 +8185,48 @@ body.cart-open #cartSummary{display:none!important;}
                     },err=>{finish(false);showToast(err?.code===1?'Debes permitir el acceso a tu ubicación o usar dirección manual.':'No pudimos obtener tu ubicación. Usa la dirección manual.','error');},{enableHighAccuracy:true,timeout:15000,maximumAge:0});
                     setTimeout(()=>finish(!!best),9000);
                 };
+                const normalSearchBtn=document.getElementById('normal-search-address');
+                const normalResults=document.getElementById('normal-place-results');
+                const markNormalManualReview=value=>{
+                    const clean=String(value||'').trim();
+                    normalLocationState={status:'review',charge:0,label:'Ubicación por revisar',displayName:clean,lat:null,lng:null,source:'manual-search',zoneValue:''};
+                    bookingFormState.normalTransportCost=0;bookingFormState.normalCoverageStatus='review';bookingFormState.normalCoverageLabel='Ubicación por revisar';bookingFormState.normalLocationName=clean;bookingFormState.normalLocationSource='manual-search';bookingFormState.address=clean;bookingFormState.location='Ubicación por revisar';
+                    if(bForm?.elements?.address)bForm.elements.address.value=clean;
+                    if(bForm?.elements?.location)bForm.elements.location.value='Ubicación por revisar';
+                    renderNormalCoverageStatus();
+                };
+                const chooseNormalPlace=async(place,input)=>{
+                    if(!place) return;
+                    if(input&&place.displayName) input.value=place.displayName;
+                    if(normalResults) normalResults.innerHTML='';
+                    await applyNormalLocation(place.lat,place.lng,{source:'manual-search',displayName:place.displayName||String(input?.value||'')});
+                    if(bForm?.elements?.address)bForm.elements.address.value=`https://www.google.com/maps?q=${Number(place.lat).toFixed(6)},${Number(place.lng).toFixed(6)}`;
+                    bookingFormState.address=bForm?.elements?.address?.value||bookingFormState.address||'';
+                    if(bForm?.elements?.location)bForm.elements.location.value=normalLocationState.label||'';
+                    showToast(normalLocationState.status==='review'?'Recibiremos la solicitud y revisaremos esta ubicación.':'Lugar encontrado y transporte calculado.','success');
+                };
+                if(normalSearchBtn&&!isChristmasEveBooking()) normalSearchBtn.onclick=async()=>{
+                    const input=document.getElementById('normal-manual-address');
+                    const value=String(input?.value||'').trim();
+                    const placeType=String(document.getElementById('normal-place-type')?.value||'').trim();
+                    if(!placeType) return showToast('Indica si es un PH, barriada o sala de eventos.','error');
+                    if(value.length<3) return showToast('Escribe el nombre del PH, barriada o sala de eventos.','error');
+                    markNormalManualReview(value);
+                    if(normalResults) normalResults.innerHTML='';
+                    const original=normalSearchBtn.innerHTML;normalSearchBtn.disabled=true;normalSearchBtn.innerHTML='<div class="loading-spinner !w-4 !h-4 !border-2 inline-block mr-2"></div> Buscando lugar…';
+                    const places=await searchNormalPlaces(value,placeType);
+                    normalSearchBtn.disabled=false;normalSearchBtn.innerHTML=original;
+                    if(!places.length){
+                        if(normalResults) normalResults.innerHTML='<div class="rounded-xl border border-orange-500/25 bg-orange-500/10 p-3 text-[11px] font-bold season-text-title">No encontramos el lugar automáticamente. Puedes seguir con la reserva; verificaremos la ubicación y el transporte contigo por WhatsApp.</div>';
+                        return showToast('No encontramos el lugar automáticamente, pero puedes continuar.','info');
+                    }
+                    if(places.length===1){await chooseNormalPlace(places[0],input);return;}
+                    if(normalResults){
+                        normalResults.innerHTML=`<p class="text-[10px] font-black uppercase tracking-wider season-text-muted">Selecciona el lugar correcto</p>${places.map((place,i)=>`<button type="button" data-normal-place-index="${i}" class="w-full rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2.5 text-left active:scale-[.99]"><span class="block text-xs font-black season-text-title">${cleanStr(place.displayName).split(',')[0]||'Lugar encontrado'}</span><span class="block mt-1 text-[9px] season-text-muted line-clamp-2">${cleanStr(place.displayName)}</span></button>`).join('')}`;
+                        normalResults.querySelectorAll('[data-normal-place-index]').forEach(btn=>btn.onclick=()=>chooseNormalPlace(places[Number(btn.dataset.normalPlaceIndex)||0],input));
+                    }
+                    showToast('Encontramos varias opciones. Selecciona la correcta.','info');
+                };
                 if(!isChristmasEveBooking()) renderNormalCoverageStatus();
 
                 const normalResourceMessage=document.getElementById('normal-resource-message');
@@ -8025,6 +8248,13 @@ body.cart-open #cartSummary{display:none!important;}
                 if(!isChristmasEveBooking()&&bForm?.elements?.time)bForm.elements.time.addEventListener('change',refreshNormalResources);
                 if(!isChristmasEveBooking()&&bForm?.elements?.date)bForm.elements.date.addEventListener('change',refreshNormalResources);
                 const dateSel = bForm ? bForm.elements['date'] : null;
+                if (dateSel && !isChristmasEveBooking()) dateSel.addEventListener('change',e=>{
+                    const value=String(e.target.value||'').slice(0,10);
+                    if(value==='2026-12-24'||value==='2026-12-25'){
+                        e.target.value=''; selectedCalendarDate=null; bookingFormState.date='';
+                        showToast('El 24 y 25 de diciembre están reservados exclusivamente para Entregas de Santa.', 'info');
+                    }
+                });
                 if (dateSel && isChristmasEveBooking()) dateSel.onchange = async e => {
                     // Rendimiento: cambiar la fecha NO reconstruye toda la página.
                     // Conserva GPS, referencia y paso actual; solo recalcula horas/cupos.
@@ -8060,7 +8290,11 @@ body.cart-open #cartSummary{display:none!important;}
                         btn.classList.toggle('bg-black/5',!active);
                     });
                 };
-                document.querySelectorAll('[data-christmas-location-mode]').forEach(btn=>btn.onclick=()=>setChristmasLocationMode(btn.dataset.christmasLocationMode||'gps'));
+                document.querySelectorAll('[data-christmas-location-mode]').forEach(btn=>btn.onclick=()=>{
+                    const mode=btn.dataset.christmasLocationMode||'gps';
+                    setChristmasLocationMode(mode);
+                    if(mode==='gps') requestAnimationFrame(()=>christmasLocationBtn?.click());
+                });
                 if (christmasLocationBtn && isChristmasEveBooking()) christmasLocationBtn.onclick = () => {
                     if (!navigator.geolocation) return showToast('Este dispositivo no permite obtener la ubicación automáticamente.', 'error');
                     christmasLocationBtn.disabled = true;
@@ -8099,21 +8333,42 @@ body.cart-open #cartSummary{display:none!important;}
                     setTimeout(()=>finish(!!best),9000);
                 };
                 const manualSearchBtn=document.getElementById('christmas-search-address');
+                const manualResults=document.getElementById('christmas-place-results');
+                const markChristmasManualReview=value=>{
+                    const clean=String(value||'').trim();
+                    christmasLocationState={status:'review',charge:0,label:'Ubicación por confirmar',displayName:clean,lat:null,lng:null,source:'manual'};
+                    bookingFormState.christmasTransportCost=0; bookingFormState.christmasCoverageStatus='review'; bookingFormState.christmasCoverageLabel='Ubicación por confirmar'; bookingFormState.christmasLocationName=clean; bookingFormState.christmasLocationSource='manual'; bookingFormState.address=clean; bookingFormState.location='Ubicación por confirmar';
+                    if(bForm?.elements?.address) bForm.elements.address.value=clean;
+                    if(bForm?.elements?.location) bForm.elements.location.value='Ubicación por confirmar';
+                    renderChristmasCoverageStatus();
+                };
+                const chooseChristmasPlace=async(place,input)=>{
+                    if(!place) return;
+                    if(input && place.displayName) input.value=place.displayName;
+                    if(manualResults) manualResults.innerHTML='';
+                    await applyChristmasLocation(place.lat,place.lng,{source:'manual',displayName:place.displayName||String(input?.value||'')});
+                    showToast(christmasLocationState.status==='review'?'Recibiremos la solicitud y revisaremos esta ubicación.':'Lugar encontrado y transporte calculado.','success');
+                };
                 if(manualSearchBtn && isChristmasEveBooking()) manualSearchBtn.onclick=async()=>{
                     const input=document.getElementById('christmas-manual-address'); const value=String(input?.value||'').trim();
-                    if(value.length<5) return showToast('Escribe la dirección de entrega o pega un enlace de Maps/Waze.','error');
-                    const original=manualSearchBtn.innerHTML; manualSearchBtn.disabled=true; manualSearchBtn.innerHTML='<div class="loading-spinner !w-4 !h-4 !border-2 inline-block mr-2"></div> Buscando ubicación…';
-                    const found=await geocodeChristmasAddress(value);
+                    const placeType=String(document.getElementById('christmas-place-type')?.value||'').trim();
+                    if(!placeType) return showToast('Indica si es un PH, barriada o sala de eventos.','error');
+                    if(value.length<3) return showToast('Escribe el nombre del PH, barriada o sala de eventos.','error');
+                    markChristmasManualReview(value); // Respaldo: aunque la búsqueda falle, la solicitud no se pierde.
+                    if(manualResults) manualResults.innerHTML='';
+                    const original=manualSearchBtn.innerHTML; manualSearchBtn.disabled=true; manualSearchBtn.innerHTML='<div class="loading-spinner !w-4 !h-4 !border-2 inline-block mr-2"></div> Buscando lugar…';
+                    const places=await searchChristmasPlaces(value,placeType);
                     manualSearchBtn.disabled=false; manualSearchBtn.innerHTML=original;
-                    if(!found){
-                        christmasLocationState={status:'review',charge:0,label:'Ubicación por confirmar',displayName:value,lat:null,lng:null,source:'manual'};
-                        bookingFormState.christmasTransportCost=0; bookingFormState.christmasCoverageStatus='review'; bookingFormState.christmasLocationName=value;
-                        renderChristmasCoverageStatus();
-                        return showToast('No pudimos ubicar esa dirección con suficiente precisión. Confírmala por WhatsApp.','info');
+                    if(!places.length){
+                        if(manualResults) manualResults.innerHTML='<div class="rounded-xl border border-orange-500/25 bg-orange-500/10 p-3 text-[11px] font-bold season-text-title">No encontramos el lugar automáticamente. Puedes seguir con la reserva; nosotros verificaremos la ubicación y te contactaremos por WhatsApp.</div>';
+                        return showToast('No encontramos el lugar automáticamente, pero puedes continuar.','info');
                     }
-                    if(input && found.displayName) input.value=found.displayName;
-                    await applyChristmasLocation(found.lat,found.lng,{source:'manual',displayName:found.displayName||value});
-                    showToast(christmasLocationState.status==='review'?'La ubicación necesita confirmación por WhatsApp.':'Dirección encontrada y verificada.','success');
+                    if(places.length===1){ await chooseChristmasPlace(places[0],input); return; }
+                    if(manualResults){
+                        manualResults.innerHTML=`<p class="text-[10px] font-black uppercase tracking-wider season-text-muted">Selecciona el lugar correcto</p>${places.map((place,i)=>`<button type="button" data-christmas-place-index="${i}" class="w-full rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2.5 text-left active:scale-[.99]"><span class="block text-xs font-black season-text-title">${cleanStr(place.displayName).split(',')[0]||'Lugar encontrado'}</span><span class="block mt-1 text-[9px] season-text-muted line-clamp-2">${cleanStr(place.displayName)}</span></button>`).join('')}`;
+                        manualResults.querySelectorAll('[data-christmas-place-index]').forEach(btn=>btn.onclick=()=>chooseChristmasPlace(places[Number(btn.dataset.christmasPlaceIndex)||0],input));
+                    }
+                    showToast('Encontramos varias opciones. Selecciona la correcta.','info');
                 };
                 document.querySelectorAll('[data-christmas-date-choice]').forEach(btn=>btn.onclick=async()=>{
                     const value=btn.dataset.christmasDateChoice||''; const dateInput=bForm?.elements?.date; if(!dateInput) return;
@@ -8295,17 +8550,19 @@ body.cart-open #cartSummary{display:none!important;}
                 // novalidate y handleBookingSubmit ejecuta las validaciones especiales explícitas.
                 if(bn) bn.onclick=async()=>{
                     if (isChristmasEveBooking() && cs === 1) {
-                        const gpsValue = String(bForm?.elements?.address?.value || bookingFormState.address || '').trim();
-                        if (isChristmasEveBooking() && christmasLocationState.status === 'review') {
-                            showToast('Esta ubicación requiere confirmación por WhatsApp antes de reservar.', 'info');
-                            renderChristmasCoverageStatus();
+                        let locationValue=String(bForm?.elements?.address?.value || bookingFormState.address || '').trim();
+                        const manualInput=document.getElementById('christmas-manual-address');
+                        const manualValue=String(manualInput?.value||'').trim();
+                        // Si escribió un PH/barriada/sala pero no pulsó Buscar, conservamos el dato
+                        // como revisión manual en vez de perder al cliente.
+                        if(!locationValue && manualValue.length>=3){ markChristmasManualReview(manualValue); locationValue=manualValue; }
+                        if(!locationValue){
+                            showToast('Indica dónde será la entrega: usa el GPS o escribe el PH, barriada o sala de eventos.', 'error');
                             return;
                         }
-                        if (!gpsValue || !/google\.com\/maps\?q=-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?/i.test(gpsValue)) {
-                            showToast('Primero comparte tu ubicación exacta para calcular los horarios de tu zona.', 'error');
-                            const status = document.getElementById('christmas-location-status');
-                            if (status) status.textContent = '⚠️ Necesitamos tu GPS para mostrarte los mejores horarios disponibles.';
-                            return;
+                        if(christmasLocationState.status==='review'){
+                            renderChristmasCoverageStatus();
+                            showToast('Puedes continuar. Revisaremos esta ubicación antes de aceptar la reserva.', 'info');
                         }
                     }
                     if (cs === 2 && isChristmasEveBooking()) {
@@ -8427,7 +8684,7 @@ body.cart-open #cartSummary{display:none!important;}
                             <img src="${cleanStr(i.image)}" class="cart-item-image" loading="lazy" decoding="async">
                             <div class="cart-item-info">
                                 <span class="cart-item-name">${cleanStr(i.name)}</span>
-                                <span class="cart-item-qty">Cant: ${i.quantity}</span>
+                                <span class="cart-item-qty">${quantityLabelForCart(i)}</span>
                                 <span class="cart-item-price">$${(Number(i.price)*i.quantity).toFixed(2)}</span>
                             </div>
                         </div>
@@ -8443,11 +8700,11 @@ body.cart-open #cartSummary{display:none!important;}
 
         function updateProductButtonState(itemId) {
             const ic = app.cart.find(i => i.id === itemId);
-            document.querySelectorAll(`button[data-item-id="${itemId}"]`).forEach(b => {
+            document.querySelectorAll(`button[data-item-id="${itemId}"][data-cart-state]`).forEach(b => {
                 if(!b.dataset.origHtml) b.dataset.origHtml = b.innerHTML;
 
                 const isCampaign = b.dataset.isCampaign === 'true';
-                const isHourly = b.dataset.action === 'add-hourly-to-cart';
+                const isQuantityButton = b.dataset.action === 'add-hourly-to-cart';
                 
                 if (isCampaign) {
                     if (ic) {
@@ -8466,7 +8723,7 @@ body.cart-open #cartSummary{display:none!important;}
                     const qe = document.querySelector(`#qty-${itemId}`); 
                     const vq = qe ? parseInt(qe.textContent) : ic.quantity;
                     
-                    if(isHourly && vq !== ic.quantity){ 
+                    if(isQuantityButton && vq !== ic.quantity){ 
                         b.innerHTML = `${S_ICONS.refresh} Actualizar Cantidad`; 
                         b.style.background = '#F59E0B'; 
                         b.dataset.cartState = 'refresh';
@@ -8489,9 +8746,14 @@ body.cart-open #cartSummary{display:none!important;}
         }
 
         function addToCart(item, qty=1) {
+            const rule = getItemQuantityRule(item);
+            const safeQty = rule.enabled ? clampItemQuantity(item, qty) : 1;
             const e = app.cart.find(i=>i.id===item.id);
-            if(e) { e.quantity+=qty; if(item.isCampaign) e.price = item.price; } 
-            else { app.cart.push({...item,quantity:qty}); }
+            if(e) {
+                e.quantity = rule.enabled ? clampItemQuantity(item, e.quantity + safeQty) : 1;
+                if(item.isCampaign) e.price = item.price;
+            } 
+            else { app.cart.push({...item,quantity:safeQty}); }
             
             updateCartUI(); 
             updateProductButtonState(item.id);
@@ -8558,6 +8820,10 @@ body.cart-open #cartSummary{display:none!important;}
                 case 'select-date':
                     if (isChristmasEveBooking() && date !== '2026-12-24' && date !== '2026-12-25') {
                         showToast('Este servicio está disponible únicamente el 24 y 25 de diciembre.', 'info');
+                        break;
+                    }
+                    if (!isChristmasEveBooking() && (date === '2026-12-24' || date === '2026-12-25')) {
+                        showToast('El 24 y 25 de diciembre están reservados exclusivamente para Entregas de Santa.', 'info');
                         break;
                     }
                     selectedCalendarDate = date; renderCalendar(); break;
@@ -8643,7 +8909,11 @@ body.cart-open #cartSummary{display:none!important;}
                     if (it) {
                         const sourceCardText = target.closest('article,section,.card-safe-wrapper,.glass-panel,[class*=\"card\"]')?.innerText || '';
                         it = markChristmasBookingItem(it, sourceCardText);
-                        app.cart = [{...it, quantity: 1}];
+                        const rule = getItemQuantityRule(it);
+                        const qtyEl = document.querySelector(`#qty-${it.id}`);
+                        const existing = app.cart.find(i=>i.id===it.id);
+                        const requestedQty = rule.enabled ? clampItemQuantity(it, qtyEl ? parseInt(qtyEl.textContent,10) : (existing?.quantity ?? rule.min)) : 1;
+                        app.cart = [{...it, quantity: requestedQty}];
                         appliedCoupon = null;
                         updateCartUI();
                         bookingFormState = {};
@@ -8685,23 +8955,30 @@ body.cart-open #cartSummary{display:none!important;}
                     }
 
                     if(sh && qh>0){ 
+                        const safeQty = clampItemQuantity(sh, qh);
                         const ex = app.cart.find(i=>i.id===itemId); 
                         if(ex){ 
-                            ex.quantity = qh; 
+                            ex.quantity = safeQty; 
                             updateCartUI(); 
                             updateProductButtonState(itemId);
                             showToast(`Cantidad actualizada`, 'success'); 
                         } 
-                        else { addToCart(sh, qh); }
+                        else { addToCart(sh, safeQty); }
                     } 
                     break; 
                 }
                 case 'change-service-qty': { 
                     const qe = document.querySelector(`#qty-${itemId}`); 
                     if(qe){ 
-                        let cq=parseInt(qe.textContent); 
-                        let nq=Math.max(1, cq+parseInt(change)); 
+                        const quantityItem = allPurchasableItems.find(s=>s.id===itemId) || app.catalog.find(s=>s.id===itemId) || app.cart.find(s=>s.id===itemId);
+                        const rule = getItemQuantityRule(quantityItem || {});
+                        let cq=parseInt(qe.textContent,10); 
+                        if(!Number.isFinite(cq)) cq=rule.min;
+                        const delta=(parseInt(change,10)||0)*rule.step;
+                        let nq=clampItemQuantity(quantityItem || {}, cq+delta);
                         qe.textContent=nq; 
+                        const label=document.querySelector(`#qty-label-${itemId}`);
+                        if(label) label.textContent=nq===1?rule.singular:rule.plural;
                         updateProductButtonState(itemId); 
                     } 
                     break; 
@@ -8778,8 +9055,9 @@ body.cart-open #cartSummary{display:none!important;}
                 const christmasGuests = Number(christmasFormData.get('guests') || 0);
                 if (![1,2].includes(christmasGuests)) return showToast('La entrega de Santa permite un máximo de 2 niños.', 'error');
                 if (christmasLocationState.status === 'review' || bookingFormState.christmasCoverageStatus === 'review') {
+                    // Se guarda como solicitud pendiente. Diverty revisa ubicación/transporte en CRM
+                    // y contacta al cliente por WhatsApp antes de aceptar o rechazar.
                     renderChristmasCoverageStatus();
-                    return showToast('Esta ubicación debe confirmarse por WhatsApp antes de reservar.', 'info');
                 }
                 const christmasDate = normalizeChristmasDateForSubmit(christmasFormData.get('date'));
                 const validChristmasDates = new Set(['2026-12-24', '2026-12-25']);
@@ -8826,6 +9104,10 @@ body.cart-open #cartSummary{display:none!important;}
                 const normalEmail = cleanStr(normalFormData.get('email'));
                 if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalEmail)) {
                     return showToast('Escribe un correo válido para continuar.', 'error');
+                }
+                const normalDate = cleanStr(normalFormData.get('date')).slice(0,10);
+                if (normalDate === '2026-12-24' || normalDate === '2026-12-25') {
+                    return showToast('El 24 y 25 de diciembre están reservados exclusivamente para Entregas de Santa.', 'error');
                 }
                 const normalReference = cleanStr(normalFormData.get('normalReference'));
                 if (!normalReference) return showToast('Escribe el PH, barriada o una referencia del lugar.', 'error');
@@ -9230,7 +9512,7 @@ body.cart-open #cartSummary{display:none!important;}
                     const rows = await fetchStaticCollection('catalogo_web');
                     if(rows.length) {
                         const cd = rows.map(dt => { 
-                            return markChristmasBookingItem({ id:dt.id, name:dt.nombre, title:dt.titulo, slug:dt.slug, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, cardImage:dt.imagenTarjeta || dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], tipoCobro:dt.tipoCobro||'paquete', isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria, orden: dt.orden, esNavidad:dt.esNavidad===true, recursoNavidad:dt.recursoNavidad||'', _raw:dt }); 
+                            return markChristmasBookingItem({ id:dt.id, name:dt.nombre, title:dt.titulo, slug:dt.slug, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, cardImage:dt.imagenTarjeta || dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], tipoCobro:dt.tipoCobro||'paquete', isHourly:dt.tipoCobro==='hora', isPerChild:dt.tipoCobro==='nino', cantidadMinima:dt.cantidadMinima, cantidadMaxima:dt.cantidadMaxima, incrementoCantidad:dt.incrementoCantidad, unidadEtiqueta:dt.unidadEtiqueta, categoria:dt.categoria, orden: dt.orden, esNavidad:dt.esNavidad===true, recursoNavidad:dt.recursoNavidad||'', _raw:dt }); 
                         });
                         if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
                         catalogLoaded = true; window.catalogLoaded = true;
