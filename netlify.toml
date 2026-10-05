@@ -1,3 +1,20 @@
 [[edge_functions]]
   function = "share-meta"
   path = "/"
+
+# Archivos versionados/estáticos: conservarlos en caché por mucho tiempo.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# El HTML principal debe comprobar siempre si hay una versión nueva.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
