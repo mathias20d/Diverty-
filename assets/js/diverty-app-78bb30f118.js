@@ -1,6 +1,83 @@
-import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+// VELOCIDAD MÓVIL 6A — Firebase pesado bajo demanda.
+        // El inicio usa REST ligero para contenido público. Firestore/Auth completos
+        // solo se descargan cuando el visitante abre reservas, disponibilidad o portal.
+        let doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch, runTransaction;
+        let firebaseRuntimePromise = null;
+        let publicRestToken = '';
+        let publicRestTokenExpiresAt = 0;
+
+        async function ensureFirebaseRuntime() {
+            if (db && auth?.currentUser && getDocs && doc) return { db, auth };
+            if (!firebaseRuntimePromise) {
+                firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js')
+                    .then(m => m.getDivertyFirebaseRuntime(firebaseConfig, 'DivertyWeb', typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : ''))
+                    .then(rt => {
+                        db = rt.db; auth = rt.auth;
+                        ({ doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch, runTransaction } = rt);
+                        return rt;
+                    })
+                    .catch(err => { firebaseRuntimePromise = null; throw err; });
+            }
+            return firebaseRuntimePromise;
+        }
+
+        async function getPublicRestToken() {
+            if (publicRestToken && Date.now() < publicRestTokenExpiresAt - 60000) return publicRestToken;
+            const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
+                method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({returnSecureToken:true})
+            });
+            if (!response.ok) throw new Error(`Firebase Auth REST ${response.status}`);
+            const data = await response.json();
+            publicRestToken = data.idToken || '';
+            publicRestTokenExpiresAt = Date.now() + Number(data.expiresIn || 3600) * 1000;
+            return publicRestToken;
+        }
+
+        function decodeFirestoreValue(v) {
+            if (!v || typeof v !== 'object') return null;
+            if ('stringValue' in v) return v.stringValue;
+            if ('integerValue' in v) return Number(v.integerValue);
+            if ('doubleValue' in v) return Number(v.doubleValue);
+            if ('booleanValue' in v) return Boolean(v.booleanValue);
+            if ('timestampValue' in v) return v.timestampValue;
+            if ('nullValue' in v) return null;
+            if ('referenceValue' in v) return v.referenceValue;
+            if ('geoPointValue' in v) return v.geoPointValue;
+            if ('arrayValue' in v) return (v.arrayValue.values || []).map(decodeFirestoreValue);
+            if ('mapValue' in v) {
+                const out={}; for (const [k,val] of Object.entries(v.mapValue.fields || {})) out[k]=decodeFirestoreValue(val); return out;
+            }
+            return null;
+        }
+        function decodeFirestoreDocument(d) {
+            const out={}; for (const [k,v] of Object.entries(d?.fields || {})) out[k]=decodeFirestoreValue(v);
+            out.id=String(d?.name || '').split('/').pop() || out.id || '';
+            return out;
+        }
+        async function fetchPublicRestDoc(collectionName, id) {
+            const token=await getPublicRestToken();
+            const path=`artifacts/${CRM_APP_ID}/public/data/${collectionName}/${id}`;
+            const url=`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/${path}`;
+            const r=await fetch(url,{headers:{authorization:`Bearer ${token}`}});
+            if(r.status===404) return null;
+            if(!r.ok) throw new Error(`Firestore REST ${r.status}`);
+            return decodeFirestoreDocument(await r.json());
+        }
+        async function fetchPublicRestCollection(collectionName) {
+            const token=await getPublicRestToken();
+            const base=`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/artifacts/${CRM_APP_ID}/public/data/${collectionName}`;
+            const rows=[]; let pageToken='';
+            for(let page=0; page<5; page++) {
+                const url=base+`?pageSize=300${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
+                const r=await fetch(url,{headers:{authorization:`Bearer ${token}`}});
+                if(r.status===404) return rows;
+                if(!r.ok) throw new Error(`Firestore REST ${r.status}`);
+                const j=await r.json();
+                rows.push(...(j.documents||[]).map(decodeFirestoreDocument));
+                pageToken=j.nextPageToken||''; if(!pageToken) break;
+            }
+            return rows;
+        }
 
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
 
@@ -30,7 +107,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
         // Se relee como máximo una vez por minuto para ahorrar operaciones de Firestore.
         let christmasCapacityCache = { at: 0, value: 1 };
         async function getChristmasCapacity({ force = false } = {}) {
-            if (!db) return Math.max(1, Number(christmasCapacityCache.value) || 1);
+            if (!db) { try { await ensureFirebaseRuntime(); } catch(_) { return Math.max(1, Number(christmasCapacityCache.value) || 1); } }
             if (!force && Date.now() - christmasCapacityCache.at < 60000) {
                 return Math.max(1, Number(christmasCapacityCache.value) || 1);
             }
@@ -471,7 +548,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
             return null;
         }
         async function getNormalResourceCapacity({force=false}={}){
-            if(!db) return normalResourceCapacityCache.value;
+            if(!db) { try { await ensureFirebaseRuntime(); } catch(_) { return normalResourceCapacityCache.value; } }
             if(!force && Date.now()-normalResourceCapacityCache.at<60000) return normalResourceCapacityCache.value;
             try{
                 const snap=await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
@@ -1273,7 +1350,10 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
             if (sectionId === 'home') renderHome();
             else if (sectionId === 'catalog') renderAllCatalog();
             else if (sectionId === 'gallery') renderGallery();
-            else if (sectionId === 'booking') renderBooking();
+            else if (sectionId === 'booking') {
+                renderBooking();
+                Promise.resolve(window.__divertyLazyAvailability?.()).catch(()=>{});
+            }
             else if (sectionId === 'portal') renderPortal();
             else if (sectionId.startsWith('cat_')) { const catId = sectionId.replace('cat_', ''); renderCategory(catId); }
             window.scrollTo(0, 0);
@@ -2030,7 +2110,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
 
         let availabilityStatusCache = { at: 0, ready: false };
         async function loadBookedEventsForMonth(date, { force = false } = {}) {
-            if (!db) return [];
+            if (!db) { try { await ensureFirebaseRuntime(); } catch(_) { availabilityReady=false; return []; } }
             // El indicador de disponibilidad cambia muy poco. Evita releerlo al pasar de un
             // mes a otro repetidamente; force=true sigue permitiendo una comprobación inmediata.
             if (force || Date.now() - availabilityStatusCache.at > 60000) {
@@ -2122,7 +2202,8 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
         }
 
         async function findReservationsByPhone(value) {
-            if (!db || !auth.currentUser) return [];
+            if (!db || !auth?.currentUser) { try { await ensureFirebaseRuntime(); } catch(_) { return []; } }
+            if (!auth?.currentUser) return [];
             const {digits} = phoneVariants(value);
             if (digits.length < 6) return [];
             const ref = collection(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente');
@@ -2224,7 +2305,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
                     const rc = document.getElementById('portalResults'); if(!rc) return;
                     if(pi.length<6){ rc.innerHTML=`<div class="text-center p-8 bg-amber-500/10 rounded-2xl border border-amber-500/20"><p class="text-amber-500 font-bold">Número inválido.</p></div>`; return; }
                     rc.innerHTML=`<div class="text-center p-8 bg-black/5 rounded-2xl border border-black/10"><div class="loading-spinner !w-6 !h-6 !border-2 mx-auto mb-3"></div><p class="season-text-muted font-bold">Buscando tu reserva...</p></div>`;
-                    let res; try { res = await findReservationsByPhone(sp.value); } catch (_) { rc.textContent='No se pudo consultar. Reintenta con conexión o contáctanos por WhatsApp.'; return; }
+                    let res; try { await ensureFirebaseRuntime(); res = await findReservationsByPhone(sp.value); } catch (_) { rc.textContent='No se pudo consultar. Reintenta con conexión o contáctanos por WhatsApp.'; return; }
                     if(res.length===0) rc.innerHTML=`<div class="text-center p-8 bg-rose-500/10 rounded-2xl border border-rose-500/20"><p class="text-rose-500 font-bold">No encontramos reservas.</p></div>`;
                     else rc.innerHTML = res.map(getPortalResultCard).join('');
                     if(typeof lucide !== 'undefined') lucide.createIcons();
@@ -3531,6 +3612,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
             const sBtn = e.target.querySelector('#btn-submit') || e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
             const obh = sBtn.innerHTML; submitForm.dataset.sending = '1'; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-[var(--s-primary)] inline-block align-middle mr-2"></div> Enviando reserva...';
             try {
+                await ensureFirebaseRuntime();
                 const fd = new FormData(e.target);
                 const sub = app.cart.reduce((s,i)=>s+(Number(i.price)*i.quantity),0);
                 const count = app.cart.reduce((s,i)=>s+i.quantity,0);
@@ -3772,18 +3854,8 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
         }
 
         async function initFirebaseAndData() {
-            const fbApp = getApps().some(a => a.name === "DivertyWeb") ? getApp("DivertyWeb") : initializeApp(firebaseConfig, "DivertyWeb");
-            db = getFirestore(fbApp); auth = getAuth(fbApp);
-            
-            try { 
-                if(typeof __initial_auth_token !== 'undefined' && __initial_auth_token){ 
-                    try { await signInWithCustomToken(auth, __initial_auth_token); } 
-                    catch(e){ await signInAnonymously(auth); } 
-                } else { 
-                    await signInAnonymously(auth); 
-                }
-            } catch(e) { console.error("Error Auth:", e); }
-
+            // 6A: el arranque público NO descarga Firebase SDK.
+            // Catálogo/tema/campañas se leen por REST ligero y el SDK se reserva para reservas.
             const T_OUT = 8000;
 
             // DIVERTY FIRESTORE OPTIMIZER
@@ -3822,9 +3894,9 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
                 const version=cacheVersion(name), key=name+':'+version;
                 if(inFlight.has(key)) return inFlight.get(key);
                 const request=(async()=>{
-                    const snap=await fetchWithTimeout(getDocs(collection(db,'artifacts',CRM_APP_ID,'public','data',name)),T_OUT);
+                    const rows=await fetchWithTimeout(fetchPublicRestCollection(name),T_OUT);
                     if(version!==cacheVersion(name)) return fetchStaticCollection(name);
-                    const rows=snap.docs.map(d=>({...d.data(),id:d.id})); saveCachedCollection(name,rows,version); return rows;
+                    saveCachedCollection(name,rows,version); return rows;
                 })();
                 inFlight.set(key,request); try{return await request;} finally{inFlight.delete(key);}
             };
@@ -3833,18 +3905,25 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
                 refreshing=true;
                 try {while(refreshPending){refreshPending=false; await refreshStaticContent();}} finally{refreshing=false;}
             }
-            let resolveInitialSync;
-            const initialSyncReady=new Promise(resolve=>{resolveInitialSync=resolve;});
-            onSnapshot(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','web_sync'),snap=>{
-                const next=snap.data()||{}, version=String(next.version||'0'), sections=next.versions||{};
-                const previousSections = sectionVersions;
-                const globalChanged = version !== currentWebSyncVersion;
-                const changed = globalChanged || JSON.stringify(sections)!==JSON.stringify(previousSections);
-                if (changed && currentWebSyncVersion !== '') queueChangedSections(previousSections, sections, globalChanged);
+            const applySyncDocument = next => {
+                next=next||{};
+                const version=String(next.version||'0'), sections=next.versions||{};
+                const previousSections=sectionVersions;
+                const globalChanged=version!==currentWebSyncVersion;
+                const changed=globalChanged || JSON.stringify(sections)!==JSON.stringify(previousSections);
+                if(changed && currentWebSyncVersion!=='') queueChangedSections(previousSections,sections,globalChanged);
                 currentWebSyncVersion=version; sectionVersions=sections;
-                resolveInitialSync(); if(changed){refreshPending=true; drainRefresh();}
-            },error=>{console.warn('Sincronización pública no disponible',error); resolveInitialSync();});
-            await Promise.race([initialSyncReady,new Promise(resolve=>setTimeout(resolve,T_OUT))]);
+                if(changed){refreshPending=true; drainRefresh();}
+            };
+            try { applySyncDocument(await fetchWithTimeout(fetchPublicRestDoc('config_web','web_sync'),T_OUT)); }
+            catch(error){ console.warn('Sincronización pública inicial no disponible',error); }
+
+            // Mantiene cambios del administrador sin cargar Firestore SDK completo.
+            // Se consulta solo cuando la pestaña está visible y a baja frecuencia.
+            setInterval(async()=>{
+                if(document.hidden) return;
+                try { applySyncDocument(await fetchPublicRestDoc('config_web','web_sync')); } catch(_) {}
+            },45000);
 
             const loadBanner = async () => {
                 try {
@@ -4014,9 +4093,29 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
             updateCartUI();
             finishThemeBoot();
 
-            await Promise.allSettled([loadSecondary(),loadBookedEventsForMonth(new Date(currentCalDate))]);
+            // Secundarios públicos siguen por REST; disponibilidad/Firebase completo se carga
+            // solamente cuando el calendario se acerca a pantalla o el usuario entra a Reservar.
+            await Promise.allSettled([loadSecondary()]);
             if(app.activeSection==='home') renderHome(); else if(app.activeSection==='booking') renderBooking();
             bootComplete=true; await drainRefresh();
+
+            const lazyLoadAvailability = async () => {
+                if (availabilityReady) return;
+                try {
+                    await ensureFirebaseRuntime();
+                    await loadBookedEventsForMonth(new Date(currentCalDate));
+                    if(app.activeSection==='home') renderHome();
+                    else if(app.activeSection==='booking') renderBooking();
+                } catch(e) { console.warn('Disponibilidad bajo demanda no disponible', e); }
+            };
+            const calendarEl=document.getElementById('calendar-section');
+            if(calendarEl && 'IntersectionObserver' in window){
+                const io=new IntersectionObserver(entries=>{
+                    if(entries.some(x=>x.isIntersecting)){ io.disconnect(); lazyLoadAvailability(); }
+                },{rootMargin:'180px 0px'});
+                io.observe(calendarEl);
+            }
+            window.__divertyLazyAvailability = lazyLoadAvailability;
 
         }
 
