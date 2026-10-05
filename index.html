@@ -6188,11 +6188,47 @@ body.cart-open #cartSummary{display:none!important;}
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '');
 
-        // NAVIDAD DISPONIBILIDAD V3 — slots Santa reutilizados para UI + confirmación de bajo consumo.
-        const isChristmasEveBooking = () => app.cart.some(item => {
-            const name = normalizeBookingName(item?.name);
-            return name.includes('entregas de nochebuena') || name.includes('entregas de noche buena');
-        });
+        // NAVIDAD DISPONIBILIDAD V5 — identificación persistente del servicio Santa.
+        // La reserva especial NO puede depender del título exacto del catálogo. El administrador
+        // puede cambiar nombres, campañas o textos, así que conservamos una marca `esNavidad` y
+        // además usamos el contenido visible como respaldo. Esto evita que Santa abra el formulario
+        // normal y garantiza GPS primero, fechas 24/25 y horarios inteligentes.
+        const christmasTextLooksLikeSantaDelivery = (value) => {
+            const text = normalizeBookingName(value);
+            if (!text) return false;
+            if (/entregas?\s+de\s+noche\s*buena|nochebuena/.test(text)) return true;
+            if (/entregas?\s+(?:de\s+)?(?:regalos?|santa)|entrega\s+con\s+santa/.test(text)) return true;
+            const mentionsSanta = /\bsanta(?:\s+claus)?\b/.test(text);
+            const mentionsDelivery = /entrega|regalo|visita/.test(text);
+            const mentionsChristmasDates = /24\s*(?:y|[-–])\s*25|24\s+de\s+diciembre|25\s+de\s+diciembre/.test(text);
+            return mentionsSanta && (mentionsDelivery || mentionsChristmasDates);
+        };
+
+        const isChristmasEveItem = (item) => {
+            if (!item || typeof item !== 'object') return false;
+            if (item.esNavidad === true || normalizeBookingName(item.recursoNavidad) === 'santa') return true;
+
+            const services = Array.isArray(item.services) ? item.services : [];
+            const rawValues = item._raw && typeof item._raw === 'object' ? Object.values(item._raw) : [];
+            const searchable = [
+                item.id, item.name, item.title, item.titulo, item.short, item.slug,
+                item.categoria, item.category, item.categoryName,
+                item.description, item.descripcion, item.descripcionEvento, item.tags,
+                ...services, ...rawValues
+            ].filter(v => v !== undefined && v !== null).map(v =>
+                Array.isArray(v) ? v.join(' ') : (typeof v === 'object' ? JSON.stringify(v) : String(v))
+            ).join(' | ');
+
+            return christmasTextLooksLikeSantaDelivery(searchable);
+        };
+
+        const markChristmasBookingItem = (item, sourceText = '') => {
+            if (!item || typeof item !== 'object') return item;
+            const christmas = isChristmasEveItem(item) || christmasTextLooksLikeSantaDelivery(sourceText);
+            return christmas ? { ...item, esNavidad:true, recursoNavidad:'Santa' } : item;
+        };
+
+        const isChristmasEveBooking = () => Array.isArray(app.cart) && app.cart.some(isChristmasEveItem);
 
         function setContent(html) { 
             const mc = document.getElementById('mainContent'); 
@@ -8521,7 +8557,7 @@ body.cart-open #cartSummary{display:none!important;}
                 case 'add-to-cart': { 
                     let it = allPurchasableItems.find(s=>s.id===itemId); 
                     
-                    if (!it && target.dataset.isCampaign === 'true') {
+                    if (!it) {
                         const camp = app.campaigns.find(c => c.id === itemId);
                         if (camp) {
                             let servicesArr = [];
@@ -8533,12 +8569,15 @@ body.cart-open #cartSummary{display:none!important;}
                                 price: Number(camp.precio || camp.precioOriginal || 0),
                                 originalPrice: Number(camp.precioOriginal || camp.precio || 0),
                                 image: cleanStr(camp.imagen) || '', description: cleanStr(camp.subtitulo || camp.descripcion),
-                                services: servicesArr, isHourly: false, isCampaign: true, campaignId: camp.id
+                                services: servicesArr, isHourly: false, isCampaign: true, campaignId: camp.id,
+                                esNavidad: camp.esNavidad === true, recursoNavidad: camp.recursoNavidad || '', _raw: camp
                             };
                         }
                     }
 
                     if(it){
+                        const sourceCardText = target.closest('article,section,.card-safe-wrapper,.glass-panel,[class*=\"card\"]')?.innerText || '';
+                        it = markChristmasBookingItem(it, sourceCardText);
                         const existingCartItem = app.cart.find(i=>i.id===it.id);
                         if(!existingCartItem) { 
                             addToCart(it, 1); 
@@ -8551,14 +8590,16 @@ body.cart-open #cartSummary{display:none!important;}
                 }
                 case 'book-now': {
                     let it = allPurchasableItems.find(s=>s.id===itemId);
-                    if (!it && target.dataset.isCampaign === 'true') {
+                    if (!it) {
                         const camp = app.campaigns.find(c => c.id === itemId);
                         if (camp) {
                             const servicesArr = Array.isArray(camp.incluye) ? camp.incluye : (typeof camp.incluye === 'string' ? camp.incluye.split('\n').filter(s=>s.trim()!=='') : []);
-                            it = { id: camp.id, name: cleanStr(camp.titulo), price: Number(camp.precio || camp.precioOriginal || 0), originalPrice: Number(camp.precioOriginal || camp.precio || 0), image: cleanStr(camp.imagen) || '', description: cleanStr(camp.subtitulo || camp.descripcion), services: servicesArr, isHourly: false, isCampaign: true, campaignId: camp.id };
+                            it = markChristmasBookingItem({ id: camp.id, name: cleanStr(camp.titulo), title:cleanStr(camp.titulo), price: Number(camp.precio || camp.precioOriginal || 0), originalPrice: Number(camp.precioOriginal || camp.precio || 0), image: cleanStr(camp.imagen) || '', description: cleanStr(camp.subtitulo || camp.descripcion), services: servicesArr, isHourly: false, isCampaign: true, campaignId: camp.id, esNavidad:camp.esNavidad===true, recursoNavidad:camp.recursoNavidad||'', _raw:camp });
                         }
                     }
                     if (it) {
+                        const sourceCardText = target.closest('article,section,.card-safe-wrapper,.glass-panel,[class*=\"card\"]')?.innerText || '';
+                        it = markChristmasBookingItem(it, sourceCardText);
                         app.cart = [{...it, quantity: 1}];
                         appliedCoupon = null;
                         updateCartUI();
@@ -8567,6 +8608,9 @@ body.cart-open #cartSummary{display:none!important;}
                         app.wizardStep = 1;
                         setActiveSection('booking');
                         window.scrollTo(0, 0);
+                    } else {
+                        console.warn('No se encontró el servicio solicitado para reservar', itemId);
+                        showToast('No pudimos abrir este servicio. Actualiza la página e inténtalo nuevamente.', 'error');
                     }
                     break;
                 }
@@ -9143,7 +9187,7 @@ body.cart-open #cartSummary{display:none!important;}
                     const rows = await fetchStaticCollection('catalogo_web');
                     if(rows.length) {
                         const cd = rows.map(dt => { 
-                            return { id:dt.id, name:dt.nombre, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, cardImage:dt.imagenTarjeta || dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], tipoCobro:dt.tipoCobro||'paquete', isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria, orden: dt.orden }; 
+                            return markChristmasBookingItem({ id:dt.id, name:dt.nombre, title:dt.titulo, slug:dt.slug, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, cardImage:dt.imagenTarjeta || dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], tipoCobro:dt.tipoCobro||'paquete', isHourly:dt.tipoCobro==='hora'||dt.categoria==='servicios', isPerChild:dt.tipoCobro==='nino', categoria:dt.categoria, orden: dt.orden, esNavidad:dt.esNavidad===true, recursoNavidad:dt.recursoNavidad||'', _raw:dt }); 
                         });
                         if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
                         catalogLoaded = true; window.catalogLoaded = true;
