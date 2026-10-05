@@ -657,6 +657,20 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
             return String(val).trim();
         };
 
+        // VELOCIDAD WEB FASE 4 — Cloudinary entrega imágenes más ligeras sin cambiar
+        // el tamaño visual. Solo transforma URLs de imagen de Cloudinary; cualquier
+        // imagen externa o ruta local se conserva exactamente como estaba.
+        const optimizeCloudinaryImage = (value, width = 720) => {
+            const url = cleanStr(value);
+            if (!url || !url.includes('res.cloudinary.com') || !url.includes('/image/upload/')) return url;
+            const safeWidth = Math.max(120, Math.min(1600, Number(width) || 720));
+            const marker = '/image/upload/';
+            const transform = `f_auto,q_auto:eco,c_limit,w_${safeWidth},dpr_auto/`;
+            // Evita duplicar nuestra transformación si la función se llama dos veces.
+            if (url.includes('/image/upload/f_auto,q_auto:eco,c_limit,')) return url;
+            return url.replace(marker, marker + transform);
+        };
+
         // NAVIDAD FASE 1 — detección aislada.
         // No modifica calendario, disponibilidad, Firebase ni el guardado de reservas.
         const normalizeBookingName = (value) => cleanStr(value)
@@ -1301,7 +1315,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
                 const titulo = cleanStr(camp.titulo);
                 const sub = cleanStr(camp.subtitulo);
                 const desc = cleanStr(camp.descripcion);
-                const img = cleanStr(camp.imagen);
+                const img = optimizeCloudinaryImage(camp.imagen, isDestacada ? 960 : 720);
                 const pPromo = cleanStr(camp.precio);
                 const pAnt = cleanStr(camp.precioOriginal);
                 const tId = cleanStr(camp.id);
@@ -1448,7 +1462,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
             
             let imgBlock = `<div class="relative w-full h-40 sm:h-48 shrink-0 rounded-[1.25rem] overflow-hidden shadow-sm mb-4 group-hover:shadow-xl transition-all duration-500 border border-[var(--s-glass-border)]">
                 ${b}
-                <img src="${cleanStr(item.image)}" loading="lazy" decoding="async" fetchpriority="low" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                <img src="${optimizeCloudinaryImage(item.image, 720)}" loading="lazy" decoding="async" fetchpriority="low" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#0F172A] via-[#0F172A]/40 to-transparent opacity-90"></div>
                 <div class="absolute bottom-0 left-0 right-0 p-5 pt-10 text-white">
                     <h3 class="text-2xl sm:text-3xl font-black leading-tight drop-shadow-lg tracking-tight font-poppins text-white">${cleanStr(item.name||item.title)}</h3>
@@ -1711,7 +1725,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
 
           const cards = categories.map(cat => {
             const firstItem = cat.items[0];
-            const cover = cleanStr(cat.imagen || cat.image || firstItem?.image || '');
+            const cover = optimizeCloudinaryImage(cat.imagen || cat.image || firstItem?.image || '', 720);
             const icon = getCatalogIcon(cat);
             const countLabel = `${cat.count} ${cat.count === 1 ? 'opción' : 'opciones'}`;
 
@@ -1784,7 +1798,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
 
               <div class="catalog-tile-image-wrap">
                 <img
-                  src="${cleanStr(item.cardImage || item.image)}"
+                  src="${optimizeCloudinaryImage(item.cardImage || item.image, 720)}"
                   alt="${itemName}"
                   class="catalog-tile-image"
                   loading="lazy"
@@ -1891,7 +1905,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
 
                         <div class="catalog-detail-card">
                             <div class="catalog-detail-image-wrap">
-                                <img src="${cleanStr(item.image)}"
+                                <img src="${optimizeCloudinaryImage(item.image, 1080)}"
                                      alt="${cleanStr(item.name || item.title)}"
                                      decoding="async" fetchpriority="high"
                                      class="catalog-detail-image">
@@ -1985,7 +1999,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
         function renderGallery() {
             if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p>Cargando Galería...</p></div>`); return; }
             if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
-            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative"><img src="${cleanStr(i.image)}" loading="lazy" decoding="async" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative"><img src="${optimizeCloudinaryImage(i.image, 900)}" loading="lazy" decoding="async" fetchpriority="low" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
         }
 
         // FIRESTORE OPTIMIZADO: el calendario solo consulta las reservas del mes visible.
@@ -3040,7 +3054,7 @@ import { initializeApp, getApps, getApp } from "https://www.gstatic.com/firebase
                 cie.innerHTML='<div class="space-y-3 pt-2 pb-4">'+app.cart.map(i=>`
                     <div class="cart-item-card group relative">
                         <div class="contents">
-                            <img src="${cleanStr(i.image)}" class="cart-item-image" loading="lazy" decoding="async">
+                            <img src="${optimizeCloudinaryImage(i.image, 240)}" class="cart-item-image" loading="lazy" decoding="async" fetchpriority="low">
                             <div class="cart-item-info">
                                 <span class="cart-item-name">${cleanStr(i.name)}</span>
                                 <span class="cart-item-qty">${quantityLabelForCart(i)}</span>
