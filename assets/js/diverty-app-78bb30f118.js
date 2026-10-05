@@ -4065,6 +4065,12 @@
             // use inmediatamente el tema correcto mientras carga el resto.
             await loadTheme();
 
+            // FASE 6B: mostrar la portada inmediatamente después de conocer el tema.
+            // El catálogo, campañas y demás contenido continúan cargando en segundo plano.
+            // Así el visitante no espera esas consultas para ver y usar el inicio.
+            if (app.activeSection === 'home') renderHome();
+            finishThemeBoot();
+
             await Promise.allSettled([ 
                 loadCategories(), 
                 loadCatalog(), 
