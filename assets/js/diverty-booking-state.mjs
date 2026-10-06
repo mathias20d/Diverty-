@@ -16,6 +16,17 @@ export function prepareBookingAttempt(previous, data) {
   return { id, data: { ...data, id }, promise: null };
 }
 
+// The customer projection is readable by its owner; the private event is not.
+// A locally pending write cannot establish that Firestore accepted the request.
+export async function readBookingReceipt(getDoc, reference, ownerUid) {
+  const snap = await getDoc(reference);
+  if (!snap.exists() || snap.metadata?.hasPendingWrites) return null;
+  const data = snap.data();
+  if (!ownerUid || data?.ownerUid !== ownerUid) return null;
+  if (typeof data.fecha !== 'string' || typeof data.hora !== 'string' || typeof data.estado !== 'string') return null;
+  return data;
+}
+
 export function isNormalDayFullyBooked(rows, date, capacity) {
   if (!Number.isInteger(capacity) || capacity < 1) return false;
   const counts = new Map();

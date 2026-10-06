@@ -1,0 +1,149 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() { return request.auth != null && request.auth.uid == 'OblqzhP2L3XulJ920O82jwd1Qrk1'; }
+    function signedIn() { return request.auth != null; }
+    function shortText(value, max) { return value is string && value.size() <= max; }
+    function validRequest(id) {
+      let d = request.resource.data;
+      return signedIn() && id.matches('web-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
+        && d.keys().hasOnly(['id','ownerUid','cliente','email','telefono','telefonoBusqueda','tipoEvento','ninos','fecha','hora','ubicacion','direccion','referenciaLugar','comentarios','servicio','serviciosSeleccionados','descripcionEvento','transporte','descuento','gastos','detalleGastos','total','abono','estado','createdAt','deletedLocally','colisionAprobada','origen','esNavidad','recursoNavidad','lat','lng'])
+        && d.id == id && d.ownerUid == request.auth.uid
+        && shortText(d.cliente,150) && d.cliente.size() > 0
+        && shortText(d.email,254) && shortText(d.telefono,30)
+        && shortText(d.telefonoBusqueda,20) && d.telefonoBusqueda.matches('[0-9]{6,15}')
+        && shortText(d.tipoEvento,100) && shortText(d.ninos,10)
+        && d.fecha is string && d.fecha.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && d.hora is string && d.hora.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+        && shortText(d.ubicacion,200) && shortText(d.direccion,1500) && shortText(d.referenciaLugar,500)
+        && shortText(d.comentarios,3000) && shortText(d.servicio,3000) && shortText(d.descripcionEvento,30000)
+        && d.serviciosSeleccionados is list && d.serviciosSeleccionados.size() > 0 && d.serviciosSeleccionados.size() <= 50
+        && d.transporte is string && d.transporte.matches('[0-9]+([.][0-9]+)?')
+        && d.descuento is string && d.descuento.matches('[0-9]+([.][0-9]+)?')
+        && d.total is string && d.total.matches('[0-9]+([.][0-9]+)?')
+        && d.abono == '0' && d.gastos == '0' && d.detalleGastos == ''
+        && d.estado == 'Pendiente' && d.origen == 'Web Directa'
+        && d.deletedLocally == false && d.colisionAprobada == false
+        && d.esNavidad is bool && d.recursoNavidad is string && d.recursoNavidad.size() <= 50
+        && (d.esNavidad == false || (d.lat is number && d.lat >= -90 && d.lat <= 90 && d.lng is number && d.lng >= -180 && d.lng <= 180))
+        && shortText(d.createdAt,40);
+    }
+    // Emulator-validated proposal. Firebase publication is a separate admin action.
+    function eventPath(id) { return /databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id); }
+    function availabilityPath(id) { return /databases/$(database)/documents/artifacts/diverty-oficial/public/data/disponibilidad_web/$(id); }
+    function receiptPath(id) { return /databases/$(database)/documents/artifacts/diverty-oficial/public/data/reservas_cliente/$(id); }
+    function lockId(d) { return (d.esNavidad ? 'slot_santa_' : 'slot_') + d.fecha + '_' + d.hora.replace(':','-'); }
+    function configuredCapacity(santa) {
+      let path = /databases/$(database)/documents/artifacts/diverty-oficial/public/data/config_web/global;
+      let config = exists(path) ? get(path).data : {};
+      return config.get(santa ? 'capacidadSanta' : 'capacidadSimultanea', santa ? 1 : 3);
+    }
+    function lockShape(d) {
+      return d.keys().hasOnly(['fecha','hora','count','capacity','reservationIds','updatedAt'])
+        && shortText(d.fecha,10) && d.fecha.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && shortText(d.hora,5) && d.hora.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+        && d.capacity is int && d.capacity >= 1 && d.capacity <= 100
+        && d.count is int && d.count >= 1 && d.count <= d.capacity
+        && d.reservationIds is list && d.reservationIds.size() == d.count
+        && d.reservationIds.toSet().size() == d.count && shortText(d.updatedAt,40);
+    }
+    function newReservationOwnsLock(id, d) {
+      let addedId = d.reservationIds[d.count - 1];
+      let event = getAfter(eventPath(addedId)).data;
+      return !exists(eventPath(addedId)) && event.ownerUid == request.auth.uid
+        && event.fecha == d.fecha && event.hora == d.hora && id == lockId(event)
+        && d.capacity == configuredCapacity(event.esNavidad);
+    }
+    function unchangedLockOwned(id, d) {
+      let path = eventPath(d.reservationIds[d.count - 1]);
+      return exists(path) && get(path).data.ownerUid == request.auth.uid && id == lockId(get(path).data)
+        && d.fecha == resource.data.fecha && d.hora == resource.data.hora
+        && d.count == resource.data.count && d.capacity == resource.data.capacity
+        && d.reservationIds.toSet() == resource.data.reservationIds.toSet();
+    }
+    function stalePublicReservation(id, before) {
+      let path = availabilityPath(id);
+      return !exists(path) || get(path).data.fecha != before.fecha || get(path).data.hora != before.hora
+        || get(path).data.get('estado','').matches('(?i).*(cancelad|rechaz|cot).*');
+    }
+    function preservesOtherReservations(d) {
+      let removed = resource.data.reservationIds.removeAll(d.reservationIds);
+      let addedId = d.reservationIds[d.count - 1];
+      return resource.data.reservationIds is list
+        && !resource.data.reservationIds.hasAny([addedId])
+        && d.reservationIds.toSet().difference(resource.data.reservationIds.toSet()).size() == 1
+        // One verified stale ID may be repaired. Larger migrations are admin-only.
+        && (removed.size() == 0 || (removed.size() == 1 && stalePublicReservation(removed[0],resource.data)));
+    }
+    function eventHasNewCapacity(d) {
+      let path = availabilityPath(lockId(d));
+      let after = getAfter(path).data;
+      return lockShape(after) && after.fecha == d.fecha && after.hora == d.hora
+        && after.capacity == configuredCapacity(d.esNavidad) && after.reservationIds.hasAny([d.id])
+        && (!exists(path) || !get(path).data.reservationIds.hasAny([d.id]));
+    }
+    function eventHasReceipt(id,d) {
+      let r = getAfter(receiptPath(id)).data;
+      return r.ownerUid == d.ownerUid && r.cliente == d.cliente && r.telefono == d.telefono
+        && r.fecha == d.fecha && r.hora == d.hora && r.estado == d.estado
+        && r.servicio == d.servicio && r.total == d.total && r.abono == d.abono;
+    }
+    match /artifacts/diverty-oficial/public/data/{section}/{id} {
+      allow read, write: if isAdmin();
+      allow read: if section in ['categorias_web','catalogo_web','campanas_web','temas_web','transporte_web','galeria_web','resenas_web','cupones_web','config_web','disponibilidad_web'];
+    }
+    match /artifacts/diverty-oficial/public/data/eventos/{id} {
+      allow read: if isAdmin();
+      allow create: if validRequest(id) && eventHasNewCapacity(request.resource.data) && eventHasReceipt(id,request.resource.data)
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/disponibilidad_web/$(id)).data.fecha == request.resource.data.fecha
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/disponibilidad_web/$(id)).data.hora == request.resource.data.hora;
+      allow update: if signedIn() && resource.data.ownerUid == request.auth.uid && request.resource.data == resource.data;
+      allow update, delete: if isAdmin();
+    }
+    match /artifacts/diverty-oficial/public/data/disponibilidad_web/{id} {
+      // No unauthenticated mutation, invented capacity or unrelated slot writes.
+      allow create: if signedIn() && id.matches('slot_(santa_)?[0-9A-Za-z_-]+')
+        && lockShape(request.resource.data) && request.resource.data.count == 1
+        && newReservationOwnsLock(id,request.resource.data);
+      allow update: if signedIn() && id.matches('slot_(santa_)?[0-9A-Za-z_-]+')
+        && lockShape(request.resource.data)
+        && request.resource.data.fecha == resource.data.fecha && request.resource.data.hora == resource.data.hora
+        && (unchangedLockOwned(id,request.resource.data)
+          || (newReservationOwnsLock(id,request.resource.data) && preservesOtherReservations(request.resource.data)));
+      allow update, delete: if isAdmin();
+      allow create: if signedIn() && !id.matches('slot_(santa_)?[0-9A-Za-z_-]+')
+        && request.resource.data.keys().hasOnly(['fecha','hora','esNavidad','recursoNavidad','lat','lng'])
+        && request.resource.data.fecha is string && request.resource.data.fecha.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && request.resource.data.hora is string && request.resource.data.hora.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+        && request.resource.data.esNavidad is bool && request.resource.data.recursoNavidad is string && request.resource.data.recursoNavidad.size() <= 50
+        && (request.resource.data.esNavidad == false || (request.resource.data.lat is number && request.resource.data.lat >= -90 && request.resource.data.lat <= 90 && request.resource.data.lng is number && request.resource.data.lng >= -180 && request.resource.data.lng <= 180))
+        && !exists(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id))
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.ownerUid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.fecha == request.resource.data.fecha
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.hora == request.resource.data.hora
+        && getAfter(eventPath(id)).data.esNavidad == request.resource.data.esNavidad
+        && getAfter(eventPath(id)).data.recursoNavidad == request.resource.data.recursoNavidad
+        && (request.resource.data.esNavidad == false ||
+          (getAfter(eventPath(id)).data.lat == request.resource.data.lat && getAfter(eventPath(id)).data.lng == request.resource.data.lng));
+      allow update: if signedIn() && !id.matches('slot_(santa_)?[0-9A-Za-z_-]+')
+        && request.resource.data == resource.data
+        && get(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.ownerUid == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+    match /artifacts/diverty-oficial/public/data/reservas_cliente/{id} {
+      function matchesEvent() {
+        let event = getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data;
+        let d = request.resource.data;
+        return d.keys().hasOnly(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'])
+          && d.ownerUid == request.auth.uid && event.ownerUid == request.auth.uid
+          && d.cliente == event.cliente && d.telefono == event.telefono && d.fecha == event.fecha && d.hora == event.hora
+          && d.estado == event.estado && d.servicio == event.servicio && d.total == event.total && d.abono == event.abono;
+      }
+      allow read: if signedIn() && resource.data.ownerUid == request.auth.uid;
+      allow create: if signedIn() && matchesEvent();
+      allow update: if signedIn() && resource.data.ownerUid == request.auth.uid && request.resource.data == resource.data;
+      allow delete: if isAdmin();
+    }
+    match /tokens/{token} { allow read, write: if isAdmin(); }
+  }
+}

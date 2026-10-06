@@ -1,5 +1,5 @@
 import { peakResourceUsage } from './diverty-resource-usage.mjs?v=9191a8365a60';
-import { prepareBookingAttempt, isNormalDayFullyBooked, readBrowserStorage, writeBrowserStorage } from './diverty-booking-state.mjs?v=f1621d666d4f';
+import { prepareBookingAttempt, readBookingReceipt, isNormalDayFullyBooked, readBrowserStorage, writeBrowserStorage } from './diverty-booking-state.mjs?v=de97c2385636';
 import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=a684dda69c53';
 // VELOCIDAD MÓVIL 6A — Firebase pesado bajo demanda.
         // El inicio usa REST ligero para contenido público. Firestore/Auth completos
@@ -3499,6 +3499,30 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             if (submitForm.dataset.sending === '1') return;
             if(app.cart.length===0) return showToast('Selecciona al menos un servicio', 'error');
 
+            // An earlier write may have committed without its acknowledgement arriving.
+            // Recover its owner-only receipt before validating or changing the retry form.
+            if (pendingBooking?.id && !pendingBooking.promise) {
+                submitForm.dataset.sending = '1';
+                let receipt = null;
+                try {
+                    await ensureFirebaseRuntime();
+                    const receiptRef = doc(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente',pendingBooking.id);
+                    receipt = await fetchWithTimeout(readBookingReceipt(getDoc, receiptRef, auth.currentUser?.uid),7000);
+                } catch (_) {
+                    // Missing receipts are denied by the current rules. An uncommitted
+                    // request can still be sent, retaining its original reservation ID.
+                }
+                if (receipt) {
+                    const request = pendingBooking;
+                    request.data = { ...request.data, ...receipt };
+                    request.recoveredReceipt = true;
+                    try { await finishBookingRequest(request); }
+                    finally { delete submitForm.dataset.sending; }
+                    return;
+                }
+                delete submitForm.dataset.sending;
+            }
+
             // NAVIDAD FASE 2 SEGURA — validación final obligatoria antes de Firebase.
             // Aunque el campo conserve una fecha previa, Nochebuena solo acepta 24 o 25/12/2026.
             if (isChristmasEveBooking()) {
@@ -3812,9 +3836,11 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     // la confirmación antes del timeout. Verificamos el MISMO ID antes de pedir reintento.
                     if (submitErr?.message !== 'SLOT_FULL') {
                         try {
-                            const verifyRef = doc(db,'artifacts',CRM_APP_ID,'public','data','eventos',request.id);
-                            const verifySnap = await fetchWithTimeout(getDoc(verifyRef),7000);
-                            if (!verifySnap.exists()) throw submitErr;
+                            const verifyRef = doc(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente',request.id);
+                            const receipt = await fetchWithTimeout(readBookingReceipt(getDoc, verifyRef, auth.currentUser?.uid),7000);
+                            if (!receipt) throw submitErr;
+                            request.data = { ...request.data, ...receipt };
+                            request.recoveredReceipt = true;
                         } catch (verifyErr) {
                             throw submitErr;
                         }
@@ -3822,25 +3848,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                         throw submitErr;
                     }
                 }
-                // Aviso push al CRM: se ejecuta solo después de confirmar que la reserva existe.
-                // Si el servicio de notificaciones falla, la reserva permanece guardada normalmente.
-                try {
-                    await fetchWithTimeout(fetch('https://diverty-notificaciones.divertypty.workers.dev', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ reservationId: request.id })
-                    }), 7000);
-                } catch (notifyErr) {
-                    console.warn('Reserva guardada, pero no se pudo enviar la notificación push:', notifyErr);
-                }
-
-                pendingBooking = null;
-                bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
-
-                try { localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: request.data.cliente || '', email: request.data.email || '', telefono: request.data.telefono || '' })); } catch (_) {}
-
-                showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
-                app.cart=[]; appliedCoupon=null; bookingFormState={}; christmasLocationState={ status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' }; normalLocationState={ status:'pending', charge:null, label:'', displayName:'', lat:null, lng:null, source:'', zoneValue:'' }; app.wizardStep=1; updateCartUI(); renderBooking();
+                await finishBookingRequest(request);
             } catch(err){
                 console.error(err);
                 if (err?.message === 'SLOT_FULL') {
@@ -3869,6 +3877,30 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 }
             } 
             finally{ submitForm.dataset.sending = '0'; sBtn.disabled=false; sBtn.innerHTML=obh; }
+        }
+
+        async function finishBookingRequest(request) {
+                // Aviso push al CRM: se ejecuta solo después de confirmar que la reserva existe.
+                // Si el servicio de notificaciones falla, la reserva permanece guardada normalmente.
+                try {
+                    await fetchWithTimeout(fetch('https://diverty-notificaciones.divertypty.workers.dev', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ reservationId: request.id })
+                    }), 7000);
+                } catch (notifyErr) {
+                    console.warn('Reserva guardada, pero no se pudo enviar la notificación push:', notifyErr);
+                }
+
+                pendingBooking = null;
+                bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
+
+                try { localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: request.data.cliente || '', email: request.data.email || '', telefono: request.data.telefono || '' })); } catch (_) {}
+
+                showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = request.recoveredReceipt
+                    ? `Tu solicitud ya estaba guardada para el ${request.data.fecha} a las ${request.data.hora}. Te contactaremos por WhatsApp.`
+                    : '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
+                app.cart=[]; appliedCoupon=null; bookingFormState={}; christmasLocationState={ status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' }; normalLocationState={ status:'pending', charge:null, label:'', displayName:'', lat:null, lng:null, source:'', zoneValue:'' }; app.wizardStep=1; updateCartUI(); renderBooking();
         }
 
         async function initFirebaseAndData() {

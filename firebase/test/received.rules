@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() { return request.auth != null && request.auth.uid == 'OblqzhP2L3XulJ920O82jwd1Qrk1'; }
+    function signedIn() { return request.auth != null; }
+    function shortText(value, max) { return value is string && value.size() <= max; }
+    function validRequest(id) {
+      let d = request.resource.data;
+      return signedIn() && id.matches('web-[a-f0-9-]{36}')
+        && d.keys().hasOnly(['id','ownerUid','cliente','email','telefono','telefonoBusqueda','tipoEvento','ninos','fecha','hora','ubicacion','direccion','referenciaLugar','comentarios','servicio','serviciosSeleccionados','descripcionEvento','transporte','descuento','gastos','detalleGastos','total','abono','estado','createdAt','deletedLocally','colisionAprobada','origen','esNavidad','recursoNavidad','lat','lng'])
+        && d.id == id && d.ownerUid == request.auth.uid
+        && shortText(d.cliente,150) && d.cliente.size() > 0
+        && shortText(d.email,254) && shortText(d.telefono,30)
+        && shortText(d.telefonoBusqueda,20) && d.telefonoBusqueda.matches('[0-9]{6,15}')
+        && shortText(d.tipoEvento,100) && shortText(d.ninos,10)
+        && d.fecha is string && d.fecha.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && d.hora is string && d.hora.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+        && shortText(d.ubicacion,200) && shortText(d.direccion,1500) && shortText(d.referenciaLugar,500)
+        && shortText(d.comentarios,3000) && shortText(d.servicio,3000) && shortText(d.descripcionEvento,30000)
+        && d.serviciosSeleccionados is list && d.serviciosSeleccionados.size() > 0 && d.serviciosSeleccionados.size() <= 50
+        && d.transporte is string && d.transporte.matches('[0-9]+([.][0-9]+)?')
+        && d.descuento is string && d.descuento.matches('[0-9]+([.][0-9]+)?')
+        && d.total is string && d.total.matches('[0-9]+([.][0-9]+)?')
+        && d.abono == '0' && d.gastos == '0' && d.detalleGastos == ''
+        && d.estado == 'Pendiente' && d.origen == 'Web Directa'
+        && d.deletedLocally == false && d.colisionAprobada == false
+        && d.esNavidad is bool && d.recursoNavidad is string && d.recursoNavidad.size() <= 50
+        && (d.esNavidad == false || (d.lat is number && d.lat >= -90 && d.lat <= 90 && d.lng is number && d.lng >= -180 && d.lng <= 180))
+        && shortText(d.createdAt,40);
+    }
+    match /artifacts/diverty-oficial/public/data/{section}/{id} {
+      allow read, write: if isAdmin();
+      allow read: if section in ['categorias_web','catalogo_web','campanas_web','temas_web','transporte_web','galeria_web','resenas_web','cupones_web','config_web','disponibilidad_web'];
+    }
+    match /artifacts/diverty-oficial/public/data/eventos/{id} {
+      allow read: if isAdmin();
+      allow create: if validRequest(id)
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/disponibilidad_web/$(id)).data.fecha == request.resource.data.fecha
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/disponibilidad_web/$(id)).data.hora == request.resource.data.hora;
+      allow update: if signedIn() && resource.data.ownerUid == request.auth.uid && request.resource.data == resource.data;
+      allow update, delete: if isAdmin();
+    }
+    match /artifacts/diverty-oficial/public/data/disponibilidad_web/{id} {
+      allow create: if signedIn() && id.matches('slot_(santa_)?[0-9A-Za-z_-]+')
+        && request.resource.data.keys().hasOnly(['fecha','hora','count','capacity','reservationIds','updatedAt'])
+        && request.resource.data.fecha is string && request.resource.data.fecha.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && request.resource.data.hora is string && request.resource.data.hora.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+        && request.resource.data.count is int && request.resource.data.count >= 1
+        && request.resource.data.capacity is int && request.resource.data.capacity >= 1 && request.resource.data.capacity <= 100
+        && request.resource.data.count <= request.resource.data.capacity
+        && request.resource.data.reservationIds is list
+        && request.resource.data.reservationIds.size() == request.resource.data.count
+        && request.resource.data.reservationIds.size() <= request.resource.data.capacity
+        && shortText(request.resource.data.updatedAt,40);
+      allow update: if signedIn() && id.matches('slot_(santa_)?[0-9A-Za-z_-]+')
+        && request.resource.data.keys().hasOnly(['fecha','hora','count','capacity','reservationIds','updatedAt'])
+        && request.resource.data.fecha == resource.data.fecha && request.resource.data.hora == resource.data.hora
+        && request.resource.data.count is int && request.resource.data.capacity is int
+        && request.resource.data.capacity >= 1 && request.resource.data.capacity <= 100
+        && request.resource.data.count == resource.data.count + 1 && request.resource.data.count <= request.resource.data.capacity
+        && request.resource.data.reservationIds is list
+        && request.resource.data.reservationIds.size() == request.resource.data.count
+        && request.resource.data.reservationIds.size() == resource.data.reservationIds.size() + 1
+        && shortText(request.resource.data.updatedAt,40);
+      allow update, delete: if isAdmin();
+      allow create: if signedIn() && !id.matches('slot_(santa_)?[0-9A-Za-z_-]+')
+        && request.resource.data.keys().hasOnly(['fecha','hora','esNavidad','recursoNavidad','lat','lng'])
+        && request.resource.data.fecha is string && request.resource.data.fecha.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && request.resource.data.hora is string && request.resource.data.hora.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+        && request.resource.data.esNavidad is bool && request.resource.data.recursoNavidad is string && request.resource.data.recursoNavidad.size() <= 50
+        && (request.resource.data.esNavidad == false || (request.resource.data.lat is number && request.resource.data.lat >= -90 && request.resource.data.lat <= 90 && request.resource.data.lng is number && request.resource.data.lng >= -180 && request.resource.data.lng <= 180))
+        && !exists(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id))
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.ownerUid == request.auth.uid
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.fecha == request.resource.data.fecha
+        && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.hora == request.resource.data.hora;
+      allow update: if signedIn() && !id.matches('slot_(santa_)?[0-9A-Za-z_-]+')
+        && request.resource.data == resource.data
+        && get(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.ownerUid == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+    match /artifacts/diverty-oficial/public/data/reservas_cliente/{id} {
+      function matchesEvent() {
+        let event = getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data;
+        let d = request.resource.data;
+        return d.keys().hasOnly(['ownerUid','cliente','telefono','fecha','hora','estado','servicio','total','abono'])
+          && d.ownerUid == request.auth.uid && event.ownerUid == request.auth.uid
+          && d.cliente == event.cliente && d.telefono == event.telefono && d.fecha == event.fecha && d.hora == event.hora
+          && d.estado == event.estado && d.servicio == event.servicio && d.total == event.total && d.abono == event.abono;
+      }
+      allow read: if signedIn() && resource.data.ownerUid == request.auth.uid;
+      allow create: if signedIn() && matchesEvent();
+      allow update: if signedIn() && resource.data.ownerUid == request.auth.uid && request.resource.data == resource.data;
+      allow delete: if isAdmin();
+    }
+    match /tokens/{token} { allow read, write: if isAdmin(); }
+  }
+}
