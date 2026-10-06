@@ -112,3 +112,29 @@ test('retrying after both acknowledgements are lost recovers the original bookin
   assert.ok(c.messages.some(m => m.kind === 'success'));
   assert.equal(c.ctx.pendingBooking, null);
 });
+
+
+test('outside coverage confirmation can cancel without creating a request',async()=>{
+  const db=store(),c=client(db);
+  c.ctx.transportNeedsReview=()=>true;
+  c.ctx.confirmTransportReview=async()=>false;
+  await c.submit();
+  assert.equal(db.rows.size,0);assert.equal(c.ctx.pendingBooking,null);assert.equal(c.button.disabled,false);
+});
+test('enabled central validation uses callable only and cannot bypass it on failure',async()=>{
+  const db=store(),c=client(db);
+  db.rows.set(base+'config_web/global',{centralBookingValidation:true});
+  let calls=0;c.ctx.callBookingFunction=async()=>{calls++;throw Object.assign(new Error('No hay personal disponible.'),{details:{reason:'SLOT_FULL'}});};
+  c.ctx.runTransaction=async()=>assert.fail('No direct client transaction when central validation is enabled');
+  await c.submit();assert.equal(calls,1);assert.equal([...db.rows.keys()].filter(k=>k.includes('/eventos/')).length,0);
+  c.ctx.callBookingFunction=async(name,payload)=>{assert.equal(name,'createWebBooking');return {event:payload.event,recovered:false};};
+  await c.submit();assert.ok(c.messages.some(m=>m.kind==='success'));
+});
+test('double tapping while reviewing transport opens only one confirmation',async()=>{
+  const db=store(),c=client(db);let release,dialogs=0;
+  c.ctx.transportNeedsReview=()=>true;
+  c.ctx.confirmTransportReview=()=>{dialogs++;return new Promise(resolve=>release=resolve);};
+  const first=c.submit();await new Promise(resolve=>setImmediate(resolve));
+  await c.submit();assert.equal(dialogs,1);release(false);await first;
+  c.ctx.confirmTransportReview=async()=>true;await c.submit();assert.ok(c.messages.some(m=>m.kind==='success'));
+});

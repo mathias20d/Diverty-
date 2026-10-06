@@ -43,7 +43,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="/assets/vendor/lucide.min.js?v=f828bf34002c" defer></script>
     
-    <link rel="stylesheet" href="/assets/css/diverty-eb0b36bf04.css?v=6b41535ad883">
+    <link rel="stylesheet" href="/assets/css/diverty-eb0b36bf04.css?v=c34f2ff2ebcc">
 
 
 <!-- Diverty: colores conocidos antes de pintar; arranque con límite de espera. -->
@@ -223,7 +223,7 @@
         <div class="modal-content glass-panel season-text-title rounded-[32px] p-8 max-w-md w-full relative overflow-hidden text-center justify-center">
             <div class="relative z-10">
                 <i data-lucide="check-circle" class="w-16 h-16 mx-auto text-emerald-500 mb-4"></i>
-                <h3 class="text-3xl font-black mb-3 tracking-tight">¡Solicitud Exitosa!</h3>
+                <h3 id="modalTitle" class="text-3xl font-black mb-3 tracking-tight">¡Solicitud Exitosa!</h3>
                 <p id="modalMessage" class="text-sm season-text-muted mb-8"></p>
                 <button data-action="close-modal" class="w-full bg-emerald-500 text-white font-extrabold py-4 rounded-[20px] active:scale-95">Entendido</button>
             </div>
@@ -269,7 +269,7 @@
                     <div id="discountRow" class="flex justify-between items-center hidden"><span class="text-xs font-bold text-pink-500 flex items-center gap-1"><i data-lucide="tag" class="w-3 h-3"></i> Descuento:</span><span id="discountAmount" class="text-sm font-bold text-pink-500 w-20 text-right">-$0.00</span></div>
                     <div class="flex justify-between items-center"><span class="text-xs font-bold season-text-muted">Transporte:</span><span id="transportCost" class="text-sm font-bold season-text-title w-20 text-right">$0.00</span></div>
                     <div class="w-full h-px bg-black/10 my-1.5"></div>
-                    <div class="flex justify-between items-end"><span class="text-sm font-black season-text-title uppercase tracking-wider">Total</span><span id="finalTotal" class="text-2xl font-black text-emerald-500 drop-shadow-sm leading-none">$0.00</span></div>
+                    <div class="flex justify-between items-end"><span id="cart-total-label" class="text-sm font-black season-text-title uppercase tracking-wider">Total estimado</span><span id="finalTotal" class="text-2xl font-black text-emerald-500 drop-shadow-sm leading-none">$0.00</span></div>
                 </div>
                 
                 <div class="flex gap-2.5 sm:gap-3">
@@ -282,7 +282,7 @@
     
     <div id="toast"></div>
 
-    <script type="module" src="/assets/js/diverty-app-78bb30f118.js?v=c529afac19ee"></script>
+    <script type="module" src="/assets/js/diverty-app-78bb30f118.js?v=7a81d5a9a619"></script>
 
 
 <div id="diverty-halloween-stage" aria-hidden="true"><div class="hw-branch left"></div><div class="hw-branch right"></div><div class="hw-web"></div><div class="hw-web r"></div><div class="hw-moon"></div><i class="hw-pumpkin" style="left:4%"></i><i class="hw-pumpkin" style="right:5%;transform:scale(.78)"></i><div class="hw-fog"></div></div>

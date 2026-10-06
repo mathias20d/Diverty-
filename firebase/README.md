@@ -15,7 +15,7 @@
 - vinculan los metadatos y GPS públicos de Santa a la reserva privada;
 - permiten Navidad sin GPS únicamente como solicitud pendiente, con dirección escrita, marcador de revisión y transporte provisional cero, sin coordenadas inventadas.
 
-No implementan capacidad de personal entre horarios solapados ni calculan precios desde el catálogo. Esa validación requiere un servicio de confianza, preferiblemente una función de servidor con transacciones. Las solicitudes siguen siendo **Pendiente** y deben revisarse en el CRM.
+Las reglas por sí solas no calculan precios ni personal entre horarios solapados. El servicio preparado en `functions` implementa esa validación con transacciones. Su activación está separada de la publicación de la web: ver [guía de validación central](../docs/validacion-central-reservas.md). Hasta activarlo, se mantiene el flujo anterior. Las solicitudes siguen siendo **Pendiente** y deben revisarse en el CRM.
 
 ## Comprobaciones preparadas
 
@@ -25,6 +25,7 @@ Desde la raíz de `Diverty-`:
 
 ```sh
 npm ci --prefix firebase --ignore-scripts
+npm ci --prefix firebase/functions
 npm --prefix firebase test
 ```
 

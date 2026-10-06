@@ -4,17 +4,17 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
 // VELOCIDAD MÓVIL 6A — Firebase pesado bajo demanda.
         // El inicio usa REST ligero para contenido público. Firestore/Auth completos
         // solo se descargan cuando el visitante abre reservas, disponibilidad o portal.
-        let doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch, runTransaction;
+        let doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch, runTransaction, callBookingFunction;
         let firebaseRuntimePromise = null;
 
         async function ensureFirebaseRuntime() {
             if (db && auth?.currentUser && getDocs && doc) return { db, auth };
             if (!firebaseRuntimePromise) {
-                firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js?v=acd3ff1181f5')
+                firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js?v=e295fdb06aaf')
                     .then(m => m.getDivertyFirebaseRuntime(firebaseConfig, 'DivertyWeb', typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : ''))
                     .then(rt => {
                         db = rt.db; auth = rt.auth;
-                        ({ doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch, runTransaction } = rt);
+                        ({ doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch, runTransaction, callBookingFunction } = rt);
                         return rt;
                     })
                     .catch(err => { firebaseRuntimePromise = null; throw err; });
@@ -359,6 +359,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             const text=normalizeChristmasPlace(label);
             const special=CHRISTMAS_REVIEW_TERMS.some(term=>text.includes(term));
             if(special) return {status:'review',charge:0,label:'Ubicación especial · confirmar',reason:'security'};
+            if(Number.isFinite(Number(lat)) && Number.isFinite(Number(lng)) && (Number(lat)<8.94 || Number(lat)>9.185 || Number(lng)<-79.61 || Number(lng)>-79.275)) return {status:'review',charge:0,label:'Fuera de cobertura automática',reason:'outside'};
 
             const includedGroups = [
                 {terms:['tocumen'],label:'Panamá Este · hasta Tocumen'},
@@ -459,6 +460,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
 
             const la=Number(lat),lo=Number(lng);
             const hasGps=Number.isFinite(la)&&Number.isFinite(lo);
+            if(hasGps && (lo<NORMAL_CHORRERA_WEST_LIMIT_LNG || lo>NORMAL_PACORA_EAST_LIMIT_LNG || la<8.84 || la>9.16)) return {status:'review',charge:0,label:'Fuera del área automática',reason:'outside',zoneValue:''};
 
             // Recargos específicos dentro de Ciudad de Panamá.
             if(text.includes('punta pacifica')) return {status:'included',charge:normalConfiguredCost('punta-pacifica',5),label:'Punta Pacífica',zoneValue:'punta-pacifica'};
@@ -591,11 +593,11 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             const s=normalLocationState||{};
             if(s.status==='included') box.innerHTML=`<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4"><p class="font-black text-emerald-600">✅ ${cleanStr(s.label)||'Ubicación verificada'}</p><p class="text-xs season-text-muted mt-1">Transporte: <b>$${Number(s.charge||0).toFixed(2)}</b></p></div>`;
             else if(s.status==='blocked') box.innerHTML=`<div class="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-4"><p class="font-black text-rose-600">Ubicación no disponible para reserva automática</p><p class="text-xs season-text-muted mt-1">Por seguridad, esta ubicación no se puede solicitar desde la web.</p></div>`;
-            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Transporte por confirmar</p><p class="text-xs season-text-muted mt-1">Puedes enviar la solicitud. Revisaremos esta ubicación en Diverty CRM y te contactaremos por WhatsApp con el transporte final antes de aceptar la reserva.</p></div>`;
+            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Transporte por confirmar</p><p class="text-xs season-text-muted mt-1">Puedes enviar la solicitud. Revisaremos la dirección del evento y te contactaremos por WhatsApp con el transporte final antes de aceptar la reserva.</p></div>`;
             const t=document.getElementById('booking-summary-transport'); if(t) t.textContent=s.status==='blocked'?'No disponible':(s.status==='review'?'Por confirmar':`$${effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)).toFixed(2)}`);
             const total=document.getElementById('booking-summary-total');
             if(total){const sub=app.cart.reduce((a,i)=>a+(Number(i.price)*i.quantity),0);let dv=0;if(appliedCoupon)dv=appliedCoupon.type==='percent'?sub*(Number(appliedCoupon.discount)/100):Number(appliedCoupon.discount);dv=Math.min(sub,Math.max(0,dv));total.textContent=`$${Math.max(0,sub-dv+effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0))).toFixed(2)}`;}
-            updateCartBadgeAndTotals();
+            updateCartBadgeAndTotals(); refreshBookingSummary();
         }
         async function applyNormalLocation(lat,lng,{source='gps',displayName='',accuracy=null,isCurrent=()=>true}={}){
             const la=Number(lat),lo=Number(lng); if(!Number.isFinite(la)||!Number.isFinite(lo)) return false;
@@ -649,7 +651,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 if(appliedCoupon) dv=appliedCoupon.type==='percent'?sub*(Number(appliedCoupon.discount)/100):Number(appliedCoupon.discount);
                 dv=Math.min(sub,Math.max(0,dv)); total.textContent=`$${Math.max(0,sub-dv+effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0))).toFixed(2)}`;
             }
-            updateCartBadgeAndTotals();
+            updateCartBadgeAndTotals(); refreshBookingSummary();
         }
         async function applyChristmasLocation(lat,lng,{source='gps',displayName='',accuracy=null,isCurrent=()=>true}={}){
             const la=Number(lat), lo=Number(lng); if(!Number.isFinite(la)||!Number.isFinite(lo)) return false;
@@ -2478,7 +2480,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 </details>`;
 
 
-            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">${isChristmasEveBooking()?'Reserva tu entrega con Santa 🎅':'Reserva tu Evento'}</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentario opcional</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2" placeholder="${isChristmasEveBooking()?'Ej: nombre del niño, indicación especial o detalle que debamos saber':'Ej: indicación especial, acceso al lugar o detalle importante del evento'}"></textarea></div></div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : `<div id="normal-resource-message" class="mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted">Selecciona fecha y hora para comprobar el personal disponible.</div>`}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${bookingLocationFields}</div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Enviar solicitud</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">${isChristmasEveBooking()?'Reserva tu entrega con Santa 🎅':'Reserva tu Evento'}</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-1 lg:order-1"><details id="booking-summary" class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24" ${window.matchMedia("(min-width: 1024px)").matches?"open":""}><summary class="booking-summary-toggle"><span>Tu reserva</span><span id="booking-summary-compact">$${Math.max(0,fTot).toFixed(2)}</span><small>Ver servicios y detalle del precio</small></summary><div class="booking-summary-details"><p id="booking-summary-appointment" class="text-sm season-text-muted mb-4"></p><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2"><span id="booking-summary-total-label">Total estimado:</span> <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}<p id="booking-summary-note" class="booking-price-note" hidden></p></div></details></div><div class="lg:col-span-7 order-2 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentario opcional</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2" placeholder="${isChristmasEveBooking()?'Ej: nombre del niño, indicación especial o detalle que debamos saber':'Ej: indicación especial, acceso al lugar o detalle importante del evento'}"></textarea></div></div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : `<div id="normal-resource-message" class="mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted">Selecciona fecha y hora para comprobar el personal disponible.</div>`}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${bookingLocationFields}</div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Enviar solicitud</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
             
             if(app.cart.length>0){
                 // NAVIDAD RUTAS FASE 1 — GPS primero.
@@ -2526,6 +2528,8 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 const bForm = document.getElementById('bookingForm');
                 if(bForm) {
                     bForm.onsubmit = handleBookingSubmit;
+                    bForm.addEventListener('input', refreshBookingSummary);
+                    bForm.addEventListener('change', refreshBookingSummary);
                     const submitBtn = bForm.querySelector('#btn-submit');
                     if (submitBtn) {
                         submitBtn.onclick = (ev) => {
@@ -3195,6 +3199,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             if(fte) fte.textContent = `$${Math.max(0,ft).toFixed(2)}`;
             
             const cle = document.getElementById('cartLocation'); if(cle && cle.value !== app.location) cle.value = app.location;
+            refreshBookingSummary();
         }
 
         function renderCartItemsHTML() {
@@ -3554,10 +3559,59 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             return m ? `${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}` : raw;
         }
 
+        function transportNeedsReview(data = null) {
+            if (data) return data.totalPendienteTransporte === true || data.requiereRevisionUbicacion === true || /por confirmar|por revisar|fuera.*(?:area|área|cobertura)|despu[eé]s de/i.test(String(data.ubicacion || ''));
+            return (isChristmasEveBooking() ? christmasLocationState : normalLocationState)?.status === 'review';
+        }
+        function refreshBookingSummary() {
+            const pending = transportNeedsReview();
+            const label = document.getElementById('booking-summary-total-label');
+            const note = document.getElementById('booking-summary-note');
+            const compact = document.getElementById('booking-summary-compact');
+            const sub = app.cart.reduce((a,i)=>a+Number(i.price)*i.quantity,0);
+            const discount = Math.min(sub, Math.max(0, appliedCoupon ? (appliedCoupon.type === 'percent' ? sub*Number(appliedCoupon.discount)/100 : Number(appliedCoupon.discount)) : 0));
+            if (label) label.textContent = pending ? 'Servicios:' : 'Total estimado:';
+            if (note) { note.hidden = !pending; note.textContent = 'Transporte pendiente de cotizar. El total final se confirma antes de aprobar la reserva.'; }
+            if (compact) compact.textContent = `$${(sub-discount+(pending?0:effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)))).toFixed(2)}${pending?' · transporte pendiente':''}`;
+            const appointment = document.getElementById('booking-summary-appointment');
+            const form = document.getElementById('bookingForm');
+            if(appointment && form) {
+                const value = name => String(form.elements?.namedItem(name)?.value || '').trim();
+                const date = value('date');
+                appointment.textContent = [date?date.split('-').reverse().join('/'):'Fecha por elegir',value('time')||'Hora por elegir',value('address')].filter(Boolean).join(' · ');
+            }
+            const cartLabel = document.getElementById('cart-total-label');
+            if (cartLabel) cartLabel.textContent = pending ? 'Servicios · transporte pendiente' : 'Total estimado';
+            const cartTransport = document.getElementById('transportCost');
+            if (cartTransport && pending) cartTransport.textContent = 'Por cotizar';
+        }
+        function confirmTransportReview() {
+            return new Promise(resolve => {
+                const dialog = document.createElement('dialog');
+                if(typeof dialog.showModal !== 'function') {
+                    resolve(window.confirm('El transporte de esta dirección está pendiente de cotizar. El precio mostrado incluye solo los servicios. Te contactaremos por WhatsApp con el costo y el total final antes de aprobar. ¿Enviar la solicitud pendiente?'));
+                    return;
+                }
+                dialog.className = 'booking-review-dialog';
+                dialog.setAttribute('aria-labelledby','transport-review-title');
+                dialog.innerHTML = `<h3 id="transport-review-title">Transporte pendiente de cotizar</h3><p>Esta dirección necesita revisión y puede estar fuera del área de cobertura automática.</p><p>El precio mostrado corresponde a los servicios y <strong>no incluye el transporte pendiente</strong>. Te enviaremos el costo por WhatsApp antes de aprobar la reserva.</p><button type="button" data-review-send>Enviar solicitud pendiente</button><button type="button" data-review-back>Revisar dirección</button>`;
+                document.body.appendChild(dialog);
+                let done = false;
+                const finish = value => { if(done)return; done=true; dialog.close(); dialog.remove(); resolve(value); };
+                dialog.querySelector('[data-review-send]').onclick = () => finish(true);
+                dialog.querySelector('[data-review-back]').onclick = () => finish(false);
+                dialog.oncancel = event => { event.preventDefault(); finish(false); };
+                dialog.showModal();
+                dialog.querySelector('[data-review-send]').focus();
+            });
+        }
+
         async function handleBookingSubmit(e) {
             e.preventDefault();
             const submitForm = e.target;
-            if (!submitForm) return;
+            if (!submitForm || submitForm.dataset.validating === '1') return;
+            submitForm.dataset.validating = '1';
+            try {
             if (submitForm.dataset.sending === '1') return;
             if(app.cart.length===0) return showToast('Selecciona al menos un servicio', 'error');
 
@@ -3714,6 +3768,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             let capacidadSimultanea = isChristmasEveBooking() ? 1 : 3;
             const obh = sBtn.innerHTML; submitForm.dataset.sending = '1'; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-[var(--s-primary)] inline-block align-middle mr-2"></div> Enviando reserva...';
             try {
+                if (transportNeedsReview() && !await confirmTransportReview()) return;
                 await ensureFirebaseRuntime();
                 const fd = new FormData(e.target);
                 const sub = app.cart.reduce((s,i)=>s+(Number(i.price)*i.quantity),0);
@@ -3782,9 +3837,11 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 // Capacidad simultánea operativa configurada desde Diverty CRM.
                 // Se consulta al confirmar para que un cambio se aplique sin volver a publicar la Web.
                 const reservaNavidad = isChristmasEveBooking();
+                let centralValidation = false;
                 try {
-                    const capacitySnap = reservaNavidad ? null : await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
+                    const capacitySnap = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
                     const configCapacity = capacitySnap?.exists() ? (capacitySnap.data() || {}) : {};
+                    centralValidation = configCapacity.centralBookingValidation === true;
                     const configuredCapacity = Number(
                         reservaNavidad
                             ? (christmasSmartCapacity ?? await getChristmasCapacity())
@@ -3801,6 +3858,15 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 const request = pendingBooking;
                 if (!request.promise) {
                     request.promise = (async () => {
+                        if (centralValidation) {
+                            const result = await callBookingFunction('createWebBooking', {
+                                event: request.data, couponCode: appliedCoupon?.code || '',
+                                location: isChristmasEveBooking() ? {lat:bookingFormState.christmasLat,lng:bookingFormState.christmasLng} : {lat:normalLocationState.lat,lng:normalLocationState.lng}
+                            });
+                            request.data = result.event;
+                            request.recoveredReceipt = result.recovered === true;
+                            return;
+                        }
                         // AHORRO FIRESTORE: Navidad usa directamente su contador slot_santa_*.
                         // Así evitamos descargar todas las reservas del día en cada confirmación.
                         // Reservas normales conservan la comprobación histórica para no alterar su lógica.
@@ -3913,7 +3979,18 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 await finishBookingRequest(request);
             } catch(err){
                 console.error(err);
-                if (err?.message === 'SLOT_FULL') {
+                if (err?.details?.reason === 'PRICE_CHANGED' && err.details.quote) {
+                    const quote = err.details.quote;
+                    app.cart.forEach((item,index)=>{const updated=quote.items?.[index];if(updated && updated.id===item.id)item.price=updated.precioOriginal;});
+                    const state = isChristmasEveBooking() ? christmasLocationState : normalLocationState;
+                    Object.assign(state, quote.coverage);
+                    if (appliedCoupon) { appliedCoupon.type='fixed';appliedCoupon.discount=Number(quote.descuento); }
+                    pendingBooking = null;
+                    if(isChristmasEveBooking())renderChristmasCoverageStatus();else renderNormalCoverageStatus();
+                    updateCartUI();
+                    renderBooking();
+                    showToast('Actualizamos el precio y transporte. Revisa el resumen y envía de nuevo para aceptar esos importes.', 'error');
+                } else if (['SLOT_FULL','ROUTE_FULL'].includes(err?.details?.reason) || err?.message === 'SLOT_FULL') {
                     pendingBooking = null;
                     bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
                     await loadBookedEventsForMonth(new Date(currentCalDate), { force: true });
@@ -3924,6 +4001,8 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                             : `Ese horario ya alcanzó el máximo de ${capacidadSimultanea} eventos. Elige otra hora disponible.`,
                         'error'
                     );
+                } else if (err?.details?.reason) {
+                    showToast(String(err.message || 'Revisa los datos de la solicitud.'), 'error');
                 } else {
                     const rawCode = String(err?.code || err?.name || 'UNKNOWN_ERROR');
                     const rawMessage = String(err?.message || 'Sin detalle').replace(/\s+/g,' ').trim();
@@ -3939,6 +4018,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 }
             } 
             finally{ submitForm.dataset.sending = '0'; sBtn.disabled=false; sBtn.innerHTML=obh; }
+            } finally { delete submitForm.dataset.validating; }
         }
 
         async function finishBookingRequest(request) {
@@ -3959,7 +4039,12 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
 
                 try { localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: request.data.cliente || '', email: request.data.email || '', telefono: request.data.telefono || '' })); } catch (_) {}
 
-                showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = request.recoveredReceipt
+                showModal('infoModal');
+                const pendingTransport = transportNeedsReview(request.data);
+                const title = document.getElementById('modalTitle'); if(title) title.textContent = pendingTransport ? 'Solicitud recibida' : '¡Solicitud recibida!';
+                const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = pendingTransport
+                    ? `Tu solicitud para el ${request.data.fecha} a las ${request.data.hora} quedó pendiente de cotizar transporte y aprobar la reserva. El precio de los servicios no incluye ese transporte. Te contactaremos por WhatsApp con el costo y el total final antes de confirmar.`
+                    : request.recoveredReceipt
                     ? `Tu solicitud ya estaba guardada para el ${request.data.fecha} a las ${request.data.hora}. Te contactaremos por WhatsApp.`
                     : '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
                 app.cart=[]; appliedCoupon=null; bookingFormState={}; christmasLocationState={ status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' }; normalLocationState={ status:'pending', charge:null, label:'', displayName:'', lat:null, lng:null, source:'', zoneValue:'' }; app.wizardStep=1; updateCartUI(); renderBooking();

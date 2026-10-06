@@ -5549,3 +5549,13 @@ html.diverty-booting body { transition:none!important; }
 body:has(#bookingForm) #cartSummary { display:none!important; }
 body:has(#bookingForm) .whatsapp-container { position:static!important; margin:16px auto; width:fit-content; }
 #bookingForm [data-location-continue]:disabled { opacity:.6; cursor:wait; }
+
+/* Compact booking price summary and explicit pending transport confirmation. */
+.booking-summary-toggle{cursor:pointer;display:grid;gap:.35rem;color:var(--s-text-title);font-weight:800;list-style:none}
+.booking-summary-toggle::-webkit-details-marker{display:none}
+.booking-summary-toggle small{font-size:.75rem;font-weight:600;color:var(--s-text-muted)}
+.booking-summary-details{margin-top:1.25rem}.booking-price-note{padding:.8rem;background:rgba(245,158,11,.12);border-radius:1rem;font-size:.8rem;margin-top:1rem;line-height:1.5;color:var(--s-text-title)}
+.booking-review-dialog{width:min(92vw,440px);max-height:85dvh;overflow:auto;border:1px solid var(--s-glass-border);border-radius:24px;padding:24px;background:var(--s-bg-color,#fff);color:var(--s-text-title,#172033);box-shadow:0 24px 80px #0005}
+.booking-review-dialog::backdrop{background:#071126b3;backdrop-filter:blur(4px)}
+.booking-review-dialog h3{font-size:1.25rem;font-weight:900;margin-bottom:14px}.booking-review-dialog p{font-size:.9rem;line-height:1.6;margin-bottom:14px}
+.booking-review-dialog button{width:100%;padding:14px;border-radius:16px;font-weight:800;margin-top:8px}.booking-review-dialog [data-review-send]{background:#059669;color:white}.booking-review-dialog [data-review-back]{border:1px solid var(--s-glass-border)}

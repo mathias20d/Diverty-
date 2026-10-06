@@ -32,6 +32,11 @@ export async function getDivertyFirebaseRuntime(firebaseConfig, appName = 'Diver
 
     return {
       db, auth,
+      callBookingFunction: async (name, data) => {
+        const functions = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js');
+        const response = await functions.httpsCallable(functions.getFunctions(app, 'us-central1'), name)(data);
+        return response.data;
+      },
       doc: firestoreMod.doc,
       collection: firestoreMod.collection,
       getDocs: firestoreMod.getDocs,

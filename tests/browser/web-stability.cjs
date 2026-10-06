@@ -205,7 +205,12 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       }
       await f.page.evaluate(()=>window.__allowBookingWrite=true);
       await f.page.locator(christmas?'#btn-submit':'[data-location-continue]').click();
+      await f.page.locator('[data-review-send]').click();
       await f.page.waitForFunction(()=>document.querySelector('#infoModal').classList.contains('show'));
+      assert.deepEqual(f.errors,[]);
+      await f.page.locator('#modalMessage').waitFor({state:'visible'});
+      assert.match(await f.page.locator('#modalMessage').innerText(), /pendiente de cotizar transporte/);
+      if(process.env.BROWSER_ARTIFACT_DIR) await f.page.screenshot({path:path.join(process.env.BROWSER_ARTIFACT_DIR,`transport-${christmas?'christmas':'normal'}.png`)});
       const saved=await f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid && x.direccion));
       assert.equal(saved.direccion,'PH que no aparece, Brisas del Golf');assert.equal(saved.referenciaLugar,'');assert.equal(saved.estado,'Pendiente');assert.equal('lat' in saved,false);
       assert.equal(saved.ubicacion,christmas?'Ubicación por confirmar':'Ubicación por revisar');

@@ -15,9 +15,13 @@ service cloud.firestore {
         && shortText(d.direccion,1500) && d.direccion.size() >= 3
         && !d.keys().hasAny(['lat','lng']);
     }
+    function centralValidationEnabled() {
+      let path = /databases/$(database)/documents/artifacts/diverty-oficial/public/data/config_web/global;
+      return exists(path) && get(path).data.get('centralBookingValidation',false) == true;
+    }
     function validRequest(id) {
       let d = request.resource.data;
-      return signedIn() && id.matches('web-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
+      return signedIn() && !centralValidationEnabled() && id.matches('web-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
         && d.keys().hasOnly(['id','ownerUid','cliente','email','telefono','telefonoBusqueda','tipoEvento','ninos','fecha','hora','ubicacion','direccion','referenciaLugar','comentarios','servicio','serviciosSeleccionados','descripcionEvento','transporte','descuento','gastos','detalleGastos','total','abono','estado','createdAt','deletedLocally','colisionAprobada','origen','esNavidad','recursoNavidad','lat','lng'])
         && d.id == id && d.ownerUid == request.auth.uid
         && shortText(d.cliente,150) && d.cliente.size() > 0

@@ -84,6 +84,15 @@ for (const [label, filename, hardened] of [
   });
   after(async () => { await environment?.cleanup(); });
 
+  if(hardened)test('central mode rejects direct customer writes and keeps administrator access',async()=>{
+    await environment.withSecurityRulesDisabled(async ctx=>{
+      await setDoc(ref(ctx.firestore(),'config_web','global'),{capacidadSimultanea:2,capacidadSanta:1,centralBookingValidation:true});
+    });
+    const {event:request}=await sample('central-owner');
+    await assertFails(bookingBatch(dbFor('central-owner'),request));
+    await assertSucceeds(setDoc(ref(dbFor(adminUid),'eventos',request.id),request));
+  });
+
   test('actual website handler creates a normal request and only its owner can read its status', async () => {
     const db = dbFor('owner'), c = browserClient(db,'owner');
     await c.submit();

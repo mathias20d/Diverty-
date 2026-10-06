@@ -48,6 +48,8 @@ function client(database, name = 'Cliente de prueba') {
   const ctx = {
     app: { cart: [{ id: 'paquete', name: 'Paquete de prueba', price: 100, quantity: 1 }], location: 'panama-centro' },
     appliedCoupon: null, bookingFormState: {}, pendingBooking: null,
+    transportNeedsReview: data => /por confirmar|por revisar|fuera.*cobertura/i.test(String(data?.ubicacion||'')),
+    confirmTransportReview: async()=>true,
     normalLocationState: { status: 'included', source: 'gps', label: 'Panamá Centro' },
     christmasLocationState: {}, isChristmasEveBooking: () => false,
     cleanStr: v => String(v ?? '').trim(), normalizeChristmasPlace: v => String(v).toLowerCase(),
