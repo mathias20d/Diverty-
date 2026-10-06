@@ -64,6 +64,18 @@
   if (!seen) {
     root.classList.add('diverty-booting');
     try { sessionStorage.setItem('diverty_splash_seen', '1'); } catch(e) {}
+
+    // VELOCIDAD FASE 7A: el splash nunca bloquea la portada más de 850 ms.
+    // Los datos dinámicos pueden seguir llegando después sin ocultar el Inicio.
+    setTimeout(function(){
+      root.classList.remove('diverty-booting');
+      root.classList.add('diverty-splash-skipped');
+      var loader = document.getElementById('themeBootLoader');
+      if (loader) {
+        loader.classList.add('boot-hide');
+        setTimeout(function(){ if (loader && loader.parentNode) loader.remove(); }, 320);
+      }
+    }, 850);
   } else {
     root.classList.add('diverty-splash-skipped');
   }
@@ -192,10 +204,7 @@
 
     <!-- Main Content -->
     <main id="mainContent" class="flex-grow flex flex-col w-full relative z-10">
-        <div id="initial-loader" class="flex-grow flex flex-col items-center justify-center py-32 fade-in">
-            <i data-lucide="loader-2" class="animate-spin w-12 h-12 mb-4 season-text-primary"></i>
-            <p class="font-bold text-sm tracking-widest uppercase season-text-muted">Cargando diversión...</p>
-        </div>
+        <div id="hero-section-identifier"><div class="relative"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video id="hero-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="none" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/so_0,w_720,q_auto,f_jpg/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none"><source data-src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="absolute inset-0 bg-black/50 z-[2] pointer-events-none"></div><div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--s-bg-color)] to-transparent z-[2] pointer-events-none"></div><div class="hero-content z-[3] relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-black mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="season-gradient-text drop-shadow-md">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full season-btn rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform active:scale-95 font-bold text-base shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> Reservar ahora</button><button data-action="scroll-to-catalog" class="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-colors font-bold text-base shadow-md active:scale-95"><i data-lucide="eye" class="w-5 h-5"></i> Explorar Catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-6"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper"><div class="w-full flex flex-col items-center justify-center py-12"><p class="text-sm font-bold season-text-muted tracking-widest uppercase">Preparando nuestros paquetes...</p></div></div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-[340px] mx-auto px-2"><div class="glass-panel card-alive p-4 sm:p-5 shadow-sm relative overflow-hidden" id="calendar-card-inner"><div class="flex items-center gap-3 mb-2"><div class="w-9 h-9 rounded-[10px] border-[2px] border-[var(--s-primary)]/20 bg-[var(--s-primary)]/10 flex items-center justify-center season-text-primary shadow-inner"><i data-lucide="calendar-heart" class="w-4 h-4"></i></div><div class="text-left"><h2 class="text-lg font-black season-text-title font-poppins leading-none tracking-tight">Selecciona tu fecha</h2><p class="season-text-muted text-[10px] mt-1 font-medium">Reserva en segundos</p></div></div><div class="calendar-motivation mt-3 mb-1 rounded-[14px] px-3.5 py-3 border border-[var(--s-glass-border)] text-left" style="background: color-mix(in srgb, var(--s-primary) 8%, var(--s-glass-bg));"><p class="season-text-title text-[11px] sm:text-xs font-extrabold leading-snug flex items-start gap-2"><i data-lucide="sparkles" class="w-4 h-4 season-text-primary shrink-0 mt-0.5"></i><span>Tu celebración comienza aquí. Elige una fecha disponible y asegura tu espacio antes de que se agote.</span></p></div><div class="flex justify-between items-center mb-4 mt-3 relative z-10 bg-[var(--s-glass-bg)] backdrop-blur-md p-1.5 rounded-[12px] border border-[var(--s-glass-border)] shadow-sm w-full mx-auto gap-2"><button data-action="prevMonth" id="prevMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><h3 id="cal-month-year" class="text-sm sm:text-base font-black season-text-title capitalize leading-none font-poppins px-1 tracking-wide">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-1 gap-x-1 text-center relative z-10 w-full mb-2"></div></div></div></section></div><div id="home-reviews-wrapper"></div></div>
     </main>
 
     <!-- FOOTER -->
@@ -298,6 +307,71 @@
   <i class="xmas-ornament gold hide-mobile" style="right:5%;top:92px;width:44px;height:44px"></i>
   <div class="xmas-left"></div><div class="xmas-right"></div><div class="xmas-snow"></div><div class="xmas-snowbank"></div>
 </div>
+
+<script>
+(function(){
+  // VELOCIDAD FASE 7A: la portada ya viene en el HTML.
+  // El video se activa después, sin retrasar la primera pintura/LCP.
+  var started = false;
+  function startHeroVideo(){
+    if (started || document.hidden) return;
+    var v = document.getElementById('hero-video');
+    if (!v) return;
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && conn.saveData) return;
+
+    var source = v.querySelector('source[data-src]');
+    if (source && !source.getAttribute('src')) {
+      source.setAttribute('src', source.getAttribute('data-src'));
+      source.removeAttribute('data-src');
+      try { v.load(); } catch(e) {}
+    }
+    v.muted = true;
+    v.defaultMuted = true;
+    var p = v.play();
+    if (p && typeof p.catch === 'function') p.catch(function(){});
+    started = true;
+  }
+
+  function scheduleHero(){
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(startHeroVideo, {timeout: 1800});
+    } else {
+      setTimeout(startHeroVideo, 1000);
+    }
+  }
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      var entry = entries && entries[0];
+      var v = document.getElementById('hero-video');
+      if (!entry || !v) return;
+      if (entry.isIntersecting && entry.intersectionRatio > 0.12) {
+        scheduleHero();
+        var p = v.play();
+        if (started && p && typeof p.catch === 'function') p.catch(function(){});
+      } else if (started) {
+        try { v.pause(); } catch(e) {}
+      }
+    }, {threshold:[0,0.12,0.3]});
+    var hero = document.getElementById('hero-video');
+    if (hero) io.observe(hero);
+  } else {
+    scheduleHero();
+  }
+
+  document.addEventListener('visibilitychange', function(){
+    var v = document.getElementById('hero-video');
+    if (!v) return;
+    if (document.hidden) {
+      try { v.pause(); } catch(e) {}
+    } else if (started) {
+      var p = v.play();
+      if (p && typeof p.catch === 'function') p.catch(function(){});
+    }
+  }, {passive:true});
+})();
+</script>
 
 <script src="/assets/js/diverty-runtime-587c019781.js" defer></script>
 
