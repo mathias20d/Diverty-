@@ -6,8 +6,6 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
         // solo se descargan cuando el visitante abre reservas, disponibilidad o portal.
         let doc, collection, getDocs, setDoc, getDoc, query, where, onSnapshot, writeBatch, runTransaction;
         let firebaseRuntimePromise = null;
-        let publicRestToken = '';
-        let publicRestTokenExpiresAt = 0;
 
         async function ensureFirebaseRuntime() {
             if (db && auth?.currentUser && getDocs && doc) return { db, auth };
@@ -22,18 +20,6 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     .catch(err => { firebaseRuntimePromise = null; throw err; });
             }
             return firebaseRuntimePromise;
-        }
-
-        async function getPublicRestToken() {
-            if (publicRestToken && Date.now() < publicRestTokenExpiresAt - 60000) return publicRestToken;
-            const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
-                method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({returnSecureToken:true})
-            });
-            if (!response.ok) throw new Error(`Firebase Auth REST ${response.status}`);
-            const data = await response.json();
-            publicRestToken = data.idToken || '';
-            publicRestTokenExpiresAt = Date.now() + Number(data.expiresIn || 3600) * 1000;
-            return publicRestToken;
         }
 
         function decodeFirestoreValue(v) {
@@ -58,21 +44,19 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             return out;
         }
         async function fetchPublicRestDoc(collectionName, id) {
-            const token=await getPublicRestToken();
             const path=`artifacts/${CRM_APP_ID}/public/data/${collectionName}/${id}`;
             const url=`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/${path}`;
-            const r=await fetch(url,{headers:{authorization:`Bearer ${token}`}});
+            const r=await fetch(url);
             if(r.status===404) return null;
             if(!r.ok) throw new Error(`Firestore REST ${r.status}`);
             return decodeFirestoreDocument(await r.json());
         }
         async function fetchPublicRestCollection(collectionName) {
-            const token=await getPublicRestToken();
             const base=`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/artifacts/${CRM_APP_ID}/public/data/${collectionName}`;
             const rows=[]; let pageToken='';
             for(let page=0; page<5; page++) {
                 const url=base+`?pageSize=300${pageToken?`&pageToken=${encodeURIComponent(pageToken)}`:''}`;
-                const r=await fetch(url,{headers:{authorization:`Bearer ${token}`}});
+                const r=await fetch(url);
                 if(r.status===404) return rows;
                 if(!r.ok) throw new Error(`Firestore REST ${r.status}`);
                 const j=await r.json();
@@ -839,7 +823,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
         let cartHistoryActive = false;
         let suppressNextCartPopstate = false;
 
-        function toggleCartDrawer(forceOpen, fromPopstate = false) {
+        function toggleCartDrawer(forceOpen, fromPopstate = false, navigating = false) {
             const mod = document.getElementById('cartModal');
             const hw = document.getElementById('headerWrapper');
             const heroVideo = document.getElementById('hero-video');
@@ -853,7 +837,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             clearTimeout(window.__divertyCartAnimTimer);
 
             if(shouldOpen) {
-                toggleMobileMenu(false);
+                toggleMobileMenu(false, false, true);
 
                 // Pausa el video mientras el carrito está abierto:
                 // libera decodificación/GPU en móviles Android.
@@ -891,7 +875,11 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
 
                 // Si se cerró con la X/botón interno, consumimos también la entrada
                 // temporal del carrito. El siguiente popstate se ignora para no navegar.
-                if (!fromPopstate && cartHistoryActive && history.state?.divertyCart) {
+                if (navigating && cartHistoryActive) {
+                    cartHistoryActive = false;
+                    const state={...(history.state||{})};delete state.divertyCart;
+                    history.replaceState(state,'',window.location.href);
+                } else if (!fromPopstate && cartHistoryActive && history.state?.divertyCart) {
                     cartHistoryActive = false;
                     suppressNextCartPopstate = true;
                     history.back();
@@ -937,7 +925,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
         let menuHistoryActive = false;
         let suppressNextMenuPopstate = false;
 
-        function toggleMobileMenu(show, fromPopstate = false) {
+        function toggleMobileMenu(show, fromPopstate = false, navigating = false) {
             const m = document.getElementById('mobileMenu');
             const o = document.getElementById('mobileMenuOverlay');
             const mt = document.getElementById('mobileToggle');
@@ -974,7 +962,11 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     mt.setAttribute('aria-expanded', 'false');
                     mt.innerHTML = '<i data-lucide="menu" class="w-6 h-6 text-gray-800"></i>';
                 }
-                if (!fromPopstate && menuHistoryActive && history.state?.divertyMenu) {
+                if (navigating && menuHistoryActive) {
+                    menuHistoryActive = false;
+                    const state={...(history.state||{})};delete state.divertyMenu;
+                    history.replaceState(state,'',window.location.href);
+                } else if (!fromPopstate && menuHistoryActive && history.state?.divertyMenu) {
                     menuHistoryActive = false;
                     suppressNextMenuPopstate = true;
                     history.back();
@@ -988,22 +980,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
         }
 
         function finishThemeBoot() {
-            const root = document.documentElement;
-            const loader = document.getElementById('themeBootLoader');
-            if (window.__divertyShowSplash === false) {
-                root.classList.remove('diverty-booting');
-                if (loader) loader.remove();
-                return;
-            }
-            const elapsed = Date.now() - (window.__divertyBootStarted || Date.now());
-            const wait = Math.max(0, 720 - elapsed);
-            setTimeout(() => {
-                root.classList.remove('diverty-booting');
-                if (loader) {
-                    loader.classList.add('boot-hide');
-                    setTimeout(() => loader.remove(), 300);
-                }
-            }, wait);
+            window.__divertyFinishBoot?.();
         }
 
         function applyThemeColors(themeData) {
@@ -1115,6 +1092,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             
             style.innerHTML = css; 
             document.head.appendChild(style);
+            try { localStorage.setItem('diverty_theme_snapshot', JSON.stringify({theme:current.theme,css})); } catch(_) {}
 
             const logoStr = cleanStr(themeData.logoUrl || themeData.imagenLogo || themeData.logo);
             if (logoStr) { const headLogo = document.getElementById('mainHeaderLogo'); if(headLogo) headLogo.src = logoStr; const bootLogo = document.getElementById('themeBootLogo'); if(bootLogo) bootLogo.src = logoStr; }
@@ -1157,7 +1135,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
 
             // Forzar recarga de UI para aplicar los nuevos iconos en los botones
             if (window.catalogLoaded) {
-                setActiveSection(app.activeSection);
+                updateNavigationState();
                 if (app.cart.length > 0) updateCartUI();
             }
         }
@@ -1265,7 +1243,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 fNav.innerHTML = fHtml;
             }
             if(typeof lucide !== 'undefined') lucide.createIcons();
-            setActiveSection(app.activeSection);
+            updateNavigationState();
         }
 
         // --- ENLACES DIRECTOS PREMIUM: paquetes y categorías ---
@@ -1339,12 +1317,8 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             return false;
         }
 
-        function setActiveSection(sectionId) {
-            if (!sectionId) sectionId = 'home';
-            bookingDatePickerCleanup?.(); bookingDatePickerCleanup = null;
-            if (sectionId === 'booking' && !readBrowserStorage('sessionStorage', 'bookingNoticeShown')) { writeBrowserStorage('sessionStorage', 'bookingNoticeShown', 'true'); }
-            
-            app.activeSection = sectionId;
+        function updateNavigationState() {
+            const sectionId=app.activeSection;
             document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => link.classList.remove('active'));
             
             const desktopLink = document.querySelector(`[data-target-section="${sectionId}"].nav-link`);
@@ -1353,6 +1327,20 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             const mobileLink = document.querySelector(`[data-target-section="${sectionId}"].mobile-nav-link`);
             if (mobileLink) mobileLink.classList.add('active');
             
+        }
+
+        function setActiveSection(sectionId) {
+            if (!sectionId) sectionId = 'home';
+            if(app.activeSection==='booking' && sectionId!=='booking'){
+                const form=document.getElementById('bookingForm');
+                if(form) bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(form).entries())};
+            }
+            bookingDatePickerCleanup?.(); bookingDatePickerCleanup = null;
+            if (sectionId === 'booking' && !readBrowserStorage('sessionStorage', 'bookingNoticeShown')) { writeBrowserStorage('sessionStorage', 'bookingNoticeShown', 'true'); }
+
+            app.activeSection = sectionId;
+            updateNavigationState();
+
             if (sectionId === 'home') renderHome();
             else if (sectionId === 'catalog') renderAllCatalog();
             else if (sectionId === 'gallery') renderGallery();
@@ -3062,7 +3050,11 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 };
                 // NAVIDAD: usa el mismo submit estable de Diverty. El formulario ya lleva
                 // novalidate y handleBookingSubmit ejecuta las validaciones especiales explícitas.
+                let advancing=false;
                 if(bn) bn.onclick=async()=>{
+                    if(advancing || cs>=3) return;
+                    advancing=true;bn.disabled=true;if(bp) bp.disabled=true;
+                    try {
                     if (isChristmasEveBooking() && cs === 1) {
                         let locationValue=String(bForm?.elements?.address?.value || bookingFormState.address || '').trim();
                         const manualInput=document.getElementById('christmas-manual-address');
@@ -3097,7 +3089,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     }
                     const inp = document.getElementById(`step-${cs}`)?.querySelectorAll('input[required],select[required],textarea[required]')||[];
                     let val=true; for(let i of inp){ if(!i.checkValidity()){ i.reportValidity(); val=false; break; } }
-                    if(val){
+                    if(val && bForm.isConnected && app.activeSection==='booking'){
                         cs++;
                         if(bForm) bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(bForm).entries())};
                         // Al pasar de Ubicación -> Horario en Navidad, recalcula AHORA,
@@ -3106,16 +3098,28 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                             bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
                             await refreshChristmasTimeAvailability();
                         }
+                        if(!bForm.isConnected || app.activeSection!=='booking') return;
                         try{ history.pushState({ ...(history.state || {}), divertyBookingWizard: true, bookingStep: cs }, '', window.location.href); }catch(_){}
                         updUI();
                         requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); setTimeout(()=>{ const first=document.getElementById(`step-${cs}`)?.querySelector('input:not([type=hidden]),select,textarea'); if(first && window.innerWidth<=767 && !isChristmasEveBooking()){ try{ first.focus({preventScroll:true}); }catch(e){ first.focus(); } } },220); });
                     }
+                    } finally {advancing=false;bn.disabled=false;if(bp) bp.disabled=false;}
                 };
-                if(bp) bp.onclick=async()=>{ if(cs>1){ cs--; if(bForm)bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(bForm).entries())}; if(cs===2 && isChristmasEveBooking()) await refreshChristmasTimeAvailability(); updUI(); requestAnimationFrame(()=>{ const formTop=document.getElementById('bookingForm'); if(formTop) formTop.scrollIntoView({behavior:'smooth',block:'start'}); }); } };
+                if(bp) bp.onclick=async()=>{
+                    if(cs<=1 || advancing) return;
+                    if(bForm) bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(bForm).entries())};
+                    if(history.state?.divertyBookingWizard && Number(history.state.bookingStep)===cs){history.back();return;}
+                    cs--;
+                    if(cs===2 && isChristmasEveBooking()) await refreshChristmasTimeAvailability();
+                    updUI();
+                    history.replaceState({...history.state,bookingStep:cs},'',window.location.href);
+                    requestAnimationFrame(()=>bForm.scrollIntoView({behavior:'smooth',block:'start'}));
+                };
                 // Navidad inicia por GPS. La disponibilidad se actualiza al llegar al paso Horario,
                 // después de conocer la ubicación exacta del cliente.
                 if (isChristmasEveBooking() && christmasTimeMessage) {
                     christmasTimeMessage.textContent = '📍 Comparte primero tu ubicación. Después te mostraremos los horarios disponibles.';
+                    if(cs===2) refreshChristmasTimeAvailability();
                 }
                 if(bForm){
                     bForm.addEventListener('focusin',()=>{ if(window.innerWidth<=767) document.body.classList.add('booking-keyboard-open'); });
@@ -3303,10 +3307,10 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 if(targetSec) {
                     e.preventDefault();
                     document.querySelectorAll('.modal-backdrop').forEach(m => { 
-                        if(m.id === 'cartModal') toggleCartDrawer(false);
+                        if(m.id === 'cartModal') toggleCartDrawer(false, false, true);
                         else m.classList.remove('show');
                     });
-                    toggleMobileMenu(false);
+                    toggleMobileMenu(false, false, true);
                     if (targetSec.startsWith('cat_')) {
                         if (app.activeSection === 'catalog') catalogNavMemory.save('catalog');
                         setDirectRoute('categoria', targetSec.replace('cat_', ''));
@@ -3433,6 +3437,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                         bookingFormState = {};
                         christmasLocationState = { status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' };
                         app.wizardStep = 1;
+                        setDirectRoute('section','booking');
                         setActiveSection('booking');
                         window.scrollTo(0, 0);
                     } else {
@@ -3500,20 +3505,20 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 case 'close-modal': { 
                     const m = target.closest('.modal-backdrop'); 
                     if(m) {
-                        if(m.id === 'cartModal') toggleCartDrawer(false);
+                        if(m.id === 'cartModal') toggleCartDrawer(false, false, !!targetSection);
                         else m.classList.remove('show');
                     }
-                    toggleMobileMenu(false);
-                    if(targetSection && !navLink) { if(app.activeSection !== targetSection) setActiveSection(targetSection); }
+                    toggleMobileMenu(false, false, !!targetSection);
+                    if(targetSection && !navLink) { setDirectRoute('section',targetSection); if(app.activeSection !== targetSection) setActiveSection(targetSection); }
                     break; 
                 }
-                case 'navigate-from-modal': { 
+                case 'navigate-from-modal': {
                     const m = target.closest('.modal-backdrop'); 
                     if(m) {
-                        if(m.id === 'cartModal') toggleCartDrawer(false);
+                        if(m.id === 'cartModal') toggleCartDrawer(false, false, true);
                         else m.classList.remove('show');
                     }
-                    if(targetSection && !navLink) { if(app.activeSection !== targetSection) setActiveSection(targetSection); }
+                    if(targetSection && !navLink) { setDirectRoute('section',targetSection); if(app.activeSection !== targetSection) setActiveSection(targetSection); }
                     break; 
                 }
                 case 'scroll-to-catalog': {
@@ -4003,10 +4008,11 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 const version=String(next.version||'0'), sections=next.versions||{};
                 const previousSections=sectionVersions;
                 const globalChanged=version!==currentWebSyncVersion;
+                const initial=currentWebSyncVersion==='';
                 const changed=globalChanged || JSON.stringify(sections)!==JSON.stringify(previousSections);
                 if(changed && currentWebSyncVersion!=='') queueChangedSections(previousSections,sections,globalChanged);
                 currentWebSyncVersion=version; sectionVersions=sections;
-                if(changed){refreshPending=true; drainRefresh();}
+                if(changed && !initial){refreshPending=true; drainRefresh();}
             };
             try { applySyncDocument(await fetchWithTimeout(fetchPublicRestDoc('config_web','web_sync'),T_OUT)); }
             catch(error){ console.warn('Sincronización pública inicial no disponible',error); }
@@ -4114,13 +4120,13 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 if (affectsNav) buildDynamicNav();
 
                 // Mantiene el detalle abierto si llegó por WhatsApp/enlace directo.
-                if (affectsCatalog && openDirectRouteFromUrl({ invalidFallback:false })) { updateCartUI(); return; }
+                if (affectsCatalog && app.activeSection!=='booking' && getDirectRoute().planId && openDirectRouteFromUrl({ invalidFallback:false })) { updateCartUI(); return; }
 
                 if (app.activeSection === 'home' && affectsHome) renderHome();
                 else if (app.activeSection === 'catalog' && affectsCatalog) renderAllCatalog();
                 else if (app.activeSection?.startsWith('cat_') && affectsCatalog) renderCategory(app.activeSection.replace('cat_',''));
                 else if (app.activeSection === 'gallery' && changed.has('galeria_web')) renderGallery();
-                else if (app.activeSection === 'booking' && (affectsCatalog || changed.has('transporte_web') || changed.has('cupones_web'))) renderBooking();
+                // El formulario activo conserva foco, paso y campos mientras llega contenido nuevo.
                 updateCartUI();
             };
             refreshStaticContent = async () => {
@@ -4143,20 +4149,14 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     await Promise.allSettled(jobs);
 
                     if (full || changed.has('categorias_web') || changed.has('catalogo_web')) normalizeCatalogVisibility();
-                    if (full) {
-                        buildDynamicNav();
-                        const directRouteKept = openDirectRouteFromUrl({ invalidFallback:false });
-                        if (!directRouteKept) {
-                            if (app.activeSection === 'home') renderHome(); else setActiveSection(app.activeSection);
-                        }
-                        updateCartUI();
-                    } else rerenderAfterSelectiveSync(changed);
+                    rerenderAfterSelectiveSync(full ? new Set(['categorias_web','catalogo_web','campanas_web','resenas_web','galeria_web','transporte_web','cupones_web']) : changed);
                 } catch (e) { console.warn('No se pudo refrescar contenido web:', e); }
             };
 
             // Carga primero la temporada activa para que la pantalla inicial
             // use inmediatamente el tema correcto mientras carga el resto.
             await loadTheme();
+            finishThemeBoot();
 
             await Promise.allSettled([ 
                 loadCategories(), 
@@ -4189,7 +4189,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             // Secundarios públicos siguen por REST; disponibilidad/Firebase completo se carga
             // solamente cuando el calendario se acerca a pantalla o el usuario entra a Reservar.
             await Promise.allSettled([loadSecondary()]);
-            if(app.activeSection==='home') renderHome(); else if(app.activeSection==='booking') renderBooking();
+            if(app.activeSection==='home') renderHome();
             bootComplete=true; await drainRefresh();
 
             const lazyLoadAvailability = async () => {
@@ -4197,8 +4197,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 try {
                     await ensureFirebaseRuntime();
                     await loadBookedEventsForMonth(new Date(currentCalDate));
-                    if(app.activeSection==='home') renderHome();
-                    else if(app.activeSection==='booking') renderBooking();
+                    if(app.activeSection==='home') renderCalendar();
                 } catch(e) { console.warn('Disponibilidad bajo demanda no disponible', e); }
             };
             const calendarEl=document.getElementById('calendar-section');
@@ -4212,22 +4211,8 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
 
         }
 
-        // DIVERTY: Atrás del celular retrocede primero dentro del formulario de reserva.
+        // Las pantallas temporales se cierran antes de interpretar Atrás como navegación.
         window.addEventListener('popstate', (event) => {
-            if (app.activeSection === 'booking' && Number(app.wizardStep || 1) > 1) {
-                event.stopImmediatePropagation();
-                const form = document.getElementById('bookingForm');
-                if (form) bookingFormState = {...bookingFormState,...Object.fromEntries(new FormData(form).entries())};
-                app.wizardStep = Math.max(1, Number(app.wizardStep || 1) - 1);
-                renderBooking();
-                requestAnimationFrame(() => {
-                    const el = document.getElementById('bookingForm');
-                    if (el) el.scrollIntoView({behavior:'smooth', block:'start'});
-                });
-            }
-        }, true);
-
-        window.addEventListener('popstate', () => {
             if (suppressNextCartPopstate) {
                 suppressNextCartPopstate = false;
                 return;
@@ -4246,6 +4231,17 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             const mobileMenu = document.getElementById('mobileMenu');
             if (mobileMenu?.classList.contains('open')) {
                 toggleMobileMenu(false, true);
+                return;
+            }
+
+            if(app.activeSection==='booking' && getDirectRoute().view==='booking'){
+                const targetStep=Math.min(3,Math.max(1,Number(event.state?.bookingStep)||1));
+                if(targetStep!==app.wizardStep){
+                    const form=document.getElementById('bookingForm');
+                    if(form) bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(form).entries())};
+                    app.wizardStep=targetStep;renderBooking();
+                    requestAnimationFrame(()=>document.getElementById('bookingForm')?.scrollIntoView({behavior:'smooth',block:'start'}));
+                }
                 return;
             }
 
@@ -4273,6 +4269,11 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             
             document.body.addEventListener('click', handleGlobalClick);
             
+            const header=document.getElementById('headerWrapper');
+            const measureHeader=()=>{if(header) document.documentElement.style.setProperty('--diverty-header-bottom',`${Math.ceil(header.getBoundingClientRect().bottom)+8}px`);};
+            measureHeader();
+            if(header && 'ResizeObserver' in window) new ResizeObserver(measureHeader).observe(header);
+            window.addEventListener('resize',measureHeader,{passive:true});
             const mt = document.getElementById('mobileToggle');
             if(mt) mt.onclick = () => {
                 const menu = document.getElementById('mobileMenu');
@@ -4321,6 +4322,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
 
         setupEventListeners(); 
         populateLocationSelects(); 
+        updateThemeAssets(document.body.dataset.theme||'default');
         if(typeof lucide !== 'undefined') lucide.createIcons();
         if(app.activeSection === 'home') renderHome(); else setActiveSection(app.activeSection);
         document.body.classList.add('js-loaded');

@@ -39,45 +39,36 @@
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="./android-chrome-512x512.png" fetchpriority="high">
     <link rel="preload" as="image" href="https://res.cloudinary.com/dv40hkeyz/video/upload/so_0,w_720,q_auto,f_jpg/v1723578146/20250813_151416_0001_p5lwst.jpg" fetchpriority="high">
-    <link rel="stylesheet" href="/assets/css/diverty-tailwind-local.css?v=6c96efe6e6bd">
+    <link rel="stylesheet" href="/assets/css/diverty-tailwind-local.css?v=73e98d348e34">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
+    <script src="/assets/vendor/lucide.min.js?v=f828bf34002c" defer></script>
     
-    <link rel="stylesheet" href="/assets/css/diverty-eb0b36bf04.css?v=d266dab89d98">
+    <link rel="stylesheet" href="/assets/css/diverty-eb0b36bf04.css?v=c00ae36fc51f">
 
 
-<!-- Diverty: arranque sin flash de tema -->
+<!-- Diverty: colores conocidos antes de pintar; arranque con límite de espera. -->
 <script>
 (function(){
-  /* Arranque inteligente: aplica inmediatamente el último tema conocido y
-     muestra la presentación solo una vez por sesión. Firebase lo valida después. */
-  var root = document.documentElement;
-  var cached = '';
-  try { cached = localStorage.getItem('diverty_active_theme') || ''; } catch(e) {}
-  if (cached) root.setAttribute('data-cached-theme', cached);
-
-  var seen = false;
-  try { seen = sessionStorage.getItem('diverty_splash_seen') === '1'; } catch(e) {}
-  window.__divertyShowSplash = !seen;
-  window.__divertyBootStarted = Date.now();
-  if (!seen) {
+  var root=document.documentElement, snapshot=null, seen=false;
+  try {snapshot=JSON.parse(localStorage.getItem('diverty_theme_snapshot')||'null');}catch(_){}
+  if(snapshot && ['default','halloween','christmas','summer','school'].includes(snapshot.theme) && typeof snapshot.css==='string' && snapshot.css.length<12000){
+    root.setAttribute('data-cached-theme',snapshot.theme);
+    var style=document.createElement('style');style.id='theme-dynamic-styles';style.textContent=snapshot.css;document.head.appendChild(style);
+  } else {snapshot=null;}
+  try {seen=sessionStorage.getItem('diverty_splash_seen')==='1';}catch(_){}
+  window.__divertyShowSplash=!(snapshot && seen);
+  window.__divertyBootStarted=Date.now();
+  window.__divertyFinishBoot=function(){
+    clearTimeout(window.__divertyBootTimeout);
+    root.classList.remove('diverty-booting');root.classList.add('diverty-splash-skipped');
+    var loader=document.getElementById('themeBootLoader');if(loader)loader.remove();
+    try {sessionStorage.setItem('diverty_splash_seen','1');}catch(_){}
+  };
+  if(window.__divertyShowSplash){
     root.classList.add('diverty-booting');
-    try { sessionStorage.setItem('diverty_splash_seen', '1'); } catch(e) {}
-
-    // VELOCIDAD FASE 7A: el splash nunca bloquea la portada más de 850 ms.
-    // Los datos dinámicos pueden seguir llegando después sin ocultar el Inicio.
-    setTimeout(function(){
-      root.classList.remove('diverty-booting');
-      root.classList.add('diverty-splash-skipped');
-      var loader = document.getElementById('themeBootLoader');
-      if (loader) {
-        loader.classList.add('boot-hide');
-        setTimeout(function(){ if (loader && loader.parentNode) loader.remove(); }, 320);
-      }
-    }, 850);
-  } else {
-    root.classList.add('diverty-splash-skipped');
-  }
+    // Si la red o el código no responden, la portada sigue accesible.
+    window.__divertyBootTimeout=setTimeout(window.__divertyFinishBoot,4000);
+  } else {root.classList.add('diverty-splash-skipped');}
 })();
 </script>
 
@@ -291,7 +282,7 @@
     
     <div id="toast"></div>
 
-    <script type="module" src="/assets/js/diverty-app-78bb30f118.js?v=ed8fd85ec79c"></script>
+    <script type="module" src="/assets/js/diverty-app-78bb30f118.js?v=dfbbf36cb4eb"></script>
 
 
 <div id="diverty-halloween-stage" aria-hidden="true"><div class="hw-branch left"></div><div class="hw-branch right"></div><div class="hw-web"></div><div class="hw-web r"></div><div class="hw-moon"></div><i class="hw-pumpkin" style="left:4%"></i><i class="hw-pumpkin" style="right:5%;transform:scale(.78)"></i><div class="hw-fog"></div></div>
@@ -374,7 +365,7 @@
 })();
 </script>
 
-<script src="/assets/js/diverty-runtime-587c019781.js" defer></script>
+<script src="/assets/js/diverty-runtime-587c019781.js?v=4ddc247400ed" defer></script>
 
 
 

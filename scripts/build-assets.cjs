@@ -4,6 +4,11 @@ const path = require('node:path');
 const crypto = require('node:crypto');
 
 const root = path.resolve(__dirname, '..');
+// Los iconos se sirven desde la web con una versión fija, también sin CDN.
+fs.mkdirSync(path.join(root, 'assets/vendor'), { recursive: true });
+const lucideRoot = path.dirname(require.resolve('lucide/package.json'));
+fs.copyFileSync(path.join(lucideRoot, 'dist/umd/lucide.min.js'), path.join(root, 'assets/vendor/lucide.min.js'));
+fs.copyFileSync(path.join(lucideRoot, 'LICENSE'), path.join(root, 'assets/vendor/lucide.LICENSE'));
 const result = spawnSync(process.execPath, [
   require.resolve('tailwindcss/lib/cli'), '-c', 'tailwind.config.cjs',
   '-i', 'assets/css/tailwind.input.css', '-o', 'assets/css/diverty-tailwind-local.css', '--minify'
@@ -23,7 +28,7 @@ js = js.replace(/diverty-booking-firebase\.js(?:\?v=[a-f0-9]+)?/g,
 fs.writeFileSync(path.join(root, main), js);
 for (const file of ['index.html', 'admin.html']) {
   let html = fs.readFileSync(path.join(root, file), 'utf8');
-  for (const asset of ['assets/css/diverty-tailwind-local.css', 'assets/css/diverty-eb0b36bf04.css', main]) {
+  for (const asset of ['assets/css/diverty-tailwind-local.css', 'assets/css/diverty-eb0b36bf04.css', 'assets/js/diverty-runtime-587c019781.js', 'assets/vendor/lucide.min.js', main]) {
     const escaped = asset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     html = html.replace(new RegExp(`/${escaped}(?:\\?v=[a-f0-9]+)?`, 'g'), `/${asset}?v=${version(asset)}`);
   }

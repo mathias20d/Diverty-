@@ -1,6 +1,6 @@
 /* ===== diverty-boot-failsafe ===== */
 // Seguro: nunca dejar la interfaz bloqueada por una conexión lenta.
-setTimeout(function(){ if (typeof finishThemeBoot === 'function') finishThemeBoot(); else { document.documentElement.classList.remove('diverty-booting'); var l=document.getElementById('themeBootLoader'); if(l) l.remove(); } }, window.__divertyShowSplash === false ? 0 : 900);
+if (!window.__divertyFinishBoot) setTimeout(function(){document.documentElement.classList.remove('diverty-booting');document.getElementById('themeBootLoader')?.remove();},4000);
 
 /* ===== diverty-home-swipe-guard ===== */
 document.addEventListener('dragstart', function(e){ if(e.target.closest && e.target.closest('.home-swipe-track')) e.preventDefault(); }, {passive:false});

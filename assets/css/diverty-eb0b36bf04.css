@@ -5520,3 +5520,26 @@ html.dv-page-hidden video { visibility:hidden; }
 @media (prefers-reduced-motion: reduce){
   button, a, [role="button"], .modal-content, .modal-backdrop { transition-duration:.01ms!important; }
 }
+
+/* Menú estable: respeta anuncio/cabecera y mantiene cada opción dentro del panel. */
+#mobileMenu {
+    top:var(--diverty-header-bottom,96px)!important;
+    height:min(calc(100dvh - var(--diverty-header-bottom,96px) - 12px),720px)!important;
+    max-height:calc(100dvh - var(--diverty-header-bottom,96px) - 12px)!important;
+}
+#mobileMenu .mobile-nav-link {
+    width:calc(100% - 14px)!important;
+    transform:none!important;
+    flex-shrink:0;
+}
+#mobileMenu .mobile-nav-icon-box { flex:0 0 32px; }
+#mobileMenu .mobile-nav-link span { min-width:0; overflow-wrap:anywhere; }
+#mobileMenu .mobile-nav-link > svg:last-child { flex-shrink:0; }
+html.diverty-booting body { transition:none!important; }
+@media(min-width:1024px) {
+    #mainHeader > .container { display:grid; grid-template-columns:1fr auto 1fr; row-gap:12px; }
+    #mainHeader .logo-container { position:static!important; transform:none!important; grid-column:2; grid-row:1; }
+    #viewCart { grid-column:3; grid-row:1; justify-self:end; }
+    #desktopNav { grid-column:1 / -1; grid-row:2; flex-wrap:wrap; justify-content:center; gap:4px; }
+    #mainContent > .container { padding-top:max(7rem,var(--diverty-header-bottom,7rem))!important; }
+}
