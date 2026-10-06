@@ -1,3 +1,4 @@
+import { peakResourceUsage } from './diverty-resource-usage.mjs?v=9191a8365a60';
 import { prepareBookingAttempt, isNormalDayFullyBooked, readBrowserStorage, writeBrowserStorage } from './diverty-booking-state.mjs?v=f1621d666d4f';
 import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=a684dda69c53';
 // VELOCIDAD MÓVIL 6A — Firebase pesado bajo demanda.
@@ -591,16 +592,13 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             let rows=[];
             try{
                 const snap=await getDocs(query(collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web'),where('fecha','==',date)));
-                rows=snap.docs.map(d=>({...d.data(),_availabilityId:d.id})).filter(r=>!String(r._availabilityId||'').startsWith('slot_')&&r.esNavidad!==true);
+                rows=snap.docs.map(d=>({...d.data(),_availabilityId:d.id})).filter(r=>!String(r._availabilityId||'').startsWith('slot_')&&r.esNavidad!==true&&isBlockingEvent(r));
             }catch(_){}
-            const start=normalTimeMinutes(time), end=start===null?null:start+req.durationMinutes;
-            const used={animadores:0,payasos:0};
-            rows.forEach(row=>{
+            const windows=rows.map(row=>{
                 const rr=row.resourceRequirements&&typeof row.resourceRequirements==='object'?row.resourceRequirements:{};
-                const rs=normalTimeMinutes(row.hora); if(start===null||rs===null) return;
-                const rd=Math.max(30,Number(rr.durationMinutes||row.duracionMinutos)||120), re=rs+rd;
-                if(start<re && rs<end){ used.animadores+=Math.max(0,Number(rr.animadores)||0); used.payasos+=Math.max(0,Number(rr.payasos)||0); }
+                return {start:normalTimeMinutes(row.hora),duration:Math.max(30,Number(rr.durationMinutes||row.duracionMinutos)||120),animadores:rr.animadores,payasos:rr.payasos};
             });
+            const used=peakResourceUsage(normalTimeMinutes(time),req.durationMinutes,windows);
             const available={animadores:Math.max(0,cap.animadores-used.animadores),payasos:Math.max(0,cap.payasos-used.payasos)};
             return {feasible:req.animadores<=available.animadores&&req.payasos<=available.payasos,needed:req,available,capacity:cap,used};
         }
@@ -3738,6 +3736,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                             const sameTimeDocs = sameDateSnap.docs.filter(d => {
                                 if (d.id.startsWith('slot_') || d.id === request.id) return false;
                                 const row = d.data() || {};
+                                if (!isBlockingEvent(row)) return false;
                                 if (row.esNavidad === true || String(row.recursoNavidad || '').toLowerCase() === 'santa') return false;
                                 return String(row.hora || '') === String(request.data.hora || '');
                             });

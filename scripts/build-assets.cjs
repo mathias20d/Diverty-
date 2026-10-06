@@ -16,6 +16,8 @@ js = js.replace(/diverty-booking-state\.mjs(?:\?v=[a-f0-9]+)?/g,
   `diverty-booking-state.mjs?v=${version('assets/js/diverty-booking-state.mjs')}`);
 js = js.replace(/diverty-date-picker\.mjs(?:\?v=[a-f0-9]+)?/g,
   `diverty-date-picker.mjs?v=${version('assets/js/diverty-date-picker.mjs')}`);
+js = js.replace(/diverty-resource-usage\.mjs(?:\?v=[a-f0-9]+)?/g,
+  `diverty-resource-usage.mjs?v=${version('assets/js/diverty-resource-usage.mjs')}`);
 js = js.replace(/diverty-booking-firebase\.js(?:\?v=[a-f0-9]+)?/g,
   `diverty-booking-firebase.js?v=${version('assets/js/diverty-booking-firebase.js')}`);
 fs.writeFileSync(path.join(root, main), js);

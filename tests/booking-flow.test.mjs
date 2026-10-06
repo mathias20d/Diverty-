@@ -119,3 +119,29 @@ test('a failed transaction followed by a corrected form saves the new time with 
   assert.equal(db.rows.has(base + 'disponibilidad_web/slot_2026-11-10_10-00'), false);
   assert.equal(db.rows.get(base + 'disponibilidad_web/slot_2026-11-10_15-00').count, 1);
 });
+
+test('cancelled public rows and orphan lock IDs do not consume the last slot', async () => {
+  const db = store();
+  db.rows.set(base + 'config_web/global', { capacidadSimultanea: 1 });
+  db.rows.set(base + 'disponibilidad_web/cancelled', { fecha: '2026-11-10', hora: '10:00', estado: 'Cancelado' });
+  db.rows.set(base + 'disponibilidad_web/slot_2026-11-10_10-00', {
+    count: 2, capacity: 1, reservationIds: ['cancelled', 'deleted']
+  });
+  const c = client(db);
+  await c.submit();
+  assert.ok(c.messages.some(m => m.kind === 'success'));
+  assert.equal(db.rows.get(base + 'disponibilidad_web/slot_2026-11-10_10-00').count, 1);
+});
+
+test('simultaneous submissions preserve each ID while enforcing a three-reservation capacity', async () => {
+  const db = store();
+  db.rows.set(base + 'config_web/global', { capacidadSimultanea: 3 });
+  const clients = Array.from({ length: 8 }, (_, i) => client(db, 'client-' + i));
+  await Promise.all(clients.map(c => c.submit()));
+  const lock = db.rows.get(base + 'disponibilidad_web/slot_2026-11-10_10-00');
+  assert.equal(lock.count, 3);
+  assert.equal(new Set(lock.reservationIds).size, 3);
+  assert.equal(clients.filter(c => c.messages.some(m => m.kind === 'success')).length, 3);
+  assert.equal(clients.filter(c => c.messages.some(m => m.kind === 'error')).length, 5);
+  assert.ok(clients.every(c => !c.button.disabled));
+});
