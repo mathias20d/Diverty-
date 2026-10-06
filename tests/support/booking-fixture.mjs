@@ -1,3 +1,4 @@
+import { needsPlaceReference } from '../../assets/js/diverty-location-reference.mjs';
 import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
@@ -47,7 +48,7 @@ function client(database, name = 'Cliente de prueba') {
   const form = { dataset: {}, querySelector: () => button };
   const ctx = {
     app: { cart: [{ id: 'paquete', name: 'Paquete de prueba', price: 100, quantity: 1 }], location: 'panama-centro' },
-    appliedCoupon: null, bookingFormState: {}, pendingBooking: null,
+    needsPlaceReference, appliedCoupon: null, bookingFormState: {}, pendingBooking: null,
     transportNeedsReview: data => /por confirmar|por revisar|fuera.*cobertura/i.test(String(data?.ubicacion||'')),
     confirmTransportReview: async()=>true,
     normalLocationState: { status: 'included', source: 'gps', label: 'Panamá Centro' },

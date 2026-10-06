@@ -1,3 +1,4 @@
+import {needsPlaceReference} from './location-reference.mjs';
 import {ADMIN_UID, fail, quoteBooking, checkAvailability, controlDates, projections, active, isSanta, resources} from './policy.mjs';
 import {gps,addressGps} from './coverage.mjs';
 const base='artifacts/diverty-oficial/public/data';
@@ -57,6 +58,7 @@ export function bookingService(db,clock=()=>new Date()) {
         const snap=await tx.get(ref('eventos',payload.id));if(!snap.exists)fail('EVENT_NOT_FOUND','La solicitud ya no existe.');
         const event=snap.data();
         if(event.estado!=='Pendiente'||event.origen!=='Web Directa')fail('ALREADY_PROCESSED','Esta solicitud ya fue procesada.');
+        if(needsPlaceReference(event))fail('PLACE_REFERENCE_REQUIRED','Confirma la barriada, PH o salón antes de aceptar.');
         if(event.centralBookingVersion!==1)fail('LEGACY_REQUEST','Esta solicitud debe revisarse con el flujo existente.');
         const configSnap=await tx.get(db.doc(configPath));const config=configSnap.data()||{};
         if(config.centralBookingValidation!==true)fail('NOT_ENABLED','La validación central no está habilitada.');

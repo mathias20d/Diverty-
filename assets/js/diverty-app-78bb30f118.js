@@ -1,3 +1,4 @@
+import { needsPlaceReference } from './diverty-location-reference.mjs?v=89e3fe00c169';
 import { peakResourceUsage } from './diverty-resource-usage.mjs?v=9191a8365a60';
 import { prepareBookingAttempt, readBookingReceipt, isNormalDayFullyBooked, readBrowserStorage, writeBrowserStorage } from './diverty-booking-state.mjs?v=de97c2385636';
 import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=a684dda69c53';
@@ -2461,13 +2462,16 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     <div id="${locationPrefix}-location-loader" class="hidden rounded-2xl bg-black/5 p-3 text-center"><div class="text-2xl animate-bounce">${isChristmasEveBooking()?'🎅🛷':'🚐🎈'}</div><p id="${locationPrefix}-location-loader-text" class="text-sm font-bold season-text-title mt-2">Buscando tu ubicación…</p></div>
                     <p id="${locationPrefix}-location-status" class="text-xs season-text-muted">Permite el GPS para usar este punto. También puedes escribir la dirección.</p>
                 </div>
+                <div class="form-group">
+                    <label for="${referenceName}" class="block text-sm font-bold season-text-title mb-2">Barriada, PH o salón de fiestas</label>
+                    <textarea id="${referenceName}" name="${referenceName}" maxlength="500" rows="2" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm" placeholder="Ej.: PH Las Palmeras, salón social, entrada por la garita"></textarea>
+                    <p class="text-xs season-text-muted mt-2">Obligatorio al usar GPS o un enlace de mapa. Si ya escribiste el nombre en la dirección, no hace falta repetirlo.</p>
+                </div>
                 <div id="${locationPrefix}-coverage-result" aria-live="polite"></div>
                 <button type="button" data-location-continue class="w-full season-btn font-extrabold py-3.5 px-5 rounded-2xl">${isChristmasEveBooking()?'Continuar con esta ubicación':'Enviar solicitud'}</button>
                 <details class="location-extra rounded-2xl border border-[var(--s-glass-border)] p-3">
-                    <summary class="cursor-pointer text-sm font-bold season-text-title">Añadir referencia o buscar en el mapa <span class="text-xs font-normal season-text-muted">(opcional)</span></summary>
+                    <summary class="cursor-pointer text-sm font-bold season-text-title">Buscar en el mapa o añadir detalles <span class="text-xs font-normal season-text-muted">(opcional)</span></summary>
                     <div class="space-y-3 mt-4">
-                        <label for="${referenceName}" class="block text-xs font-bold season-text-muted">Torre, casa, entrada o referencia</label>
-                        <textarea id="${referenceName}" name="${referenceName}" maxlength="500" rows="2" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm" placeholder="Ej.: torre B, entrada por la garita principal"></textarea>
                         <label for="${locationPrefix}-place-type" class="block text-xs font-bold season-text-muted">Tipo de lugar para afinar la búsqueda</label>
                         <select id="${locationPrefix}-place-type" name="${locationPrefix}PlaceType" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm">
                             <option value="" style="color:black">Cualquier lugar</option><option value="ph" style="color:black">PH / edificio</option><option value="barriada" style="color:black">Barriada / residencial</option><option value="sala" style="color:black">Sala de eventos / fiestas infantiles</option>
@@ -3084,6 +3088,11 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                             showToast('Indica dónde será la entrega: usa el GPS o escribe el PH, barriada o sala de eventos.', 'error');
                             return;
                         }
+                        if(needsPlaceReference({direccion:locationValue,referenciaLugar:bForm?.elements?.christmasReference?.value})){
+                            showToast('Escribe la barriada, PH o salón del evento. El GPS solo marca el punto.','error');
+                            bForm?.elements?.christmasReference?.focus();
+                            return;
+                        }
                         if(christmasLocationState.status==='review'){
                             renderChristmasCoverageStatus();
                             showToast('Puedes continuar. Revisaremos esta ubicación antes de aceptar la reserva.', 'info');
@@ -3637,6 +3646,14 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     return;
                 }
                 delete submitForm.dataset.sending;
+            }
+
+            const placeFormData = new FormData(submitForm);
+            const placeReferenceField = isChristmasEveBooking() ? 'christmasReference' : 'normalReference';
+            if(needsPlaceReference({direccion:placeFormData.get('address'),referenciaLugar:placeFormData.get(placeReferenceField)})){
+                showToast('Escribe la barriada, PH o salón del evento. El GPS solo marca el punto.','error');
+                submitForm.querySelector(`[name="${placeReferenceField}"]`)?.focus?.();
+                return;
             }
 
             // NAVIDAD FASE 2 SEGURA — validación final obligatoria antes de Firebase.

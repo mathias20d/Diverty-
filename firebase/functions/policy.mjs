@@ -1,3 +1,4 @@
+import {needsPlaceReference} from './location-reference.mjs';
 import { coverage, gps, addressGps, distanceKm } from './coverage.mjs';
 export const ADMIN_UID='OblqzhP2L3XulJ920O82jwd1Qrk1';
 export class BookingError extends Error {
@@ -35,6 +36,7 @@ export function validateInput(event,uid,now) {
   if(!event.cliente.trim()||event.direccion.trim().length<3||!/^\S+@\S+\.\S+$/.test(event.email)||!/^\d{6,15}$/.test(String(event.telefonoBusqueda||'')))fail('INVALID_REQUEST','Revisa tus datos y la dirección del evento.');
   if(!/^\d{4}-\d{2}-\d{2}$/.test(event.fecha||'')||!/^([01]\d|2[0-3]):[0-5]\d$/.test(event.hora||'')||!Number.isFinite(Date.parse(`${event.fecha}T12:00:00Z`))||new Date(`${event.fecha}T12:00:00Z`).toISOString().slice(0,10)!==event.fecha)fail('INVALID_REQUEST','Fecha u hora inválida.');
   if(Date.parse(`${event.fecha}T${event.hora}:00-05:00`)<=now.getTime())fail('PAST_DATE','Elige una fecha y hora futura.');
+  if(needsPlaceReference(event))fail('PLACE_REFERENCE_REQUIRED','Escribe la barriada, PH o salón del evento. El GPS solo marca el punto.');
   if(!Array.isArray(event.serviciosSeleccionados)||event.serviciosSeleccionados.length<1||event.serviciosSeleccionados.length>50)fail('INVALID_REQUEST','Selecciona los servicios.');
 }
 export function quoteBooking(input,uid,products,coupon,point,now=new Date()) {

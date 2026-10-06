@@ -27,3 +27,12 @@ Las pruebas de navegador usan Chromium y Firebase/servicios externos simulados: 
 Las 34 pruebas de Firestore usan solo el emulador `demo-diverty`. Incluyen el manejador real de Navidad sin GPS y rechazo de coordenadas públicas inventadas, dirección vacía, transporte provisional distinto de cero o estado confirmado por el cliente. Las 25 pruebas de la app incluyen la negativa a aceptar una ubicación pendiente desde un dispositivo con datos antiguos.
 
 No se crearon reservas, cuentas ni notificaciones reales. El sitio de Netlify respondió HTTP 200 en esta revisión. La comprobación del despliegue se limita a leer archivos publicados; las pruebas aisladas no certifican las reglas activas en producción.
+
+
+## Nombre del lugar incluso cuando se usa GPS
+
+El campo **Barriada, PH o salón de fiestas** se muestra antes de continuar/enviar. Si solo se proporciona GPS, coordenadas o un enlace de mapa, se exige una descripción del lugar. Si la dirección escrita ya incluye esa descripción, el cliente no tiene que repetirla. Los clientes que no están en el sitio conservan la opción de escribir la dirección sin buscarla en un mapa.
+
+El dato se conserva en el campo existente `referenciaLugar`; no requiere cambiar el esquema ni publicar nuevas reglas para usar la interfaz. La app puede abrir el punto guardado en Google Maps/Waze y completar la referencia de solicitudes antiguas antes de aprobar. El servicio central preparado también valida esta condición al crear y aprobar cuando se active.
+
+Validación de esta mejora: 32 pruebas de la web, 47 pruebas del servicio y reglas en emulador, y recorrido de navegador para GPS/dirección remota en reservas normales y de Navidad. No se escribieron reservas reales.

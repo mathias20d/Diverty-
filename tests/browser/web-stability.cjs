@@ -133,7 +133,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
 
     const remote=await fixture({christmas:true,width:320});await openBooking(remote);
     assert.equal(await remote.page.locator('#christmas-manual-address').isVisible(),true);
-    assert.equal(await remote.page.locator('[name="christmasReference"]').isVisible(),false);
+    assert.equal(await remote.page.locator('[name="christmasReference"]').isVisible(),true);
     await remote.page.locator('#christmas-manual-address').fill('Casa de mi hermana, Brisas del Golf, casa 18');
     await remote.page.locator('[data-location-continue]').click();await remote.page.locator('#step-2.active').waitFor();
     await remote.page.locator('#btn-prev').click();await remote.page.locator('#step-1.active').waitFor();
@@ -155,7 +155,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     console.log('PASS: dirección remota sin buscar, referencia opcional, Atrás, enlace Maps y cambio de dirección.');
 
     const santa=await fixture({christmas:true});await openBooking(santa);
-    await santa.page.locator('[data-christmas-location-mode="manual"]').click();await santa.page.locator('#christmas-manual-address').fill('PH Prueba');await santa.page.locator('.location-extra summary').click();await santa.page.locator('[name="christmasReference"]').fill('Entrada ficticia');
+    await santa.page.locator('[data-christmas-location-mode="manual"]').click();await santa.page.locator('#christmas-manual-address').fill('PH Prueba');await santa.page.locator('[name="christmasReference"]').fill('Entrada ficticia');
     await santa.page.locator('[data-location-continue]').click();await santa.page.locator('#step-2.active').waitFor();await santa.page.locator('[data-christmas-date-choice="2026-12-24"]').click();
     await santa.page.locator('[data-christmas-time="18:00"]').click();const dialog=santa.page.getByRole('dialog',{name:'Confirmar horario 🎅'});await dialog.waitFor();
     await santa.page.evaluate(()=>window.__occupied=true);await dialog.getByRole('button',{name:'Seguir',exact:true}).click();await santa.page.waitForFunction(()=>!document.querySelector('#christmas-time-confirmation'));
@@ -183,6 +183,12 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       const prefix=christmas?'christmas':'normal';
       await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
       await gps.page.waitForFunction(()=>document.querySelector('[name="address"]').value.startsWith('https://www.google.com/maps?q='));
+      assert.equal(await gps.page.locator(`[name="${prefix}Reference"]`).isVisible(),true);
+      await gps.page.locator('[data-location-continue]').click();
+      assert.match(await gps.page.locator('#toast').innerText(), /barriada, PH o salón/);
+      assert.equal(await gps.page.locator(christmas?'#step-1.active':'#step-3.active').count(),1);
+      await gps.page.locator(`[name="${prefix}Reference"]`).fill('PH Las Palmeras, salón social');
+      if(christmas){await gps.page.locator('[data-location-continue]').click();await gps.page.locator('#step-2.active').waitFor();await gps.page.locator('#btn-prev').click();await gps.page.locator('#step-1.active').waitFor();}
       await gps.page.locator(`[data-${prefix}-location-mode="manual"]`).click();
       assert.equal(await gps.page.locator('[name="address"]').inputValue(),'');
       await gps.page.locator(`#${prefix}-manual-address`).fill('Dirección nueva sin estar allí');

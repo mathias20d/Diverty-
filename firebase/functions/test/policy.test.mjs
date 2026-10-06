@@ -63,3 +63,9 @@ test('Santa travel margin also applies across midnight on December 24 and 25',()
   assert.throws(()=>checkAvailability(event,[row],{capacidadSanta:1},'Santa 1'),e=>e.reason==='ROUTE_FULL');
   checkAvailability({...event,hora:'00:30'},[row],{capacidadSanta:1},'Santa 1');
 });
+
+test('central booking requires a written venue reference even with a GPS map link',()=>{
+  const input={...sample,direccion:'https://www.google.com/maps?q=9.04,-79.51',referenciaLugar:''};
+  assert.throws(()=>quote(input),e=>e.reason==='PLACE_REFERENCE_REQUIRED');
+  const e=quote({...input,referenciaLugar:'PH Las Palmeras, salón social'});assert.equal(e.referenciaLugar,'PH Las Palmeras, salón social');
+});

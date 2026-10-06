@@ -17,6 +17,8 @@ if (result.status !== 0) process.exit(result.status || 1);
 const version = file => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex').slice(0, 12);
 const main = 'assets/js/diverty-app-78bb30f118.js';
 let js = fs.readFileSync(path.join(root, main), 'utf8');
+js = js.replace(/diverty-location-reference\.mjs(?:\?v=[a-f0-9]+)?/g,
+  `diverty-location-reference.mjs?v=${version('assets/js/diverty-location-reference.mjs')}`);
 js = js.replace(/diverty-booking-state\.mjs(?:\?v=[a-f0-9]+)?/g,
   `diverty-booking-state.mjs?v=${version('assets/js/diverty-booking-state.mjs')}`);
 js = js.replace(/diverty-date-picker\.mjs(?:\?v=[a-f0-9]+)?/g,

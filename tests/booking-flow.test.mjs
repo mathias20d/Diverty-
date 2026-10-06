@@ -138,3 +138,12 @@ test('double tapping while reviewing transport opens only one confirmation',asyn
   await c.submit();assert.equal(dialogs,1);release(false);await first;
   c.ctx.confirmTransportReview=async()=>true;await c.submit();assert.ok(c.messages.some(m=>m.kind==='success'));
 });
+
+test('GPS-only booking requires a venue name and preserves it on the saved request',async()=>{
+  const db=store(),c=client(db);
+  c.values.address='https://www.google.com/maps?q=9.01,-79.5';c.values.normalReference='';
+  await c.submit();assert.equal(db.rows.size,0);assert.ok(c.messages.some(m=>/barriada, PH o salón/.test(m.text||'')));
+  c.values.normalReference='PH Las Palmeras, salón social';
+  await c.submit();const event=[...db.rows].find(([p])=>p.includes('/eventos/'))[1];
+  assert.equal(event.referenciaLugar,c.values.normalReference);assert.equal(event.direccion,c.values.address);
+});
