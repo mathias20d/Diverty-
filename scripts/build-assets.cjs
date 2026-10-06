@@ -28,7 +28,7 @@ for (const file of ['index.html', 'admin.html']) {
   fs.writeFileSync(path.join(root, file), html);
 }
 
-// Netlify publishes only the website, keeping build tooling and tests out of
+// Publish only the website, keeping build tooling and tests out of
 // the deployed directory. Edge functions are still discovered from the base.
 const output = path.join(root, 'dist');
 fs.rmSync(output, { recursive: true, force: true });
@@ -36,7 +36,7 @@ fs.mkdirSync(output, { recursive: true });
 fs.cpSync(path.join(root, 'assets'), path.join(output, 'assets'), { recursive: true });
 for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
   if (entry.isFile() && (/\.(html|json|png|jpe?g|ico|mp4)$/i.test(entry.name) &&
-      !['package.json', 'package-lock.json'].includes(entry.name) || entry.name === 'Video')) {
+      !['package.json', 'package-lock.json', 'vercel.json'].includes(entry.name) || entry.name === 'Video')) {
     fs.copyFileSync(path.join(root, entry.name), path.join(output, entry.name));
   }
 }
