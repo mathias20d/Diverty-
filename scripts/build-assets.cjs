@@ -23,7 +23,7 @@ js = js.replace(/diverty-booking-firebase\.js(?:\?v=[a-f0-9]+)?/g,
 fs.writeFileSync(path.join(root, main), js);
 for (const file of ['index.html', 'admin.html']) {
   let html = fs.readFileSync(path.join(root, file), 'utf8');
-  for (const asset of ['assets/css/diverty-tailwind-local.css', main]) {
+  for (const asset of ['assets/css/diverty-tailwind-local.css', 'assets/css/diverty-eb0b36bf04.css', main]) {
     const escaped = asset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     html = html.replace(new RegExp(`/${escaped}(?:\\?v=[a-f0-9]+)?`, 'g'), `/${asset}?v=${version(asset)}`);
   }

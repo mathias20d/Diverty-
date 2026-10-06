@@ -2914,6 +2914,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                         christmasTimeSelect.value=btn.dataset.christmasTime||'';
                         christmasTimeSelect.dispatchEvent(new Event('change',{bubbles:true}));
                         renderChristmasTimeCards(date,capacity);
+                        confirmChristmasTime();
                     }));
                 };
                 const refreshChristmasTimeAvailability = async () => {
@@ -3017,6 +3018,48 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 };
                 updUI();
                 const bn=document.getElementById('btn-next'), bp=document.getElementById('btn-prev');
+                const confirmChristmasTime = () => {
+                    if (!isChristmasEveBooking() || cs !== 2 || !christmasTimeSelect?.value || christmasTimeIsUnavailable()) return;
+                    const option=christmasTimeSelect.options[christmasTimeSelect.selectedIndex];
+                    const selectedTime=christmasTimeSelect.value;
+                    const selectedDate=bForm.elements.date.value;
+                    const dialog=document.createElement('dialog');
+                    dialog.id='christmas-time-confirmation';
+                    dialog.className='w-full max-w-sm rounded-3xl border border-[var(--s-glass-border)] bg-[var(--s-bg-color)] p-6 shadow-2xl season-text-title';
+                    dialog.setAttribute('aria-labelledby','christmas-time-confirm-title');
+                    dialog.setAttribute('aria-describedby','christmas-time-confirm-details');
+                    dialog.innerHTML=`<h3 id="christmas-time-confirm-title" class="text-xl font-extrabold">Confirmar horario 🎅</h3>
+                        <p id="christmas-time-confirm-details" class="mt-4 text-lg font-bold"></p>
+                        <p class="mt-3 text-sm season-text-muted">Pulsa Seguir para continuar con tus datos de contacto.</p>
+                        <div class="mt-6 flex flex-col gap-3"><button type="button" data-christmas-time-continue class="season-btn w-full rounded-2xl py-3.5 font-bold" autofocus>Seguir</button>
+                        <button type="button" data-christmas-time-change class="w-full rounded-2xl py-3.5 bg-black/10 font-bold">Cambiar hora</button></div>`;
+                    const dateLabel=new Date(`${selectedDate}T12:00:00`).toLocaleDateString('es-PA',{day:'numeric',month:'long'});
+                    dialog.querySelector('#christmas-time-confirm-details').textContent=`${dateLabel} · ${String(option.textContent||'').split(' — ')[0]}`;
+                    const follow=dialog.querySelector('[data-christmas-time-continue]');
+                    const change=dialog.querySelector('[data-christmas-time-change]');
+                    let checking=false;
+                    dialog.addEventListener('cancel',event=>{if(checking) event.preventDefault();});
+                    dialog.addEventListener('close',()=>{
+                        dialog.remove();
+                        const focusTarget=cs===2
+                            ? document.querySelector(`[data-christmas-time="${christmasTimeSelect.value||selectedTime}"]:not([disabled])`) || bn
+                            : document.querySelector('#step-3 h3');
+                        if(focusTarget){if(cs===3) focusTarget.tabIndex=-1;focusTarget.focus({preventScroll:true});}
+                    },{once:true});
+                    change.onclick=()=>dialog.close();
+                    follow.onclick=async()=>{
+                        if(checking) return;
+                        checking=true;follow.disabled=true;change.disabled=true;
+                        follow.textContent='Comprobando horario…';
+                        try {
+                            // Reutiliza las validaciones y la navegación de Siguiente.
+                            // Este paso no envía ni guarda la solicitud.
+                            if(cs===2 && bForm.isConnected && christmasTimeSelect.value===selectedTime && bForm.elements.date.value===selectedDate) await bn.onclick();
+                        } finally {dialog.close();}
+                    };
+                    bForm.appendChild(dialog);
+                    dialog.showModal();
+                };
                 // NAVIDAD: usa el mismo submit estable de Diverty. El formulario ya lleva
                 // novalidate y handleBookingSubmit ejecuta las validaciones especiales explícitas.
                 if(bn) bn.onclick=async()=>{

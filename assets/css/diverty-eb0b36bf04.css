@@ -181,6 +181,9 @@
         }
         .modal-backdrop.show .modal-content { transform: scale(1); }
 
+        #christmas-time-confirmation { width: calc(100% - 2rem); max-height: calc(100dvh - 2rem); overflow-y: auto; }
+        #christmas-time-confirmation::backdrop { background: rgba(15, 23, 42, 0.85); }
+
         body.cart-open { overflow: hidden !important; touch-action: none; }
         body.cart-open #cartSummary { opacity: 0 !important; pointer-events: none !important; transform: translate(-50%, 20px) scale(0.95) !important; }
         #cartSummary { transition: all 0.2s ease-out; transform: translate(-50%, 0) scale(1); }
