@@ -597,9 +597,10 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             if(total){const sub=app.cart.reduce((a,i)=>a+(Number(i.price)*i.quantity),0);let dv=0;if(appliedCoupon)dv=appliedCoupon.type==='percent'?sub*(Number(appliedCoupon.discount)/100):Number(appliedCoupon.discount);dv=Math.min(sub,Math.max(0,dv));total.textContent=`$${Math.max(0,sub-dv+effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0))).toFixed(2)}`;}
             updateCartBadgeAndTotals();
         }
-        async function applyNormalLocation(lat,lng,{source='gps',displayName='',accuracy=null}={}){
+        async function applyNormalLocation(lat,lng,{source='gps',displayName='',accuracy=null,isCurrent=()=>true}={}){
             const la=Number(lat),lo=Number(lng); if(!Number.isFinite(la)||!Number.isFinite(lo)) return false;
             const rev=displayName?null:await reverseChristmasLocation(la,lo);
+            if(!isCurrent()) return false;
             const resolved=String(displayName||rev?.display_name||'Ubicación GPS');
             const coverage=evaluateNormalCoverage(la,lo,resolved);
             normalLocationState={...coverage,displayName:resolved,lat:la,lng:lo,source,accuracy:Number.isFinite(Number(accuracy))?Number(accuracy):null};
@@ -639,7 +640,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             const safeLabel=cleanStr(s.label||'');
             if(s.status==='included') box.innerHTML=`<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4"><p class="font-black text-emerald-600">✅ ${safeLabel||'Ubicación dentro de cobertura'}</p><p class="text-xs season-text-muted mt-1">Transporte adicional: <b>$0.00</b> · El punto GPS se usará también para recomendar la mejor hora y organizar la ruta del Santa.</p></div>`;
             else if(s.status==='surcharge') box.innerHTML=`<div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4"><p class="font-black text-amber-600">📍 ${safeLabel||'Ubicación disponible'}</p><p class="text-xs season-text-muted mt-1">Transporte adicional: <b>$5.00</b> · Este es el recargo máximo automático de Navidad.</p></div>`;
-            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Ubicación por confirmar</p><p class="text-xs season-text-muted mt-1">Puedes continuar con la solicitud. Diverty revisará la ubicación y te contactará por WhatsApp antes de aceptar la reserva y confirmar el transporte.</p></div>`;
+            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Ubicación por confirmar</p><p class="text-xs season-text-muted mt-1">Confirmaremos contigo la dirección y el transporte antes de aceptar. Puedes continuar.</p></div>`;
             else box.innerHTML='';
             const t=document.getElementById('booking-summary-transport'); if(t) t.textContent=s.status==='review'?'Por confirmar':`$${effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)).toFixed(2)}`;
             const total=document.getElementById('booking-summary-total');
@@ -650,9 +651,10 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             }
             updateCartBadgeAndTotals();
         }
-        async function applyChristmasLocation(lat,lng,{source='gps',displayName='',accuracy=null}={}){
+        async function applyChristmasLocation(lat,lng,{source='gps',displayName='',accuracy=null,isCurrent=()=>true}={}){
             const la=Number(lat), lo=Number(lng); if(!Number.isFinite(la)||!Number.isFinite(lo)) return false;
             const rev=displayName?null:await reverseChristmasLocation(la,lo);
+            if(!isCurrent()) return false;
             const resolved=String(displayName||rev?.display_name||'Ubicación GPS');
             const coverage=evaluateChristmasCoverage(la,lo,resolved);
             christmasLocationState={...coverage,displayName:resolved,lat:la,lng:lo,source,accuracy:Number.isFinite(Number(accuracy))?Number(accuracy):null};
@@ -666,7 +668,8 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
             bookingFormState.location=coverage.label;
             renderChristmasCoverageStatus();
             bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
-            if(coverage.status!=='review') await refreshChristmasTimeAvailability();
+            // Al avanzar al horario se recalcula la ruta con este punto.
+            // La función de horarios pertenece al formulario, no a este ámbito global.
             return coverage.status!=='review';
         }
         
@@ -2432,84 +2435,47 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                  exploreButtons += `<button data-action="navigate-from-modal" data-target-section="home" class="w-full sm:w-auto season-btn font-extrabold py-3.5 px-8 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2 nav-action"><i data-lucide="home" class="w-5 h-5"></i> Volver al Inicio</button>`;
             }
 
-            // NAVIDAD FASE 4 — ubicación exacta sin cambiar la estructura de Firebase.
-            // El pin se guarda en el mismo campo direccion y la referencia se agrega al confirmar.
-            const bookingLocationFields = isChristmasEveBooking() ? `
-                <input type="hidden" name="location" value="${cleanStr(bookingFormState.christmasCoverageLabel||'Ubicación por verificar')}">
-                <input type="hidden" name="address" value="${cleanStr(bookingFormState.address||'')}">
+            // Una dirección escrita basta para solicitar; mapa, tipo y referencia siguen disponibles.
+            const locationAttribute=value=>String(value||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+            const locationPrefix=isChristmasEveBooking()?'christmas':'normal';
+            const referenceName=isChristmasEveBooking()?'christmasReference':'normalReference';
+            const bookingLocationFields = `
+                <input type="hidden" name="location" value="${locationAttribute(bookingFormState[locationPrefix+'CoverageLabel'])}">
+                <input type="hidden" name="address" value="${locationAttribute(bookingFormState.address)}">
                 <div class="form-group">
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-2 block">📍 ¿Dónde será la entrega? *</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        <button type="button" data-christmas-location-mode="gps" class="rounded-2xl border border-[var(--s-primary)] bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)] px-4 py-3 text-left font-black season-text-title"><span class="flex items-center gap-2 text-sm"><i data-lucide="locate-fixed" class="w-4 h-4"></i> Estoy en el lugar</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Toca aquí y localizamos la entrega con el GPS</span></button>
-                        <button type="button" data-christmas-location-mode="manual" class="rounded-2xl border border-[var(--s-glass-border)] bg-black/5 px-4 py-3 text-left font-black season-text-title"><span class="flex items-center gap-2 text-sm"><i data-lucide="building-2" class="w-4 h-4"></i> Otra dirección</span><span class="block text-[10px] font-semibold season-text-muted mt-1">PH, barriada o sala de eventos</span></button>
+                    <p class="text-sm season-text-muted mb-3">Elige cómo indicar el lugar de ${isChristmasEveBooking()?'la entrega':'tu evento'}.</p>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <button type="button" data-${locationPrefix}-location-mode="manual" class="location-mode rounded-2xl border px-3 py-3 text-left season-text-title"><i data-lucide="pencil-line" class="w-5 h-5 mb-2"></i><span class="block text-sm font-black">Escribir dirección</span><span class="block text-xs season-text-muted mt-1">No necesito estar allí</span></button>
+                        <button type="button" data-${locationPrefix}-location-mode="gps" class="location-mode rounded-2xl border px-3 py-3 text-left season-text-title"><i data-lucide="locate-fixed" class="w-5 h-5 mb-2"></i><span class="block text-sm font-black">Estoy en el lugar</span><span class="block text-xs season-text-muted mt-1">Usar mi GPS</span></button>
                     </div>
                 </div>
-                <div id="christmas-gps-panel" class="form-group rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
-                    <button type="button" id="christmas-use-location" class="hidden" aria-hidden="true" tabindex="-1">Usar mi ubicación actual</button>
-                    <div id="christmas-location-loader" class="hidden mt-3 rounded-2xl border border-red-400/25 bg-gradient-to-br from-red-500/10 via-amber-400/10 to-emerald-400/10 p-4 text-center overflow-hidden relative">
-                        <div class="text-4xl animate-bounce mb-2">🎅🛷✨</div>
-                        <div class="h-2 rounded-full bg-black/10 overflow-hidden"><div class="h-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-500 animate-pulse" style="width:72%"></div></div>
-                        <p id="christmas-location-loader-text" class="text-xs font-black season-text-title mt-3">Buscando tu ubicación…</p>
-                        <p class="text-[10px] season-text-muted mt-1">Santa está revisando cobertura, transporte y la mejor ruta 🎄</p>
+                <div id="${locationPrefix}-manual-panel" class="form-group">
+                    <label for="${locationPrefix}-manual-address" class="form-label font-bold season-text-title text-sm mb-2 block">¿Dónde será? *</label>
+                    <textarea id="${locationPrefix}-manual-address" name="${locationPrefix}ManualAddress" maxlength="1500" rows="2" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm" placeholder="Ej.: PH Las Palmeras, Brisas del Golf, casa 18. También puedes pegar un enlace de Maps o Waze."></textarea>
+                    <p class="text-xs season-text-muted mt-2">Escribe lo que sabes del lugar. Si falta algún detalle, lo confirmaremos contigo.</p>
+                </div>
+                <div id="${locationPrefix}-gps-panel" class="form-group hidden">
+                    <button type="button" id="${locationPrefix}-use-location" class="hidden" aria-hidden="true" tabindex="-1">Usar mi ubicación actual</button>
+                    <div id="${locationPrefix}-location-loader" class="hidden rounded-2xl bg-black/5 p-3 text-center"><div class="text-2xl animate-bounce">${isChristmasEveBooking()?'🎅🛷':'🚐🎈'}</div><p id="${locationPrefix}-location-loader-text" class="text-sm font-bold season-text-title mt-2">Buscando tu ubicación…</p></div>
+                    <p id="${locationPrefix}-location-status" class="text-xs season-text-muted">Permite el GPS para usar este punto. También puedes escribir la dirección.</p>
+                </div>
+                <div id="${locationPrefix}-coverage-result" aria-live="polite"></div>
+                <button type="button" data-location-continue class="w-full season-btn font-extrabold py-3.5 px-5 rounded-2xl">${isChristmasEveBooking()?'Continuar con esta ubicación':'Enviar solicitud'}</button>
+                <details class="location-extra rounded-2xl border border-[var(--s-glass-border)] p-3">
+                    <summary class="cursor-pointer text-sm font-bold season-text-title">Añadir referencia o buscar en el mapa <span class="text-xs font-normal season-text-muted">(opcional)</span></summary>
+                    <div class="space-y-3 mt-4">
+                        <label for="${referenceName}" class="block text-xs font-bold season-text-muted">Torre, casa, entrada o referencia</label>
+                        <textarea id="${referenceName}" name="${referenceName}" maxlength="500" rows="2" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm" placeholder="Ej.: torre B, entrada por la garita principal"></textarea>
+                        <label for="${locationPrefix}-place-type" class="block text-xs font-bold season-text-muted">Tipo de lugar para afinar la búsqueda</label>
+                        <select id="${locationPrefix}-place-type" name="${locationPrefix}PlaceType" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm">
+                            <option value="" style="color:black">Cualquier lugar</option><option value="ph" style="color:black">PH / edificio</option><option value="barriada" style="color:black">Barriada / residencial</option><option value="sala" style="color:black">Sala de eventos / fiestas infantiles</option>
+                        </select>
+                        <button type="button" id="${locationPrefix}-search-address" class="w-full border border-[var(--s-glass-border)] season-text-title font-bold py-3 px-3 rounded-xl">Buscar dirección en el mapa</button>
+                        <div id="${locationPrefix}-place-results" class="space-y-2"></div>
+                        <p class="text-xs season-text-muted">Si no aparece tu PH o barriada, conserva la dirección escrita y continúa. Revisaremos ubicación y transporte antes de aceptar.</p>
+                        <a href="https://wa.me/50766677965" target="_blank" rel="noopener noreferrer" class="block text-sm font-bold season-text-primary underline">Pedir ayuda por WhatsApp</a>
                     </div>
-                    <p id="christmas-location-status" class="text-xs season-text-muted mt-2">Activa la ubicación del teléfono y trataremos de obtener el punto más preciso posible.</p>
-                </div>
-                <div id="christmas-manual-panel" class="form-group hidden rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">¿Qué tipo de lugar es? *</label>
-                    <select id="christmas-place-type" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm mb-3">
-                        <option value="" style="color:black">Selecciona una opción</option>
-                        <option value="ph" style="color:black">🏢 PH / edificio</option>
-                        <option value="barriada" style="color:black">🏘️ Barriada / residencial</option>
-                        <option value="sala" style="color:black">🎈 Sala de eventos / fiestas infantiles</option>
-                    </select>
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Nombre del lugar *</label>
-                    <input id="christmas-manual-address" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" placeholder="Ej: PH Costa View, Brisas del Golf o Happy Kids">
-                    <p class="text-[10px] season-text-muted mt-2">Buscaremos el PH, barriada o sala dentro de nuestra cobertura para calcular el transporte. También puedes pegar un enlace de Google Maps/Waze.</p>
-                    <button type="button" id="christmas-search-address" class="mt-3 w-full bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-black py-3 rounded-xl active:scale-95 transition flex items-center justify-center gap-2"><i data-lucide="search" class="w-4 h-4"></i> Buscar lugar y calcular transporte</button>
-                    <div id="christmas-place-results" class="mt-3 space-y-2"></div>
-                    <p class="text-[10px] season-text-muted mt-2">Si no encontramos el lugar, igual podrás enviar la solicitud. Nosotros te contactaremos por WhatsApp antes de aceptarla.</p>
-                </div>
-                <div id="christmas-coverage-result"></div>
-                <div class="form-group">
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Referencia del lugar *</label>
-                    <textarea name="christmasReference" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej: PH Costa View, torre 2, entrada por la garita principal"></textarea>
-                </div>` : `
-                <input type="hidden" name="location" value="${cleanStr(bookingFormState.normalCoverageLabel||'')}">
-                <input type="hidden" name="address" value="${cleanStr(bookingFormState.address||'')}">
-                <div class="form-group">
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-2 block">📍 ¿Dónde será el evento? *</label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        <button type="button" data-normal-location-mode="gps" class="rounded-2xl border border-[var(--s-primary)] bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)] px-4 py-3 text-left font-black season-text-title"><span class="flex items-center gap-2 text-sm"><i data-lucide="locate-fixed" class="w-4 h-4"></i> Estoy en el lugar</span><span class="block text-[10px] font-semibold season-text-muted mt-1">Toca aquí y localizamos el evento con el GPS</span></button>
-                        <button type="button" data-normal-location-mode="manual" class="rounded-2xl border border-[var(--s-glass-border)] bg-black/5 px-4 py-3 text-left font-black season-text-title"><span class="flex items-center gap-2 text-sm"><i data-lucide="building-2" class="w-4 h-4"></i> Otra dirección</span><span class="block text-[10px] font-semibold season-text-muted mt-1">PH, barriada o sala de eventos</span></button>
-                    </div>
-                </div>
-                <div id="normal-gps-panel" class="form-group rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
-                    <button type="button" id="normal-use-location" class="hidden">Encontrar mi ubicación</button>
-                    <div id="normal-location-loader" class="hidden rounded-2xl border border-violet-400/25 bg-violet-400/10 p-4 text-center overflow-hidden relative">
-                        <div class="text-3xl animate-bounce mb-2">🚐🎈</div>
-                        <div class="h-2 rounded-full bg-black/10 overflow-hidden"><div class="h-full bg-gradient-to-r from-pink-500 via-violet-500 to-cyan-400 animate-pulse" style="width:70%"></div></div>
-                        <p id="normal-location-loader-text" class="text-xs font-black season-text-title mt-3">Buscando tu ubicación…</p>
-                        <p class="text-[10px] season-text-muted mt-1">Estamos preparando la mejor ruta para tu evento ✨</p>
-                    </div>
-                    <p id="normal-location-status" class="text-xs season-text-muted">Toca “Estoy en el lugar” y calcularemos el transporte automáticamente.</p>
-                </div>
-                <div id="normal-manual-panel" class="form-group hidden rounded-2xl border border-[var(--s-glass-border)] bg-black/5 p-4">
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">¿Qué tipo de lugar es? *</label>
-                    <select id="normal-place-type" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm mb-3">
-                        <option value="" style="color:black">Selecciona una opción</option>
-                        <option value="ph" style="color:black">🏢 PH / edificio</option>
-                        <option value="barriada" style="color:black">🏘️ Barriada / residencial</option>
-                        <option value="sala" style="color:black">🎈 Sala de eventos / fiestas infantiles</option>
-                    </select>
-                    <label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Nombre del lugar *</label>
-                    <input id="normal-manual-address" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" placeholder="Ej: PH Sunrise, Brisas del Golf o Happy Kids">
-                    <p class="text-[10px] season-text-muted mt-2">Buscaremos el PH, barriada o sala para calcular automáticamente el transporte. También puedes pegar un enlace de Google Maps/Waze.</p>
-                    <button type="button" id="normal-search-address" class="mt-3 w-full bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-black py-3 rounded-xl active:scale-95 transition flex items-center justify-center gap-2"><i data-lucide="search" class="w-4 h-4"></i> Buscar lugar y calcular transporte</button>
-                    <div id="normal-place-results" class="mt-3 space-y-2"></div>
-                    <p class="text-[10px] season-text-muted mt-2">Si no encontramos el lugar, igual podrás enviar la solicitud. Revisaremos la dirección y te contactaremos por WhatsApp antes de aceptar la reserva.</p>
-                </div>
-                <div id="normal-coverage-result"></div>
-                <div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">PH / barriada / referencia *</label><textarea name="normalReference" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm focus:border-[var(--s-primary)] transition-colors shadow-inner" rows="2" placeholder="Ej. PH Sunrise, torre B, casa 18, frente al parque"></textarea></div>`;
+                </details>`;
 
 
             setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">${isChristmasEveBooking()?'Reserva tu entrega con Santa 🎅':'Reserva tu Evento'}</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-2 lg:order-1"><div class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24"><h3 class="text-lg font-bold season-text-title mb-5">Resumen:</h3><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2">Total: <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}</div></div><div class="lg:col-span-7 order-1 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentario opcional</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2" placeholder="${isChristmasEveBooking()?'Ej: nombre del niño, indicación especial o detalle que debamos saber':'Ej: indicación especial, acceso al lugar o detalle importante del evento'}"></textarea></div></div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : `<div id="normal-resource-message" class="mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted">Selecciona fecha y hora para comprobar el personal disponible.</div>`}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${bookingLocationFields}</div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Enviar solicitud</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
@@ -2592,13 +2558,16 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 const normalStatus=document.getElementById('normal-location-status');
                 const normalManualZone=document.getElementById('normal-manual-zone');
                 const normalManualAddress=document.getElementById('normal-manual-address');
+                let locationRevision=0, cancelGpsSearch=()=>{};
                 const setNormalLocationMode=mode=>{
+                    locationRevision++; cancelGpsSearch(); bookingFormState.normalLocationMode=mode;
                     if(isChristmasEveBooking()) return;
                     const manual=mode==='manual';
                     normalGpsPanel?.classList.toggle('hidden',manual);
                     normalManualPanel?.classList.toggle('hidden',!manual);
                     document.querySelectorAll('[data-normal-location-mode]').forEach(btn=>{
                         const active=btn.dataset.normalLocationMode===mode;
+                        btn.setAttribute('aria-pressed',String(active));
                         btn.classList.toggle('border-[var(--s-primary)]',active);
                         btn.classList.toggle('bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)]',active);
                         btn.classList.toggle('border-[var(--s-glass-border)]',!active);
@@ -2607,13 +2576,19 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 };
                 document.querySelectorAll('[data-normal-location-mode]').forEach(btn=>btn.onclick=()=>{
                     const mode=btn.dataset.normalLocationMode||'gps';
+                    if(mode==='gps' && normalLocationBtn?.disabled) return;
                     setNormalLocationMode(mode);
+                    markNormalManualReview(mode==='manual'?document.getElementById('normal-manual-address').value:'');
                     if(mode==='gps' && normalLocationBtn) normalLocationBtn.click();
                 });
                 if(normalManualZone&&!isChristmasEveBooking()) normalManualZone.onchange=e=>{applyNormalManualZone(e.target.value); if(bForm?.elements?.location)bForm.elements.location.value=normalLocationState.label||'';};
                 if(normalManualAddress&&!isChristmasEveBooking()) normalManualAddress.oninput=e=>{bookingFormState.address=e.target.value;if(bForm?.elements?.address)bForm.elements.address.value=e.target.value;};
                 if(normalLocationBtn&&!isChristmasEveBooking()) normalLocationBtn.onclick=()=>{
+                    if(normalLocationBtn.disabled) return;
+                    const revision=++locationRevision;
+                    const isCurrent=()=>revision===locationRevision && bForm.isConnected;
                     if(!navigator.geolocation) return showToast('Este dispositivo no permite obtener la ubicación automáticamente.','error');
+                    if(normalLocationBtn.disabled) return;
                     normalLocationBtn.disabled=true; normalLoader?.classList.remove('hidden');
                     if(normalLoaderText) normalLoaderText.textContent='Buscando tu ubicación…';
                     if(normalStatus) normalStatus.textContent='Estamos buscando el punto más preciso posible.';
@@ -2621,11 +2596,13 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     const finish=async(ok=true)=>{
                         if(finished)return;finished=true;if(watchId!==null)navigator.geolocation.clearWatch(watchId);clearInterval(phaseTimer);
                         normalLoader?.classList.add('hidden');normalLocationBtn.disabled=false;
+                        if(!isCurrent()) return;
                         if(!ok||!best){if(normalStatus)normalStatus.textContent='No pudimos obtener una ubicación precisa. Puedes escribir la dirección manualmente.';return;}
                         const lat=Number(best.coords.latitude),lng=Number(best.coords.longitude),accuracy=Math.round(Number(best.coords.accuracy)||0);
                         if(normalStatus)normalStatus.textContent=`✅ Ubicación encontrada${accuracy?` · precisión aproximada ±${accuracy} m`:''}. Verificando zona…`;
                         normalLocationBtn.innerHTML='<i data-lucide="map-pin-check" class="w-5 h-5"></i> Ubicación encontrada ✓'; if(window.lucide)lucide.createIcons();
-                        await applyNormalLocation(lat,lng,{source:'gps',accuracy});
+                        await applyNormalLocation(lat,lng,{source:'gps',accuracy,isCurrent});
+                        if(!isCurrent()) return;
                         const addr=bForm?.elements?.address;if(addr)addr.value=`https://www.google.com/maps?q=${lat.toFixed(6)},${lng.toFixed(6)}`;
                         bookingFormState.address=addr?.value||bookingFormState.address||'';
                         if(bForm?.elements?.location)bForm.elements.location.value=normalLocationState.label||'';
@@ -2634,6 +2611,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     };
                     const phases=['Buscando tu ubicación…','🗺️ Verificando la zona…','🚐 Calculando transporte…','✨ Casi listo…'];let idx=0;
                     phaseTimer=setInterval(()=>{idx=Math.min(idx+1,phases.length-1);if(normalLoaderText)normalLoaderText.textContent=phases[idx];},1500);
+                    cancelGpsSearch=()=>finish(false);
                     watchId=navigator.geolocation.watchPosition(pos=>{
                         if(!best||Number(pos.coords.accuracy||99999)<Number(best.coords.accuracy||99999))best=pos;
                         const acc=Math.round(Number(pos.coords.accuracy)||0); if(acc>0&&acc<=25)finish(true);
@@ -2645,6 +2623,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 const markNormalManualReview=value=>{
                     const clean=String(value||'').trim();
                     normalLocationState={status:'review',charge:0,label:'Ubicación por revisar',displayName:clean,lat:null,lng:null,source:'manual-search',zoneValue:''};
+                    delete bookingFormState.normalLat; delete bookingFormState.normalLng;
                     bookingFormState.normalTransportCost=0;bookingFormState.normalCoverageStatus='review';bookingFormState.normalCoverageLabel='Ubicación por revisar';bookingFormState.normalLocationName=clean;bookingFormState.normalLocationSource='manual-search';bookingFormState.address=clean;bookingFormState.location='Ubicación por revisar';
                     if(bForm?.elements?.address)bForm.elements.address.value=clean;
                     if(bForm?.elements?.location)bForm.elements.location.value='Ubicación por revisar';
@@ -2664,13 +2643,15 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     const input=document.getElementById('normal-manual-address');
                     const value=String(input?.value||'').trim();
                     const placeType=String(document.getElementById('normal-place-type')?.value||'').trim();
-                    if(!placeType) return showToast('Indica si es un PH, barriada o sala de eventos.','error');
+
                     if(value.length<3) return showToast('Escribe el nombre del PH, barriada o sala de eventos.','error');
                     markNormalManualReview(value);
                     if(normalResults) normalResults.innerHTML='';
                     const original=normalSearchBtn.innerHTML;normalSearchBtn.disabled=true;normalSearchBtn.innerHTML='<div class="loading-spinner !w-4 !h-4 !border-2 inline-block mr-2"></div> Buscando lugar…';
+                    const revision=++locationRevision;
                     const places=await searchNormalPlaces(value,placeType);
                     normalSearchBtn.disabled=false;normalSearchBtn.innerHTML=original;
+                    if(revision!==locationRevision || !bForm.isConnected || input.value.trim()!==value) return;
                     if(!places.length){
                         if(normalResults) normalResults.innerHTML='<div class="rounded-xl border border-orange-500/25 bg-orange-500/10 p-3 text-[11px] font-bold season-text-title">No encontramos el lugar automáticamente. Puedes seguir con la reserva; verificaremos la ubicación y el transporte contigo por WhatsApp.</div>';
                         return showToast('No encontramos el lugar automáticamente, pero puedes continuar.','info');
@@ -2738,11 +2719,13 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 const christmasLoaderText = document.getElementById('christmas-location-loader-text');
                 const christmasStatus = document.getElementById('christmas-location-status');
                 const setChristmasLocationMode = mode => {
+                    locationRevision++; cancelGpsSearch(); bookingFormState.christmasLocationMode=mode;
                     const manual=mode==='manual';
                     christmasGpsPanel?.classList.toggle('hidden',manual);
                     christmasManualPanel?.classList.toggle('hidden',!manual);
                     document.querySelectorAll('[data-christmas-location-mode]').forEach(btn=>{
                         const active=btn.dataset.christmasLocationMode===mode;
+                        btn.setAttribute('aria-pressed',String(active));
                         btn.classList.toggle('border-[var(--s-primary)]',active);
                         btn.classList.toggle('bg-[color-mix(in_srgb,var(--s-primary)_12%,transparent)]',active);
                         btn.classList.toggle('border-[var(--s-glass-border)]',!active);
@@ -2751,12 +2734,18 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 };
                 document.querySelectorAll('[data-christmas-location-mode]').forEach(btn=>btn.onclick=()=>{
                     const mode=btn.dataset.christmasLocationMode||'gps';
+                    if(mode==='gps' && christmasLocationBtn?.disabled) return;
                     setChristmasLocationMode(mode);
+                    markChristmasManualReview(mode==='manual'?document.getElementById('christmas-manual-address').value:'');
                     if(mode==='gps') requestAnimationFrame(()=>christmasLocationBtn?.click());
                 });
                 if (christmasLocationBtn && isChristmasEveBooking()) christmasLocationBtn.onclick = () => {
+                    if(christmasLocationBtn.disabled) return;
+                    const revision=++locationRevision;
+                    const isCurrent=()=>revision===locationRevision && bForm.isConnected;
                     if (!navigator.geolocation) return showToast('Este dispositivo no permite obtener la ubicación automáticamente.', 'error');
-                    christmasLocationBtn.disabled = true;
+                    if(christmasLocationBtn.disabled) return;
+                    christmasLocationBtn.disabled=true;
                     christmasLoader?.classList.remove('hidden');
                     if(christmasLoaderText) christmasLoaderText.textContent='Buscando tu ubicación…';
                     if(christmasStatus) christmasStatus.textContent='Estamos buscando el punto más preciso posible.';
@@ -2770,15 +2759,18 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                         if(phaseTimer) clearInterval(phaseTimer);
                         christmasLoader?.classList.add('hidden');
                         christmasLocationBtn.disabled=false;
+                        if(!isCurrent()) return;
                         if(!ok||!best){ if(christmasStatus) christmasStatus.textContent='No pudimos obtener una ubicación precisa. Puedes intentar otra vez o usar Otra dirección.'; return; }
                         const lat=Number(best.coords.latitude), lng=Number(best.coords.longitude), accuracy=Math.round(Number(best.coords.accuracy)||0);
                         if(christmasStatus) christmasStatus.textContent=`✅ Ubicación encontrada${accuracy?` · precisión aproximada ±${accuracy} m`:''}. Verificando cobertura…`;
                         christmasLocationBtn.innerHTML='<i data-lucide="map-pin-check" class="w-5 h-5"></i> Ubicación encontrada ✓';
                         if(window.lucide) lucide.createIcons();
-                        await applyChristmasLocation(lat,lng,{source:'gps',accuracy});
+                        await applyChristmasLocation(lat,lng,{source:'gps',accuracy,isCurrent});
+                        if(!isCurrent()) return;
                         if(christmasStatus) christmasStatus.textContent=`✅ Ubicación encontrada${accuracy?` · precisión aproximada ±${accuracy} m`:''}.`;
                         showToast('Ubicación encontrada y verificada.', 'success');
                     };
+                    cancelGpsSearch=()=>finish(false);
                     watchId=navigator.geolocation.watchPosition(pos=>{
                         if(!best || Number(pos.coords.accuracy||99999)<Number(best.coords.accuracy||99999)) best=pos;
                         const acc=Math.round(Number(pos.coords.accuracy)||0);
@@ -2796,6 +2788,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 const markChristmasManualReview=value=>{
                     const clean=String(value||'').trim();
                     christmasLocationState={status:'review',charge:0,label:'Ubicación por confirmar',displayName:clean,lat:null,lng:null,source:'manual'};
+                    delete bookingFormState.christmasLat; delete bookingFormState.christmasLng;
                     bookingFormState.christmasTransportCost=0; bookingFormState.christmasCoverageStatus='review'; bookingFormState.christmasCoverageLabel='Ubicación por confirmar'; bookingFormState.christmasLocationName=clean; bookingFormState.christmasLocationSource='manual'; bookingFormState.address=clean; bookingFormState.location='Ubicación por confirmar';
                     if(bForm?.elements?.address) bForm.elements.address.value=clean;
                     if(bForm?.elements?.location) bForm.elements.location.value='Ubicación por confirmar';
@@ -2811,13 +2804,15 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 if(manualSearchBtn && isChristmasEveBooking()) manualSearchBtn.onclick=async()=>{
                     const input=document.getElementById('christmas-manual-address'); const value=String(input?.value||'').trim();
                     const placeType=String(document.getElementById('christmas-place-type')?.value||'').trim();
-                    if(!placeType) return showToast('Indica si es un PH, barriada o sala de eventos.','error');
+
                     if(value.length<3) return showToast('Escribe el nombre del PH, barriada o sala de eventos.','error');
                     markChristmasManualReview(value); // Respaldo: aunque la búsqueda falle, la solicitud no se pierde.
                     if(manualResults) manualResults.innerHTML='';
                     const original=manualSearchBtn.innerHTML; manualSearchBtn.disabled=true; manualSearchBtn.innerHTML='<div class="loading-spinner !w-4 !h-4 !border-2 inline-block mr-2"></div> Buscando lugar…';
+                    const revision=++locationRevision;
                     const places=await searchChristmasPlaces(value,placeType);
                     manualSearchBtn.disabled=false; manualSearchBtn.innerHTML=original;
+                    if(revision!==locationRevision || !bForm.isConnected || input.value.trim()!==value) return;
                     if(!places.length){
                         if(manualResults) manualResults.innerHTML='<div class="rounded-xl border border-orange-500/25 bg-orange-500/10 p-3 text-[11px] font-bold season-text-title">No encontramos el lugar automáticamente. Puedes seguir con la reserva; nosotros verificaremos la ubicación y te contactaremos por WhatsApp.</div>';
                         return showToast('No encontramos el lugar automáticamente, pero puedes continuar.','info');
@@ -2828,6 +2823,22 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                         manualResults.querySelectorAll('[data-christmas-place-index]').forEach(btn=>btn.onclick=()=>chooseChristmasPlace(places[Number(btn.dataset.christmasPlaceIndex)||0],input));
                     }
                     showToast('Encontramos varias opciones. Selecciona la correcta.','info');
+                };
+                for(const prefix of ['normal','christmas']){
+                    const input=document.getElementById(prefix+'-manual-address');
+                    if(input) input.oninput=()=>{
+                        locationRevision++;
+                        bookingFormState[prefix+'ManualAddress']=input.value;
+                        document.getElementById(prefix+'-place-results').innerHTML='';
+                        (prefix==='christmas'?markChristmasManualReview:markNormalManualReview)(input.value);
+                    };
+                }
+                const locationContinue=document.querySelector('[data-location-continue]');
+                if(locationContinue) locationContinue.onclick=async()=>{
+                    if(isChristmasEveBooking()){
+                        locationContinue.disabled=true;
+                        try {await bn?.onclick?.();} finally {locationContinue.disabled=false;}
+                    } else bForm.requestSubmit();
                 };
                 document.querySelectorAll('[data-christmas-date-choice]').forEach(btn=>btn.onclick=async()=>{
                     const value=btn.dataset.christmasDateChoice||''; const dateInput=bForm?.elements?.date; if(!dateInput) return;
@@ -2841,6 +2852,8 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 });
                 renderChristmasCoverageStatus();
                 if(bForm && Object.keys(bookingFormState).length>0){ for(let k in bookingFormState){ if(bForm.elements[k]) bForm.elements[k].value=bookingFormState[k]; } }
+                if(isChristmasEveBooking()) setChristmasLocationMode(bookingFormState.christmasLocationMode||'manual');
+                else setNormalLocationMode(bookingFormState.normalLocationMode||'manual');
                 const christmasTimeSelect = bForm?.elements?.time;
                 const christmasTimeMessage = document.getElementById('christmas-time-message');
                 const christmasTimeIsUnavailable = () => {
@@ -3002,7 +3015,8 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     });
                     const bp=document.getElementById('btn-prev'), bn=document.getElementById('btn-next'), bs=document.getElementById('btn-submit');
                     if(bp) cs===1?bp.classList.add('hidden'):bp.classList.remove('hidden');
-                    if(cs===3){ if(bn)bn.classList.add('hidden'); if(bs)bs.classList.remove('hidden'); } else { if(bn)bn.classList.remove('hidden'); if(bs)bs.classList.add('hidden'); }
+                    if(bn) bn.classList.toggle('hidden',cs===3 || (isChristmasEveBooking() && cs===1));
+                    if(bs) bs.classList.toggle('hidden',cs!==3 || !isChristmasEveBooking());
                 };
                 updUI();
                 const bn=document.getElementById('btn-next'), bp=document.getElementById('btn-prev');
@@ -3061,8 +3075,8 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                         const manualValue=String(manualInput?.value||'').trim();
                         // Si escribió un PH/barriada/sala pero no pulsó Buscar, conservamos el dato
                         // como revisión manual en vez de perder al cliente.
-                        if(!locationValue && manualValue.length>=3){ markChristmasManualReview(manualValue); locationValue=manualValue; }
-                        if(!locationValue){
+                        if(!locationValue && bookingFormState.christmasLocationMode==='manual' && manualValue.length>=3){ markChristmasManualReview(manualValue); locationValue=manualValue; }
+                        if(locationValue.length<3){
                             showToast('Indica dónde será la entrega: usa el GPS o escribe el PH, barriada o sala de eventos.', 'error');
                             return;
                         }
@@ -3609,12 +3623,10 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 }
                 const christmasAddress = cleanStr(christmasFormData.get('address'));
                 const christmasReference = cleanStr(christmasFormData.get('christmasReference'));
-                if (!christmasAddress) {
+                if (christmasAddress.length<3) {
                     return showToast('Comparte la ubicación exacta donde debe llegar Santa.', 'error');
                 }
-                if (!christmasReference) {
-                    return showToast('Escribe una referencia corta del lugar.', 'error');
-                }
+
                 const christmasTime = cleanStr(christmasFormData.get('time'));
                 const timeMatch = christmasTime.match(/^(\d{2}):(\d{2})$/);
                 const christmasMinutes = timeMatch ? (Number(timeMatch[1]) * 60 + Number(timeMatch[2])) : -1;
@@ -3653,7 +3665,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     return showToast('El 24 y 25 de diciembre están reservados exclusivamente para Entregas de Santa.', 'error');
                 }
                 const normalReference = cleanStr(normalFormData.get('normalReference'));
-                if (!normalReference) return showToast('Escribe el PH, barriada o una referencia del lugar.', 'error');
+
 
                 const locationStatus = normalLocationState?.status || bookingFormState.normalCoverageStatus || 'pending';
                 const locationSource = normalLocationState?.source || bookingFormState.normalLocationSource || '';
@@ -3675,7 +3687,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                     return showToast('Primero indica la ubicación del evento para calcular el transporte.', 'error');
                 }
                 if (locationStatus === 'review') renderNormalCoverageStatus();
-                if (locationSource === 'manual-zone' && !manualAddress) {
+                if (manualAddress.length<3) {
                     return showToast('Escribe la dirección, PH o barriada donde será el evento.', 'error');
                 }
                 if (!cleanStr(normalFormData.get('location'))) {
@@ -3698,7 +3710,7 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                 }
             }
 
-            const sBtn = e.target.querySelector('#btn-submit') || e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
+            const sBtn = e.target.querySelector(isChristmasEveBooking()?'#btn-submit':'[data-location-continue]') || e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
             let capacidadSimultanea = isChristmasEveBooking() ? 1 : 3;
             const obh = sBtn.innerHTML; submitForm.dataset.sending = '1'; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-[var(--s-primary)] inline-block align-middle mr-2"></div> Enviando reserva...';
             try {
@@ -3728,21 +3740,23 @@ import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.m
                         const g=String(fd.get('address')||'').match(/[?&]q=(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/i);
                         if (g) { smartLat=Number(g[1]); smartLng=Number(g[2]); }
                     }
-                    const smartGps = Number.isFinite(smartLat) && Number.isFinite(smartLng) ? {lat:smartLat,lng:smartLng} : null;
+                    const smartGps = Number.isFinite(smartLat) && Number.isFinite(smartLng) && Math.abs(smartLat)<=90 && Math.abs(smartLng)<=180 && !(smartLat===0 && smartLng===0) ? {lat:smartLat,lng:smartLng} : null;
+                    const manualReview = christmasLocationState.status==='review' && String(fd.get('address')||'').trim().length>=3;
+                    if(!smartGps && !manualReview) return showToast('Escribe la dirección o utiliza el GPS para continuar.','error');
                     await loadRouteEventsForMonth(new Date(`${smartDate}T12:00:00`), {force:true});
                     christmasSmartCapacity = await getChristmasCapacity({force:true});
                     const smartRoute = computeChristmasSmartRoute(smartDate, smartTime, christmasSmartCapacity, smartGps, routeEvents);
-                    if (!smartRoute?.feasible || !smartRoute.bestSanta) {
+                    if (smartGps && (!smartRoute?.feasible || !smartRoute.bestSanta)) {
                         return showToast('Ese horario dejó de ser viable para las rutas de Santa. Elige otro horario disponible.', 'error');
                     }
                     // La web pública usa este resultado solo para validar/recomendar la ruta.
                     // La asignación definitiva se persiste desde la app administrativa,
                     // porque las reglas de Firestore no permiten que el cliente escriba santaAsignado.
-                    christmasSmartSanta = smartRoute.bestSanta;
+                    christmasSmartSanta = smartRoute?.bestSanta || '';
                 }
                 const dataToSave = {
                     id: pendingBooking?.id || `web-${crypto.randomUUID()}`, ownerUid: auth.currentUser.uid, cliente: fd.get('name')||'', email: fd.get('email')||'', telefono: fd.get('phone')||'', telefonoBusqueda: String(fd.get('phone')||'').replace(/\D/g,'').replace(/^00507/,'').replace(/^507/,''), tipoEvento: fd.get('eventType')||'Cumpleaños', ninos: fd.get('guests')||'', fecha: isChristmasEveBooking() ? normalizeChristmasDateForSubmit(fd.get('date')||'') : (fd.get('date')||''), hora: fd.get('time')||'', ubicacion: isChristmasEveBooking()
-                        ? (bookingFormState.christmasLocationName || bookingFormState.christmasCoverageLabel || 'Ubicación GPS')
+                        ? (christmasLocationState.status==='review' ? 'Ubicación por confirmar' : String(bookingFormState.christmasLocationName || bookingFormState.christmasCoverageLabel || 'Ubicación GPS').slice(0,200))
                         : (normalLocationState.label || bookingFormState.normalCoverageLabel || 'Ubicación por revisar'),
                     direccion: fd.get('address')||'',
                     referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : (fd.get('normalReference')||''),

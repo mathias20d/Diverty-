@@ -30,7 +30,7 @@ function receipt(event) {
 }
 function availability(event) {
   return { fecha: event.fecha, hora: event.hora, esNavidad: event.esNavidad, recursoNavidad: event.recursoNavidad,
-    ...(event.esNavidad ? {lat: event.lat, lng: event.lng} : {}) };
+    ...(event.esNavidad && 'lat' in event ? {lat:event.lat,lng:event.lng} : {}) };
 }
 function lockKey(event) { return (event.esNavidad ? 'slot_santa_' : 'slot_') + event.fecha + '_' + event.hora.replace(':','-'); }
 function bookingBatch(db, event, { ids = [event.id], capacity = event.esNavidad ? 1 : 2, includeLock = true, includeReceipt = true, publicOverride = {} } = {}) {
@@ -47,7 +47,7 @@ function santaClient(c) {
   Object.assign(c.values, { date:'2026-12-24', time:'16:00', guests:'1', christmasReference:'PH ficticio', location:'Panamá Centro' });
   Object.assign(c.ctx, {
     isChristmasEveBooking: () => true, normalizeChristmasDateForSubmit: value => value,
-    christmasLocationState: {status:'included'}, bookingFormState: { christmasLat:9, christmasLng:-79 },
+    renderChristmasCoverageStatus() {}, christmasLocationState: {status:'included'}, bookingFormState: { christmasLat:9, christmasLng:-79 },
     loadRouteEventsForMonth: async () => {}, getChristmasCapacity: async () => 1,
     computeChristmasSmartRoute: () => ({feasible:true,bestSanta:'Santa 1'}), routeEvents:[], bookedEvents:[],
     isChristmasAvailabilityRow: value => value.esNavidad === true
@@ -173,6 +173,34 @@ for (const [label, filename, hardened] of [
     assert.equal(lock.count,1);
   });
   if(hardened) {
+    test('the actual handler accepts a remote Christmas address as pending, without invented GPS',async()=>{
+      const db=dbFor('owner'),c=browserClient(db,'owner',{santa:true});
+      c.values.address='PH no encontrado, calle principal';c.values.christmasReference='';
+      c.ctx.bookingFormState={};c.ctx.christmasLocationState={status:'review'};
+      c.ctx.computeChristmasSmartRoute=(_date,_time,_capacity,gps)=>{assert.equal(gps,null);return null;};
+      await c.submit();assert.ok(c.messages.some(m=>m.kind==='success'),JSON.stringify(c.messages));
+      const list=await getDocs(collection(db,base+'disponibilidad_web'));
+      const publicRow=list.docs.find(d=>!d.id.startsWith('slot_'));
+      assert.equal('lat' in publicRow.data(),false);assert.equal('direccion' in publicRow.data(),false);
+      const event=(await getDoc(ref(dbFor(adminUid),'eventos',publicRow.id))).data();
+      assert.equal(event.estado,'Pendiente');assert.equal(event.ubicacion,'Ubicación por confirmar');
+      assert.equal(event.direccion,c.values.address);assert.equal('lat' in event,false);
+      assert.equal((await getDoc(ref(db,'disponibilidad_web',lockKey(event)))).data().count,1);
+    });
+    test('missing GPS requires explicit manual review, a real address and zero provisional transport',async()=>{
+      const {event}=await sample('owner',true);delete event.lat;delete event.lng;
+      await assertFails(bookingBatch(dbFor('owner'),event));
+      event.ubicacion='Ubicación por confirmar';event.direccion='';
+      await assertFails(bookingBatch(dbFor('owner'),event));
+      event.direccion='PH manual válido';event.transporte='5';
+      await assertFails(bookingBatch(dbFor('owner'),event));
+      event.transporte='0';event.estado='Confirmado';
+      await assertFails(bookingBatch(dbFor('owner'),event));
+      event.estado='Pendiente';
+      await assertFails(bookingBatch(dbFor('owner'),event,{publicOverride:{lat:9,lng:-79}}));
+      await assertSucceeds(bookingBatch(dbFor('owner'),event));
+    });
+
     test('the real transactional website handler admits exactly two of three simultaneous requests', async () => {
       const clients=['one','two','three'].map(uid=>browserClient(dbFor(uid),uid));
       await Promise.all(clients.map(c=>c.submit()));

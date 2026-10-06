@@ -5543,3 +5543,9 @@ html.diverty-booting body { transition:none!important; }
     #desktopNav { grid-column:1 / -1; grid-row:2; flex-wrap:wrap; justify-content:center; gap:4px; }
     #mainContent > .container { padding-top:max(7rem,var(--diverty-header-bottom,7rem))!important; }
 }
+
+/* La cabecera no tapa el paso al volver; las acciones flotantes dejan libre el formulario. */
+#bookingForm { scroll-margin-top:calc(var(--diverty-header-bottom,96px) + 16px); }
+body:has(#bookingForm) #cartSummary { display:none!important; }
+body:has(#bookingForm) .whatsapp-container { position:static!important; margin:16px auto; width:fit-content; }
+#bookingForm [data-location-continue]:disabled { opacity:.6; cursor:wait; }

@@ -22,9 +22,9 @@ const seed=()=>({
 });
 const documentFor=(collection,row)=>({name:`projects/diverty-eventos/databases/(default)/documents/artifacts/diverty-oficial/public/data/${collection}/${row.id}`,fields:Object.fromEntries(Object.entries(row).filter(([k])=>k!=='id').map(([k,v])=>[k,encode(v)]))});
 const sdk=`export const initializeApp=()=>({});export const getApps=()=>[];export const getApp=()=>({});export const getFirestore=()=>({});export const getAuth=()=>({currentUser:{uid:'test-user'}});export const signInAnonymously=async()=>({});export const signInWithCustomToken=async()=>({});export const doc=(...args)=>args.slice(1).join('/');export const collection=doc;export const where=(...args)=>args;export const query=(...args)=>args;
-export const getDoc=async ref=>({exists:()=>true,data:()=>ref.endsWith('disponibilidad')?{lista:true}:{capacidadSimultanea:3,capacidadSanta:1,recursosDisponibles:{animadores:3,payasos:1}}});
+export const getDoc=async ref=>{const stored=window.__fakeWrites?.[ref];const isConfig=ref.includes('/config_web/');return {exists:()=>!!stored||isConfig,data:()=>stored||(ref.endsWith('disponibilidad')?{lista:true}:{capacidadSimultanea:3,capacidadSanta:1,recursosDisponibles:{animadores:3,payasos:1}})};};
 export const getDocs=async()=>{window.__availabilityReads=(window.__availabilityReads||0)+1;if(window.__holdAvailability){window.__holdAvailability=false;await new Promise(resolve=>window.__releaseAvailability=resolve);}return {docs:window.__occupied?[{id:'web-test-occupied',data:()=>({fecha:'2026-12-24',hora:'18:00',esNavidad:true,recursoNavidad:'Santa'})}]:[]};};
-export const setDoc=async()=>{throw new Error('Unexpected write');};export const onSnapshot=()=>()=>{};export const writeBatch=()=>({});export const runTransaction=async()=>{throw new Error('Unexpected write');};`;
+export const setDoc=async()=>{throw new Error('Unexpected write');};export const onSnapshot=()=>()=>{};export const writeBatch=()=>({});export const runTransaction=async(_db,callback)=>{if(!window.__allowBookingWrite)throw new Error('Unexpected write');const writes={};await callback({get:async ref=>{if(Object.keys(writes).length)throw new Error('Read after write');return {exists:()=>!!window.__fakeWrites?.[ref],data:()=>window.__fakeWrites?.[ref]};},set:(ref,data)=>writes[ref]=data});window.__fakeWrites={...window.__fakeWrites,...writes};};`;
 
 (async()=>{
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
@@ -131,9 +131,32 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.deepEqual(f.errors,[]);console.log(`PASS ${width}px: menú, carrito, Atrás, sincronización, campos y doble toque.`);
     }
 
+    const remote=await fixture({christmas:true,width:320});await openBooking(remote);
+    assert.equal(await remote.page.locator('#christmas-manual-address').isVisible(),true);
+    assert.equal(await remote.page.locator('[name="christmasReference"]').isVisible(),false);
+    await remote.page.locator('#christmas-manual-address').fill('Casa de mi hermana, Brisas del Golf, casa 18');
+    await remote.page.locator('[data-location-continue]').click();await remote.page.locator('#step-2.active').waitFor();
+    await remote.page.locator('#btn-prev').click();await remote.page.locator('#step-1.active').waitFor();
+    assert.equal(await remote.page.locator('#christmas-manual-address').inputValue(),'Casa de mi hermana, Brisas del Golf, casa 18');
+    assert.equal(await remote.page.locator('[name="address"]').inputValue(),'Casa de mi hermana, Brisas del Golf, casa 18');
+    assert.equal(await remote.page.locator('#christmas-manual-address').isVisible(),true);
+    if(process.env.BROWSER_ARTIFACT_DIR){
+      fs.mkdirSync(process.env.BROWSER_ARTIFACT_DIR,{recursive:true});
+      await remote.page.locator('#bookingForm').screenshot({path:path.join(process.env.BROWSER_ARTIFACT_DIR,'location.png')});
+    }
+    await remote.page.locator('.location-extra summary').click();
+    await remote.page.locator('#christmas-manual-address').fill('https://www.google.com/maps?q=9.0123,-79.5012');
+    await remote.page.locator('#christmas-search-address').click();
+    await remote.page.waitForFunction(()=>document.querySelector('#christmas-coverage-result').textContent.includes('Transporte adicional'));
+    await remote.page.locator('#christmas-manual-address').fill('Nueva dirección sin pin');
+    await remote.page.locator('[data-location-continue]').click();await remote.page.locator('#step-2.active').waitFor();
+    assert.equal(await remote.page.locator('[name="address"]').inputValue(),'Nueva dirección sin pin');
+    assert.deepEqual(remote.errors,[]);
+    console.log('PASS: dirección remota sin buscar, referencia opcional, Atrás, enlace Maps y cambio de dirección.');
+
     const santa=await fixture({christmas:true});await openBooking(santa);
-    await santa.page.locator('[data-christmas-location-mode="manual"]').click();await santa.page.locator('#christmas-manual-address').fill('PH Prueba');await santa.page.locator('[name="christmasReference"]').fill('Entrada ficticia');
-    await santa.page.locator('#btn-next').click();await santa.page.locator('#step-2.active').waitFor();await santa.page.locator('[data-christmas-date-choice="2026-12-24"]').click();
+    await santa.page.locator('[data-christmas-location-mode="manual"]').click();await santa.page.locator('#christmas-manual-address').fill('PH Prueba');await santa.page.locator('.location-extra summary').click();await santa.page.locator('[name="christmasReference"]').fill('Entrada ficticia');
+    await santa.page.locator('[data-location-continue]').click();await santa.page.locator('#step-2.active').waitFor();await santa.page.locator('[data-christmas-date-choice="2026-12-24"]').click();
     await santa.page.locator('[data-christmas-time="18:00"]').click();const dialog=santa.page.getByRole('dialog',{name:'Confirmar horario 🎅'});await dialog.waitFor();
     await santa.page.evaluate(()=>window.__occupied=true);await dialog.getByRole('button',{name:'Seguir',exact:true}).click();await santa.page.waitForFunction(()=>!document.querySelector('#christmas-time-confirmation'));
     assert.equal(await santa.page.locator('#step-2.active').count(),1);assert.equal(await santa.page.locator('[data-christmas-time="18:00"]').isDisabled(),true);
@@ -147,6 +170,47 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     await santa.page.goBack();await santa.page.locator('#step-2.active').waitFor();await santa.page.locator('[data-christmas-time="10:00"]').click();
     await dialog.getByRole('button',{name:'Seguir',exact:true}).click();await santa.page.locator('#step-3.active').waitFor();
     assert.deepEqual(santa.errors,[]);console.log('PASS: Atrás/Adelante de Navidad conservan fecha, horas y formulario.');
+
+    for(const christmas of [false,true]){
+      const gps=await fixture({christmas});await gps.context.grantPermissions(['geolocation'],{origin});
+      await gps.context.setGeolocation({latitude:9.0123,longitude:-79.5012,accuracy:10});await openBooking(gps);
+      if(!christmas){
+        await gps.page.locator('[name="name"]').fill('Cliente ficticio');await gps.page.locator('[name="email"]').fill('prueba@example.com');await gps.page.locator('[name="phone"]').fill('60000000');
+        await gps.page.locator('#btn-next').click();await gps.page.locator('#step-2.active').waitFor();
+        await gps.page.locator('#booking-open-date-picker').click();await gps.page.locator('[data-calendar-date="2026-10-15"]').click();await gps.page.locator('[name="time"]').selectOption('10:00');
+        await gps.page.locator('#btn-next').click();await gps.page.locator('#step-3.active').waitFor();
+      }
+      const prefix=christmas?'christmas':'normal';
+      await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
+      await gps.page.waitForFunction(()=>document.querySelector('[name="address"]').value.startsWith('https://www.google.com/maps?q='));
+      await gps.page.locator(`[data-${prefix}-location-mode="manual"]`).click();
+      assert.equal(await gps.page.locator('[name="address"]').inputValue(),'');
+      await gps.page.locator(`#${prefix}-manual-address`).fill('Dirección nueva sin estar allí');
+      assert.equal(await gps.page.locator('[name="address"]').inputValue(),'Dirección nueva sin estar allí');
+      assert.deepEqual(gps.errors,[]);
+      console.log(`PASS: GPS ${prefix}, dirección remota y limpieza del punto anterior.`);
+    }
+
+    for(const christmas of [false,true]){
+      const f=await fixture({christmas});await openBooking(f);
+      const contact=async()=>{await f.page.locator('[name="name"]').fill('Cliente remoto ficticio');await f.page.locator('[name="email"]').fill('prueba@example.com');await f.page.locator('[name="phone"]').fill('60000000');};
+      if(christmas){
+        await f.page.locator('#christmas-manual-address').fill('PH que no aparece, Brisas del Golf');await f.page.locator('[data-location-continue]').click();await f.page.locator('#step-2.active').waitFor();
+        await f.page.locator('[data-christmas-date-choice="2026-12-24"]').click();await f.page.locator('[data-christmas-time="18:00"]').click();
+        await f.page.getByRole('dialog').getByRole('button',{name:'Seguir',exact:true}).click();await f.page.locator('#step-3.active').waitFor();await contact();
+      }else{
+        await contact();await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();
+        await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();
+        await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('PH que no aparece, Brisas del Golf');
+      }
+      await f.page.evaluate(()=>window.__allowBookingWrite=true);
+      await f.page.locator(christmas?'#btn-submit':'[data-location-continue]').click();
+      await f.page.waitForFunction(()=>document.querySelector('#infoModal').classList.contains('show'));
+      const saved=await f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid && x.direccion));
+      assert.equal(saved.direccion,'PH que no aparece, Brisas del Golf');assert.equal(saved.referenciaLugar,'');assert.equal(saved.estado,'Pendiente');assert.equal('lat' in saved,false);
+      assert.equal(saved.ubicacion,christmas?'Ubicación por confirmar':'Ubicación por revisar');
+      assert.deepEqual(f.errors,[]);console.log(`PASS: envío completo ${christmas?'Navidad':'normal'} con dirección remota y Firebase simulado.`);
+    }
 
     const denied=await fixture({blockedStorage:true});await denied.page.goto(origin);await denied.ready();assert.equal(await denied.page.locator('#themeBootLoader').count(),0);assert.deepEqual(denied.errors,[]);
     const offline=await fixture({offline:true});await offline.page.goto(origin);await offline.page.waitForFunction(()=>!document.documentElement.classList.contains('diverty-booting'));assert.deepEqual(offline.errors,[]);

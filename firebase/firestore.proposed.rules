@@ -4,6 +4,17 @@ service cloud.firestore {
     function isAdmin() { return request.auth != null && request.auth.uid == 'OblqzhP2L3XulJ920O82jwd1Qrk1'; }
     function signedIn() { return request.auth != null; }
     function shortText(value, max) { return value is string && value.size() <= max; }
+    function validGps(d) {
+      return d.get('lat',null) is number && d.lat >= -90 && d.lat <= 90
+        && d.get('lng',null) is number && d.lng >= -180 && d.lng <= 180
+        && !(d.lat == 0 && d.lng == 0);
+    }
+    function pendingManualLocation(d) {
+      return d.esNavidad == true && d.estado == 'Pendiente'
+        && d.ubicacion == 'Ubicación por confirmar' && d.transporte == '0'
+        && shortText(d.direccion,1500) && d.direccion.size() >= 3
+        && !d.keys().hasAny(['lat','lng']);
+    }
     function validRequest(id) {
       let d = request.resource.data;
       return signedIn() && id.matches('web-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
@@ -25,7 +36,7 @@ service cloud.firestore {
         && d.estado == 'Pendiente' && d.origen == 'Web Directa'
         && d.deletedLocally == false && d.colisionAprobada == false
         && d.esNavidad is bool && d.recursoNavidad is string && d.recursoNavidad.size() <= 50
-        && (d.esNavidad == false || (d.lat is number && d.lat >= -90 && d.lat <= 90 && d.lng is number && d.lng >= -180 && d.lng <= 180))
+        && (d.esNavidad == false || validGps(d) || pendingManualLocation(d))
         && shortText(d.createdAt,40);
     }
     // Emulator-validated proposal. Firebase publication is a separate admin action.
@@ -116,7 +127,8 @@ service cloud.firestore {
         && request.resource.data.fecha is string && request.resource.data.fecha.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
         && request.resource.data.hora is string && request.resource.data.hora.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
         && request.resource.data.esNavidad is bool && request.resource.data.recursoNavidad is string && request.resource.data.recursoNavidad.size() <= 50
-        && (request.resource.data.esNavidad == false || (request.resource.data.lat is number && request.resource.data.lat >= -90 && request.resource.data.lat <= 90 && request.resource.data.lng is number && request.resource.data.lng >= -180 && request.resource.data.lng <= 180))
+        && (request.resource.data.esNavidad == false || validGps(request.resource.data) ||
+          (pendingManualLocation(getAfter(eventPath(id)).data) && !request.resource.data.keys().hasAny(['lat','lng'])))
         && !exists(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id))
         && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.ownerUid == request.auth.uid
         && getAfter(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.fecha == request.resource.data.fecha
@@ -124,7 +136,7 @@ service cloud.firestore {
         && getAfter(eventPath(id)).data.esNavidad == request.resource.data.esNavidad
         && getAfter(eventPath(id)).data.recursoNavidad == request.resource.data.recursoNavidad
         && (request.resource.data.esNavidad == false ||
-          (getAfter(eventPath(id)).data.lat == request.resource.data.lat && getAfter(eventPath(id)).data.lng == request.resource.data.lng));
+          (getAfter(eventPath(id)).data.get('lat',null) == request.resource.data.get('lat',null) && getAfter(eventPath(id)).data.get('lng',null) == request.resource.data.get('lng',null)));
       allow update: if signedIn() && !id.matches('slot_(santa_)?[0-9A-Za-z_-]+')
         && request.resource.data == resource.data
         && get(/databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id)).data.ownerUid == request.auth.uid;

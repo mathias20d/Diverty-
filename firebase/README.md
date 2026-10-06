@@ -12,7 +12,8 @@
 - conservan los IDs de otras reservas y rechazan IDs duplicados;
 - permiten reparar un único ID público huérfano o movido, comprobándolo contra Firestore;
 - mantienen los reintentos que no cambian la reserva y el seguimiento;
-- vinculan los metadatos y GPS públicos de Santa a la reserva privada.
+- vinculan los metadatos y GPS públicos de Santa a la reserva privada;
+- permiten Navidad sin GPS únicamente como solicitud pendiente, con dirección escrita, marcador de revisión y transporte provisional cero, sin coordenadas inventadas.
 
 No implementan capacidad de personal entre horarios solapados ni calculan precios desde el catálogo. Esa validación requiere un servicio de confianza, preferiblemente una función de servidor con transacciones. Las solicitudes siguen siendo **Pendiente** y deben revisarse en el CRM.
 
@@ -53,3 +54,5 @@ Las ocho reproducciones con las reglas originales esperan explícitamente los pe
 5. Verificar una reserva normal y otra de Santa en un proyecto de pruebas con la configuración real de catálogo, capacidad y ruta, antes de publicar las reglas de producción.
 
 El archivo `firebase.json` aquí sirve al emulador. No hay alias de producción ni automatización de despliegue de reglas. El acceso administrativo no es necesario para ejecutar estas pruebas locales.
+
+La dirección remota requiere volver a publicar este archivo de reglas. Consulta [el recorrido y los pasos de publicación](../docs/reserva-direccion-remota.md). Las reglas anteriores con GPS obligatorio no habilitan ese caso.
