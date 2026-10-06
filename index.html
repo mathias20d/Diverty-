@@ -37,10 +37,9 @@
     <link rel="preconnect" href="https://res.cloudinary.com">
     <link rel="preconnect" href="https://firestore.googleapis.com">
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <link rel="preload" as="image" href="./android-chrome-512x512.png" fetchpriority="high">
     <link rel="preload" as="image" href="https://res.cloudinary.com/dv40hkeyz/video/upload/so_0,w_720,q_auto,f_jpg/v1723578146/20250813_151416_0001_p5lwst.jpg" fetchpriority="high">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/assets/css/diverty-tailwind-local.css?v=6c96efe6e6bd">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" defer></script>
     
@@ -292,7 +291,7 @@
     
     <div id="toast"></div>
 
-    <script type="module" src="/assets/js/diverty-app-78bb30f118.js"></script>
+    <script type="module" src="/assets/js/diverty-app-78bb30f118.js?v=85214e820426"></script>
 
 
 <div id="diverty-halloween-stage" aria-hidden="true"><div class="hw-branch left"></div><div class="hw-branch right"></div><div class="hw-web"></div><div class="hw-web r"></div><div class="hw-moon"></div><i class="hw-pumpkin" style="left:4%"></i><i class="hw-pumpkin" style="right:5%;transform:scale(.78)"></i><div class="hw-fog"></div></div>
@@ -347,9 +346,11 @@
       var v = document.getElementById('hero-video');
       if (!entry || !v) return;
       if (entry.isIntersecting && entry.intersectionRatio > 0.12) {
-        scheduleHero();
-        var p = v.play();
-        if (started && p && typeof p.catch === 'function') p.catch(function(){});
+        if (!started) scheduleHero();
+        else {
+          var p = v.play();
+          if (p && typeof p.catch === 'function') p.catch(function(){});
+        }
       } else if (started) {
         try { v.pause(); } catch(e) {}
       }

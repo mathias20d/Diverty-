@@ -1,3 +1,5 @@
+import { prepareBookingAttempt, isNormalDayFullyBooked, readBrowserStorage, writeBrowserStorage } from './diverty-booking-state.mjs?v=f1621d666d4f';
+import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=a684dda69c53';
 // VELOCIDAD MÓVIL 6A — Firebase pesado bajo demanda.
         // El inicio usa REST ligero para contenido público. Firestore/Auth completos
         // solo se descargan cuando el visitante abre reservas, disponibilidad o portal.
@@ -9,7 +11,7 @@
         async function ensureFirebaseRuntime() {
             if (db && auth?.currentUser && getDocs && doc) return { db, auth };
             if (!firebaseRuntimePromise) {
-                firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js')
+                firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js?v=acd3ff1181f5')
                     .then(m => m.getDivertyFirebaseRuntime(firebaseConfig, 'DivertyWeb', typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : ''))
                     .then(rt => {
                         db = rt.db; auth = rt.auth;
@@ -211,9 +213,11 @@
         let currentCalDate = new Date(); 
         let bookingFormState = {}; 
         let selectedCalendarDate = null; 
+        let bookingDatePickerCleanup = null;
         let christmasLocationState = { status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' };
         let normalLocationState = { status:'pending', charge:null, label:'', displayName:'', lat:null, lng:null, source:'', zoneValue:'' };
         let normalResourceCapacityCache = { at:0, value:{animadores:3,payasos:1} };
+        let normalBookingCapacity = null;
 
         const CHRISTMAS_WHATSAPP = '50766677965';
         const CHRISTMAS_REVIEW_TERMS = [
@@ -554,7 +558,10 @@
                 const snap=await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
                 const cfg=snap.exists()?(snap.data()||{}):{};
                 const r=cfg.recursosDisponibles&&typeof cfg.recursosDisponibles==='object'?cfg.recursosDisponibles:{};
-                normalResourceCapacityCache={at:Date.now(),value:{animadores:Math.max(0,Number(r.animadores)||3),payasos:Math.max(0,Number(r.payasos)||1)}};
+                const resourceCount = (value, fallback) => value != null && Number.isFinite(Number(value)) ? Math.max(0, Math.round(Number(value))) : fallback;
+                normalResourceCapacityCache={at:Date.now(),value:{animadores:resourceCount(r.animadores,3),payasos:resourceCount(r.payasos,1)}};
+                const simultaneous = Number(cfg.capacidadSimultanea ?? 3);
+                normalBookingCapacity = Number.isInteger(simultaneous) && simultaneous >= 1 && simultaneous <= 100 ? simultaneous : null;
             }catch(_){ normalResourceCapacityCache.at=Date.now(); }
             return normalResourceCapacityCache.value;
         }
@@ -1336,7 +1343,8 @@
 
         function setActiveSection(sectionId) {
             if (!sectionId) sectionId = 'home';
-            if (sectionId === 'booking' && !sessionStorage.getItem('bookingNoticeShown')) { sessionStorage.setItem('bookingNoticeShown', 'true'); }
+            bookingDatePickerCleanup?.(); bookingDatePickerCleanup = null;
+            if (sectionId === 'booking' && !readBrowserStorage('sessionStorage', 'bookingNoticeShown')) { writeBrowserStorage('sessionStorage', 'bookingNoticeShown', 'true'); }
             
             app.activeSection = sectionId;
             document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => link.classList.remove('active'));
@@ -2097,7 +2105,7 @@
         const isBlockingEvent = (ev) => {
             if (!ev || ev.deletedLocally === true) return false;
             const estado = cleanStr(ev.estado).toLowerCase();
-            return !['cancelado', 'rechazada', 'cot'].some(s => estado.includes(s));
+            return !/cancelad|rechaz|cot/.test(estado);
         };
 
         // Navidad comparte `disponibilidad_web` con las reservas normales. Para cupos
@@ -2114,7 +2122,10 @@
             // El indicador de disponibilidad cambia muy poco. Evita releerlo al pasar de un
             // mes a otro repetidamente; force=true sigue permitiendo una comprobación inmediata.
             if (force || Date.now() - availabilityStatusCache.at > 60000) {
-                const status = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','disponibilidad')).catch(() => null);
+                const [status] = await Promise.all([
+                    getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','disponibilidad')).catch(() => null),
+                    getNormalResourceCapacity({force})
+                ]);
                 availabilityStatusCache = { at: Date.now(), ready: status?.data()?.lista === true };
             }
             availabilityReady = availabilityStatusCache.ready;
@@ -2255,7 +2266,7 @@
                 else if(currentDate<today) { 
                     html += `<div class="flex items-center justify-center"><div class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-[var(--s-text-muted)] opacity-30 font-medium">${d}</div></div>`; 
                 }
-                else if(eventsThisDay>=3){ 
+                else if(isNormalDayFullyBooked(bookedEvents, dateStr, normalBookingCapacity)){
                     html += `<div class="flex items-center justify-center relative pointer-events-none"><div class="${c} bg-rose-500/10 text-rose-500 border-rose-500/20 line-through decoration-rose-500/50 cursor-not-allowed shadow-sm">${d}</div></div>`; 
                 }
                 else if(eventsThisDay>=1){ 
@@ -2314,6 +2325,9 @@
         }
 
         function renderBooking() {
+            const previousForm = document.getElementById('bookingForm');
+            if (previousForm && app.cart.length > 0) bookingFormState = {...bookingFormState, ...Object.fromEntries(new FormData(previousForm).entries())};
+            bookingDatePickerCleanup?.(); bookingDatePickerCleanup = null;
             // El 24 y 25 de diciembre de 2026 quedan exclusivos para Entregas de Nochebuena.
             if(!isChristmasEveBooking() && ['2026-12-24','2026-12-25'].includes(String(selectedCalendarDate||'').slice(0,10))){
                 selectedCalendarDate=null;
@@ -2335,7 +2349,7 @@
             }
 
             let welcomeBanner = '';
-            const savedData = localStorage.getItem('datosClienteDiverty');
+            const savedData = readBrowserStorage('localStorage', 'datosClienteDiverty');
             if (savedData) {
                 try {
                     const parsed = JSON.parse(savedData);
@@ -2399,6 +2413,7 @@
             }
 
             const christmasSelectedForDisplay = normalizeChristmasDate(selectedCalendarDate || bookingFormState.date || '');
+            const normalDatePickerButton = `<button type="button" id="booking-open-date-picker" aria-haspopup="dialog" aria-expanded="false" aria-controls="booking-date-calendar" class="mt-2 w-full rounded-xl border border-[var(--s-primary)]/30 bg-[var(--s-primary)]/10 py-3 px-4 font-bold season-text-title text-sm">📅 Elegir fecha en el calendario</button>`;
             const dateDisplay = isChristmasEveBooking() ? `
                 <div class="form-group col-span-1 md:col-span-2">
                     <label class="form-label font-bold season-text-muted text-xs uppercase mb-2 block">Fecha de la entrega *</label>
@@ -2413,10 +2428,10 @@
                     <div class="w-10 h-10 bg-[var(--s-glass-bg)] border border-emerald-500/50 text-emerald-500 rounded-full flex items-center justify-center shrink-0 shadow-sm"><i data-lucide="calendar-check" class="w-5 h-5"></i></div>
                     <div class="flex-1">
                         <label class="font-bold text-emerald-600 text-[10px] uppercase tracking-wider block">Fecha Reservada *</label>
-                        <input type="date" name="date" required class="bg-transparent border-none text-emerald-600 font-black text-lg p-0 w-full outline-none focus:ring-0" min="${new Intl.DateTimeFormat('en-CA',{timeZone:'America/Panama',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}" value="${selectedCalendarDate}">
+                        <input type="date" name="date" required class="bg-transparent border-none text-emerald-600 font-black text-lg p-0 w-full outline-none focus:ring-0" aria-label="Fecha del evento" min="${panamaDateKey()}" value="${selectedCalendarDate}">${normalDatePickerButton}
                     </div>
                 </div>` : 
-                `<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Fecha *</label><input type="date" name="date" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="${new Intl.DateTimeFormat('en-CA',{timeZone:'America/Panama',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}"></div>`);
+                `<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Fecha *</label><input type="date" name="date" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" aria-label="Fecha del evento" min="${panamaDateKey()}">${normalDatePickerButton}</div>`);
 
 
             let exploreButtons = '';
@@ -2702,12 +2717,16 @@
                 if(!isChristmasEveBooking()&&bForm?.elements?.time)bForm.elements.time.addEventListener('change',refreshNormalResources);
                 if(!isChristmasEveBooking()&&bForm?.elements?.date)bForm.elements.date.addEventListener('change',refreshNormalResources);
                 const dateSel = bForm ? bForm.elements['date'] : null;
+                if (dateSel && !isChristmasEveBooking()) bookingDatePickerCleanup = installBookingDatePicker(dateSel, document.getElementById('booking-open-date-picker'));
                 if (dateSel && !isChristmasEveBooking()) dateSel.addEventListener('change',e=>{
                     const value=String(e.target.value||'').slice(0,10);
                     if(value==='2026-12-24'||value==='2026-12-25'){
                         e.target.value=''; selectedCalendarDate=null; bookingFormState.date='';
                         showToast('El 24 y 25 de diciembre están reservados exclusivamente para Entregas de Santa.', 'info');
+                        return;
                     }
+                    selectedCalendarDate = value || null;
+                    bookingFormState.date = value;
                 });
                 if (dateSel && isChristmasEveBooking()) dateSel.onchange = async e => {
                     // Rendimiento: cambiar la fecha NO reconstruye toda la página.
@@ -3062,16 +3081,16 @@
                     bForm.addEventListener('focusout',()=>{ setTimeout(()=>{ if(!bForm.contains(document.activeElement)) document.body.classList.remove('booking-keyboard-open'); },120); });
                 }
 
-                const savedData = localStorage.getItem('datosClienteDiverty');
+                const savedData = readBrowserStorage('localStorage', 'datosClienteDiverty');
                 if (savedData) {
                     try {
                         const parsed = JSON.parse(savedData);
                         const nameInp = document.querySelector('input[name="name"]');
                         const emailInp = document.querySelector('input[name="email"]');
                         const phoneInp = document.querySelector('input[name="phone"]');
-                        if(nameInp && parsed.nombre) nameInp.value = parsed.nombre;
-                        if(emailInp && parsed.email) emailInp.value = parsed.email;
-                        if(phoneInp && parsed.telefono) phoneInp.value = parsed.telefono;
+                        if(nameInp && parsed.nombre && !Object.prototype.hasOwnProperty.call(bookingFormState, 'name')) nameInp.value = parsed.nombre;
+                        if(emailInp && parsed.email && !Object.prototype.hasOwnProperty.call(bookingFormState, 'email')) emailInp.value = parsed.email;
+                        if(phoneInp && parsed.telefono && !Object.prototype.hasOwnProperty.call(bookingFormState, 'phone')) phoneInp.value = parsed.telefono;
                     } catch(e){}
                 }
             }
@@ -3610,6 +3629,7 @@
             }
 
             const sBtn = e.target.querySelector('#btn-submit') || e.target.querySelector('button[type="submit"]'); if(!sBtn) return;
+            let capacidadSimultanea = isChristmasEveBooking() ? 1 : 3;
             const obh = sBtn.innerHTML; submitForm.dataset.sending = '1'; sBtn.disabled = true; sBtn.innerHTML = '<div class="loading-spinner !w-5 !h-5 !border-2 !border-t-[var(--s-primary)] inline-block align-middle mr-2"></div> Enviando reserva...';
             try {
                 await ensureFirebaseRuntime();
@@ -3677,7 +3697,6 @@
                 
                 // Capacidad simultánea operativa configurada desde Diverty CRM.
                 // Se consulta al confirmar para que un cambio se aplique sin volver a publicar la Web.
-                let capacidadSimultanea = 3;
                 const reservaNavidad = isChristmasEveBooking();
                 try {
                     const capacitySnap = reservaNavidad ? null : await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
@@ -3694,7 +3713,7 @@
 
                 // El documento slot_* funciona como contador transaccional. Firestore serializa
                 // confirmaciones concurrentes para que nunca se supere la capacidad configurada.
-                if (!pendingBooking) pendingBooking = {id:dataToSave.id, data:dataToSave};
+                pendingBooking = prepareBookingAttempt(pendingBooking, dataToSave);
                 const request = pendingBooking;
                 if (!request.promise) {
                     request.promise = (async () => {
@@ -3819,7 +3838,7 @@
                 pendingBooking = null;
                 bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
 
-                try { localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: fd.get('name') || '', email: fd.get('email') || '', telefono: fd.get('phone') || '' })); } catch (_) {}
+                try { localStorage.setItem('datosClienteDiverty', JSON.stringify({ nombre: request.data.cliente || '', email: request.data.email || '', telefono: request.data.telefono || '' })); } catch (_) {}
 
                 showModal('infoModal'); const mm = document.getElementById('modalMessage'); if(mm) mm.textContent = '¡Gracias por elegir Diverty Eventos! Te contactaremos por WhatsApp para confirmarla.';
                 app.cart=[]; appliedCoupon=null; bookingFormState={}; christmasLocationState={ status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' }; normalLocationState={ status:'pending', charge:null, label:'', displayName:'', lat:null, lng:null, source:'', zoneValue:'' }; app.wizardStep=1; updateCartUI(); renderBooking();

@@ -26,6 +26,7 @@ export async function getDivertyFirebaseRuntime(firebaseConfig, appName = 'Diver
         }
       } catch (e) {
         console.warn('Firebase Auth bajo demanda no disponible:', e);
+        throw e;
       }
     }
 
