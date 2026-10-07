@@ -21,7 +21,7 @@ const seed=()=>({
   catalogo_web:[{id:'plan-test',nombre:'Paquete de prueba',descripcion:'Animación 2 horas',precio:100,categoria:'fiestas',destacado:true,serviciosLista:'1 animador\nJuegos',orden:1}],
 });
 const documentFor=(collection,row)=>({name:`projects/diverty-eventos/databases/(default)/documents/artifacts/diverty-oficial/public/data/${collection}/${row.id}`,fields:Object.fromEntries(Object.entries(row).filter(([k])=>k!=='id').map(([k,v])=>[k,encode(v)]))});
-const sdk=`export const initializeApp=()=>({});export const getApps=()=>[];export const getApp=()=>({});export const getFirestore=()=>({});export const getAuth=()=>({currentUser:{uid:'test-user'}});export const signInAnonymously=async()=>({});export const signInWithCustomToken=async()=>({});export const doc=(...args)=>args.slice(1).join('/');export const collection=doc;export const where=(...args)=>args;export const query=(...args)=>args;
+const sdk=`export const initializeApp=()=>({});export const getApps=()=>[];export const getApp=()=>({});export const getFirestore=()=>({});export const getAuth=()=>({currentUser:{uid:'test-user',getIdToken:async()=>"fixture-token"}});export const signInAnonymously=async()=>({});export const signInWithCustomToken=async()=>({});export const doc=(...args)=>args.slice(1).join('/');export const collection=doc;export const where=(...args)=>args;export const query=(...args)=>args;
 export const getDoc=async ref=>{const stored=window.__fakeWrites?.[ref];const isConfig=ref.includes('/config_web/');return {exists:()=>!!stored||isConfig,data:()=>stored||(ref.endsWith('disponibilidad')?{lista:true}:{capacidadSimultanea:3,capacidadSanta:1,recursosDisponibles:{animadores:3,payasos:1}})};};
 export const getFunctions=()=>({});export const httpsCallable=(_functions,name)=>async payload=>{if(name!=='lookupCustomerReservations')throw new Error('Unexpected function');window.__portalCalls=(window.__portalCalls||[]).concat(payload);if(window.__portalFailure)throw window.__portalFailure;return {data:{reservations:window.__portalRemote||[]}};};
 export const getDocs=async ref=>{if(String(ref[0]).includes('/reservas_cliente')){if(window.__ownedFailure)throw new Error('Simulated owner lookup failure');return {metadata:{fromCache:false},docs:(window.__ownedReceipts||[]).map(row=>({id:row.id,data:()=>row}))};}window.__availabilityReads=(window.__availabilityReads||0)+1;if(window.__holdAvailability){if(!window.__heldAvailability)window.__heldAvailability=new Promise(resolve=>window.__releaseAvailability=()=>{window.__holdAvailability=false;window.__heldAvailability=null;resolve();});await window.__heldAvailability;}return {docs:window.__occupied?[{id:'web-test-occupied',data:()=>({fecha:'2026-12-24',hora:'18:00',esNavidad:true,recursoNavidad:'Santa'})}]:[]};};
@@ -47,6 +47,18 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     },blockedStorage);
     await context.route('**/*',async route=>{
       const url=new URL(route.request().url());
+      if(url.origin===origin&&url.pathname==='/api/customer-portal'){
+        assert.equal(route.request().headers().authorization,'Bearer fixture-token');
+        const payload=route.request().postDataJSON();
+        const state=await context.pages()[0].evaluate(payload=>{
+          if(payload.action==='sync'){window.__portalSyncCalls=(window.__portalSyncCalls||[]).concat(payload);return {sync:true,hold:window.__holdPortalSync};}
+          window.__portalCalls=(window.__portalCalls||[]).concat(payload);
+          return {failure:window.__portalFailure,rows:window.__portalRemote||[]};
+        },payload);
+        if(state.sync){if(state.hold)await context.pages()[0].waitForFunction(()=>window.__releasePortalSync===true);return route.fulfill({json:{synced:true}});}
+        if(state.failure){const reason=state.failure.details?.reason||(state.failure.code==='functions/resource-exhausted'?'RATE_LIMITED':'UNAVAILABLE');return route.fulfill({status:reason==='RATE_LIMITED'?429:reason==='AMBIGUOUS_NAME'?409:503,json:{error:{reason}}});}
+        return route.fulfill({json:{reservations:state.rows}});
+      }
       if(url.origin===origin)return route.continue();
       if(url.hostname==='firestore.googleapis.com'){
         if(offline)return route.abort();
@@ -79,7 +91,16 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     assert.equal(new URL(f.page.url()).searchParams.get('vista'),'booking');
     assert.equal(new URL(f.page.url()).searchParams.has('plan'),false);
   };
+    const sendNormalBooking=async f=>{
+      await f.page.locator('[name="name"]').fill('Cliente catálogo de prueba');await f.page.locator('[name="email"]').fill('catalogo@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
+      await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();
+      await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('PH de prueba, Brisas del Golf');await f.page.evaluate(()=>window.__allowBookingWrite=true);
+      await f.page.locator('[data-location-continue]').click();await f.page.locator('[data-review-send]').click();await f.page.waitForFunction(()=>document.querySelector('#infoModal').classList.contains('show'),null,{timeout:f.holdPortalSync?2000:30000});
+      assert.deepEqual(f.errors,[]);return f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid&&x.serviciosSeleccionados));
+    };
   try {
+    // Run the focused portal/booking synchronization checks without the full catalog/GPS sweep.
+    if(!process.env.PORTAL_ONLY){
     const cold=await fixture({slowTheme:true});await cold.page.goto(origin,{waitUntil:'domcontentloaded'});
     await cold.page.waitForTimeout(1100);
     assert.equal(await cold.page.locator('html').evaluate(e=>e.classList.contains('diverty-booting')),false);
@@ -330,13 +351,6 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       categories:[{id:'comida',nombre:'Comida',activo:true,visible:true},{id:'personajes',nombre:'Personajes',activo:true,visible:true}],
       products:[{id:'hot-dogs',nombre:'Hot dogs de prueba',categoria:'comida',precio:2,tipoCobro:'unidad',tipoServicio:'producto',cantidadMinima:50,cantidadMaxima:500,incrementoCantidad:25,unidadEtiqueta:'hot dog',imagen:'/assets/logo-256.webp'},{id:'hero-a',nombre:'Héroe de prueba A',categoria:'personajes',precio:80,tipoServicio:'personaje',tematica:'Superhéroes',imagen:'/assets/logo-256.webp'},{id:'hero-b',nombre:'Héroe de prueba B',categoria:'personajes',precio:95,tipoServicio:'personaje',tematica:'Superhéroes',imagen:'/assets/logo-256.webp'}]
     };
-    const sendNormalBooking=async f=>{
-      await f.page.locator('[name="name"]').fill('Cliente catálogo de prueba');await f.page.locator('[name="email"]').fill('catalogo@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
-      await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();
-      await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('PH de prueba, Brisas del Golf');await f.page.evaluate(()=>window.__allowBookingWrite=true);
-      await f.page.locator('[data-location-continue]').click();await f.page.locator('[data-review-send]').click();await f.page.waitForFunction(()=>document.querySelector('#infoModal').classList.contains('show'));
-      assert.deepEqual(f.errors,[]);return f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid&&x.serviciosSeleccionados));
-    };
     const quantity=await fixture();quantity.api.catalogo_web=created.products;quantity.api.categorias_web=created.categories;
     const product=created.products.find(p=>p.tipoCobro==='unidad');
     await quantity.page.goto(origin+'/?plan='+product.id);await quantity.ready();
@@ -363,7 +377,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       const max=raw.cantidadMaxima||1000;assert.equal(await field.getAttribute('max'),String(max));assert.match(await f.page.locator('.service-quantity-hint').innerText(),new RegExp('Máximo '+max));
       await field.fill(String(max+1));await field.blur();assert.equal(await field.inputValue(),String(max));
       await f.page.getByRole('button',{name:'Aumentar '+raw.nombre,exact:true}).click();assert.equal(await field.inputValue(),String(max));
-      await f.page.locator('[data-action="add-hourly-to-cart"]').click();await f.page.locator('#viewCart').click();await f.page.locator('#cartModal [data-action="navigate-from-modal"]').click();await f.page.locator('#bookingForm').waitFor();
+      await f.page.locator('[data-action="add-hourly-to-cart"]').click();await f.page.locator('#viewCart').click();await f.page.locator('#cartModal.show [data-action="navigate-from-modal"]').waitFor();await f.page.locator('#cartModal.show [data-action="navigate-from-modal"]').click();await f.page.locator('#bookingForm').waitFor();
       const saved=await sendNormalBooking(f);assert.equal(saved.serviciosSeleccionados[0].cantidad,max);
       const verified=quoteBooking(saved,'test-user',[raw],null,null,new Date('2026-10-07T17:00:00Z'));assert.equal(verified.serviciosSeleccionados[0].cantidad,max);assert.equal(verified.total,(max*2).toFixed(2));assert.deepEqual(f.errors,[]);
     }
@@ -382,6 +396,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     const characterSaved=await sendNormalBooking(characters);assert.equal(characterSaved.serviciosSeleccionados[0].nombre,'Héroe de prueba B');assert.equal(characterSaved.serviciosSeleccionados[0].precio,95);assert.equal(characterSaved.serviciosSeleccionados[0].cantidad,1);
     console.log('PASS: admin-created character photos/prices, cart selection and reservation retain the chosen character.');
 
+    }
     const portal=await fixture();await portal.page.goto(origin+'/?vista=portal');await portal.ready();
     const portalInput=portal.page.getByRole('textbox',{name:'Nombre o celular de la reserva'});
     const portalResults=portal.page.locator('#portalResults');
@@ -404,6 +419,16 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     await submitPortal('60000000');assert.match(await portalResults.innerText(),/María Pérez/);assert.equal(await portalInput.isEnabled(),true);
     assert.ok(await portal.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(portal.errors,[]);
     console.log('PASS: mobile portal finds name/phone across sessions, preserves cancelled status, distinguishes failures/ambiguity/rate limits and retries.');
+
+    assert.equal(portal.requests.some(url=>url.includes('firebase-functions.js')),false,'portal queries must not load Cloud Functions');
+    const nonblocking=await fixture();await openBooking(nonblocking);
+    nonblocking.holdPortalSync=true;await nonblocking.page.evaluate(()=>window.__holdPortalSync=true);
+    const savedWithPendingSync=await sendNormalBooking(nonblocking);
+    assert.equal(savedWithPendingSync.ownerUid,'test-user');
+    await nonblocking.page.waitForFunction(()=>window.__portalSyncCalls?.length>0);
+    assert.equal(await nonblocking.page.evaluate(()=>window.__portalSyncCalls[0].reservationId),savedWithPendingSync.id);
+    await nonblocking.page.evaluate(()=>window.__releasePortalSync=true);
+    console.log('PASS: saved booking confirmation appears while portal synchronization is still pending.');
 
     const denied=await fixture({blockedStorage:true});await denied.page.goto(origin);await denied.ready();assert.equal(await denied.page.locator('#themeBootLoader').count(),0);assert.deepEqual(denied.errors,[]);
     const offline=await fixture({offline:true});await offline.page.goto(origin);await offline.page.waitForFunction(()=>!document.documentElement.classList.contains('diverty-booting'));assert.deepEqual(offline.errors,[]);

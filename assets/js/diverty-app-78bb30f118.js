@@ -1,4 +1,5 @@
-import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=54148b70bb91';
+import {requestCustomerPortal} from './diverty-portal-api.mjs?v=0d2428d94f21';
+import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=8b19069e9f53';
 import { isClosedBookingDate } from './diverty-date-availability.mjs?v=79d415724694';
 import { catalogQuantityLimits, clampCatalogQuantity } from './diverty-catalog-product.mjs?v=997168bfeec5';
 import { resolveTheme, themeControlsCss } from './diverty-theme-options.mjs?v=d9e520083145';
@@ -2208,7 +2209,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     if(snapshot.metadata?.fromCache) throw new PortalError('OFFLINE');
                     return snapshot.docs.map(document=>({...document.data(),id:document.id}));
                 },
-                lookup: search => fetchWithTimeout(callBookingFunction('lookupCustomerReservations',{search:search.raw}),12000)
+                lookup: async search => requestCustomerPortal({search:search.raw},await auth.currentUser.getIdToken())
             });
         }
 
@@ -4049,6 +4050,12 @@ function captureBookingGps(form, isCurrent, onProgress) {
         }
 
         async function finishBookingRequest(request) {
+                // Netlify indexes the saved request privately without Cloud Functions.
+                // Synchronize alongside the existing notification, preserving the saved booking on failure.
+                void (async()=>{
+                    try{await requestCustomerPortal({action:'sync',reservationId:request.id},await auth.currentUser.getIdToken());}
+                    catch(_){console.warn('Reserva guardada; el portal se actualizará al abrir el panel administrador.');}
+                })();
                 // Aviso push al CRM: se ejecuta solo después de confirmar que la reserva existe.
                 // Si el servicio de notificaciones falla, la reserva permanece guardada normalmente.
                 try {

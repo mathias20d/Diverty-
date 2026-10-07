@@ -63,6 +63,7 @@ export async function searchCustomerPortal(input, { getOwned, lookup }) {
     if (!Array.isArray(result?.reservations)) throw new PortalError('UNAVAILABLE');
     return result.reservations;
   } catch (error) {
+    if (['AMBIGUOUS_NAME','RATE_LIMITED'].includes(error.reason)) throw new PortalError(error.reason);
     if (error.details?.reason === 'AMBIGUOUS_NAME') throw new PortalError('AMBIGUOUS_NAME');
     if (error.code === 'functions/resource-exhausted') throw new PortalError('RATE_LIMITED');
     throw ownedFailure?.reason === 'OFFLINE' ? ownedFailure : new PortalError('UNAVAILABLE');

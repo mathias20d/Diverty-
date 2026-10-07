@@ -30,10 +30,11 @@ export function customerPortalService(db, clock = () => new Date()) {
   return {
     // Read the current event inside the transaction: delayed/out-of-order trigger
     // deliveries and a concurrent administrator edit cannot restore old data.
-    async sync(id) {
+    async sync(id, ownerUid) {
       if (typeof id!=='string' || !id || id.includes('/')) throw new PortalError('INVALID_ID');
       return db.runTransaction(async tx => {
         const event=await tx.get(ref('eventos',id));
+        if(ownerUid && (!event.exists || event.data().ownerUid!==ownerUid))throw new PortalError('FORBIDDEN');
         const index=event.exists ? portalIndex(event.data()) : null;
         if(index)tx.set(ref('portal_busqueda',id),index);
         else tx.delete(ref('portal_busqueda',id));

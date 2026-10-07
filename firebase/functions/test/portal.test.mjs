@@ -14,6 +14,10 @@ test('portal finds old/manual reservations from another browser and updates date
   try{
     await db.recursiveDelete(db.collection('artifacts'));
     await ref('eventos','web').set(reservation);
+    await assert.rejects(portal.sync('web','different-browser'),error=>error.reason==='FORBIDDEN');
+    assert.equal((await ref('portal_busqueda','web').get()).exists,false);
+    await portal.sync('web','original-browser');
+    assert.equal((await ref('portal_busqueda','web').get()).data().telefonoKey,'60702108');
     const phone=await portal.lookup('different-browser',{search:'60702108'},'test-ip');
     assert.equal(phone.reservations[0].cliente,'María Peña');assert.equal(phone.reservations[0].abono,'25');
     for(const key of ['ownerUid','telefono','direccion','email','comentarios'])assert.equal(key in phone.reservations[0],false);
