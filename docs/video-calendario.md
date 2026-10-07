@@ -5,12 +5,13 @@ empieza después de pintar la portada y cerrar la transición inicial. No depend
 del catálogo ni del tema remoto; se conservan el poster, reproducción silenciada,
 repetición, reproducción en línea, pausa fuera de pantalla y ahorro de datos.
 
-En pantallas de hasta 767 px se solicita una transformación Cloudinary H.264 de
-480 px, 24 fps y aproximadamente 700 kbit/s, sin la pista de audio del fondo
-silenciado. Conserva el contenido y los 8,83 segundos del video. La descarga
-verificada pesa 811.093 bytes frente a 3.355.200 de la versión de 720 px, que sigue
-utilizándose en escritorio: un 75,8 % menos. El tiempo real también depende de
-la conexión y las restricciones de reproducción del navegador.
+En celulares se utiliza video H.264 de 720 × 1280 píxeles, a 30 fps y calidad
+`q_auto:good`, sin el límite anterior de 700 kbit/s. La variante económica de
+480 px perdió demasiada definición y se sustituyó. Se conserva todo el contenido
+y la duración de 8,83 segundos; el fondo sigue silenciado. La descarga verificada
+pesa 3.283.921 bytes, con aproximadamente 3 Mbit/s de video. Escritorio mantiene
+su versión de 720 px. Esta calidad requiere más datos, pero no recupera la espera
+artificial de ocho segundos. El arranque depende de la conexión y del navegador.
 
 El calendario usa la proyección pública existente `disponibilidad_web` y el
 indicador `config_web/disponibilidad`. Antes de cargar el SDK, consulta el mes
