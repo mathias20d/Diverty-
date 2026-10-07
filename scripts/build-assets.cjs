@@ -18,7 +18,7 @@ if (result.status !== 0) process.exit(result.status || 1);
 const version = file => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex').slice(0, 12);
 const main = 'assets/js/diverty-app-78bb30f118.js';
 let js = fs.readFileSync(path.join(root, main), 'utf8');
-for (const module of ['diverty-gps-point.mjs', 'diverty-gps-capture.mjs']) {
+for (const module of ['diverty-gps-point.mjs', 'diverty-gps-capture.mjs', 'diverty-theme-options.mjs']) {
   const escaped = module.replaceAll('.', '\\.');
   js = js.replace(new RegExp(escaped + '(?:\\?v=[a-f0-9]+)?', 'g'), `${module}?v=${version('assets/js/' + module)}`);
 }
@@ -115,9 +115,18 @@ for (const file of modules.concat(path.basename(main))) {
 for (const file of ['index.html', 'admin.html']) {
   const target = path.join(output, file);
   let html = fs.readFileSync(target, 'utf8');
-  html = html.replace(/\/assets\/[\w./-]+\.(?:js|css|webp|woff2)(?:\?v=[a-f0-9]+)?/g, match => {
+  html = html.replace(/\/assets\/[\w./-]+\.(?:js|mjs|css|webp|woff2)(?:\?v=[a-f0-9]+)?/g, match => {
     const asset = match.slice(1).split('?')[0];
     return fs.existsSync(path.join(output, asset)) ? `/${asset}?v=${assetVersion(asset)}` : match;
   });
   fs.writeFileSync(target, html);
 }
+
+// Preview uses the actual published templates and CSS, with bookings and analytics disabled.
+let preview = fs.readFileSync(path.join(output, 'index.html'), 'utf8');
+preview = preview.replace(/<!-- Google Analytics:[\s\S]*?<script>[\s\S]*?<\/script>/, '');
+preview = preview.replace('<head>', '<head><script>window.__DIVERTY_THEME_PREVIEW__=true;</script><meta name="robots" content="noindex,nofollow">');
+preview = preview.replace(/try \{snapshot=JSON.parse/, 'try {if(!window.__DIVERTY_THEME_PREVIEW__)snapshot=JSON.parse');
+preview = preview.replace("window.__divertyShowSplash=!(snapshot && seen)", "window.__divertyShowSplash=!window.__DIVERTY_THEME_PREVIEW__&&!(snapshot && seen)");
+preview = preview.replace("sessionStorage.setItem('diverty_splash_seen','1')", "window.__DIVERTY_THEME_PREVIEW__||sessionStorage.setItem('diverty_splash_seen','1')");
+fs.writeFileSync(path.join(output, 'theme-preview.html'), preview);

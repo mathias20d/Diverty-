@@ -1,3 +1,6 @@
+import { resolveTheme, themeControlsCss } from './diverty-theme-options.mjs?v=d9e520083145';
+const isThemePreview=location.pathname==='/theme-preview.html'&&window.__DIVERTY_THEME_PREVIEW__===true;
+let previewTheme=null;
 import { gpsPointFromText } from './diverty-gps-point.mjs?v=1fb92a5943a5';
 import { capturePreciseGps, gpsAccuracyMessage } from './diverty-gps-capture.mjs?v=832eee9812fc';
 import { needsPlaceReference } from './diverty-location-reference.mjs?v=89e3fe00c169';
@@ -19,6 +22,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
         let firebaseRuntimePromise = null;
 
         async function ensureFirebaseRuntime() {
+            if(isThemePreview)throw new Error('Theme preview is read-only');
             if (db && auth?.currentUser && getDocs && doc) return { db, auth };
             if (!firebaseRuntimePromise) {
                 firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js?v=e295fdb06aaf')
@@ -1034,43 +1038,24 @@ function captureBookingGps(form, isCurrent, onProgress) {
             };
 
             let current = palettes.default;
-            if (decorType.includes('escolar') || decorType.includes('escuela')) current = palettes.school;
+            if (decorType.includes('escolar') || decorType.includes('escuela') || decorType.includes('school')) current = palettes.school;
             else if (decorType.includes('halloween') || decorType.includes('miedo')) current = palettes.halloween;
-            else if (decorType.includes('navidad') || decorType.includes('santa')) current = palettes.christmas;
+            else if (decorType.includes('navidad') || decorType.includes('christmas') || decorType.includes('santa')) current = palettes.christmas;
             else if (decorType.includes('verano') || decorType.includes('summer')) current = palettes.summer;
 
-            const customP = cleanStr(themeData.colorPrimario || themeData.colorPrimary);
-            const customS = cleanStr(themeData.colorSecundario || themeData.colorSecondary);
-
-            // Los temas normales siguen aceptando los colores configurados en Firebase.
-            // Navidad usa una paleta fija premium para impedir que colores antiguos
-            // guardados (verde/rojo) vuelvan a sobrescribir el diseño azul/plateado.
-            if (current.theme !== 'christmas') {
-                if (customP && customP.startsWith('#')) current.p = customP;
-                if (customS && customS.startsWith('#')) current.s = customS;
-                if (themeData.colorBg) current.bg = themeData.colorBg;
-                if (themeData.colorText) current.tTitle = themeData.colorText;
-                if (themeData.colorCard) current.glass = themeData.colorCard;
-            } else {
-                current.p = '#2563EB';
-                current.s = '#94A3B8';
-                current.a = '#E2E8F0';
-                current.bg = '#061426';
-                current.overlay = 'rgba(4,15,32,0.78)';
-                current.glass = 'rgba(9,30,58,0.86)';
-                current.border = 'rgba(226,232,240,0.24)';
-                current.tTitle = '#F8FAFC';
-                current.tMuted = '#CBD5E1';
+            const resolved=resolveTheme(themeData);
+            current.p=resolved.colorPrimary;current.s=resolved.colorSecondary;
+            if(resolved.modern) {
+                current.bg=resolved.colorBg;current.tTitle=resolved.colorText;current.glass=resolved.colorCard;current.tMuted=resolved.colorText;
+            } else if(current.theme!=='christmas') {
+                if(themeData.colorBg)current.bg=resolved.colorBg;
+                if(themeData.colorText)current.tTitle=resolved.colorText;
+                if(themeData.colorCard)current.glass=resolved.colorCard;
             }
-
-            document.body.setAttribute('data-theme', current.theme);
-            document.documentElement.setAttribute('data-cached-theme', current.theme);
-            try { localStorage.setItem('diverty_active_theme', current.theme); } catch(e) {}
-
-            const customGrad = current.theme === 'christmas'
-                ? 'linear-gradient(135deg, #2563EB, #94A3B8)'
-                : (themeData.gradient ? themeData.gradient : `linear-gradient(135deg, ${current.p}, ${current.s})`);
-
+            document.body.setAttribute('data-theme',current.theme);
+            document.documentElement.setAttribute('data-cached-theme',current.theme);
+            if(!isThemePreview)try{localStorage.setItem('diverty_active_theme',current.theme);}catch(_){}
+            const customGrad=resolved.modern?resolved.buttonBackground:current.theme==='christmas'?'linear-gradient(135deg, #2563EB, #94A3B8)':resolved.gradient&&themeData.gradient?resolved.gradient:`linear-gradient(135deg, ${current.p}, ${current.s})`;
             let css = `
             :root {
                 --s-primary: ${current.p};
@@ -1084,17 +1069,14 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 --s-text-title: ${current.tTitle};
                 --s-text-muted: ${current.tMuted};
                 --s-btn-grad: ${customGrad};
+                --s-button-text: ${resolved.buttonText};
             }
             `;
 
-            if (themeData.animaciones === false || cleanStr(themeData.animacionesActivas).toLowerCase() === 'false') {
-                 css += `*, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }`;
-            }
-            
-            style.innerHTML = css; 
+            css+=themeControlsCss(resolved);
+            style.textContent=css;
             document.head.appendChild(style);
-            try { localStorage.setItem('diverty_theme_snapshot', JSON.stringify({theme:current.theme,css})); } catch(_) {}
-
+            if(!isThemePreview)try{localStorage.setItem('diverty_theme_snapshot',JSON.stringify({theme:current.theme,css}));}catch(_){}
             const logoStr = cleanStr(themeData.logoUrl || themeData.imagenLogo || themeData.logo);
             if (logoStr) { const headLogo = document.getElementById('mainHeaderLogo'); if(headLogo) headLogo.src = logoStr; const bootLogo = document.getElementById('themeBootLogo'); if(bootLogo) bootLogo.src = logoStr; }
 
@@ -1110,35 +1092,29 @@ function captureBookingGps(form, isCurrent, onProgress) {
             }
             decorLayer.innerHTML = '';
 
-            if (current.theme === 'halloween') {
-                decorLayer.innerHTML += '<div class="spider-web spider-web-left"></div><div class="spider-web spider-web-right"></div>';
-                for(let i=0; i<12; i++) {
-                    const left = Math.random() * 100; const dur = 6 + Math.random() * 8; const del = Math.random() * 5; const size = 1 + Math.random() * 1.5;
-                    decorLayer.innerHTML += `<div class="falling-decor" style="left:${left}%; animation-duration:${dur}s; animation-delay:-${del}s; font-size:${size}rem;">🦇</div>`;
-                }
-            } else if (current.theme === 'christmas') {
-                for(let i=0; i<25; i++) {
-                    const left = Math.random() * 100; const dur = 5 + Math.random() * 10; const del = Math.random() * 5; const size = 0.5 + Math.random() * 1;
-                    decorLayer.innerHTML += `<div class="falling-decor text-white" style="left:${left}%; animation-duration:${dur}s; animation-delay:-${del}s; font-size:${size}rem; text-shadow: 0 0 5px rgba(255,255,255,0.8);">❄️</div>`;
-                }
-            } else if (current.theme === 'summer') {
-                for(let i=0; i<10; i++) {
-                    const left = Math.random() * 100; const dur = 7 + Math.random() * 6; const del = Math.random() * 5;
-                    decorLayer.innerHTML += `<div class="falling-decor" style="left:${left}%; animation-duration:${dur}s; animation-delay:-${del}s; opacity:0.4;">🫧</div>`;
-                }
-            } else if (current.theme === 'school') {
-                const confetis = ['📚','✏️','🎒','📏','✨'];
-                for(let i=0; i<15; i++) {
-                    const left = Math.random() * 100; const dur = 6 + Math.random() * 7; const del = Math.random() * 5; const c = confetis[Math.floor(Math.random()*confetis.length)];
-                    decorLayer.innerHTML += `<div class="falling-decor" style="left:${left}%; animation-duration:${dur}s; animation-delay:-${del}s;">${c}</div>`;
-                }
+            const symbols={leaves:['🍂','🍁'],snow:['❄️'],bats:['🦇'],bubbles:['🫧'],confetti:['🎉','✨','🎊']};
+            const icons=resolved.key==='school'&&resolved.decorations==='auto'?['📚','✏️','🎒','📏','✨']:symbols[resolved.effect]||[];
+            if(resolved.effect==='bats'&&resolved.decorations==='auto')decorLayer.innerHTML='<div class="spider-web spider-web-left"></div><div class="spider-web spider-web-right"></div>';
+            for(let i=0;i<(icons.length?(resolved.effect==='snow'?25:12):0);i++) {
+                const node=document.createElement('div');node.className='falling-decor';
+                node.style.cssText=`left:${Math.random()*100}%;animation-duration:${5+Math.random()*10}s;animation-delay:-${Math.random()*5}s;font-size:${.5+Math.random()}rem;color:var(--s-text-title)`;
+                node.textContent=icons[i%icons.length];decorLayer.appendChild(node);
             }
-
             // Forzar recarga de UI para aplicar los nuevos iconos en los botones
             if (window.catalogLoaded) {
                 updateNavigationState();
                 if (app.cart.length > 0) updateCartUI();
             }
+        }
+
+        if(isThemePreview) {
+            document.addEventListener('click',e=>{if(e.target.closest('a,button,input,select,textarea')){e.preventDefault();e.stopImmediatePropagation();}},true);
+            document.addEventListener('submit',e=>{e.preventDefault();e.stopImmediatePropagation();},true);
+            window.addEventListener('message',e=>{
+                if(e.source!==window.parent||e.data?.type!=='diverty:theme-preview'||!e.data.theme||typeof e.data.theme!=='object')return;
+                previewTheme={...e.data.theme,themeVersion:2};applyThemeColors(previewTheme);
+            });
+            window.parent.postMessage({type:'diverty:theme-preview-ready'},'*');
         }
 
         const VALID_CATALOG_ICONS = new Set(['party-popper','smile','sparkles','bubbles','mic-2','wand-sparkles','palette','gamepad-2','ghost','cake-slice','music','camera','image','tent','balloon','baby','crown','star','heart','gift','users','calendar-days','sun','school','graduation-cap','drama','folder']);
@@ -4057,13 +4033,13 @@ function captureBookingGps(form, isCurrent, onProgress) {
             };
             const inFlight=new Map();
             const fetchStaticCollection=async name=>{
-                const cached=readCachedCollection(name); if(cached) return cached;
+                const cached=isThemePreview?null:readCachedCollection(name); if(cached) return cached;
                 const version=cacheVersion(name), key=name+':'+version;
                 if(inFlight.has(key)) return inFlight.get(key);
                 const request=(async()=>{
                     const rows=await fetchWithTimeout(fetchPublicRestCollection(name),T_OUT);
                     if(version!==cacheVersion(name)) return fetchStaticCollection(name);
-                    saveCachedCollection(name,rows,version); return rows;
+                    if(!isThemePreview)saveCachedCollection(name,rows,version); return rows;
                 })();
                 inFlight.set(key,request); try{return await request;} finally{inFlight.delete(key);}
             };
@@ -4089,7 +4065,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
             // Mantiene cambios del administrador sin cargar Firestore SDK completo.
             // Se consulta solo cuando la pestaña está visible y a baja frecuencia.
             setInterval(async()=>{
-                if(document.hidden) return;
+                if(isThemePreview || document.hidden) return;
                 try { applySyncDocument(await fetchPublicRestDoc('config_web','web_sync')); } catch(_) {}
             },45000);
 
@@ -4146,6 +4122,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
             };
 
             const loadTheme = async () => {
+                if(isThemePreview){applyThemeColors(previewTheme||{nombre:'Normal'});return;}
                 try {
                     const themes = await fetchStaticCollection('temas_web');
                     if (themes.length) {
@@ -4260,7 +4237,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
             bootComplete=true; await drainRefresh();
 
             const lazyLoadAvailability = async () => {
-                if (availabilityReady) return;
+                if (isThemePreview || availabilityReady) return;
                 try {
                     await ensureFirebaseRuntime();
                     await loadBookedEventsForMonth(new Date(currentCalDate));

@@ -614,12 +614,13 @@
                     <div><label class="saas-label">Fondo General</label><div class="flex gap-2"><input type="color" id="thmColBgPicker" class="w-10 h-10 rounded-lg cursor-pointer bg-slate-900 border border-slate-700 shrink-0 p-0.5"><input type="text" id="thmColBg" class="saas-input bg-slate-900 flex-1 px-2 text-xs"></div></div>
                     <div><label class="saas-label">Fondo Tarjetas</label><div class="flex gap-2"><input type="color" id="thmColCardPicker" class="w-10 h-10 rounded-lg cursor-pointer bg-slate-900 border border-slate-700 shrink-0 p-0.5"><input type="text" id="thmColCard" class="saas-input bg-slate-900 flex-1 px-2 text-xs"></div></div>
                 </div>
+                <div><label class="saas-label">Estilo del botón</label><select id="thmButtonStyle" class="saas-input"><option value="solid">Color sólido (Botones)</option><option value="gradient">Degradado</option></select></div>
                 <div><label class="saas-label">Gradientes CSS (Opcional)</label><input type="text" id="thmGradient" class="saas-input bg-slate-900 text-xs font-mono" placeholder="linear-gradient(...)"></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="saas-label">Elementos Decorativos</label>
                         <select id="thmDecorations" class="saas-input bg-slate-900 border-slate-700 appearance-none">
-                            <option value="none">Ninguno</option>
+                            <option value="auto">Automática por temporada</option><option value="none">Ninguno</option><option value="bubbles">Burbujas</option>
                             <option value="snow">Nieve (Invierno)</option>
                             <option value="bats">Murciélagos (Halloween)</option>
                             <option value="leaves">Hojas (Otoño)</option>
@@ -755,6 +756,7 @@
 
     <!-- SCRIPTS COMPLETOS Y SINCRONIZADOS -->
     <script type="module">
+        import { themeOptionsFromItem, themeOptionsForSave } from '/assets/js/diverty-theme-options.mjs';
         import { productOptionsForSave, productOptionsFromItem } from '/assets/js/diverty-catalog-product.mjs';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, doc, getDocs, getDoc, writeBatch as sdkWriteBatch, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -1475,7 +1477,7 @@
         window.setDefaultTheme = async function(id) { const batch = writeBatch(db); window.temasLocales.forEach(t => { t.isDefault = (t.id === id); batch.update(doc(db, 'artifacts', APP_ID, 'public', 'data', 'temas_web', t.id), { isDefault: t.isDefault }); }); await batch.commit(); await evaluateAndApplyThemes(); }
         
         window.openThemeModal = function() { 
-            editingThemeId = null; 
+            editingThemeId = null; document.getElementById('thmButtonStyle').value='gradient';
             document.getElementById('themeModalTitle').innerHTML = '<i data-lucide="palette" class="w-5 h-5 text-amber-400"></i> Nuevo Tema';
             document.getElementById('thmName').value = ''; document.getElementById('thmDesc').value = ''; document.getElementById('thmStart').value = ''; document.getElementById('thmEnd').value = ''; document.getElementById('thmGradient').value = ''; document.getElementById('thmDecorations').value = 'none'; document.getElementById('thmAnimations').checked = true;
             const defaultColors = { Primary: '#8B5CF6', Secondary: '#EC4899', Button: '#8B5CF6', Text: '#1E293B', Bg: '#FFFFFF', Card: '#F8FAFC' };
@@ -1501,6 +1503,7 @@
             else if (hay.includes('verano') || hay.includes('summer')) key = 'summer';
             else if (hay.includes('escolar') || hay.includes('escuela') || hay.includes('school')) key = 'school';
 
+            document.getElementById('thmButtonStyle').value='gradient';
             const p = DIVERTY_THEME_DEFAULT_COLORS[key];
             ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => {
                 const txt = document.getElementById(`thmCol${t}`);
@@ -1521,7 +1524,7 @@
         window.closeThemeModal = () => document.getElementById('themeModal').classList.remove('show');
         
         window.editTheme = function(id) { 
-            editingThemeId = id; const thm = window.temasLocales.find(t => t.id === id); if(!thm) return; 
+            editingThemeId = id; const rawTheme = window.temasLocales.find(t => t.id === id); if(!rawTheme) return; const thm=themeOptionsFromItem(rawTheme); document.getElementById('thmButtonStyle').value=thm.buttonStyle;
             document.getElementById('themeModalTitle').innerHTML = '<i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i> Editar Tema';
             document.getElementById('thmName').value = thm.nombre || ''; document.getElementById('thmDesc').value = thm.descripcion || ''; document.getElementById('thmStart').value = thm.fechaInicio || ''; document.getElementById('thmEnd').value = thm.fechaFin || ''; document.getElementById('thmGradient').value = thm.gradient || ''; document.getElementById('thmDecorations').value = thm.decorations || 'none'; document.getElementById('thmAnimations').checked = thm.animations !== false;
             ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => { const colorValue = thm[`color${t}`] || '#FFFFFF'; document.getElementById(`thmCol${t}`).value = colorValue; document.getElementById(`thmCol${t}Picker`).value = colorValue; });
@@ -1531,9 +1534,10 @@
         window.saveTheme = async function() { 
             const nombre = document.getElementById('thmName').value.trim();
             if(!nombre) { showToast("Debes ingresar un nombre para el tema", "error"); return; }
-            const data = { nombre: nombre, descripcion: document.getElementById('thmDesc').value, fechaInicio: document.getElementById('thmStart').value, fechaFin: document.getElementById('thmEnd').value, gradient: document.getElementById('thmGradient').value, decorations: document.getElementById('thmDecorations').value, animations: document.getElementById('thmAnimations').checked };
+            const data = { buttonStyle:document.getElementById('thmButtonStyle').value, nombre: nombre, descripcion: document.getElementById('thmDesc').value, fechaInicio: document.getElementById('thmStart').value, fechaFin: document.getElementById('thmEnd').value, gradient: document.getElementById('thmGradient').value, decorations: document.getElementById('thmDecorations').value, animations: document.getElementById('thmAnimations').checked };
             ['Primary','Secondary','Button','Text','Bg','Card'].forEach(t => { data[`color${t}`] = document.getElementById(`thmCol${t}`).value; });
             
+            try{Object.assign(data,themeOptionsForSave(data));}catch(error){return showToast(error.message,'error');}
             const btn = document.getElementById('saveThemeBtn'); const originalText = btn.innerHTML; btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Guardando...'; btn.disabled = true;
             try {
                 if(editingThemeId) { await updateDoc(doc(db,'artifacts',APP_ID,'public','data','temas_web',editingThemeId), data); showToast("Tema actualizado", "success"); } 
@@ -2036,8 +2040,8 @@
                 const picker = document.getElementById(`thmCol${t}Picker`);
                 const text = document.getElementById(`thmCol${t}`);
                 if (picker && text) {
-                    picker.addEventListener('input', (e) => text.value = e.target.value);
-                    text.addEventListener('input', (e) => picker.value = e.target.value);
+                    picker.addEventListener('input', (e) => {text.value = e.target.value;if(t==='Button')document.getElementById('thmButtonStyle').value='solid';});
+                    text.addEventListener('input', (e) => {picker.value = e.target.value;if(t==='Button')document.getElementById('thmButtonStyle').value='solid';});
                 }
             });
         }

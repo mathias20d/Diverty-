@@ -245,6 +245,18 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.deepEqual(f.errors,[]);console.log(`PASS: envío completo ${christmas?'Navidad':'normal'} con dirección remota y Firebase simulado.`);
     }
 
+    const themeDraft=process.env.THEME_FIXTURE_PATH?JSON.parse(fs.readFileSync(process.env.THEME_FIXTURE_PATH,'utf8')):{themeVersion:2,colorPrimary:'#336699',colorSecondary:'#99aabb',colorButton:'#123456',buttonStyle:'solid',colorText:'#f0f0f0',colorBg:'#112233',colorCard:'#223344',decorations:'confetti',animations:false};
+    for(const [nombre,decorations,count] of [['Navidad','none',0],['Halloween','snow',25],['Verano','confetti',12],['Escolar','bubbles',12],['Normal','leaves',12]]){
+      const f=await fixture();f.api.temas_web=[{...themeDraft,id:'edited-theme',nombre,tipo:nombre,isDefault:true,decorations}];
+      await f.page.goto(origin);await f.ready();
+      const painted=await f.page.evaluate(()=>({bg:getComputedStyle(document.body).backgroundColor,button:getComputedStyle(document.querySelector('#mainContent .season-btn')).backgroundColor,card:getComputedStyle(document.querySelector('#mainContent .glass-panel')).backgroundColor,text:getComputedStyle(document.querySelector('#mainContent .season-text-title')).color,transition:getComputedStyle(document.querySelector('#mainContent .season-btn')).transitionDuration,decor:document.querySelectorAll('#decor-layer .falling-decor').length}));
+      assert.equal(painted.bg,'rgb(17, 34, 51)');assert.equal(painted.button,'rgb(18, 52, 86)');assert.equal(painted.transition,'0s');assert.equal(painted.card,'rgb(34, 51, 68)');assert.equal(painted.text,'rgb(240, 240, 240)');assert.equal(painted.decor,count);assert.deepEqual(await f.page.evaluate(()=>[...document.querySelectorAll('body *')].filter(el=>{const css=getComputedStyle(el);return (css.animationName&&css.animationName!=='none')||(css.transitionDuration&&css.transitionDuration!=='0s');}).map(el=>({tag:el.tagName,id:el.id,classes:el.getAttribute('class'),animation:getComputedStyle(el).animationName,transition:getComputedStyle(el).transitionDuration}))),[],'motion off also covers headers, carousels and modals');
+      await f.page.reload();await f.ready();assert.equal(await f.page.locator('#decor-layer .falling-decor').count(),count,'reloading cannot duplicate decorations');
+      assert.equal(await f.page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(17, 34, 51)');
+      assert.deepEqual(f.errors,[]);
+    }
+    console.log('PASS: saved admin theme colors, button, motion and every decoration reach all five seasons and survive reload.');
+
     const created = process.env.CATALOG_FIXTURE_PATH ? JSON.parse(fs.readFileSync(process.env.CATALOG_FIXTURE_PATH,'utf8')) : {
       categories:[{id:'comida',nombre:'Comida',activo:true,visible:true},{id:'personajes',nombre:'Personajes',activo:true,visible:true}],
       products:[{id:'hot-dogs',nombre:'Hot dogs de prueba',categoria:'comida',precio:2,tipoCobro:'unidad',tipoServicio:'producto',cantidadMinima:50,cantidadMaxima:500,incrementoCantidad:25,unidadEtiqueta:'hot dog',imagen:'/assets/logo-256.webp'},{id:'hero-a',nombre:'Héroe de prueba A',categoria:'personajes',precio:80,tipoServicio:'personaje',tematica:'Superhéroes',imagen:'/assets/logo-256.webp'},{id:'hero-b',nombre:'Héroe de prueba B',categoria:'personajes',precio:95,tipoServicio:'personaje',tematica:'Superhéroes',imagen:'/assets/logo-256.webp'}]
