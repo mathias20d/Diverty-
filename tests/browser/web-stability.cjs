@@ -23,7 +23,8 @@ const seed=()=>({
 const documentFor=(collection,row)=>({name:`projects/diverty-eventos/databases/(default)/documents/artifacts/diverty-oficial/public/data/${collection}/${row.id}`,fields:Object.fromEntries(Object.entries(row).filter(([k])=>k!=='id').map(([k,v])=>[k,encode(v)]))});
 const sdk=`export const initializeApp=()=>({});export const getApps=()=>[];export const getApp=()=>({});export const getFirestore=()=>({});export const getAuth=()=>({currentUser:{uid:'test-user'}});export const signInAnonymously=async()=>({});export const signInWithCustomToken=async()=>({});export const doc=(...args)=>args.slice(1).join('/');export const collection=doc;export const where=(...args)=>args;export const query=(...args)=>args;
 export const getDoc=async ref=>{const stored=window.__fakeWrites?.[ref];const isConfig=ref.includes('/config_web/');return {exists:()=>!!stored||isConfig,data:()=>stored||(ref.endsWith('disponibilidad')?{lista:true}:{capacidadSimultanea:3,capacidadSanta:1,recursosDisponibles:{animadores:3,payasos:1}})};};
-export const getDocs=async()=>{window.__availabilityReads=(window.__availabilityReads||0)+1;if(window.__holdAvailability){if(!window.__heldAvailability)window.__heldAvailability=new Promise(resolve=>window.__releaseAvailability=()=>{window.__holdAvailability=false;window.__heldAvailability=null;resolve();});await window.__heldAvailability;}return {docs:window.__occupied?[{id:'web-test-occupied',data:()=>({fecha:'2026-12-24',hora:'18:00',esNavidad:true,recursoNavidad:'Santa'})}]:[]};};
+export const getFunctions=()=>({});export const httpsCallable=(_functions,name)=>async payload=>{if(name!=='lookupCustomerReservations')throw new Error('Unexpected function');window.__portalCalls=(window.__portalCalls||[]).concat(payload);if(window.__portalFailure)throw window.__portalFailure;return {data:{reservations:window.__portalRemote||[]}};};
+export const getDocs=async ref=>{if(String(ref[0]).includes('/reservas_cliente')){if(window.__ownedFailure)throw new Error('Simulated owner lookup failure');return {metadata:{fromCache:false},docs:(window.__ownedReceipts||[]).map(row=>({id:row.id,data:()=>row}))};}window.__availabilityReads=(window.__availabilityReads||0)+1;if(window.__holdAvailability){if(!window.__heldAvailability)window.__heldAvailability=new Promise(resolve=>window.__releaseAvailability=()=>{window.__holdAvailability=false;window.__heldAvailability=null;resolve();});await window.__heldAvailability;}return {docs:window.__occupied?[{id:'web-test-occupied',data:()=>({fecha:'2026-12-24',hora:'18:00',esNavidad:true,recursoNavidad:'Santa'})}]:[]};};
 export const setDoc=async()=>{throw new Error('Unexpected write');};export const onSnapshot=()=>()=>{};export const writeBatch=()=>({});export const runTransaction=async(_db,callback)=>{if(!window.__allowBookingWrite)throw new Error('Unexpected write');const writes={};await callback({get:async ref=>{if(Object.keys(writes).length)throw new Error('Read after write');return {exists:()=>!!window.__fakeWrites?.[ref],data:()=>window.__fakeWrites?.[ref]};},set:(ref,data)=>writes[ref]=data});window.__fakeWrites={...window.__fakeWrites,...writes};};`;
 
 (async()=>{
@@ -380,6 +381,29 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     await selected.getByRole('button',{name:'Reservar ahora'}).click();await characters.page.locator('#bookingForm').waitFor();
     const characterSaved=await sendNormalBooking(characters);assert.equal(characterSaved.serviciosSeleccionados[0].nombre,'Héroe de prueba B');assert.equal(characterSaved.serviciosSeleccionados[0].precio,95);assert.equal(characterSaved.serviciosSeleccionados[0].cantidad,1);
     console.log('PASS: admin-created character photos/prices, cart selection and reservation retain the chosen character.');
+
+    const portal=await fixture();await portal.page.goto(origin+'/?vista=portal');await portal.ready();
+    const portalInput=portal.page.getByRole('textbox',{name:'Nombre o celular de la reserva'});
+    const portalResults=portal.page.locator('#portalResults');
+    const submitPortal=async value=>{await portalInput.fill(value);await portal.page.getByRole('button',{name:'Buscar Reserva',exact:true}).click();await portal.page.getByRole('button',{name:'Buscar Reserva',exact:true}).waitFor();};
+    const receipt={id:'receipt-1',cliente:'María Pérez',telefono:'+507 6000-0000',fecha:'2026-12-24',hora:'14:00',estado:'Cancelado',servicio:'Paquete de prueba',total:100,abono:25};
+    await portal.page.evaluate(row=>{window.__ownedReceipts=[row];},receipt);
+    await submitPortal('  maria   perez ');assert.match(await portalResults.innerText(),/María Pérez/);assert.match(await portalResults.innerText(),/Cancelado/i);
+    await submitPortal('6000-0000');assert.match(await portalResults.innerText(),/María Pérez/);assert.equal(await portal.page.evaluate(()=>window.__portalCalls?.length||0),0);
+    await portal.page.evaluate(row=>{window.__ownedReceipts=[];window.__portalRemote=[row];},receipt);
+    await submitPortal('+507 6000-0000');assert.match(await portalResults.innerText(),/María Pérez/);assert.equal(await portal.page.evaluate(()=>window.__portalCalls.length),1);
+    await portal.page.evaluate(()=>{window.__ownedFailure=true;window.__portalFailure={code:'functions/unavailable'};});
+    await submitPortal('60000000');assert.match(await portalResults.innerText(),/No pudimos consultar/);assert.doesNotMatch(await portalResults.innerText(),/No encontramos/);
+    await portal.page.evaluate(()=>{window.__portalFailure={code:'functions/failed-precondition',details:{reason:'AMBIGUOUS_NAME'}};});
+    await submitPortal('Maria Perez');assert.match(await portalResults.innerText(),/varios clientes/);
+    await portal.page.evaluate(()=>{window.__portalFailure={code:'functions/resource-exhausted'};});
+    await submitPortal('60000000');assert.match(await portalResults.innerText(),/Espera un minuto/);
+    await portal.page.evaluate(()=>{window.__portalFailure=null;window.__portalRemote=[];});
+    await submitPortal('60000000');assert.match(await portalResults.innerText(),/No encontramos una reserva/);
+    await portal.page.evaluate(row=>{window.__portalRemote=[row];},receipt);
+    await submitPortal('60000000');assert.match(await portalResults.innerText(),/María Pérez/);assert.equal(await portalInput.isEnabled(),true);
+    assert.ok(await portal.page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));assert.deepEqual(portal.errors,[]);
+    console.log('PASS: mobile portal finds name/phone across sessions, preserves cancelled status, distinguishes failures/ambiguity/rate limits and retries.');
 
     const denied=await fixture({blockedStorage:true});await denied.page.goto(origin);await denied.ready();assert.equal(await denied.page.locator('#themeBootLoader').count(),0);assert.deepEqual(denied.errors,[]);
     const offline=await fixture({offline:true});await offline.page.goto(origin);await offline.page.waitForFunction(()=>!document.documentElement.classList.contains('diverty-booting'));assert.deepEqual(offline.errors,[]);

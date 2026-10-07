@@ -1,3 +1,4 @@
+import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=54148b70bb91';
 import { isClosedBookingDate } from './diverty-date-availability.mjs?v=79d415724694';
 import { catalogQuantityLimits, clampCatalogQuantity } from './diverty-catalog-product.mjs?v=997168bfeec5';
 import { resolveTheme, themeControlsCss } from './diverty-theme-options.mjs?v=d9e520083145';
@@ -2197,29 +2198,18 @@ function captureBookingGps(form, isCurrent, onProgress) {
             return rows;
         }
 
-        function phoneVariants(value) {
-            const digits = String(value || '').replace(/\D/g, '').replace(/^00507/, '').replace(/^507/, '');
-            if (digits.length < 6) return { digits, variants: [] };
-            const dashed = digits.length === 8 ? `${digits.slice(0,4)}-${digits.slice(4)}` : digits;
-            const spaced = digits.length === 8 ? `${digits.slice(0,4)} ${digits.slice(4)}` : digits;
-            const variants = [
-                digits, dashed, spaced,
-                `507${digits}`, `+507${digits}`, `00507${digits}`,
-                `507 ${digits}`, `+507 ${digits}`,
-                `507 ${dashed}`, `+507 ${dashed}`,
-                `507-${dashed}`, `+507-${dashed}`
-            ];
-            return { digits, variants: [...new Set(variants)].slice(0, 30) };
-        }
-
-        async function findReservationsByPhone(value) {
-            if (!db || !auth?.currentUser) { try { await ensureFirebaseRuntime(); } catch(_) { return []; } }
-            if (!auth?.currentUser) return [];
-            const {digits} = phoneVariants(value);
-            if (digits.length < 6) return [];
-            const ref = collection(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente');
-            const snap = await getDocs(query(ref,where('ownerUid','==',auth.currentUser.uid)));
-            return snap.docs.map(d => ({...d.data(),id:d.id})).filter(e => phoneVariants(e.telefono).digits === digits && isBlockingEvent(e));
+        async function findCustomerReservations(value) {
+            await ensureFirebaseRuntime();
+            if (!auth?.currentUser) throw new PortalError('UNAVAILABLE');
+            return searchCustomerPortal(value, {
+                getOwned: async () => {
+                    const ref = collection(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente');
+                    const snapshot = await fetchWithTimeout(getDocs(query(ref,where('ownerUid','==',auth.currentUser.uid))),8000);
+                    if(snapshot.metadata?.fromCache) throw new PortalError('OFFLINE');
+                    return snapshot.docs.map(document=>({...document.data(),id:document.id}));
+                },
+                lookup: search => fetchWithTimeout(callBookingFunction('lookupCustomerReservations',{search:search.raw}),12000)
+            });
         }
 
         function renderCalendar() {
@@ -2290,23 +2280,30 @@ function captureBookingGps(form, isCurrent, onProgress) {
         }
 
         function renderPortal() {
-            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-black/5 border border-[var(--s-primary)] rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm season-text-primary"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold season-text-title font-nunito tracking-tight">Portal del Cliente</h2><p class="season-text-muted mt-2 font-medium text-sm">Consulta el estado de tu evento de forma rápida.</p></div><div class="glass-panel card-alive p-6 sm:p-10 shadow-sm"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 season-text-muted w-5 h-5"></i><input type="tel" id="searchPhone" placeholder="Tu WhatsApp (Ej. 60000000)" class="w-full bg-black/5 border border-black/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold season-text-title outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" required></div><button type="submit" class="w-full season-btn font-bold py-3.5 rounded-2xl flex justify-center items-center gap-2 text-sm transition-transform active:scale-95"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-black/10 rounded-2xl bg-black/5"><p class="season-text-muted font-semibold">Consulta las solicitudes creadas desde este navegador. Para reservas anteriores o desde otro dispositivo, contáctanos por WhatsApp.</p></div></div></div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-black/5 border border-[var(--s-primary)] rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm season-text-primary"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold season-text-title font-nunito tracking-tight">Portal del Cliente</h2><p class="season-text-muted mt-2 font-medium text-sm">Consulta tu reserva con el nombre o celular que registraste.</p></div><div class="glass-panel card-alive p-6 sm:p-10 shadow-sm"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 season-text-muted w-5 h-5"></i><input type="text" id="searchPhone" aria-label="Nombre o celular de la reserva" autocomplete="off" maxlength="150" placeholder="Tu nombre o celular (Ej. 60000000)" class="w-full bg-black/5 border border-black/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold season-text-title outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" required></div><button type="submit" class="w-full season-btn font-bold py-3.5 rounded-2xl flex justify-center items-center gap-2 text-sm transition-transform active:scale-95"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" aria-live="polite" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-black/10 rounded-2xl bg-black/5"><p class="season-text-muted font-semibold">Escribe el nombre que pusiste en la reserva o tu número de celular. Puedes incluir +507.</p></div></div></div></section></div>`);
             const form = document.getElementById('portalSearchForm');
-            if(form){
-                form.onsubmit = async (e) => {
-                    e.preventDefault();
-                    const sp = document.getElementById('searchPhone'); if(!sp) return;
-                    const cleanPhone = (p) => String(p||'').replace(/\D/g, '').replace(/^00507/, '').replace(/^507/, '');
-                    const pi = cleanPhone(sp.value);
-                    const rc = document.getElementById('portalResults'); if(!rc) return;
-                    if(pi.length<6){ rc.innerHTML=`<div class="text-center p-8 bg-amber-500/10 rounded-2xl border border-amber-500/20"><p class="text-amber-500 font-bold">Número inválido.</p></div>`; return; }
-                    rc.innerHTML=`<div class="text-center p-8 bg-black/5 rounded-2xl border border-black/10"><div class="loading-spinner !w-6 !h-6 !border-2 mx-auto mb-3"></div><p class="season-text-muted font-bold">Buscando tu reserva...</p></div>`;
-                    let res; try { await ensureFirebaseRuntime(); res = await findReservationsByPhone(sp.value); } catch (_) { rc.textContent='No se pudo consultar. Reintenta con conexión o contáctanos por WhatsApp.'; return; }
-                    if(res.length===0) rc.innerHTML=`<div class="text-center p-8 bg-rose-500/10 rounded-2xl border border-rose-500/20"><p class="text-rose-500 font-bold">No encontramos reservas.</p></div>`;
-                    else rc.innerHTML = res.map(getPortalResultCard).join('');
-                    if(typeof lucide !== 'undefined') lucide.createIcons();
+            if(form)form.onsubmit = async event => {
+                event.preventDefault();
+                if(form.dataset.searching==='1')return;
+                const input=form.querySelector('#searchPhone'), results=form.querySelector('#portalResults') || document.getElementById('portalResults');
+                if(!input || !results)return;
+                try { parsePortalQuery(input.value); }
+                catch(error){results.textContent=error.reason==='INVALID_PHONE'?'Escribe el número de celular completo. Puedes incluir +507.':'Escribe el nombre que registraste en la reserva o tu celular completo.';input.focus();return;}
+                const button=form.querySelector('button[type="submit"]'), label=button.innerHTML;
+                form.dataset.searching='1';button.disabled=true;input.disabled=true;button.textContent='Buscando…';
+                results.innerHTML='<div class="text-center p-8 bg-black/5 rounded-2xl"><div class="loading-spinner !w-6 !h-6 !border-2 mx-auto mb-3"></div><p class="season-text-muted font-bold">Consultando tu reserva…</p></div>';
+                try {
+                    const rows=await findCustomerReservations(input.value);
+                    if(!results.isConnected)return;
+                    results.innerHTML=rows.length ? rows.map(getPortalResultCard).join('') : '<div class="text-center p-8 bg-rose-500/10 rounded-2xl border border-rose-500/20"><p class="text-rose-500 font-bold">No encontramos una reserva con esos datos.</p><p class="season-text-muted text-sm mt-2">Prueba con tu celular completo o escribe el nombre tal como lo registraste.</p></div>';
+                } catch(error) {
+                    if(!results.isConnected)return;
+                    results.textContent=error.reason==='AMBIGUOUS_NAME'?'Hay varios clientes con ese nombre. Escribe tu número de celular para ver tu reserva.':error.reason==='RATE_LIMITED'?'Has realizado varias consultas seguidas. Espera un minuto e inténtalo de nuevo.':'No pudimos consultar las reservas. Reintenta o contáctanos por WhatsApp; este mensaje no significa que tu reserva no exista.';
+                } finally {
+                    delete form.dataset.searching;button.disabled=false;input.disabled=false;button.innerHTML=label;
+                    if(typeof lucide!=='undefined')lucide.createIcons({root:form.parentElement});
                 }
-            }
+            };
         }
 
         function renderBooking() {

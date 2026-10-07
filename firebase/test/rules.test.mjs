@@ -84,6 +84,14 @@ for (const [label, filename, hardened] of [
   });
   after(async () => { await environment?.cleanup(); });
 
+  test('customer lookup index stays private while administrators can synchronize it',async()=>{
+    const admin=dbFor(adminUid),customer=dbFor('portal-customer');
+    await assertSucceeds(setDoc(ref(admin,'portal_busqueda','manual'),{nombreKey:'cliente',telefonoKey:'60000000'}));
+    await assertFails(getDoc(ref(customer,'portal_busqueda','manual')));
+    await assertFails(getDocs(collection(customer,base+'portal_busqueda')));
+    await assertFails(setDoc(ref(customer,'portal_busqueda','manual'),{nombreKey:'other',telefonoKey:'60000000'}));
+  });
+
   test('closed normal and Santa dates reject the actual stale website form; reopening permits it', async () => {
     const admin = dbFor(adminUid);
     for (const santa of [false,true]) {
