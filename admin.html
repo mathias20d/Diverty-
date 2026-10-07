@@ -354,10 +354,11 @@
 <label class="saas-label">Presentación<select id="tipoServicio" class="saas-input"><option value="servicio">Servicio</option><option value="producto">Producto por cantidad</option><option value="personaje">Personaje</option></select></label>
 <label class="saas-label">Temática del personaje<input id="tematica" class="saas-input" placeholder="Opcional"></label>
 <label class="saas-label">Cantidad mínima<input id="cantidadMinima" type="number" min="1" step="1" value="1" class="saas-input"></label>
-<label class="saas-label">Cantidad máxima<input id="cantidadMaxima" type="number" min="1" step="1" class="saas-input" placeholder="Opcional"></label>
+<label class="saas-label">Cantidad máxima<input id="cantidadMaxima" type="number" min="1" step="1" value="1000" class="saas-input" placeholder="1000 por defecto"></label>
 <label class="saas-label">Aumentar de<input id="incrementoCantidad" type="number" min="1" step="1" value="1" class="saas-input"></label>
 <label class="saas-label">Nombre de la unidad<input id="unidadEtiqueta" value="unidad" class="saas-input" placeholder="Ej.: hot dog"></label>
 </div>
+<p class="text-xs text-slate-400 mb-4">Para servicios por cantidad, hora o niño: si dejas el máximo vacío se usa 1000. Puedes indicar otro máximo. “Aumentar de” controla los botones; también se puede escribir una cantidad entera.</p>
                             <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-800 mb-3">
                                 <span class="text-sm font-bold text-white">Es Oferta 🔥</span>
                                 <div class="relative inline-block w-10 h-5 shrink-0">

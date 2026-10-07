@@ -282,6 +282,24 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     const quantitySaved=await sendNormalBooking(quantity);assert.equal(quantitySaved.serviciosSeleccionados[0].cantidad,200);assert.equal(quantitySaved.serviciosSeleccionados[0].precio,400);assert.equal(quantitySaved.serviciosSeleccionados[0].precioOriginal,2);assert.equal(quantitySaved.serviciosSeleccionados[0].tipoCobro,'unidad');
     console.log('PASS: admin-created product minimum/maximum, typed quantity, increments, cart and saved 200 × $2 = $400.');
 
+    const quantityCases=[
+      created.products.find(p=>p.nombre==='Hot dogs máximo predeterminado')||{id:'default-limit',nombre:'Hot dogs máximo predeterminado',categoria:'comida',precio:2,tipoCobro:'unidad',cantidadMinima:50,cantidadMaxima:1000},
+      {id:'legacy-limit',nombre:'Hot dogs máximo antiguo',categoria:'comida',precio:2,tipoCobro:'unidad',cantidadMinima:50,cantidadMaxima:null},
+      created.products.find(p=>p.nombre==='Hot dogs máximo ampliado')||{id:'custom-limit',nombre:'Hot dogs máximo ampliado',categoria:'comida',precio:2,tipoCobro:'unidad',cantidadMinima:1200,cantidadMaxima:2000},
+    ];
+    const {quoteBooking}=await import('../../firebase/functions/policy.mjs');
+    for(const raw of quantityCases){
+      const f=await fixture();f.api.catalogo_web=[raw];f.api.categorias_web=created.categories;
+      await f.page.goto(origin+'/?plan='+raw.id);await f.ready();const field=f.page.locator('[data-service-quantity]');await field.waitFor();
+      const max=raw.cantidadMaxima||1000;assert.equal(await field.getAttribute('max'),String(max));assert.match(await f.page.locator('.service-quantity-hint').innerText(),new RegExp('Máximo '+max));
+      await field.fill(String(max+1));await field.blur();assert.equal(await field.inputValue(),String(max));
+      await f.page.getByRole('button',{name:'Aumentar '+raw.nombre,exact:true}).click();assert.equal(await field.inputValue(),String(max));
+      await f.page.locator('[data-action="add-hourly-to-cart"]').click();await f.page.locator('#viewCart').click();await f.page.locator('#cartModal [data-action="navigate-from-modal"]').click();await f.page.locator('#bookingForm').waitFor();
+      const saved=await sendNormalBooking(f);assert.equal(saved.serviciosSeleccionados[0].cantidad,max);
+      const verified=quoteBooking(saved,'test-user',[raw],null,null,new Date('2026-10-07T17:00:00Z'));assert.equal(verified.serviciosSeleccionados[0].cantidad,max);assert.equal(verified.total,(max*2).toFixed(2));assert.deepEqual(f.errors,[]);
+    }
+    console.log('PASS: saved default, legacy null and custom quantity maxima agree across admin, web, cart, booking and real server policy.');
+
     const characters=await fixture();characters.api.catalogo_web=created.products;characters.api.categorias_web=created.categories;
     await characters.page.goto(origin+'/?categoria=personajes');await characters.ready();await characters.page.locator('.catalog-character-card').last().waitFor();
     assert.equal(await characters.page.locator('.catalog-character-card').count(),2);assert.equal(await characters.page.locator('.catalog-character-card img').count(),2);

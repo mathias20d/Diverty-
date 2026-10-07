@@ -2,7 +2,7 @@
 
 Desde la app administrativa: **Web → Servicios y personajes → Nuevo servicio / personaje**.
 
-- **Por cantidad:** indica precio por unidad, cantidad mínima, máximo opcional y el incremento de los botones. Por ejemplo, mínimo 50 hot dogs, precio $2: el cliente puede escribir 200 y verá $400. Se conservan los modos de precio fijo, por hora y por niño.
+- **Por cantidad:** indica precio por unidad, cantidad mínima, cantidad máxima y el incremento de los botones. Dejar el máximo vacío utiliza 1.000, el mismo límite predeterminado del servidor. Por ejemplo, mínimo 50 hot dogs, precio $2: el cliente puede escribir 200 y verá $400. Se conservan los modos de precio fijo, por hora y por niño.
 - **Personaje:** crea una ficha por personaje con nombre, foto, precio y temática opcional. El catálogo Personajes se crea automáticamente si hace falta. **Guardar y agregar otro personaje** conserva categoría y temática, dejando vacíos los datos de la siguiente ficha.
 
 La web muestra personajes con fotografía, precio y botones de carrito y reserva. En los productos por cantidad, el campo y los botones respetan el mínimo y el máximo. La reserva guarda el ID, nombre, cantidad, precio por unidad y total mediante el formato existente. Cada personaje tiene precio fijo e identidad propia; varios personajes pueden compartir el mismo precio.

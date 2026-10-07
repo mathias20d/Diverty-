@@ -1,3 +1,4 @@
+import { catalogQuantityLimits, clampCatalogQuantity } from './diverty-catalog-product.mjs?v=997168bfeec5';
 import { resolveTheme, themeControlsCss } from './diverty-theme-options.mjs?v=d9e520083145';
 const isThemePreview=location.pathname==='/theme-preview.html'&&window.__DIVERTY_THEME_PREVIEW__===true;
 let previewTheme=null;
@@ -1464,12 +1465,11 @@ function captureBookingGps(form, isCurrent, onProgress) {
         function getItemQuantityRule(item) {
             const raw = item?._raw || {};
             const mode = cleanStr(item?.tipoCobro || raw.tipoCobro || (item?.isHourly ? 'hora' : 'paquete')).toLowerCase();
-            const minCandidate = Number(item?.cantidadMinima ?? raw.cantidadMinima ?? raw.minCantidad ?? 1);
-            const maxCandidate = Number(item?.cantidadMaxima ?? raw.cantidadMaxima ?? raw.maxCantidad ?? 0);
-            const stepCandidate = Number(item?.incrementoCantidad ?? raw.incrementoCantidad ?? raw.pasoCantidad ?? 1);
-            const min = Number.isFinite(minCandidate) && minCandidate > 0 ? Math.floor(minCandidate) : 1;
-            const max = Number.isFinite(maxCandidate) && maxCandidate >= min ? Math.floor(maxCandidate) : null;
-            const step = Number.isFinite(stepCandidate) && stepCandidate > 0 ? Math.floor(stepCandidate) : 1;
+            const { min, max, step } = catalogQuantityLimits({...raw,
+                cantidadMinima:item?.cantidadMinima ?? raw.cantidadMinima,
+                cantidadMaxima:item?.cantidadMaxima ?? raw.cantidadMaxima,
+                incrementoCantidad:item?.incrementoCantidad ?? raw.incrementoCantidad,
+            });
 
             if (mode === 'hora' || mode === 'horas') {
                 return { enabled:true, mode:'hora', min:Math.max(1,min), max, step, singular:'hora', plural:'horas' };
@@ -1487,10 +1487,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
         function clampItemQuantity(item, value) {
             const rule = getItemQuantityRule(item);
             if (!rule.enabled) return 1;
-            let q = Number.isFinite(Number(value)) ? Math.floor(Number(value)) : rule.min;
-            q = Math.max(rule.min, q);
-            if (rule.max) q = Math.min(rule.max, q);
-            return q;
+            return clampCatalogQuantity(rule, value);
         }
 
         function escapeCatalogText(value) {

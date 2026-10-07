@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {quoteBooking,checkAvailability,controlDates,projections,ADMIN_UID} from '../policy.mjs';
 import {coverage} from '../coverage.mjs';
-import {productOptionsForSave} from '../../../assets/js/diverty-catalog-product.mjs';
+import {productOptionsForSave,catalogQuantityLimits,clampCatalogQuantity} from '../../../assets/js/diverty-catalog-product.mjs';
 export const sample={id:'web-00000000-0000-0000-0000-000000000001',cliente:'Prueba',email:'test@example.test',telefono:'60000000',telefonoBusqueda:'60000000',tipoEvento:'Cumpleaños',ninos:'10',fecha:'2026-11-10',hora:'10:00',direccion:'PH que no aparece',referenciaLugar:'',comentarios:'',serviciosSeleccionados:[{id:'plan',origenCatalogo:'catalogo_web',cantidad:1,precioOriginal:100}],esNavidad:false,total:'100',transporte:'0',descuento:'0'};
 export const product={nombre:'Plan recreativo',precio:100,descripcion:'1 animador. 2 horas',activo:true};
 const now=new Date('2026-10-06T12:00:00Z');
@@ -83,4 +83,26 @@ test('central booking requires a written venue reference even with a GPS map lin
   const input={...sample,direccion:'https://www.google.com/maps?q=9.04,-79.51',referenciaLugar:''};
   assert.throws(()=>quote(input),e=>e.reason==='PLACE_REFERENCE_REQUIRED');
   const e=quote({...input,referenciaLugar:'PH Las Palmeras, salón social'});assert.equal(e.referenciaLugar,'PH Las Palmeras, salón social');
+});
+
+test('frontend quantity limits match the server for blank, historical and explicit maxima',()=>{
+ for(const maximum of [undefined,null,'',0,500,500.8,2000]){
+  const raw={nombre:'Hot dogs',precio:2,tipoCobro:'unidad',cantidadMinima:50,cantidadMaxima:maximum,incrementoCantidad:25};
+  const rule=catalogQuantityLimits(raw);
+  const makeInput=cantidad=>({...sample,total:String(2*cantidad),serviciosSeleccionados:[{...sample.serviciosSeleccionados[0],cantidad,precioOriginal:2}]});
+  for(const requested of [49,50,51,1000,1001,2000,2001]){
+   const quantity=clampCatalogQuantity(rule,requested),saved=quote(makeInput(quantity),raw);
+   assert.equal(saved.serviciosSeleccionados[0].cantidad,quantity);assert.equal(saved.total,(quantity*2).toFixed(2));
+  }
+  for(const quantity of [49,rule.max+1])assert.throws(()=>quote(makeInput(quantity),raw),e=>e.reason==='INVALID_QUANTITY');
+ }
+});
+test('newly saved defaults and custom maxima keep the same server acceptance',()=>{
+ const form={tipoServicio:'producto',tipoCobro:'unidad',cantidadMinima:50,cantidadMaxima:'',incrementoCantidad:25};
+ for(const maximum of ['',2000]){
+  const options=productOptionsForSave({...form,cantidadMaxima:maximum}),raw={nombre:'Hot dogs',precio:2,...options};
+  const quantity=options.cantidadMaxima,event={...sample,total:String(2*quantity),serviciosSeleccionados:[{...sample.serviciosSeleccionados[0],cantidad:quantity,precioOriginal:2}]};
+  assert.equal(quote(event,raw).serviciosSeleccionados[0].cantidad,quantity);
+  assert.throws(()=>quote({...event,total:String(2*(quantity+1)),serviciosSeleccionados:[{...event.serviciosSeleccionados[0],cantidad:quantity+1}]},raw),e=>e.reason==='INVALID_QUANTITY');
+ }
 });
