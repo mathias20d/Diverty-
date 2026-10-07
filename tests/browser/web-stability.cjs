@@ -173,7 +173,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
 
     for(const christmas of [false,true]){
       const gps=await fixture({christmas});await gps.context.grantPermissions(['geolocation'],{origin});
-      await gps.context.setGeolocation({latitude:9.0123,longitude:-79.5012,accuracy:10});await openBooking(gps);
+      await gps.context.setGeolocation({latitude:9.0128,longitude:-79.5018,accuracy:25});await openBooking(gps);
       if(!christmas){
         await gps.page.locator('[name="name"]').fill('Cliente ficticio');await gps.page.locator('[name="email"]').fill('prueba@example.com');await gps.page.locator('[name="phone"]').fill('60000000');
         await gps.page.locator('#btn-next').click();await gps.page.locator('#step-2.active').waitFor();
@@ -182,7 +182,15 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       }
       const prefix=christmas?'christmas':'normal';
       await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
+      await gps.page.waitForFunction(prefix=>document.querySelector(`#${prefix}-location-status`).textContent.includes('±25 m'),prefix);
+      assert.doesNotMatch(await gps.page.locator('[name="address"]').inputValue(), /google.com\/maps/,'first 25m reading must not finish the search');
+      await gps.context.setGeolocation({latitude:9.0123,longitude:-79.5012,accuracy:6});
       await gps.page.waitForFunction(()=>document.querySelector('[name="address"]').value.startsWith('https://www.google.com/maps?q='));
+      assert.match(await gps.page.locator('[name="address"]').inputValue(), /9\.012300,-79\.501200/);
+      await gps.page.waitForFunction(prefix=>document.querySelector(`#${prefix}-location-status`).textContent.includes('±6 m'),prefix);
+      const acceptedAddress=await gps.page.locator('[name="address"]').inputValue();
+      await gps.context.setGeolocation({latitude:9.02,longitude:-79.52,accuracy:2});
+      await gps.page.waitForTimeout(100);assert.equal(await gps.page.locator('[name="address"]').inputValue(),acceptedAddress);
       assert.equal(await gps.page.locator(`[name="${prefix}Reference"]`).isVisible(),true);
       await gps.page.locator('[data-location-continue]').click();
       assert.match(await gps.page.locator('#toast').innerText(), /barriada, PH o salón/);
