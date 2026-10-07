@@ -118,6 +118,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     assert.equal(await calendar.page.locator('.calendar-day[data-date="2026-10-16"]').getAttribute('data-day-state'),'available');
     assert.equal(calendar.requests.some(url=>url.includes('firebasejs/')||url.includes('accounts:signUp')),false,'public dates do not require Firebase Auth');
     await calendar.page.locator('[data-date="2026-10-14"]').click();
+    await calendar.page.waitForFunction(()=>document.querySelector('[data-date="2026-10-14"]')?.getAttribute('aria-pressed')==='true');
     assert.equal(await calendar.page.locator('[data-date="2026-10-14"]').getAttribute('aria-pressed'),'true');
     await calendar.page.route('**/data:runQuery',route=>route.fulfill({status:503,json:{error:{message:'Temporary outage'}}}));
     await calendar.page.locator('#nextMonth').click();await calendar.page.locator('.calendar-status').waitFor();
@@ -132,6 +133,27 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     await returnHome.page.waitForFunction(()=>!document.querySelector('.calendar-status')&&document.querySelector('.calendar-day[data-day-state="available"]'));
     assert.equal(returnHome.requests.some(url=>url.includes('firebasejs/')),false);
     assert.deepEqual(calendar.errors,[]);console.log('PASS: calendario público sin Auth, cupos reales, fechas seleccionables y recuperación de errores.');
+
+    const closedCalendar=await fixture();
+    closedCalendar.api.config_web.push({id:'fechas_cerradas',fechas:{'2026-10-14':true}});
+    await closedCalendar.page.goto(origin);await closedCalendar.ready();await closedCalendar.page.locator('#calendar-section').scrollIntoViewIfNeeded();
+    const closedDay=closedCalendar.page.getByRole('button',{name:/14 de octubre.*Sin disponibilidad/});
+    await closedDay.waitFor();assert.equal(await closedDay.isDisabled(),true);
+    assert.equal(await closedDay.getAttribute('data-day-state'),'closed');
+    closedCalendar.api.config_web.find(row=>row.id==='fechas_cerradas').fechas={};
+    Object.assign(closedCalendar.api.config_web.find(row=>row.id==='web_sync'),{version:'reopened',versions:{config_web:1}});
+    await closedCalendar.page.evaluate(()=>window.__syncTick());
+    await closedCalendar.page.waitForFunction(()=>document.querySelector('[data-date="2026-10-14"]')?.dataset.dayState==='available');
+    assert.deepEqual(closedCalendar.errors,[]);
+    const closedPicker=await fixture();closedPicker.api.config_web.push({id:'fechas_cerradas',fechas:{'2026-10-14':true}});
+    await openBooking(closedPicker);await closedPicker.page.locator('[name="name"]').fill('Cliente');await closedPicker.page.locator('[name="email"]').fill('test@example.test');await closedPicker.page.locator('[name="phone"]').fill('60000000');
+    await closedPicker.page.locator('#btn-next').click();await closedPicker.page.locator('#step-2.active').waitFor();
+    await closedPicker.page.locator('#booking-open-date-picker').click();
+    assert.equal(await closedPicker.page.locator('[data-calendar-date="2026-10-14"]').isDisabled(),true);
+    await closedPicker.page.locator('[data-calendar-date="2026-10-15"]').click();
+    assert.equal(await closedPicker.page.locator('[name="date"]').inputValue(),'2026-10-15');
+    assert.deepEqual(closedPicker.errors,[]);
+    console.log('PASS: closed dates remain visible and disabled in both calendars; reopening synchronizes without a new deployment.');
 
     const desktop=await fixture({width:1280});await desktop.page.goto(origin+'/?vista=catalog');await desktop.ready();
     const desktopLayout=await desktop.page.evaluate(()=>({nav:document.querySelector('#desktopNav').getBoundingClientRect().toJSON(),logo:document.querySelector('#mainHeaderLogo').getBoundingClientRect().toJSON()}));
@@ -264,8 +286,21 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
         await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();
         await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('PH que no aparece, Brisas del Golf');
       }
-      await f.page.evaluate(()=>window.__allowBookingWrite=true);
+      // Close the day after the visitor has already filled the final step.
+      await f.page.evaluate(christmas=>{window.__allowBookingWrite=true;window.__fakeWrites={'artifacts/diverty-oficial/public/data/config_web/fechas_cerradas':{fechas:{[christmas?'2026-12-24':'2026-10-15']:true}}};},christmas);
       await f.page.locator(christmas?'#btn-submit':'[data-location-continue]').click();
+      await f.page.locator('[data-review-send]').click();
+      await f.page.locator('#booking-date-availability-message').filter({hasText:'sin disponibilidad'}).waitFor();
+      assert.equal(await f.page.evaluate(()=>Object.keys(window.__fakeWrites).some(key=>key.includes('/eventos/'))),false);
+      assert.equal(await f.page.locator('[name="name"]').inputValue(),'Cliente remoto ficticio');
+      if(christmas)assert.equal(await f.page.locator('[data-christmas-date-choice="2026-12-24"]').isDisabled(),true);
+      await f.page.evaluate(()=>window.__fakeWrites['artifacts/diverty-oficial/public/data/config_web/fechas_cerradas']={fechas:{}});
+      // Fresh public read also clears the UI warning without discarding the form.
+      Object.assign(f.api.config_web.find(row=>row.id==='web_sync'),{version:'date-reopened',versions:{config_web:1}});
+      await f.page.evaluate(()=>window.__syncTick());
+      await f.page.waitForFunction(()=>document.querySelector('#booking-date-availability-message')?.textContent==='');
+      await f.page.locator(christmas?'#btn-submit':'[data-location-continue]').click();
+
       await f.page.locator('[data-review-send]').click();
       await f.page.waitForFunction(()=>document.querySelector('#infoModal').classList.contains('show'));
       assert.deepEqual(f.errors,[]);

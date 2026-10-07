@@ -33,6 +33,8 @@ export function bookingService(db,clock=()=>new Date()) {
         if(existing.exists){if(existing.data().ownerUid!==uid)fail('FORBIDDEN','Esta solicitud pertenece a otra sesión.');return {event:existing.data(),recovered:true};}
         const configSnap=await tx.get(db.doc(configPath));const config=configSnap.data()||{};
         if(config.centralBookingValidation!==true)fail('NOT_ENABLED','La validación central todavía no está habilitada.');
+        const closures = await tx.get(ref('config_web','fechas_cerradas'));
+        if(closures.data()?.fechas?.[input.fecha] === true)fail('DATE_CLOSED','Esta fecha está sin disponibilidad. Elige otra fecha.');
         if(!Array.isArray(input.serviciosSeleccionados)||input.serviciosSeleccionados.length<1||input.serviciosSeleccionados.length>50)fail('INVALID_REQUEST','Selecciona los servicios.');
         const productRefs=input.serviciosSeleccionados.map(item=>{
           if(!['catalogo_web','campana_web'].includes(item.origenCatalogo)||typeof item.id!=='string'||!item.id||item.id.includes('/')||item.id.length>1500)fail('INVALID_REQUEST','Servicio inválido.');

@@ -1,3 +1,4 @@
+import { isClosedBookingDate } from './diverty-date-availability.mjs?v=79d415724694';
 import { catalogQuantityLimits, clampCatalogQuantity } from './diverty-catalog-product.mjs?v=997168bfeec5';
 import { resolveTheme, themeControlsCss } from './diverty-theme-options.mjs?v=d9e520083145';
 const isThemePreview=location.pathname==='/theme-preview.html'&&window.__DIVERTY_THEME_PREVIEW__===true;
@@ -7,7 +8,7 @@ import { capturePreciseGps, gpsAccuracyMessage } from './diverty-gps-capture.mjs
 import { needsPlaceReference } from './diverty-location-reference.mjs?v=89e3fe00c169';
 import { peakResourceUsage } from './diverty-resource-usage.mjs?v=9191a8365a60';
 import { prepareBookingAttempt, readBookingReceipt, isNormalDayFullyBooked, readBrowserStorage, writeBrowserStorage } from './diverty-booking-state.mjs?v=de97c2385636';
-import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=a684dda69c53';
+import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=547ea6fb13e5';
 
 function captureBookingGps(form, isCurrent, onProgress) {
     const search = capturePreciseGps({ isCurrent, onProgress });
@@ -2067,11 +2068,53 @@ function captureBookingGps(form, isCurrent, onProgress) {
             return cleanStr(ev.recursoNavidad).toLowerCase() === 'santa';
         };
 
+        let dateClosures = {}, dateClosuresLoadedAt = 0, dateClosureRequest = null;
+        async function loadClosedDates({ force = false } = {}) {
+            if (isThemePreview) return {};
+            if (!force && dateClosuresLoadedAt && Date.now() - dateClosuresLoadedAt < 15000) return dateClosures;
+            if (!dateClosureRequest) dateClosureRequest = fetchWithTimeout(fetchPublicRestDoc('config_web','fechas_cerradas'),8000)
+                .then(data => { dateClosures = data?.fechas || {}; dateClosuresLoadedAt = Date.now(); updateBookingDateClosures(); return dateClosures; })
+                .finally(() => { dateClosureRequest = null; });
+            return dateClosureRequest;
+        }
+        async function checkDateOpen(date) {
+            if (!date) return false;
+            try {
+                const fechas = await loadClosedDates({force:true});
+                if (fechas[date] === true) { showToast('Esta fecha está sin disponibilidad. Elige otra fecha.', 'error'); return false; }
+                return true;
+            } catch (_) { showToast('No se pudo comprobar la disponibilidad. Reintenta con conexión.', 'error'); return false; }
+        }
+        function updateBookingDateClosures() {
+            const form = document.getElementById('bookingForm'); if (!form) return;
+            const field = form.elements?.date; if (!field) return;
+            if (field.tagName === 'SELECT') [...field.options].forEach(option => {
+                if (!option.value) return;
+                if (!option.dataset.openLabel) option.dataset.openLabel = option.textContent;
+                option.disabled = dateClosures[option.value] === true;
+                option.textContent = option.dataset.openLabel + (option.disabled ? ' — Sin disponibilidad' : '');
+            });
+            form.querySelectorAll('[data-christmas-date-choice]').forEach(button => {
+                const closed = dateClosures[button.dataset.christmasDateChoice] === true;
+                button.disabled = closed;
+                button.classList.toggle('opacity-50',closed);
+                let status = button.querySelector('[data-date-closed-label]');
+                if (!status) { status = document.createElement('span'); status.dataset.dateClosedLabel=''; status.className='block mt-2 text-xs font-bold text-rose-600'; button.appendChild(status); }
+                status.textContent = closed ? 'Sin disponibilidad' : '';
+            });
+            let message = document.getElementById('booking-date-availability-message');
+            if (!message) { message = document.createElement('p'); message.id='booking-date-availability-message'; message.setAttribute('role','status'); message.className='mt-2 text-sm font-bold text-rose-600'; const footer = form.querySelector('#btn-next')?.parentElement; if (footer) footer.before(message); else form.appendChild(message); }
+            const closed = dateClosures[field.value] === true;
+            field.setCustomValidity(closed ? 'Esta fecha está sin disponibilidad. Elige otra fecha.' : '');
+            message.textContent = closed ? 'Esta fecha está sin disponibilidad. Elige otra fecha.' : '';
+        }
+
         let availabilityStatusCache = { at: 0, ready: false };
         async function loadBookedEventsForMonth(date, { force = false } = {}) {
             const { start, end, key } = getMonthRange(date);
             const requestSeq = ++bookedEventsRequestSeq;
             const publicRead=!db;
+            const closuresReady = loadClosedDates({force}).then(()=>true,()=>false);
             // La proyección de cupos es pública: no requiere descargar Auth ni crear una sesión.
             // Las reservas siguen utilizando Firestore y su validación transaccional.
             // El indicador de disponibilidad cambia muy poco. Evita releerlo al pasar de un
@@ -2083,7 +2126,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 ]);
                 availabilityStatusCache = { at: Date.now(), ready: status?.lista === true && normalBookingCapacity !== null };
             }
-            if (!availabilityStatusCache.ready) { availabilityReady=false; bookedEvents = []; return []; }
+            if (!await closuresReady || !availabilityStatusCache.ready) { availabilityReady=false; bookedEvents = []; return []; }
 
             if (!force && bookedEventsMonthCache.has(key) && Date.now()-bookedEventsMonthCache.get(key).at<60000) {
                 bookedEvents = bookedEventsMonthCache.get(key).rows;
@@ -2181,6 +2224,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
 
         function renderCalendar() {
             const grid = document.getElementById('availability-calendar-grid'); if(!grid) return;
+            if(dateClosures[selectedCalendarDate]===true)selectedCalendarDate=null;
             const year = currentCalDate.getFullYear(), month = currentCalDate.getMonth();
             const firstDay = new Date(year, month, 1).getDay(), daysInMonth = new Date(year, month + 1, 0).getDate();
             
@@ -2207,14 +2251,15 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 const christmasEveMode=isChristmasEveBooking();
                 const christmasDate=dateStr==='2026-12-24'||dateStr==='2026-12-25';
                 let state='available',disabled=false;
-                if(currentDate<today){state='past';disabled=true;}
+                if(dateStr<panamaDateKey()){state='past';disabled=true;}
+                else if(dateClosures[dateStr]===true){state='closed';disabled=true;}
                 else if(christmasEveMode&&!christmasDate){state='restricted';disabled=true;}
                 else if(!christmasEveMode&&christmasDate){state='christmas';disabled=true;}
                 else if(!availabilityReady){state='unknown';}
                 else if(!christmasEveMode&&isNormalDayFullyBooked(bookedEvents,dateStr,normalBookingCapacity)){state='full';disabled=true;}
                 else if(!christmasEveMode&&eventsThisDay>=1){state='limited';}
-                const labels={available:'Disponible',limited:'Pocos cupos',full:'Lleno',past:'Fecha pasada',unknown:'Disponibilidad por confirmar',restricted:'No disponible para este servicio',christmas:'Reservado para entregas de Santa'};
-                html+=`<button type="button" class="calendar-day${isSelected?' is-selected':''}" data-day-state="${state}" ${disabled?'disabled':`data-action="select-date" data-date="${dateStr}"`} aria-label="${d} de ${new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(currentCalDate)}: ${labels[state]}" aria-pressed="${isSelected}"><span>${d}</span>${state==='christmas'?'<span class="calendar-santa" aria-hidden="true">🎅</span>':''}</button>`;
+                const labels={closed:'Sin disponibilidad',available:'Disponible',limited:'Pocos cupos',full:'Lleno',past:'Fecha pasada',unknown:'Disponibilidad por confirmar',restricted:'No disponible para este servicio',christmas:'Reservado para entregas de Santa'};
+                html+=`<button type="button" class="calendar-day${isSelected?' is-selected':''}" data-day-state="${state}" ${disabled?'disabled':`data-action="select-date" data-date="${dateStr}"`} title="${labels[state]}" aria-label="${d} de ${new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(currentCalDate)}: ${labels[state]}" aria-pressed="${isSelected}"><span>${d}</span>${state==='christmas'?'<span class="calendar-santa" aria-hidden="true">🎅</span>':''}</button>`;
             }
             grid.innerHTML=html;
             if(!availabilityReady)grid.insertAdjacentHTML('beforeend','<div class="calendar-status" role="status">Disponibilidad por confirmar. Puedes enviar tu solicitud. <button type="button" data-action="retry-calendar">Reintentar</button></div>');
@@ -2238,7 +2283,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 bBox.innerHTML = `<div class="flex justify-center gap-3 sm:gap-6 mt-5 pt-4 border-t border-[var(--s-glass-border)] flex-wrap">
                     <div class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black season-text-muted uppercase tracking-widest bg-[var(--s-glass-bg)] py-1 px-2.5 rounded-full border border-[var(--s-glass-border)] shadow-sm"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> Disponible</div>
                     <div class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black text-amber-600 uppercase tracking-widest bg-amber-500/10 py-1 px-2.5 rounded-full border border-amber-500/20 shadow-sm"><div class="w-2 h-2 rounded-full bg-amber-500"></div> Pocos cupos</div>
-                    <div class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-500/10 py-1 px-2.5 rounded-full border border-rose-500/20 shadow-sm"><div class="w-2 h-2 rounded-full bg-rose-500"></div> Lleno</div>
+                    <div class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-500/10 py-1 px-2.5 rounded-full border border-rose-500/20 shadow-sm"><div class="w-2 h-2 rounded-full bg-rose-500"></div> Sin disponibilidad</div>
                 </div>`;
             }
             if(typeof lucide !== 'undefined') lucide.createIcons({root: document.getElementById('calendar-section')});
@@ -2643,7 +2688,9 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 if(!isChristmasEveBooking()&&bForm?.elements?.time)bForm.elements.time.addEventListener('change',refreshNormalResources);
                 if(!isChristmasEveBooking()&&bForm?.elements?.date)bForm.elements.date.addEventListener('change',refreshNormalResources);
                 const dateSel = bForm ? bForm.elements['date'] : null;
-                if (dateSel && !isChristmasEveBooking()) bookingDatePickerCleanup = installBookingDatePicker(dateSel, document.getElementById('booking-open-date-picker'));
+                if (dateSel && !isChristmasEveBooking()) bookingDatePickerCleanup = installBookingDatePicker(dateSel, document.getElementById('booking-open-date-picker'), {loadClosedDates:()=>loadClosedDates({force:true}),onError:message=>showToast(message,'error')});
+                void loadClosedDates({force:true}).then(updateBookingDateClosures).catch(()=>{});
+                dateSel?.addEventListener('change',updateBookingDateClosures);
                 if (dateSel && !isChristmasEveBooking()) dateSel.addEventListener('change',e=>{
                     const value=String(e.target.value||'').slice(0,10);
                     if(value==='2026-12-24'||value==='2026-12-25'){
@@ -2791,6 +2838,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 };
                 document.querySelectorAll('[data-christmas-date-choice]').forEach(btn=>btn.onclick=async()=>{
                     const value=btn.dataset.christmasDateChoice||''; const dateInput=bForm?.elements?.date; if(!dateInput) return;
+                    if (btn.disabled || !await checkDateOpen(value)) return;
                     selectedCalendarDate=value; bookingFormState.date=value; dateInput.value=value;
                     document.querySelectorAll('[data-christmas-date-choice]').forEach(x=>{
                         const active=x.dataset.christmasDateChoice===value;
@@ -2893,7 +2941,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                             // contador auxiliar `slot_santa_*`. El slot sigue protegiendo la transacción
                             // al confirmar, pero un slot huérfano ya no bloquea horarios en pantalla.
                             const count = individualCount;
-                            const fullByCapacity = count >= capacity;
+                            const fullByCapacity = dateClosures[christmasDate] === true || count >= capacity;
                             const hint = !fullByCapacity ? routeRecommendation(christmasDate, opt.value, capacity) : null;
                             return {opt,count,fullByCapacity,hint,base:String(opt.textContent||'').split(' — ')[0]};
                         });
@@ -3039,6 +3087,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                             showToast('Puedes continuar. Revisaremos esta ubicación antes de aceptar la reserva.', 'info');
                         }
                     }
+                    if (cs === 2 && !await checkDateOpen(bForm?.elements?.date?.value)) return;
                     if (cs === 2 && isChristmasEveBooking()) {
                         await refreshChristmasTimeAvailability();
                         if (christmasTimeIsUnavailable()) {
@@ -3310,6 +3359,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     await loadBookedEventsForMonth(new Date(currentCalDate),{force:true});
                     renderCalendar(); break;
                 case 'select-date':
+                    if (!await checkDateOpen(date)) { renderCalendar(); break; }
                     if (isChristmasEveBooking() && date !== '2026-12-24' && date !== '2026-12-25') {
                         showToast('Este servicio está disponible únicamente el 24 y 25 de diciembre.', 'info');
                         break;
@@ -3320,6 +3370,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     }
                     selectedCalendarDate = date; renderCalendar(); break;
                 case 'confirm-date':
+                    if (!await checkDateOpen(selectedCalendarDate)) { renderCalendar(); break; }
                     setDirectRoute('section', 'booking');
                     setActiveSection('booking');
                     requestAnimationFrame(() => {
@@ -3864,6 +3915,8 @@ function captureBookingGps(form, isCurrent, onProgress) {
                         const customerRef = doc(db,'artifacts',CRM_APP_ID,'public','data','reservas_cliente',request.id);
 
                         await runTransaction(db, async tx => {
+                            const closureSnap = await tx.get(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','fechas_cerradas'));
+                            if (isClosedBookingDate(closureSnap.data(), request.data.fecha)) throw new Error('DATE_CLOSED');
                             const lockSnap = await tx.get(slotRef);
                             const lock = lockSnap.exists() ? (lockSnap.data() || {}) : {};
                             const lockIds = Array.isArray(lock.reservationIds) ? lock.reservationIds.map(String) : [];
@@ -3939,6 +3992,18 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 await finishBookingRequest(request);
             } catch(err){
                 console.error(err);
+                // Rules may reject a closure before Firestore retries the stale
+                // transaction. Read the public closure afresh to explain that denial.
+                if (String(err?.code || '').includes('permission-denied') && db) {
+                    try {
+                        let closed = false;
+                        await runTransaction(db, async tx => {
+                            const snapshot = await tx.get(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','fechas_cerradas'));
+                            closed = isClosedBookingDate(snapshot.data(), String(new FormData(submitForm).get('date') || ''));
+                        });
+                        if (closed) err = new Error('DATE_CLOSED');
+                    } catch (_) {}
+                }
                 if (err?.details?.reason === 'PRICE_CHANGED' && err.details.quote) {
                     const quote = err.details.quote;
                     app.cart.forEach((item,index)=>{const updated=quote.items?.[index];if(updated && updated.id===item.id)item.price=updated.precioOriginal;});
@@ -3950,6 +4015,11 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     updateCartUI();
                     renderBooking();
                     showToast('Actualizamos el precio y transporte. Revisa el resumen y envía de nuevo para aceptar esos importes.', 'error');
+                } else if (err?.details?.reason === 'DATE_CLOSED' || err?.message === 'DATE_CLOSED') {
+                    pendingBooking = null;
+                    dateClosures[String(new FormData(submitForm).get('date') || '')] = true;
+                    updateBookingDateClosures();
+                    showToast('Esta fecha está sin disponibilidad. Elige otra fecha para enviar tu reserva.', 'error');
                 } else if (['SLOT_FULL','ROUTE_FULL'].includes(err?.details?.reason) || err?.message === 'SLOT_FULL') {
                     pendingBooking = null;
                     bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
@@ -4199,6 +4269,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     const jobs = [];
                     if (full || changed.has('temas_web') || changed.has('config_web')) jobs.push(loadTheme());
                     if (full || changed.has('config_web')) jobs.push(loadBanner());
+                    if (!isThemePreview && (full || changed.has('config_web'))) jobs.push(loadClosedDates({force:true}).then(()=>{renderCalendar();updateBookingDateClosures();}));
                     if (full || changed.has('categorias_web')) jobs.push(loadCategories());
                     if (full || changed.has('catalogo_web')) jobs.push(loadCatalog());
                     if (full || changed.has('campanas_web')) jobs.push(loadCampaigns());

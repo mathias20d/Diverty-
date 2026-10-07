@@ -18,7 +18,7 @@ if (result.status !== 0) process.exit(result.status || 1);
 const version = file => crypto.createHash('sha256').update(fs.readFileSync(path.join(root, file))).digest('hex').slice(0, 12);
 const main = 'assets/js/diverty-app-78bb30f118.js';
 let js = fs.readFileSync(path.join(root, main), 'utf8');
-for (const module of ['diverty-gps-point.mjs', 'diverty-gps-capture.mjs', 'diverty-theme-options.mjs', 'diverty-catalog-product.mjs']) {
+for (const module of ['diverty-gps-point.mjs', 'diverty-gps-capture.mjs', 'diverty-theme-options.mjs', 'diverty-catalog-product.mjs', 'diverty-date-availability.mjs']) {
   const escaped = module.replaceAll('.', '\\.');
   js = js.replace(new RegExp(escaped + '(?:\\?v=[a-f0-9]+)?', 'g'), `${module}?v=${version('assets/js/' + module)}`);
 }

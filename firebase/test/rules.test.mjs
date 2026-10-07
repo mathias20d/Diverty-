@@ -84,6 +84,57 @@ for (const [label, filename, hardened] of [
   });
   after(async () => { await environment?.cleanup(); });
 
+  test('closed normal and Santa dates reject the actual stale website form; reopening permits it', async () => {
+    const admin = dbFor(adminUid);
+    for (const santa of [false,true]) {
+      await setDoc(ref(admin,'config_web','fechas_cerradas'),{fechas:{[santa?'2026-12-24':'2026-11-10']:true}});
+      const c = browserClient(dbFor('closed-owner'),'closed-owner',{santa});
+      await c.submit();
+      assert.ok(c.messages.some(m=>m.text?.includes('sin disponibilidad')),JSON.stringify(c.messages));
+      assert.equal((await getDocs(collection(admin,base+'eventos'))).size,santa?1:0);
+      await setDoc(ref(admin,'config_web','fechas_cerradas'),{fechas:{}});
+      await c.submit();
+      assert.ok(c.messages.some(m=>m.kind==='success'),JSON.stringify(c.messages));
+    }
+  });
+
+  test('a closure committed during submission refuses the stale transaction and explains the denial', async () => {
+    const admin = dbFor(adminUid), customer = dbFor('race-owner');
+    const c = browserClient(customer,'race-owner');
+    let changed = false;
+    c.ctx.runTransaction = (database,callback)=>runTransaction(database,tx=>callback({
+      get:async reference=>{
+        const snapshot = await tx.get(reference);
+        if (!changed && reference.path.endsWith('/config_web/fechas_cerradas')) {
+          changed = true;
+          await setDoc(ref(admin,'config_web','fechas_cerradas'),{fechas:{'2026-11-10':true}});
+        }
+        return snapshot;
+      },
+      set:(reference,data,options)=>options?tx.set(reference,structuredClone(data),options):tx.set(reference,structuredClone(data))
+    }));
+    await c.submit();
+    assert.equal(changed,true);
+    assert.ok(c.messages.some(m=>m.text?.includes('sin disponibilidad')),JSON.stringify(c.messages));
+    assert.equal((await getDocs(collection(admin,base+'eventos'))).size,0);
+  });
+
+  if(hardened)test('server rules prohibit forged bookings on a closed date and customer closure changes', async () => {
+    const {event:request} = await sample('closed-owner');
+    const admin = dbFor(adminUid), customer = dbFor('closed-owner');
+    await setDoc(ref(admin,'config_web','fechas_cerradas'),{fechas:{[request.fecha]:true}});
+    await assertSucceeds(getDoc(ref(customer,'config_web','fechas_cerradas')));
+    await assertFails(setDoc(ref(customer,'config_web','fechas_cerradas'),{fechas:{}}));
+    await assertFails(bookingBatch(customer,request));
+    assert.equal((await getDocs(collection(admin,base+'eventos'))).size,0);
+    await setDoc(ref(admin,'config_web','fechas_cerradas'),{fechas:{}});
+    await assertSucceeds(bookingBatch(customer,request));
+    // Closing an existing reservation's date doesn't erase it or prevent admin review.
+    await setDoc(ref(admin,'config_web','fechas_cerradas'),{fechas:{[request.fecha]:true}});
+    await assertSucceeds(setDoc(ref(admin,'eventos',request.id),{...request,estado:'Confirmado'}));
+    assert.equal((await getDoc(ref(admin,'eventos',request.id))).data().estado,'Confirmado');
+  });
+
   if(hardened)test('central mode rejects direct customer writes and keeps administrator access',async()=>{
     await environment.withSecurityRulesDisabled(async ctx=>{
       await setDoc(ref(ctx.firestore(),'config_web','global'),{capacidadSimultanea:2,capacidadSanta:1,centralBookingValidation:true});

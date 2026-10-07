@@ -41,3 +41,23 @@ test('real Firestore transactions serialize overlapping starts, recover retries 
     await assert.rejects(service.create('customer',{event:{...event,id:'web-00000000-0000-0000-0000-000000000003'}}),e=>e.reason==='NOT_ENABLED');
   }finally{await db.recursiveDelete(db.collection('artifacts'));await deleteApp(app);}
 });
+
+test('central service refuses a closed day, permits reopening and recovers existing requests',{skip:!local},async()=>{
+  const app=initializeApp({projectId:'demo-diverty-closed-dates'},'closure-tests');const db=getFirestore(app);
+  const ref=(section,id)=>db.doc(`${base}/${section}/${id}`);
+  const service=bookingService(db,()=>new Date('2026-10-07T12:00:00Z'));
+  try {
+    await db.recursiveDelete(db.collection('artifacts'));
+    await ref('config_web','global').set({centralBookingValidation:true,capacidadSimultanea:3,recursosDisponibles:{animadores:3,payasos:1}});
+    await ref('catalogo_web','plan').set({nombre:'Plan recreativo',precio:100,descripcion:'1 animador. 2 horas',activo:true});
+    await ref('config_web','fechas_cerradas').set({fechas:{[event.fecha]:true}});
+    await assert.rejects(service.create('owner',{event}),e=>e.reason==='DATE_CLOSED');
+    assert.equal((await db.collection(`${base}/eventos`).get()).size,0);
+    await ref('config_web','fechas_cerradas').set({fechas:{}});
+    const created=await service.create('owner',{event});assert.equal(created.recovered,false);
+    await ref('config_web','fechas_cerradas').set({fechas:{[event.fecha]:true}});
+    const recovered=await service.create('owner',{event});assert.equal(recovered.recovered,true);
+    assert.equal((await db.collection(`${base}/eventos`).get()).size,1);
+    await assert.rejects(service.create('other',{event:{...event,id:'web-00000000-0000-0000-0000-000000000099'}}),e=>e.reason==='DATE_CLOSED');
+  }finally{await db.recursiveDelete(db.collection('artifacts'));await deleteApp(app);}
+});

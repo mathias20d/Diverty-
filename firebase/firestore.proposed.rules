@@ -21,7 +21,7 @@ service cloud.firestore {
     }
     function validRequest(id) {
       let d = request.resource.data;
-      return signedIn() && !centralValidationEnabled() && id.matches('web-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
+      return signedIn() && !centralValidationEnabled() && !closedDate(d.fecha) && id.matches('web-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
         && d.keys().hasOnly(['id','ownerUid','cliente','email','telefono','telefonoBusqueda','tipoEvento','ninos','fecha','hora','ubicacion','direccion','referenciaLugar','comentarios','servicio','serviciosSeleccionados','descripcionEvento','transporte','descuento','gastos','detalleGastos','total','abono','estado','createdAt','deletedLocally','colisionAprobada','origen','esNavidad','recursoNavidad','lat','lng'])
         && d.id == id && d.ownerUid == request.auth.uid
         && shortText(d.cliente,150) && d.cliente.size() > 0
@@ -44,6 +44,10 @@ service cloud.firestore {
         && shortText(d.createdAt,40);
     }
     // Emulator-validated proposal. Firebase publication is a separate admin action.
+    function closedDate(date) {
+      let path = /databases/$(database)/documents/artifacts/diverty-oficial/public/data/config_web/fechas_cerradas;
+      return exists(path) && get(path).data.get('fechas',{}).get(date,false) == true;
+    }
     function eventPath(id) { return /databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id); }
     function availabilityPath(id) { return /databases/$(database)/documents/artifacts/diverty-oficial/public/data/disponibilidad_web/$(id); }
     function receiptPath(id) { return /databases/$(database)/documents/artifacts/diverty-oficial/public/data/reservas_cliente/$(id); }
