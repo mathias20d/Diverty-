@@ -25,9 +25,11 @@ pasados siguen visibles. Un fallo de lectura muestra disponibilidad por confirma
 con Reintentar, sin anunciar cupos disponibles. Cambiar de mes actualiza el título
 de inmediato y evita saltar meses cuando el día actual es 29, 30 o 31.
 
-Las tarjetas recuperan profundidad, bordes de temporada, títulos destacados,
-precios alineados y acciones enmarcadas. Se conservan fotos completas, ofertas,
-precios, cantidades, personajes y acceso al detalle. No se añaden bibliotecas ni
+Las tarjetas de catálogo recuperan la composición anterior: fotos cuadradas,
+títulos más ligeros, precios junto al nombre y acciones discretas. Se eliminan
+los paneles altos y sus espacios vacíos. La miniatura vuelve a llenar su marco;
+la foto completa se conserva en el detalle. Ofertas, precios, cantidades,
+personajes y acceso al detalle siguen disponibles. No se añaden bibliotecas ni
 fuentes externas.
 
 Validación:

@@ -68,7 +68,10 @@ const server=http.createServer((req,res)=>{
     });metrics.push({preset:theme,width,...layout});
     assert.ok(layout.overflow<=1,`${theme}/${width} horizontal overflow`);
     if(!baseline){
-     assert.equal(layout.radius,'24px');assert.ok(layout.font.includes('Poppins'));
+     assert.ok(layout.font.includes('Nunito'));
+     assert.ok(layout.body.height<190,'a short service name must not create a tall empty panel');
+     const photo=await page.locator('.catalog-tile-image-wrap').first().boundingBox();
+     assert.ok(Math.abs(photo.width-photo.height)<=1,'restore the square photos of the original catalog');
      assert.notEqual(layout.surface,layout.text,`${theme}: title and card must have distinct colors`);
      const contrast=await page.locator('.catalog-tile-name').first().evaluate(el=>{
       const rgb=s=>s.match(/[\d.]+/g).map(Number),root=getComputedStyle(document.documentElement).getPropertyValue('--s-bg-color').trim();
