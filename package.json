@@ -4,7 +4,7 @@
   "scripts": {
     "build": "node scripts/build-assets.cjs",
     "test": "node --test tests/*.test.mjs",
-    "test:browser": "npm run build && node tests/browser/web-stability.cjs"
+    "test:browser": "npm run build && node tests/browser/hero-video.cjs && node tests/browser/web-stability.cjs"
   },
   "devDependencies": {
     "esbuild": "0.25.12",

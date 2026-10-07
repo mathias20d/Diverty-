@@ -23,7 +23,7 @@ const seed=()=>({
 const documentFor=(collection,row)=>({name:`projects/diverty-eventos/databases/(default)/documents/artifacts/diverty-oficial/public/data/${collection}/${row.id}`,fields:Object.fromEntries(Object.entries(row).filter(([k])=>k!=='id').map(([k,v])=>[k,encode(v)]))});
 const sdk=`export const initializeApp=()=>({});export const getApps=()=>[];export const getApp=()=>({});export const getFirestore=()=>({});export const getAuth=()=>({currentUser:{uid:'test-user'}});export const signInAnonymously=async()=>({});export const signInWithCustomToken=async()=>({});export const doc=(...args)=>args.slice(1).join('/');export const collection=doc;export const where=(...args)=>args;export const query=(...args)=>args;
 export const getDoc=async ref=>{const stored=window.__fakeWrites?.[ref];const isConfig=ref.includes('/config_web/');return {exists:()=>!!stored||isConfig,data:()=>stored||(ref.endsWith('disponibilidad')?{lista:true}:{capacidadSimultanea:3,capacidadSanta:1,recursosDisponibles:{animadores:3,payasos:1}})};};
-export const getDocs=async()=>{window.__availabilityReads=(window.__availabilityReads||0)+1;if(window.__holdAvailability){window.__holdAvailability=false;await new Promise(resolve=>window.__releaseAvailability=resolve);}return {docs:window.__occupied?[{id:'web-test-occupied',data:()=>({fecha:'2026-12-24',hora:'18:00',esNavidad:true,recursoNavidad:'Santa'})}]:[]};};
+export const getDocs=async()=>{window.__availabilityReads=(window.__availabilityReads||0)+1;if(window.__holdAvailability){if(!window.__heldAvailability)window.__heldAvailability=new Promise(resolve=>window.__releaseAvailability=()=>{window.__holdAvailability=false;window.__heldAvailability=null;resolve();});await window.__heldAvailability;}return {docs:window.__occupied?[{id:'web-test-occupied',data:()=>({fecha:'2026-12-24',hora:'18:00',esNavidad:true,recursoNavidad:'Santa'})}]:[]};};
 export const setDoc=async()=>{throw new Error('Unexpected write');};export const onSnapshot=()=>()=>{};export const writeBatch=()=>({});export const runTransaction=async(_db,callback)=>{if(!window.__allowBookingWrite)throw new Error('Unexpected write');const writes={};await callback({get:async ref=>{if(Object.keys(writes).length)throw new Error('Read after write');return {exists:()=>!!window.__fakeWrites?.[ref],data:()=>window.__fakeWrites?.[ref]};},set:(ref,data)=>writes[ref]=data});window.__fakeWrites={...window.__fakeWrites,...writes};};`;
 
 (async()=>{
@@ -49,6 +49,14 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       if(url.origin===origin)return route.continue();
       if(url.hostname==='firestore.googleapis.com'){
         if(offline)return route.abort();
+        if(url.pathname.endsWith('/data:runQuery')){
+          const body=route.request().postDataJSON();
+          assert.equal(body.structuredQuery.from[0].collectionId,'disponibilidad_web');
+          const filters=body.structuredQuery.where.compositeFilter.filters;
+          const start=filters[0].fieldFilter.value.stringValue,end=filters[1].fieldFilter.value.stringValue;
+          const rows=(api.disponibilidad_web||[]).filter(row=>row.fecha>=start&&row.fecha<=end);
+          return route.fulfill({json:rows.map(row=>({document:documentFor('disponibilidad_web',row)}))});
+        }
         const [collection,id]=url.pathname.split('/public/data/')[1]?.split('/')||[];
         if(collection==='temas_web')await gate;
         const rows=api[collection]||[];
@@ -76,7 +84,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     assert.equal(await cold.page.locator('html').evaluate(e=>e.classList.contains('diverty-booting')),false);
     await cold.page.locator('.hero-content h1').waitFor({state:'visible'});
     assert.equal(await cold.page.locator('#themeBootLoader').count(),0);
-    assert.equal(await cold.page.locator('#hero-video source').getAttribute('src'),null,'the video cannot compete with the first screen');
+    assert.ok(await cold.page.locator('#hero-video source').getAttribute('src'),'the visible video starts without waiting for the remote theme');
     assert.ok(await cold.page.locator('#calendar-section').evaluate(el=>el.getBoundingClientRect().top>=innerHeight),'the pending offers reserve space instead of moving a visible calendar');
     cold.releaseTheme();await cold.ready();
     assert.equal(await cold.page.locator('body').getAttribute('data-theme'),'halloween');
@@ -98,7 +106,32 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     await cold.page.waitForFunction(()=>!!document.querySelector('#hero-video source')?.getAttribute('src'),{},{timeout:10000});
     if(!cold.requests.some(url=>url.includes('.mp4')))await cold.page.waitForRequest(request=>request.url().includes('.mp4'),{timeout:3000});
     assert.ok(cold.requests.some(url=>url.includes('.mp4')),'the hero video is retained and starts after the initial content');
-    console.log('PASS: video conservado y diferido hasta después del contenido inicial.');
+    console.log('PASS: video conservado e iniciado después del primer render, sin espera fija.');
+
+    const calendar=await fixture();
+    calendar.api.disponibilidad_web=[{id:'limited',fecha:'2026-10-14',hora:'10:00',estado:'Confirmado'},{id:'cancelled',fecha:'2026-10-16',hora:'10:00',estado:'Cancelado'},{id:'slot_ignore',fecha:'2026-10-16',hora:'10:00',count:100}];
+    for(let minutes=480;minutes<=1410;minutes+=30)for(let n=0;n<3;n++)calendar.api.disponibilidad_web.push({id:`full-${minutes}-${n}`,fecha:'2026-10-15',hora:`${String(Math.floor(minutes/60)).padStart(2,'0')}:${String(minutes%60).padStart(2,'0')}`,estado:'Confirmado'});
+    await calendar.page.goto(origin);await calendar.ready();await calendar.page.locator('#calendar-section').scrollIntoViewIfNeeded();
+    await calendar.page.waitForFunction(()=>document.querySelector('[data-date="2026-10-14"]')?.dataset.dayState==='limited');
+    assert.equal(await calendar.page.locator('.calendar-status').count(),0);
+    assert.equal(await calendar.page.locator('.calendar-day[data-day-state="full"]').count(),1);
+    assert.equal(await calendar.page.locator('.calendar-day[data-date="2026-10-16"]').getAttribute('data-day-state'),'available');
+    assert.equal(calendar.requests.some(url=>url.includes('firebasejs/')||url.includes('accounts:signUp')),false,'public dates do not require Firebase Auth');
+    await calendar.page.locator('[data-date="2026-10-14"]').click();
+    assert.equal(await calendar.page.locator('[data-date="2026-10-14"]').getAttribute('aria-pressed'),'true');
+    await calendar.page.route('**/data:runQuery',route=>route.fulfill({status:503,json:{error:{message:'Temporary outage'}}}));
+    await calendar.page.locator('#nextMonth').click();await calendar.page.locator('.calendar-status').waitFor();
+    await calendar.page.waitForFunction(()=>document.querySelector('#cal-month-year')?.textContent.toLowerCase().includes('noviembre'));
+    assert.equal(await calendar.page.locator('.calendar-day[data-day-state="available"]').count(),0,'failed reads must not advertise available dates');
+    await calendar.page.unroute('**/data:runQuery');
+    await calendar.page.locator('[data-action="retry-calendar"]').click();
+    await calendar.page.waitForFunction(()=>!document.querySelector('.calendar-status'));
+    assert.ok(await calendar.page.locator('.calendar-day[data-day-state="available"]').count()>0);
+    const returnHome=await fixture();await returnHome.page.goto(origin+'/?vista=catalog');await returnHome.ready();
+    await returnHome.page.locator('#mainHeaderLogo').click();await returnHome.page.locator('#calendar-section').scrollIntoViewIfNeeded();
+    await returnHome.page.waitForFunction(()=>!document.querySelector('.calendar-status')&&document.querySelector('.calendar-day[data-day-state="available"]'));
+    assert.equal(returnHome.requests.some(url=>url.includes('firebasejs/')),false);
+    assert.deepEqual(calendar.errors,[]);console.log('PASS: calendario público sin Auth, cupos reales, fechas seleccionables y recuperación de errores.');
 
     const desktop=await fixture({width:1280});await desktop.page.goto(origin+'/?vista=catalog');await desktop.ready();
     const desktopLayout=await desktop.page.evaluate(()=>({nav:document.querySelector('#desktopNav').getBoundingClientRect().toJSON(),logo:document.querySelector('#mainHeaderLogo').getBoundingClientRect().toJSON()}));

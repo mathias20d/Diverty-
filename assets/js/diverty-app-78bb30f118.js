@@ -82,6 +82,24 @@ function captureBookingGps(form, isCurrent, onProgress) {
             return rows;
         }
 
+        async function fetchPublicRestMonth(start, end) {
+            const url=`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/artifacts/${CRM_APP_ID}/public/data:runQuery`;
+            const response=await fetch(url, {
+                method:'POST', headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({structuredQuery:{from:[{collectionId:'disponibilidad_web'}],where:{compositeFilter:{op:'AND',filters:[
+                    {fieldFilter:{field:{fieldPath:'fecha'},op:'GREATER_THAN_OR_EQUAL',value:{stringValue:start}}},
+                    {fieldFilter:{field:{fieldPath:'fecha'},op:'LESS_THAN_OR_EQUAL',value:{stringValue:end}}}
+                ]}}}})
+            });
+            if(!response.ok) throw new Error(`Firestore availability ${response.status}`);
+            const rows=await response.json();
+            if(!Array.isArray(rows)||rows.some(row=>row.error)) throw new Error('Incomplete availability response');
+            return rows.filter(row=>row.document).map(row=>{
+                const event=decodeFirestoreDocument(row.document);
+                return {...event,_availabilityId:event.id};
+            });
+        }
+
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
 
         const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
@@ -539,12 +557,15 @@ function captureBookingGps(form, isCurrent, onProgress) {
             if(status==='review' || status==='blocked') return 0;
             return null;
         }
-        async function getNormalResourceCapacity({force=false}={}){
-            if(!db) { try { await ensureFirebaseRuntime(); } catch(_) { return normalResourceCapacityCache.value; } }
+        async function getNormalResourceCapacity({force=false,publicRead=false}={}){
+            if(!publicRead&&!db){try{await ensureFirebaseRuntime();}catch(_){return normalResourceCapacityCache.value;}}
             if(!force && Date.now()-normalResourceCapacityCache.at<60000) return normalResourceCapacityCache.value;
             try{
-                const snap=await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
-                const cfg=snap.exists()?(snap.data()||{}):{};
+                let cfg;
+                if(!publicRead){
+                    const snap=await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
+                    cfg=snap.exists()?(snap.data()||{}):{};
+                }else{cfg=await fetchWithTimeout(fetchPublicRestDoc('config_web','global'),8000)||{};}
                 const r=cfg.recursosDisponibles&&typeof cfg.recursosDisponibles==='object'?cfg.recursosDisponibles:{};
                 const resourceCount = (value, fallback) => value != null && Number.isFinite(Number(value)) ? Math.max(0, Math.round(Number(value))) : fallback;
                 normalResourceCapacityCache={at:Date.now(),value:{animadores:resourceCount(r.animadores,3),payasos:resourceCount(r.payasos,1)}};
@@ -1672,11 +1693,12 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     setupSliders(); 
                 }
 
-                if(typeof renderCalendar === 'function') renderCalendar(); 
+                if(typeof renderCalendar === 'function') renderCalendar();
+                window.__divertyObserveCalendar?.();
                 return;
             }
 
-            setContent(`<div id="hero-section-identifier"><div class="relative"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video id="hero-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="none" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/so_0,w_720,q_auto,f_jpg/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none"><source data-src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="dv-hero-shade absolute inset-0 bg-black/50 z-[2] pointer-events-none"></div><div class="dv-hero-fade absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--s-bg-color)] to-transparent z-[2] pointer-events-none"></div><div class="hero-content z-[3] relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-black mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="season-gradient-text drop-shadow-md">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full season-btn rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform active:scale-95 font-bold text-base shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> Reservar ahora</button><button data-action="scroll-to-catalog" class="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-colors font-bold text-base shadow-md active:scale-95"><i data-lucide="eye" class="w-5 h-5"></i> Ver catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-6"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-[340px] mx-auto px-2"><div class="glass-panel card-alive p-4 sm:p-5 shadow-sm relative overflow-hidden" id="calendar-card-inner"><div class="flex items-center gap-3 mb-2"><div class="w-9 h-9 rounded-[10px] border-[2px] border-[var(--s-primary)]/20 bg-[var(--s-primary)]/10 flex items-center justify-center season-text-primary shadow-inner"><i data-lucide="calendar-heart" class="w-4 h-4"></i></div><div class="text-left"><h2 class="text-lg font-black season-text-title font-poppins leading-none tracking-tight">Selecciona tu fecha</h2><p class="season-text-muted text-[10px] mt-1 font-medium">Reserva en segundos</p></div></div><div class="calendar-motivation mt-3 mb-1 rounded-[14px] px-3.5 py-3 border border-[var(--s-glass-border)] text-left" style="background: color-mix(in srgb, var(--s-primary) 8%, var(--s-glass-bg));"><p class="season-text-title text-[11px] sm:text-xs font-extrabold leading-snug flex items-start gap-2"><i data-lucide="sparkles" class="w-4 h-4 season-text-primary shrink-0 mt-0.5"></i><span>Tu celebración comienza aquí. Elige una fecha disponible y asegura tu espacio antes de que se agote.</span></p></div><div class="flex justify-between items-center mb-4 mt-3 relative z-10 bg-[var(--s-glass-bg)] backdrop-blur-md p-1.5 rounded-[12px] border border-[var(--s-glass-border)] shadow-sm w-full mx-auto gap-2"><button data-action="prevMonth" id="prevMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><h3 id="cal-month-year" class="text-sm sm:text-base font-black season-text-title capitalize leading-none font-poppins px-1 tracking-wide">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-1 gap-x-1 text-center relative z-10 w-full mb-2"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
+            setContent(`<div id="hero-section-identifier"><div class="relative"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video id="hero-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="none" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/so_0,w_720,q_auto,f_jpg/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none"><source data-src-mobile="https://res.cloudinary.com/dv40hkeyz/video/upload/w_480,q_auto:eco,f_mp4,vc_h264:baseline,fps_24,ac_none,br_700k/v1723578146/20250813_151416_0001_p5lwst.mp4" data-src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="dv-hero-shade absolute inset-0 bg-black/50 z-[2] pointer-events-none"></div><div class="dv-hero-fade absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--s-bg-color)] to-transparent z-[2] pointer-events-none"></div><div class="hero-content z-[3] relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-black mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="season-gradient-text drop-shadow-md">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full season-btn rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform active:scale-95 font-bold text-base shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> Reservar ahora</button><button data-action="scroll-to-catalog" class="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-colors font-bold text-base shadow-md active:scale-95"><i data-lucide="eye" class="w-5 h-5"></i> Ver catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-6"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-[340px] mx-auto px-2"><div class="glass-panel card-alive p-4 sm:p-5 shadow-sm relative overflow-hidden" id="calendar-card-inner"><div class="flex items-center gap-3 mb-2"><div class="w-9 h-9 rounded-[10px] border-[2px] border-[var(--s-primary)]/20 bg-[var(--s-primary)]/10 flex items-center justify-center season-text-primary shadow-inner"><i data-lucide="calendar-heart" class="w-4 h-4"></i></div><div class="text-left"><h2 class="text-lg font-black season-text-title font-poppins leading-none tracking-tight">Selecciona tu fecha</h2><p class="season-text-muted text-[10px] mt-1 font-medium">Reserva en segundos</p></div></div><div class="calendar-motivation mt-3 mb-1 rounded-[14px] px-3.5 py-3 border border-[var(--s-glass-border)] text-left" style="background: color-mix(in srgb, var(--s-primary) 8%, var(--s-glass-bg));"><p class="season-text-title text-[11px] sm:text-xs font-extrabold leading-snug flex items-start gap-2"><i data-lucide="sparkles" class="w-4 h-4 season-text-primary shrink-0 mt-0.5"></i><span>Tu celebración comienza aquí. Elige una fecha disponible y asegura tu espacio antes de que se agote.</span></p></div><div class="flex justify-between items-center mb-4 mt-3 relative z-10 bg-[var(--s-glass-bg)] backdrop-blur-md p-1.5 rounded-[12px] border border-[var(--s-glass-border)] shadow-sm w-full mx-auto gap-2"><button data-action="prevMonth" id="prevMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><h3 id="cal-month-year" class="text-sm sm:text-base font-black season-text-title capitalize leading-none font-poppins px-1 tracking-wide">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-1 gap-x-1 text-center relative z-10 w-full mb-2"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
             
             const campWrapper = document.getElementById('home-campaigns-wrapper');
             if (campWrapper && isFirebaseLoaded) {
@@ -1685,6 +1707,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
             }
 
             window.__divertyScheduleHero?.();
+            window.__divertyObserveCalendar?.();
 
             if(typeof renderCalendar === 'function') renderCalendar(); 
         }
@@ -2046,35 +2069,39 @@ function captureBookingGps(form, isCurrent, onProgress) {
 
         let availabilityStatusCache = { at: 0, ready: false };
         async function loadBookedEventsForMonth(date, { force = false } = {}) {
-            if (!db) { try { await ensureFirebaseRuntime(); } catch(_) { availabilityReady=false; return []; } }
+            const { start, end, key } = getMonthRange(date);
+            const requestSeq = ++bookedEventsRequestSeq;
+            const publicRead=!db;
+            // La proyección de cupos es pública: no requiere descargar Auth ni crear una sesión.
+            // Las reservas siguen utilizando Firestore y su validación transaccional.
             // El indicador de disponibilidad cambia muy poco. Evita releerlo al pasar de un
             // mes a otro repetidamente; force=true sigue permitiendo una comprobación inmediata.
             if (force || Date.now() - availabilityStatusCache.at > 60000) {
                 const [status] = await Promise.all([
-                    getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','disponibilidad')).catch(() => null),
-                    getNormalResourceCapacity({force})
+                    (!publicRead ? getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','disponibilidad')).then(s=>s.data()) : fetchWithTimeout(fetchPublicRestDoc('config_web','disponibilidad'),8000)).catch(() => null),
+                    getNormalResourceCapacity({force,publicRead})
                 ]);
-                availabilityStatusCache = { at: Date.now(), ready: status?.data()?.lista === true };
+                availabilityStatusCache = { at: Date.now(), ready: status?.lista === true && normalBookingCapacity !== null };
             }
-            availabilityReady = availabilityStatusCache.ready;
-            if (!availabilityReady) { bookedEvents = []; return []; }
-            const { start, end, key } = getMonthRange(date);
+            if (!availabilityStatusCache.ready) { availabilityReady=false; bookedEvents = []; return []; }
 
             if (!force && bookedEventsMonthCache.has(key) && Date.now()-bookedEventsMonthCache.get(key).at<60000) {
                 bookedEvents = bookedEventsMonthCache.get(key).rows;
+                availabilityReady=true;
                 return bookedEvents;
             }
 
-            const requestSeq = ++bookedEventsRequestSeq;
+            availabilityReady=false;
             try {
-                const eventsRef = collection(db, 'artifacts', CRM_APP_ID, 'public', 'data', 'disponibilidad_web');
-                const monthQuery = query(
-                    eventsRef,
-                    where('fecha', '>=', start),
-                    where('fecha', '<=', end)
-                );
-                const snap = await fetchWithTimeout(getDocs(monthQuery), 8000);
-                let monthEvents = snap.docs.map(d => ({ ...d.data(), _availabilityId: d.id })).filter(isBlockingEvent);
+                let monthEvents;
+                if(!publicRead){
+                    const eventsRef=collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web');
+                    const snap=await fetchWithTimeout(getDocs(query(eventsRef,where('fecha','>=',start),where('fecha','<=',end))),8000);
+                    monthEvents=snap.docs.map(d=>({...d.data(),_availabilityId:d.id}));
+                }else{
+                    monthEvents=await fetchWithTimeout(fetchPublicRestMonth(start,end),8000);
+                }
+                monthEvents=monthEvents.filter(isBlockingEvent);
 
                 // RUTAS NAVIDAD: disponibilidad_web es la fuente pública autorizada.
                 // Las reservas nuevas ya guardan lat/lng aquí al confirmar la reserva.
@@ -2083,10 +2110,12 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 // Evita que una respuesta antigua reemplace el mes que el usuario ya cambió.
                 if (requestSeq === bookedEventsRequestSeq || getMonthRange(currentCalDate).key === key) {
                     bookedEvents = monthEvents;
+                    availabilityReady=true;
                 }
                 return monthEvents;
             } catch (e) {
-                availabilityReady = false; console.warn('No se pudo cargar disponibilidad del mes:', e);
+                if(requestSeq===bookedEventsRequestSeq)availabilityReady=false;
+                console.warn('No se pudo cargar disponibilidad del mes:', e);
                 return bookedEventsMonthCache.get(key)?.rows || [];
             }
         }
@@ -2175,37 +2204,20 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 }).length;
                 const isSelected = selectedCalendarDate === dateStr;
                 
-                let c = "w-8 h-8 sm:w-9 sm:h-9 mx-auto rounded-[10px] flex items-center justify-center font-bold text-[12px] sm:text-[13px] transition-all duration-300 cursor-pointer border border-transparent ";
-                
-                // NAVIDAD FASE 2 — calendario aislado para Entregas de Nochebuena.
-                // No cambia la disponibilidad ni la capacidad de los servicios normales.
-                const christmasEveMode = isChristmasEveBooking();
-                const isChristmasBookingDate = dateStr === '2026-12-24' || dateStr === '2026-12-25';
-
-                if(christmasEveMode && !isChristmasBookingDate) {
-                    html += `<div class="flex items-center justify-center pointer-events-none"><div class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-[var(--s-text-muted)] opacity-25 font-medium cursor-not-allowed">${d}</div></div>`;
-                }
-                else if(christmasEveMode && isChristmasBookingDate) {
-                    html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'season-btn ring-4 ring-[var(--s-primary)]/30 scale-110 text-white shadow-lg':'bg-emerald-500/15 text-emerald-600 border-emerald-500/30 active:scale-95 shadow-md'}">${d}</div></div>`;
-                }
-                else if(!christmasEveMode && isChristmasBookingDate) {
-                    html += `<div class="flex items-center justify-center relative pointer-events-none" title="Reservado para entregas de Santa"><div class="${c} bg-red-500/10 text-red-400 border-red-500/20 cursor-not-allowed opacity-55">${d}</div><span class="absolute -top-1 -right-0 text-[9px]">🎅</span></div>`;
-                }
-                else if(currentDate<today) { 
-                    html += `<div class="flex items-center justify-center"><div class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-[var(--s-text-muted)] opacity-30 font-medium">${d}</div></div>`; 
-                }
-                else if(isNormalDayFullyBooked(bookedEvents, dateStr, normalBookingCapacity)){
-                    html += `<div class="flex items-center justify-center relative pointer-events-none"><div class="${c} bg-rose-500/10 text-rose-500 border-rose-500/20 line-through decoration-rose-500/50 cursor-not-allowed shadow-sm">${d}</div></div>`; 
-                }
-                else if(eventsThisDay>=1){ 
-                    html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'season-btn ring-4 ring-amber-400/30 scale-110 text-white shadow-lg':'bg-amber-500/15 text-amber-600 border-amber-500/30 active:scale-95 shadow-md'}">${d}</div></div>`; 
-                }
-                else { 
-                    html += `<div class="flex items-center justify-center relative" data-action="select-date" data-date="${dateStr}"><div class="${c} ${isSelected?'season-btn ring-4 ring-[var(--s-primary)]/30 scale-110 text-white shadow-lg':'bg-[var(--s-glass-bg)] text-[var(--s-text-title)] border-[var(--s-glass-border)] active:scale-95 shadow-[0_2px_10px_rgba(0,0,0,0.03)]'}">${d}</div></div>`; 
-                }
+                const christmasEveMode=isChristmasEveBooking();
+                const christmasDate=dateStr==='2026-12-24'||dateStr==='2026-12-25';
+                let state='available',disabled=false;
+                if(currentDate<today){state='past';disabled=true;}
+                else if(christmasEveMode&&!christmasDate){state='restricted';disabled=true;}
+                else if(!christmasEveMode&&christmasDate){state='christmas';disabled=true;}
+                else if(!availabilityReady){state='unknown';}
+                else if(!christmasEveMode&&isNormalDayFullyBooked(bookedEvents,dateStr,normalBookingCapacity)){state='full';disabled=true;}
+                else if(!christmasEveMode&&eventsThisDay>=1){state='limited';}
+                const labels={available:'Disponible',limited:'Pocos cupos',full:'Lleno',past:'Fecha pasada',unknown:'Disponibilidad por confirmar',restricted:'No disponible para este servicio',christmas:'Reservado para entregas de Santa'};
+                html+=`<button type="button" class="calendar-day${isSelected?' is-selected':''}" data-day-state="${state}" ${disabled?'disabled':`data-action="select-date" data-date="${dateStr}"`} aria-label="${d} de ${new Intl.DateTimeFormat('es-ES',{month:'long',year:'numeric'}).format(currentCalDate)}: ${labels[state]}" aria-pressed="${isSelected}"><span>${d}</span>${state==='christmas'?'<span class="calendar-santa" aria-hidden="true">🎅</span>':''}</button>`;
             }
-            grid.innerHTML = html;
-            if (!availabilityReady) grid.insertAdjacentHTML('beforeend','<p style="grid-column:1/-1">Disponibilidad por confirmar. Puedes enviar tu solicitud.</p>');
+            grid.innerHTML=html;
+            if(!availabilityReady)grid.insertAdjacentHTML('beforeend','<div class="calendar-status" role="status">Disponibilidad por confirmar. Puedes enviar tu solicitud. <button type="button" data-action="retry-calendar">Reintentar</button></div>');
             const mn = new Intl.DateTimeFormat('es-ES', { month: 'long', year: 'numeric' }).format(currentCalDate);
             const cmy = document.getElementById('cal-month-year'); if(cmy) cmy.textContent = mn.charAt(0).toUpperCase() + mn.slice(1);
             
@@ -2224,7 +2236,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 </div>`;
             } else {
                 bBox.innerHTML = `<div class="flex justify-center gap-3 sm:gap-6 mt-5 pt-4 border-t border-[var(--s-glass-border)] flex-wrap">
-                    <div class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black season-text-muted uppercase tracking-widest bg-[var(--s-glass-bg)] py-1 px-2.5 rounded-full border border-[var(--s-glass-border)] shadow-sm"><div class="w-2 h-2 rounded-full border border-[var(--s-glass-border)]"></div> Disponible</div>
+                    <div class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black season-text-muted uppercase tracking-widest bg-[var(--s-glass-bg)] py-1 px-2.5 rounded-full border border-[var(--s-glass-border)] shadow-sm"><div class="w-2 h-2 rounded-full bg-emerald-500"></div> Disponible</div>
                     <div class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black text-amber-600 uppercase tracking-widest bg-amber-500/10 py-1 px-2.5 rounded-full border border-amber-500/20 shadow-sm"><div class="w-2 h-2 rounded-full bg-amber-500"></div> Pocos cupos</div>
                     <div class="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black text-rose-500 uppercase tracking-widest bg-rose-500/10 py-1 px-2.5 rounded-full border border-rose-500/20 shadow-sm"><div class="w-2 h-2 rounded-full bg-rose-500"></div> Lleno</div>
                 </div>`;
@@ -3246,13 +3258,15 @@ function captureBookingGps(form, isCurrent, onProgress) {
 
         async function handleGlobalClick(e) {
             if (e.target.closest('#prevMonth')) {
-                currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+                currentCalDate.setDate(1); currentCalDate.setMonth(currentCalDate.getMonth() - 1);
+                availabilityReady=false; bookedEvents=[]; renderCalendar();
                 await loadBookedEventsForMonth(new Date(currentCalDate));
                 renderCalendar();
                 return;
             }
             if (e.target.closest('#nextMonth')) {
-                currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+                currentCalDate.setDate(1); currentCalDate.setMonth(currentCalDate.getMonth() + 1);
+                availabilityReady=false; bookedEvents=[]; renderCalendar();
                 await loadBookedEventsForMonth(new Date(currentCalDate));
                 renderCalendar();
                 return;
@@ -3292,6 +3306,9 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     else { showToast("Cupón inválido o expirado", "error"); appliedCoupon=null; updateCartUI(); }
                     break;
                 }
+                case 'retry-calendar':
+                    await loadBookedEventsForMonth(new Date(currentCalDate),{force:true});
+                    renderCalendar(); break;
                 case 'select-date':
                     if (isChristmasEveBooking() && date !== '2026-12-24' && date !== '2026-12-25') {
                         showToast('Este servicio está disponible únicamente el 24 y 25 de diciembre.', 'info');
@@ -4233,22 +4250,29 @@ function captureBookingGps(form, isCurrent, onProgress) {
             if(app.activeSection==='home') renderHome();
             bootComplete=true; await drainRefresh();
 
+            let lazyAvailabilityStartedAt=0;
             const lazyLoadAvailability = async () => {
-                if (isThemePreview || availabilityReady) return;
+                if (isThemePreview || availabilityReady || Date.now()-lazyAvailabilityStartedAt<30000) return;
+                lazyAvailabilityStartedAt=Date.now();
                 try {
-                    await ensureFirebaseRuntime();
                     await loadBookedEventsForMonth(new Date(currentCalDate));
                     if(app.activeSection==='home') renderCalendar();
                 } catch(e) { console.warn('Disponibilidad bajo demanda no disponible', e); }
             };
-            const calendarEl=document.getElementById('calendar-section');
-            if(calendarEl && 'IntersectionObserver' in window){
-                const io=new IntersectionObserver(entries=>{
-                    if(entries.some(x=>x.isIntersecting)){ io.disconnect(); lazyLoadAvailability(); }
-                },{rootMargin:'180px 0px'});
-                io.observe(calendarEl);
-            }
-            window.__divertyLazyAvailability = lazyLoadAvailability;
+            let calendarObserver=null;
+            window.__divertyObserveCalendar=()=>{
+                if(calendarObserver)calendarObserver.disconnect();
+                const calendarEl=document.getElementById('calendar-section');
+                if(!calendarEl||isThemePreview)return;
+                if('IntersectionObserver' in window){
+                    calendarObserver=new IntersectionObserver(entries=>{
+                        if(entries.some(x=>x.isIntersecting)){calendarObserver.disconnect();lazyLoadAvailability();}
+                    },{rootMargin:'180px 0px'});
+                    calendarObserver.observe(calendarEl);
+                }else{lazyLoadAvailability();}
+            };
+            window.__divertyLazyAvailability=lazyLoadAvailability;
+            window.__divertyObserveCalendar();
 
         }
 
