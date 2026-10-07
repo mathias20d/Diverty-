@@ -1,3 +1,4 @@
+import {socialImage} from '../../assets/js/diverty-images.mjs';
 const FIREBASE_API_KEY = "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0";
 const FIREBASE_PROJECT_ID = "diverty-eventos";
 const APP_ID = "diverty-oficial";
@@ -45,24 +46,6 @@ function money(value) {
   return Number.isFinite(n) ? n.toFixed(2) : "";
 }
 
-function normalizeImage(value = "", origin = "") {
-  let image = String(value || "").trim();
-  if (!image) return "";
-  if (image.startsWith("//")) image = `https:${image}`;
-  if (image.startsWith("http://")) image = `https://${image.slice(7)}`;
-  if (image.startsWith("/")) image = `${origin}${image}`;
-
-  // Para Cloudinary generamos una portada social 1200x630. Esto evita que
-  // WhatsApp descarte imágenes demasiado pequeñas o con proporción extraña.
-  if (image.includes("res.cloudinary.com/") && image.includes("/image/upload/")) {
-    image = image.replace(
-      "/image/upload/",
-      "/image/upload/f_auto,q_auto:good,c_fill,g_auto,w_1200,h_630/"
-    );
-  }
-  return image;
-}
-
 async function getAnonymousToken() {
   if (cachedToken && Date.now() < tokenExpiresAt - 60000) return cachedToken;
 
@@ -107,7 +90,7 @@ async function getFirestoreDoc(collectionName, id, forceFresh = false) {
   // previa nueva. En ese caso no usamos la copia anterior de Edge Cache.
   if (forceFresh) return await fetchFirestoreDoc(collectionName, id);
 
-  const cache = await caches.open("diverty-social-preview-v3");
+  const cache = await caches.open("diverty-social-preview-v4");
   const cacheKey = `https://diverty-cache.local/${collectionName}/${id}`;
   const cachedResponse = await cache.match(cacheKey);
   if (cachedResponse) return await cachedResponse.json();
@@ -136,15 +119,16 @@ function injectMeta(html, meta) {
   html = removeExistingSocialMeta(html);
 
   const imageTags = meta.image ? `
-    <meta property="og:image" content="${esc(meta.image)}">
-    <meta property="og:image:secure_url" content="${esc(meta.image)}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image" content="${esc(meta.image.url)}">
+    <meta property="og:image:secure_url" content="${esc(meta.image.url)}">
+    ${meta.image.width ? `<meta property="og:image:width" content="${meta.image.width}">` : ''}
+    ${meta.image.height ? `<meta property="og:image:height" content="${meta.image.height}">` : ''}
+    ${meta.image.type ? `<meta property="og:image:type" content="${meta.image.type}">` : ''}
     <meta property="og:image:alt" content="${esc(meta.title)}">
-    <meta name="twitter:image" content="${esc(meta.image)}">` : "";
+    <meta name="twitter:image" content="${esc(meta.image.url)}">` : "";
 
   const tags = `
-    <!-- DIVERTY SOCIAL PREVIEW V3 -->
+    <!-- DIVERTY SOCIAL PREVIEW V4 -->
     <link rel="canonical" href="${esc(meta.url)}">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="${esc(SITE_NAME)}">
@@ -196,8 +180,8 @@ export default async function handler(request, context) {
         );
 
         image =
-          field(doc.fields, "imagenTarjeta", "") ||
           field(doc.fields, "imagen", "") ||
+          field(doc.fields, "imagenTarjeta", "") ||
           field(doc.fields, "imagenUrl", "") ||
           field(doc.fields, "imageUrl", "") ||
           field(doc.fields, "foto", "");
@@ -243,7 +227,7 @@ export default async function handler(request, context) {
 
     // Siempre dejamos alguna imagen de vista previa. Si el plan no tiene una
     // foto guardada, se usa el icono de Diverty como respaldo.
-    image = normalizeImage(image, url.origin) || `${url.origin}/android-chrome-512x512.png`;
+    image = socialImage(image,url.origin);
 
     const finalUrl = new URL(url.pathname, url.origin);
     if (planId) finalUrl.searchParams.set("plan", planId);
@@ -259,8 +243,10 @@ export default async function handler(request, context) {
 
     const headers = new Headers(response.headers);
     headers.delete("content-length");
+    headers.delete("etag");
+    headers.delete("last-modified");
     headers.set("content-type", "text/html; charset=utf-8");
-    headers.set("x-diverty-social-preview", planId ? "plan-v3" : "categoria-v3");
+    headers.set("x-diverty-social-preview", planId ? "plan-v4" : "categoria-v4");
     headers.set("cache-control", "public, max-age=0, must-revalidate");
 
     return new Response(transformed, {

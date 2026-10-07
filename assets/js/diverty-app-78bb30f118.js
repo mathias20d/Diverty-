@@ -1,3 +1,4 @@
+import {catalogImageUrl} from './diverty-images.mjs';
 import {requestCustomerPortal} from './diverty-portal-api.mjs?v=0d2428d94f21';
 import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=8b19069e9f53';
 import { isClosedBookingDate } from './diverty-date-availability.mjs?v=79d415724694';
@@ -1535,7 +1536,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
         }
         function createCharacterTileHTML(item) {
             const selected=app.cart.some(row=>row.id===item.id), name=escapeCatalogText(item.name), id=escapeCatalogText(item.id);
-            return `<article class="catalog-character-card"><button type="button" class="catalog-character-photo" data-action="open-item-detail" data-item-id="${id}" aria-label="Ver ${name}"><img src="${escapeCatalogText(optimizeCloudinaryImage(item.cardImage||item.image,480))}" alt="${name}" loading="lazy" decoding="async"></button><div class="catalog-character-body">${item.tematica?`<p class="catalog-character-theme">${escapeCatalogText(item.tematica)}</p>`:''}<h3>${name}</h3><strong class="catalog-character-price">$${Number(item.price).toFixed(2)}</strong><div class="catalog-character-actions"><button type="button" class="season-btn" data-action="add-to-cart" data-item-id="${id}" data-cart-state="${selected?'selected':'none'}">${selected?'Seleccionado':'Añadir al carrito'}</button><button type="button" class="direct-booking-btn" data-action="book-now" data-item-id="${id}">Reservar ahora</button></div></div></article>`;
+            return `<article class="catalog-character-card"><button type="button" class="catalog-character-photo" data-action="open-item-detail" data-item-id="${id}" aria-label="Ver ${name}"><img src="${escapeCatalogText(catalogImageUrl(item.cardImage||item.image,480,480))}" alt="${name}" loading="lazy" decoding="async"></button><div class="catalog-character-body">${item.tematica?`<p class="catalog-character-theme">${escapeCatalogText(item.tematica)}</p>`:''}<h3>${name}</h3><strong class="catalog-character-price">$${Number(item.price).toFixed(2)}</strong><div class="catalog-character-actions"><button type="button" class="season-btn" data-action="add-to-cart" data-item-id="${id}" data-cart-state="${selected?'selected':'none'}">${selected?'Seleccionado':'Añadir al carrito'}</button><button type="button" class="direct-booking-btn" data-action="book-now" data-item-id="${id}">Reservar ahora</button></div></div></article>`;
         }
 
         function quantityLabelForCart(item) {
@@ -1844,7 +1845,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
 
               <div class="catalog-tile-image-wrap">
                 <img
-                  src="${optimizeCloudinaryImage(item.cardImage || item.image, 720)}"
+                  src="${catalogImageUrl(item.cardImage || item.image,720,540)}"
                   alt="${itemName}"
                   class="catalog-tile-image"
                   loading="lazy"
@@ -1947,10 +1948,13 @@ function captureBookingGps(form, isCurrent, onProgress) {
 
                         <div class="catalog-detail-card">
                             <div class="catalog-detail-image-wrap">
-                                <img src="${optimizeCloudinaryImage(item.image, 1080)}"
+                                <picture>
+                                <source media="(min-width:768px)" srcset="${optimizeCloudinaryImage(item.image,1080)}">
+                                <img src="${catalogImageUrl(item.image,1080,540)}"
                                      alt="${cleanStr(item.name || item.title)}"
                                      decoding="async" fetchpriority="high"
                                      class="catalog-detail-image">
+                                </picture>
                                 ${hasOffer ? `<span class="catalog-detail-offer">OFERTA</span>` : ''}
                             </div>
 

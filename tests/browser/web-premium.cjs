@@ -100,6 +100,8 @@ const server=http.createServer((req,res)=>{
      metrics.at(-1).detail=compact;
     }
     assert.equal(await page.locator('.catalog-detail-price').innerText(),'$150.00');
+    assert.equal(await page.locator('.catalog-detail-image').evaluate(el=>getComputedStyle(el).objectFit),'cover');
+    assert.equal(await page.locator('.catalog-detail-image').evaluate(el=>{const photo=el.getBoundingClientRect(),frame=el.closest('.catalog-detail-image-wrap').getBoundingClientRect();return Math.abs(photo.width-frame.width)<1&&Math.abs(photo.height-frame.height)<1;}),true);
     await page.locator('[data-action="add-to-cart"][data-item-id="plan"]').click();await page.locator('#cartModal').waitFor({state:'visible'});
     assert.ok((await page.locator('#cartItems').innerText()).includes('Plan Magic'));
     await page.locator('#viewCart').click();
