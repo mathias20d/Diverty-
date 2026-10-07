@@ -73,7 +73,11 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
   try {
     const cold=await fixture({slowTheme:true});await cold.page.goto(origin,{waitUntil:'domcontentloaded'});
     await cold.page.waitForTimeout(1100);
-    assert.equal(await cold.page.locator('html').evaluate(e=>e.classList.contains('diverty-booting')),true);
+    assert.equal(await cold.page.locator('html').evaluate(e=>e.classList.contains('diverty-booting')),false);
+    await cold.page.locator('.hero-content h1').waitFor({state:'visible'});
+    assert.equal(await cold.page.locator('#themeBootLoader').count(),0);
+    assert.equal(await cold.page.locator('#hero-video source').getAttribute('src'),null,'the video cannot compete with the first screen');
+    assert.ok(await cold.page.locator('#calendar-section').evaluate(el=>el.getBoundingClientRect().top>=innerHeight),'the pending offers reserve space instead of moving a visible calendar');
     cold.releaseTheme();await cold.ready();
     assert.equal(await cold.page.locator('body').getAttribute('data-theme'),'halloween');
     assert.equal(await cold.page.locator('#themeBootLoader').count(),0);
@@ -84,7 +88,16 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     assert.equal(await cached.locator('html').evaluate(e=>getComputedStyle(e).getPropertyValue('--s-primary').trim()),'#ff6600');
     assert.equal(await cached.locator('html').evaluate(e=>e.classList.contains('diverty-booting')),false);
     assert.deepEqual(cold.errors,[]);
-    console.log('PASS: tema lento, colores antes de ejecutar el módulo e iconos locales.');
+    console.log('PASS: portada visible sin esperar al tema remoto, colores guardados e iconos locales.');
+
+    // A custom icon outside the small initial set must retain full support.
+    await cold.page.evaluate(()=>{const icon=document.createElement('i');icon.setAttribute('data-lucide','telescope');document.querySelector('.hero-content').appendChild(icon);window.lucide.createIcons();});
+    await cold.page.locator('.hero-content svg.lucide-telescope').waitFor();
+    assert.ok(cold.requests.some(url=>url.includes('lucide-full.min.js')));
+    assert.deepEqual(cold.errors,[]);console.log('PASS: iconos personalizados cargan la biblioteca completa bajo demanda.');
+    await cold.page.waitForFunction(()=>!!document.querySelector('#hero-video source')?.getAttribute('src'),{},{timeout:10000});
+    assert.ok(cold.requests.some(url=>url.includes('.mp4')),'the hero video is retained and starts after the initial content');
+    console.log('PASS: video conservado y diferido hasta después del contenido inicial.');
 
     const desktop=await fixture({width:1280});await desktop.page.goto(origin+'/?vista=catalog');await desktop.ready();
     const desktopLayout=await desktop.page.evaluate(()=>({nav:document.querySelector('#desktopNav').getBoundingClientRect().toJSON(),logo:document.querySelector('#mainHeaderLogo').getBoundingClientRect().toJSON()}));

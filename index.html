@@ -29,21 +29,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diverty Eventos | Planes de Fiestas en Panamá</title>
     <meta name="description" content="¡Celebra con Diverty Eventos! Fiestas infantiles en Panamá. Payasitos, animadores, pintacaritas y shows de burbujas.">
+    <link rel="canonical" href="https://divertypanama.netlify.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Diverty Panamá">
+    <meta property="og:locale" content="es_PA">
+    <meta property="og:title" content="Diverty Eventos | Planes de Fiestas en Panamá">
+    <meta property="og:description" content="Fiestas infantiles en Panamá. Payasitos, animadores, pintacaritas y shows de burbujas con Diverty Eventos.">
+    <meta property="og:url" content="https://divertypanama.netlify.app/">
+    <meta property="og:image" content="https://divertypanama.netlify.app/android-chrome-512x512.png">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="theme-color" content="#F8FAFC">
     
     <!-- PRECONEXIÓN DE RECURSOS PARA MAXIMA VELOCIDAD -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://res.cloudinary.com">
     <link rel="preconnect" href="https://firestore.googleapis.com">
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link rel="preload" as="image" href="./android-chrome-512x512.png" fetchpriority="high">
+    <link rel="preload" as="image" href="/assets/logo-256.webp" fetchpriority="high">
     <link rel="preload" as="image" href="https://res.cloudinary.com/dv40hkeyz/video/upload/so_0,w_720,q_auto,f_jpg/v1723578146/20250813_151416_0001_p5lwst.jpg" fetchpriority="high">
-    <link rel="stylesheet" href="/assets/css/diverty-tailwind-local.css?v=350ced0ddb85">
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Poppins:wght@400;600;700;800;900&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/diverty-tailwind-local.css?v=479ec8917ec1">
+    <link rel="preload" as="font" type="font/woff2" href="/assets/fonts/poppins-b590fe0e0eda.woff2" crossorigin>
+    <link rel="stylesheet" href="/assets/css/diverty-fonts.css">
     <script src="/assets/vendor/lucide.min.js?v=f828bf34002c" defer></script>
     
-    <link rel="stylesheet" href="/assets/css/diverty-eb0b36bf04.css?v=c34f2ff2ebcc">
+    <link rel="stylesheet" href="/assets/css/diverty-eb0b36bf04.css?v=924089fc9c56">
 
 
 <!-- Diverty: colores conocidos antes de pintar; arranque con límite de espera. -->
@@ -66,8 +74,8 @@
   };
   if(window.__divertyShowSplash){
     root.classList.add('diverty-booting');
-    // Si la red o el código no responden, la portada sigue accesible.
-    window.__divertyBootTimeout=setTimeout(window.__divertyFinishBoot,4000);
+    // La transición de marca dura como máximo 250 ms; no espera datos remotos.
+    window.__divertyBootTimeout=setTimeout(window.__divertyFinishBoot,250);
   } else {root.classList.add('diverty-splash-skipped');}
 })();
 </script>
@@ -83,7 +91,7 @@
     </script>
     <div id="themeBootLoader" role="status" aria-label="Cargando Diverty Eventos">
       <img class="boot-logo" id="themeBootLogo"
-           src="./android-chrome-512x512.png"
+           src="/assets/logo-256.webp" width="256" height="256"
            alt="Diverty Eventos"
            loading="eager"
            decoding="async">
@@ -93,7 +101,6 @@
     <div class="season-background"></div>
     <div class="season-overlay"></div>
 
-    <h1 class="sr-only">Diverty Eventos: La mejor animación, payasos y planes de fiestas infantiles en Panamá</h1>
 
     <div id="headerWrapper" class="fixed top-0 left-0 w-full z-50 flex flex-col pointer-events-none transition-all duration-300">
         <div id="topAnnouncementBanner" style="display: none;" class="justify-center items-center shadow-md pointer-events-auto">
@@ -120,7 +127,7 @@
         <button data-action="close-modal" data-target-section="home"
             class="absolute left-1/2 -translate-x-1/2 flex items-center logo-container nav-action"
             aria-label="Inicio">
-            <img src="./android-chrome-512x512.png"
+            <img src="/assets/logo-256.webp" width="256" height="256"
                 alt="Diverty Eventos"
                 class="w-28 h-16 sm:w-32 sm:h-18 object-contain scale-110"
                 loading="eager"
@@ -282,7 +289,7 @@
     
     <div id="toast"></div>
 
-    <script type="module" src="/assets/js/diverty-app-78bb30f118.js?v=703fe75fecce"></script>
+    <script type="module" src="/assets/js/diverty-app-78bb30f118.js?v=6a0bec7eccfa"></script>
 
 
 <div id="diverty-halloween-stage" aria-hidden="true"><div class="hw-branch left"></div><div class="hw-branch right"></div><div class="hw-web"></div><div class="hw-web r"></div><div class="hw-moon"></div><i class="hw-pumpkin" style="left:4%"></i><i class="hw-pumpkin" style="right:5%;transform:scale(.78)"></i><div class="hw-fog"></div></div>
@@ -300,72 +307,40 @@
 
 <script>
 (function(){
-  // VELOCIDAD FASE 7A: la portada ya viene en el HTML.
-  // El video se activa después, sin retrasar la primera pintura/LCP.
-  var started = false;
-  function startHeroVideo(){
-    if (started || document.hidden) return;
-    var v = document.getElementById('hero-video');
-    if (!v) return;
-    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (conn && conn.saveData) return;
-
-    var source = v.querySelector('source[data-src]');
-    if (source && !source.getAttribute('src')) {
-      source.setAttribute('src', source.getAttribute('data-src'));
-      source.removeAttribute('data-src');
-      try { v.load(); } catch(e) {}
-    }
-    v.muted = true;
-    v.defaultMuted = true;
-    var p = v.play();
-    if (p && typeof p.catch === 'function') p.catch(function(){});
-    started = true;
+  var ready = false, timer = null, observer = null;
+  function playVisibleHero(){
+    var video = document.getElementById('hero-video');
+    var connection = navigator.connection;
+    if (!ready || !video || document.hidden || (connection && connection.saveData) || document.body.classList.contains('cart-open') || document.body.classList.contains('menu-drawer-open')) return;
+    var bounds = video.getBoundingClientRect();
+    if (bounds.bottom <= 0 || bounds.top >= innerHeight) return;
+    var source = video.querySelector('source[data-src]');
+    if (source) { source.src = source.dataset.src; source.removeAttribute('data-src'); video.load(); }
+    video.muted = true;
+    var promise = video.play(); if (promise && promise.catch) promise.catch(function(){});
   }
-
-  function scheduleHero(){
-    if ('requestIdleCallback' in window) {
-      requestIdleCallback(startHeroVideo, {timeout: 1800});
-    } else {
-      setTimeout(startHeroVideo, 1000);
+  window.__divertyScheduleHero = function(){
+    var video = document.getElementById('hero-video');
+    if (!video) return;
+    if (observer) observer.disconnect();
+    if ('IntersectionObserver' in window) {
+      observer = new IntersectionObserver(function(entries){
+        if (entries[0].isIntersecting) playVisibleHero(); else video.pause();
+      }, {threshold:.12});
+      observer.observe(video);
     }
-  }
-
-  if ('IntersectionObserver' in window) {
-    var io = new IntersectionObserver(function(entries){
-      var entry = entries && entries[0];
-      var v = document.getElementById('hero-video');
-      if (!entry || !v) return;
-      if (entry.isIntersecting && entry.intersectionRatio > 0.12) {
-        if (!started) scheduleHero();
-        else {
-          var p = v.play();
-          if (p && typeof p.catch === 'function') p.catch(function(){});
-        }
-      } else if (started) {
-        try { v.pause(); } catch(e) {}
-      }
-    }, {threshold:[0,0.12,0.3]});
-    var hero = document.getElementById('hero-video');
-    if (hero) io.observe(hero);
-  } else {
-    scheduleHero();
-  }
-
-  document.addEventListener('visibilitychange', function(){
-    var v = document.getElementById('hero-video');
-    if (!v) return;
-    if (document.hidden) {
-      try { v.pause(); } catch(e) {}
-    } else if (started) {
-      var p = v.play();
-      if (p && typeof p.catch === 'function') p.catch(function(){});
-    }
-  }, {passive:true});
+    if (ready) playVisibleHero();
+    else if (!timer) timer = setTimeout(function(){ ready = true; playVisibleHero(); }, 8000);
+  };
+  document.addEventListener('visibilitychange',function(){
+    var video=document.getElementById('hero-video');
+    if (document.hidden) { if(video) video.pause(); } else playVisibleHero();
+  });
+  window.__divertyScheduleHero();
 })();
 </script>
 
-<script src="/assets/js/diverty-runtime-587c019781.js?v=4ddc247400ed" defer></script>
+<script src="/assets/js/diverty-runtime-587c019781.js?v=5ed7179c8c2a" defer></script>
 
 
 

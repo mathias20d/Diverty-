@@ -1687,60 +1687,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 if(typeof lucide !== 'undefined') lucide.createIcons({root: campWrapper});
             }
 
-            const heroVideo = document.getElementById('hero-video');
-            if (heroVideo) {
-                heroVideo.muted = true;
-                heroVideo.defaultMuted = true;
-
-                const ensureHeroVideoSource = () => {
-                    const source = heroVideo.querySelector('source[data-src]');
-                    if(source && !source.getAttribute('src')) {
-                        source.setAttribute('src', source.dataset.src);
-                        source.removeAttribute('data-src');
-                        heroVideo.load();
-                    }
-                };
-
-                const safePlayHero = () => {
-                    if(document.hidden || app.activeSection !== 'home') return;
-                    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-                    if(conn && conn.saveData) return;
-                    ensureHeroVideoSource();
-                    const p = heroVideo.play();
-                    if(p && typeof p.catch === 'function') p.catch(() => {});
-                };
-
-                // Da prioridad al contenido y deja el video para después del primer render.
-                if('requestIdleCallback' in window) {
-                    requestIdleCallback(safePlayHero, { timeout: 1200 });
-                } else {
-                    setTimeout(safePlayHero, 450);
-                }
-
-                if ('IntersectionObserver' in window) {
-                    if(window.__divertyHeroObserver) window.__divertyHeroObserver.disconnect();
-                    window.__divertyHeroObserver = new IntersectionObserver(entries => {
-                        const entry = entries[0];
-                        if(!entry) return;
-                        if(entry.isIntersecting && entry.intersectionRatio > 0.12) safePlayHero();
-                        else heroVideo.pause();
-                    }, { threshold:[0,0.12,0.3] });
-                    window.__divertyHeroObserver.observe(heroVideo);
-                }
-
-                if(!window.__divertyVisibilityBound){
-                    document.addEventListener('visibilitychange', () => {
-                        const v = document.getElementById('hero-video');
-                        if(!v) return;
-                        if(document.hidden) v.pause();
-                        else if(app.activeSection === 'home') {
-                            const p = v.play();
-                            if(p && typeof p.catch === 'function') p.catch(() => {});
-                        }
-                    }, { passive:true });
-                    window.__divertyVisibilityBound = true;
-                }
-            }
+            window.__divertyScheduleHero?.();
 
             if(typeof renderCalendar === 'function') renderCalendar(); 
         }
@@ -4257,12 +4204,10 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 } catch (e) { console.warn('No se pudo refrescar contenido web:', e); }
             };
 
-            // Carga primero la temporada activa para que la pantalla inicial
-            // use inmediatamente el tema correcto mientras carga el resto.
-            await loadTheme();
-            finishThemeBoot();
-
-            await Promise.allSettled([ 
+            // Load public content together: categories and catalog need not wait
+            // for the theme. The brief brand transition already released the page.
+            await Promise.allSettled([
+                loadTheme(),
                 loadCategories(), 
                 loadCatalog(), 
                 loadBanner(), 

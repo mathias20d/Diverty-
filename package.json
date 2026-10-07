@@ -7,6 +7,7 @@
     "test:browser": "npm run build && node tests/browser/web-stability.cjs"
   },
   "devDependencies": {
+    "esbuild": "0.25.12",
     "lucide": "1.52.0",
     "playwright": "1.63.0",
     "tailwindcss": "3.4.19"

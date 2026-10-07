@@ -2,6 +2,12 @@
   command = "npm run build"
   publish = "dist"
 
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
+  force = true
+
 [[edge_functions]]
   function = "share-meta"
   path = "/"

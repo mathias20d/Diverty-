@@ -74,7 +74,7 @@ document.addEventListener('dragstart', function(e){ if(e.target.closest && e.tar
         const e=entries[0]; if(!e) return;
         const blocked=document.hidden||document.body.classList.contains('cart-open')||document.body.classList.contains('menu-drawer-open');
         if(!e.isIntersecting||blocked){ if(!video.paused) video.pause(); }
-        else if(video.paused&&!saveData){ const p=video.play(); if(p&&p.catch)p.catch(()=>{}); }
+        else if(video.paused&&!saveData){ window.__divertyScheduleHero?.(); }
       },{rootMargin:'100px 0px',threshold:.01});
       io.observe(video);
     }
