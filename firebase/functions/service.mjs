@@ -66,7 +66,6 @@ export function bookingService(db,clock=()=>new Date()) {
         if(config.centralBookingValidation!==true)fail('NOT_ENABLED','La validación central no está habilitada.');
         if((event.requiereRevisionUbicacion||event.totalPendienteTransporte)&&event.transporteRevisadoEnApp!==true)fail('TRANSPORT_REVIEW_REQUIRED','Confirma el costo de transporte antes de aceptar.');
         const destination=gps(event)||addressGps(event.direccion);
-        if(isSanta(event)&&!destination)fail('LOCATION_REVIEW_REQUIRED','Confirma el punto exacto de entrega de Santa.');
         // Prices are the trusted server snapshot shown to the customer. Admin may
         // negotiate transport/resources; don't replace the agreed service price.
         if(!Number.isFinite(Number(event.total))||Number(event.total)<0||!Number.isFinite(Number(event.transporte))||Number(event.transporte)<0)fail('INVALID_REQUEST','Revisa los importes.');

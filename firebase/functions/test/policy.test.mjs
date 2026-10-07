@@ -67,6 +67,13 @@ test('Santa route uses travel margins and validates assigned Santa on approval',
   checkAvailability(e,rows,{capacidadSanta:2},'Santa 2');
   assert.throws(()=>checkAvailability(e,rows,{capacidadSanta:2},'Santa 1'),e=>e.reason==='ROUTE_FULL');
 });
+test('Santa approval without GPS uses estimated travel and retains route capacity checks',()=>{
+  const event={id:'new',esNavidad:true,fecha:'2026-12-24',hora:'17:00',direccion:'PH de prueba'};
+  const previous={...event,id:'old',hora:'16:00',santaAsignado:'Santa 1'};
+  checkAvailability(event,[previous],{capacidadSanta:1},'Santa 1');
+  assert.throws(()=>checkAvailability({...event,hora:'16:30'},[previous],{capacidadSanta:1},'Santa 1'),e=>e.reason==='ROUTE_FULL');
+  checkAvailability({...event,hora:'16:30'},[previous],{capacidadSanta:2},'Santa 2');
+});
 test('invalid and past dates are rejected predictably',()=>{
   for(const fecha of ['2026-99-10','2026-02-30','2020-01-01'])assert.throws(()=>quote({...sample,fecha}),e=>['INVALID_REQUEST','PAST_DATE'].includes(e.reason));
 });

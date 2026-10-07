@@ -98,7 +98,9 @@ export function checkAvailability(candidate,rows,config={},santaName='') {
     const fits=(e,stops)=>stops.every(x=>minute(x)<minute(e)?minute(x)+30+travel(x,e)<=minute(e):minute(e)+30+travel(e,x)<=minute(x));
     for(const e of same.filter(e=>names.includes(e.santaAsignado)))routes.get(e.santaAsignado).push(e);
     for(const e of same.filter(e=>!names.includes(e.santaAsignado)).sort((a,b)=>minute(a)-minute(b))){const name=names.find(n=>fits(e,routes.get(n)));if(!name)fail('SLOT_FULL','Las rutas de Santa necesitan revisión.');routes.get(name).push(e);}
-    if((gps(candidate)||addressGps(candidate.direccion))&&! (santaName?[santaName]:names).some(n=>fits(candidate,routes.get(n))))fail('ROUTE_FULL','Ese horario no permite completar la ruta de Santa.');
+    // Approval still checks the selected route without GPS, using the existing
+    // 15-minute travel estimate. Manual-location requests may await review.
+    if((santaName||gps(candidate)||addressGps(candidate.direccion))&&! (santaName?[santaName]:names).some(n=>fits(candidate,routes.get(n))))fail('ROUTE_FULL','Ese horario no permite completar la ruta de Santa.');
     return;
   }
   const r=resources(candidate),{start,end}=interval(candidate),points=new Set([start]);

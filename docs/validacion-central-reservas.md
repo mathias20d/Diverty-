@@ -22,7 +22,7 @@ El código del servicio está en `firebase/functions`. **Subir a GitHub/Netlify 
 
 3. En Firestore, documento `artifacts/diverty-oficial/public/data/config_web/global`, **añadir** el campo booleano `centralBookingValidation` con valor `true`. Conservar los demás campos. Hacerlo únicamente después de publicar las funciones, reglas y ambas interfaces. Las nuevas solicitudes se enviarán al servidor; las reglas bloquearán el intento de crearlas directamente desde el navegador.
 
-4. Realizar una solicitud de prueba identificable, revisarla en la app y rechazarla al terminar para liberar capacidad. Probar una dirección manual y otra fuera de cobertura: deben decir transporte pendiente. Probar dos horarios solapados con la última unidad de personal: solo debe guardarse uno. Aprobar una solicitud exige transporte revisado cuando corresponda; Navidad también exige punto exacto y ruta viable. Los reintentos usan el mismo identificador.
+4. Realizar una solicitud de prueba identificable, revisarla en la app y rechazarla al terminar para liberar capacidad. Probar una dirección manual y otra fuera de cobertura: deben decir transporte pendiente. Probar dos horarios solapados con la última unidad de personal: solo debe guardarse uno. Aprobar una solicitud exige transporte revisado cuando corresponda; Navidad exige una ruta viable, pero el GPS es opcional y, cuando falta, el traslado se estima en 15 minutos. Los reintentos usan el mismo identificador.
 
 Si hay un problema de publicación, poner `centralBookingValidation` en `false` restaura el flujo anterior. No eliminar documentos de eventos para volver atrás. Esta reversión desactiva la nueva validación central; los avisos y filtros continúan disponibles.
 

@@ -42,6 +42,24 @@ test('real Firestore transactions serialize overlapping starts, recover retries 
   }finally{await db.recursiveDelete(db.collection('artifacts'));await deleteApp(app);}
 });
 
+test('Santa can be approved by written address without GPS and keeps transport review',{skip:!local},async()=>{
+  const app=initializeApp({projectId:'demo-diverty-santa-optional-gps'},'santa-optional-gps');const db=getFirestore(app);
+  const ref=(section,id)=>db.doc(`${base}/${section}/${id}`);
+  const service=bookingService(db,()=>new Date('2026-10-07T12:00:00Z'));
+  try{
+    await ref('config_web','global').set({centralBookingValidation:true,capacidadSanta:1});
+    const request={...event,estado:'Pendiente',origen:'Web Directa',esNavidad:true,fecha:'2026-12-24',hora:'17:00',servicio:'Entregas de Nochebuena',centralBookingVersion:1,ownerUid:'customer',requiereRevisionUbicacion:true,totalPendienteTransporte:true};
+    await ref('eventos',event.id).set(request);
+    await assert.rejects(service.confirm(ADMIN_UID,{id:event.id,santaAsignado:'Santa 1'}),e=>e.reason==='TRANSPORT_REVIEW_REQUIRED');
+    await ref('eventos',event.id).update({transporteRevisadoEnApp:true});
+    const result=await service.confirm(ADMIN_UID,{id:event.id,santaAsignado:'Santa 1'});
+    assert.equal(result.event.estado,'Confirmado');assert.equal(result.event.santaAsignado,'Santa 1');assert.equal(result.event.direccion,request.direccion);
+    assert.equal('lat' in result.event,false);assert.equal('lng' in result.event,false);
+    assert.equal((await ref('reservas_cliente',event.id).get()).data().estado,'Confirmado');
+    const availability=(await ref('disponibilidad_web',event.id).get()).data();assert.equal(availability.santaAsignado,'Santa 1');assert.equal('direccion' in availability,false);
+  }finally{await db.recursiveDelete(db.collection('artifacts'));await deleteApp(app);}
+});
+
 test('central service refuses a closed day, permits reopening and recovers existing requests',{skip:!local},async()=>{
   const app=initializeApp({projectId:'demo-diverty-closed-dates'},'closure-tests');const db=getFirestore(app);
   const ref=(section,id)=>db.doc(`${base}/${section}/${id}`);
