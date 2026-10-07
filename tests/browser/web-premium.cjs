@@ -16,15 +16,17 @@ const server=http.createServer((req,res)=>{
  const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||'/usr/bin/chromium',args:['--no-sandbox','--disable-dev-shm-usage']});
  const metrics=[];
  try{
-  for(const theme of ['normal','halloween','christmas','summer','school','custom']){
-   for(const width of [320,392,1280]){
+  for(const theme of (process.env.PREMIUM_THEMES||'normal,halloween,christmas,summer,school,custom').split(',')){
+   for(const width of (process.env.PREMIUM_WIDTHS||'320,392,1280').split(',').map(Number)){
     const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
     const api={
      config_web:[{id:'global',bannerActive:true,bannerText:'Reserva tu próxima celebración'},{id:'web_sync',version:1,versions:{catalogo_web:1}}],
      temas_web:[{id:theme,nombre:theme,tipo:theme,isDefault:true,animaciones:false,decoracion:'none'}],
      categorias_web:[{id:'fiestas',nombre:'Planes de animación',imagen:'/test-media/plan.jpg',activo:true,visible:true,orden:1},{id:'extras',nombre:'Servicios y snacks',imagen:'/test-media/snack.jpg',activo:true,visible:true,orden:2},{id:'personajes',nombre:'Personajes temáticos',imagen:'/test-media/face.jpg',activo:true,visible:true,orden:3}],
-     catalogo_web:[{id:'plan',nombre:'Plan Magic',descripcion:'Animación, juegos y diversión para tu celebración.',serviciosLista:'Animación\nJuegos\nMúsica',categoria:'fiestas',precio:150,precioOriginal:180,oferta:true,destacado:true,imagen:'/test-media/plan.jpg'},
+     catalogo_web:[{id:'plan',nombre:'Plan Magic',descripcion:'Animación, juegos y diversión para tu celebración.',serviciosLista:'Payasito (a)\nAnimación infantil\nGloboflexia\nPintacaritas 1 hora\nMesa y silla de maquillaje\nMúsica infantil\nAsistencia para la piñata\nCanto de cumpleaños\nDuración 2 horas',categoria:'fiestas',precio:150,precioOriginal:180,oferta:true,destacado:true,imagen:'/test-media/plan.jpg'},
       {id:'plus',nombre:'Una celebración con animación y actividades para toda la familia',categoria:'fiestas',precio:200,imagen:'/test-media/face.jpg'},
+      {id:'basic',nombre:'Plan Básico',categoria:'fiestas',precio:95,imagen:'/test-media/plan.jpg'},
+      {id:'premium',nombre:'Plan Premium Recreativo',categoria:'fiestas',precio:115,imagen:'/test-media/face.jpg'},
       {id:'dogs',nombre:'Hot dogs',categoria:'extras',tipoCobro:'unidad',precio:2,cantidadMinima:50,cantidadMaxima:500,cantidadPaso:25,unidadNombre:'hot dog',imagen:'/test-media/snack.jpg'},
       {id:'face',nombre:'Pintacaritas',categoria:'extras',tipoCobro:'hora',precio:40,imagen:'/test-media/face.jpg'},
       {id:'character',nombre:'Personaje temático de prueba',categoria:'personajes',tipoServicio:'personaje',tematica:'Fantasía',precio:80,imagen:'/test-media/face.jpg'}],
@@ -71,7 +73,8 @@ const server=http.createServer((req,res)=>{
      assert.ok(layout.font.includes('Nunito'));
      assert.ok(layout.body.height<190,'a short service name must not create a tall empty panel');
      const photo=await page.locator('.catalog-tile-image-wrap').first().boundingBox();
-     assert.ok(Math.abs(photo.width-photo.height)<=1,'restore the square photos of the original catalog');
+     assert.ok(Math.abs(photo.width/photo.height-4/3)<.02,'landscape photos keep the catalog compact');
+     assert.ok(parseFloat(layout.radius)>=16,'premium cards retain their rounded panel');
      assert.notEqual(layout.surface,layout.text,`${theme}: title and card must have distinct colors`);
      const contrast=await page.locator('.catalog-tile-name').first().evaluate(el=>{
       const rgb=s=>s.match(/[\d.]+/g).map(Number),root=getComputedStyle(document.documentElement).getPropertyValue('--s-bg-color').trim();
@@ -82,21 +85,30 @@ const server=http.createServer((req,res)=>{
       const front=luminance(rgb(getComputedStyle(el).color).slice(0,3)),back=luminance(bg);
       return (Math.max(front,back)+.05)/(Math.min(front,back)+.05);
      });assert.ok(contrast>=4.5,`${theme}: card title contrast ${contrast}`);
-     const same=metrics.find(row=>row.width===width&&row.preset==='normal');
+     const same=metrics.find(row=>row.width===width&&row.preset==='normal')||metrics.find(row=>row.width===width);
      assert.equal(Math.round(layout.card.width),Math.round(same.card.width),'season must preserve the card width');
      assert.equal(Math.round(layout.body.height),Math.round(same.body.height),'season must preserve the content layout');
     }
     await page.locator('[data-action="open-item-detail"][data-item-id="plan"]').click();await page.locator('.catalog-detail-card').waitFor();await shot('detail');
+    if(!baseline&&width<768){
+     const compact=await page.evaluate(()=>({header:document.querySelector('#headerWrapper').getBoundingClientRect().bottom,list:document.querySelector('.catalog-detail-includes ul').getBoundingClientRect().height,actions:document.querySelector('.catalog-detail-button-row').getBoundingClientRect().height,top:document.querySelector('.catalog-detail-back').getBoundingClientRect().top,overflow:document.documentElement.scrollWidth-innerWidth}));
+     assert.ok(compact.header<=100,'mobile header leaves more space for the catalog');
+     assert.ok(compact.top>=compact.header,'the header does not hide the back action');
+     assert.ok(compact.list<280,'all nine inclusions remain readable in a compact list');
+     assert.ok(compact.actions<=64,'both actions fit together without tall stacked buttons');
+     assert.ok(compact.overflow<=1,'detail has no horizontal overflow');
+     metrics.at(-1).detail=compact;
+    }
     assert.equal(await page.locator('.catalog-detail-price').innerText(),'$150.00');
     await page.locator('[data-action="add-to-cart"][data-item-id="plan"]').click();await page.locator('#cartModal').waitFor({state:'visible'});
     assert.ok((await page.locator('#cartItems').innerText()).includes('Plan Magic'));
     await page.locator('#viewCart').click();
-    assert.equal(await page.locator('.catalog-detail-includes li').count(),3);
+    assert.equal(await page.locator('.catalog-detail-includes li').count(),9);
     assert.deepEqual(errors,[]);assert.equal(requests.some(url=>url.includes('fonts.googleapis.com')),false);
     await context.close();
    }
   }
   if(artifact)fs.writeFileSync(path.join(artifact,'metrics.json'),JSON.stringify(metrics,null,2));
-  console.log(`PASS: ${baseline?'baseline':'premium'} layout in five seasons plus custom colors at 320/392/1280px, contrast, detail prices, inclusions and cart.`);
+  console.log(`PASS: ${baseline?'baseline':'premium'} catalog layout in ${new Set(metrics.map(m=>m.preset)).size} themes at ${[...new Set(metrics.map(m=>m.width))].join('/')}px, contrast, detail prices, inclusions and cart.`);
  }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
 })().catch(e=>{console.error(e);process.exitCode=1;});
