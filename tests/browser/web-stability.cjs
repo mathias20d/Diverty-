@@ -96,6 +96,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     assert.ok(cold.requests.some(url=>url.includes('lucide-full.min.js')));
     assert.deepEqual(cold.errors,[]);console.log('PASS: iconos personalizados cargan la biblioteca completa bajo demanda.');
     await cold.page.waitForFunction(()=>!!document.querySelector('#hero-video source')?.getAttribute('src'),{},{timeout:10000});
+    if(!cold.requests.some(url=>url.includes('.mp4')))await cold.page.waitForRequest(request=>request.url().includes('.mp4'),{timeout:3000});
     assert.ok(cold.requests.some(url=>url.includes('.mp4')),'the hero video is retained and starts after the initial content');
     console.log('PASS: video conservado y diferido hasta después del contenido inicial.');
 
@@ -243,6 +244,44 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.equal(saved.ubicacion,christmas?'Ubicación por confirmar':'Ubicación por revisar');
       assert.deepEqual(f.errors,[]);console.log(`PASS: envío completo ${christmas?'Navidad':'normal'} con dirección remota y Firebase simulado.`);
     }
+
+    const created = process.env.CATALOG_FIXTURE_PATH ? JSON.parse(fs.readFileSync(process.env.CATALOG_FIXTURE_PATH,'utf8')) : {
+      categories:[{id:'comida',nombre:'Comida',activo:true,visible:true},{id:'personajes',nombre:'Personajes',activo:true,visible:true}],
+      products:[{id:'hot-dogs',nombre:'Hot dogs de prueba',categoria:'comida',precio:2,tipoCobro:'unidad',tipoServicio:'producto',cantidadMinima:50,cantidadMaxima:500,incrementoCantidad:25,unidadEtiqueta:'hot dog',imagen:'/assets/logo-256.webp'},{id:'hero-a',nombre:'Héroe de prueba A',categoria:'personajes',precio:80,tipoServicio:'personaje',tematica:'Superhéroes',imagen:'/assets/logo-256.webp'},{id:'hero-b',nombre:'Héroe de prueba B',categoria:'personajes',precio:95,tipoServicio:'personaje',tematica:'Superhéroes',imagen:'/assets/logo-256.webp'}]
+    };
+    const sendNormalBooking=async f=>{
+      await f.page.locator('[name="name"]').fill('Cliente catálogo de prueba');await f.page.locator('[name="email"]').fill('catalogo@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
+      await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();
+      await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('PH de prueba, Brisas del Golf');await f.page.evaluate(()=>window.__allowBookingWrite=true);
+      await f.page.locator('[data-location-continue]').click();await f.page.locator('[data-review-send]').click();await f.page.waitForFunction(()=>document.querySelector('#infoModal').classList.contains('show'));
+      assert.deepEqual(f.errors,[]);return f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid&&x.serviciosSeleccionados));
+    };
+    const quantity=await fixture();quantity.api.catalogo_web=created.products;quantity.api.categorias_web=created.categories;
+    const product=created.products.find(p=>p.tipoCobro==='unidad');
+    await quantity.page.goto(origin+'/?plan='+product.id);await quantity.ready();
+    const input=quantity.page.locator('[data-service-quantity]');await input.waitFor();assert.equal(await input.inputValue(),'50');
+    await input.fill('10');await input.blur();assert.equal(await input.inputValue(),'50');
+    await input.fill('800');await input.blur();assert.equal(await input.inputValue(),'500');
+    await input.fill('200');await input.blur();assert.match(await quantity.page.locator('[data-quantity-total]').innerText(),/200.*400.00/);
+    await quantity.page.getByRole('button',{name:'Aumentar Hot dogs de prueba',exact:true}).click();assert.equal(await input.inputValue(),'225');
+    await quantity.page.getByRole('button',{name:'Disminuir Hot dogs de prueba',exact:true}).click();assert.equal(await input.inputValue(),'200');
+    await quantity.page.locator('[data-action="add-hourly-to-cart"]').click();await quantity.page.locator('#viewCart').click();await quantity.page.locator('.cart-item-price').waitFor();assert.match(await quantity.page.locator('.cart-item-price').innerText(),/400.00/);
+    await quantity.page.locator('#cartModal [data-action="navigate-from-modal"]').click();await quantity.page.locator('#bookingForm').waitFor();
+    const quantitySaved=await sendNormalBooking(quantity);assert.equal(quantitySaved.serviciosSeleccionados[0].cantidad,200);assert.equal(quantitySaved.serviciosSeleccionados[0].precio,400);assert.equal(quantitySaved.serviciosSeleccionados[0].precioOriginal,2);assert.equal(quantitySaved.serviciosSeleccionados[0].tipoCobro,'unidad');
+    console.log('PASS: admin-created product minimum/maximum, typed quantity, increments, cart and saved 200 × $2 = $400.');
+
+    const characters=await fixture();characters.api.catalogo_web=created.products;characters.api.categorias_web=created.categories;
+    await characters.page.goto(origin+'/?categoria=personajes');await characters.ready();await characters.page.locator('.catalog-character-card').last().waitFor();
+    assert.equal(await characters.page.locator('.catalog-character-card').count(),2);assert.equal(await characters.page.locator('.catalog-character-card img').count(),2);
+    if(process.env.BROWSER_ARTIFACT_DIR){fs.mkdirSync(process.env.BROWSER_ARTIFACT_DIR,{recursive:true});await characters.page.locator('.catalog-products-grid').screenshot({path:path.join(process.env.BROWSER_ARTIFACT_DIR,'characters.png')});}
+    const selected=characters.page.locator('.catalog-character-card').filter({hasText:'Héroe de prueba B'});
+    assert.match(await selected.locator('.catalog-character-price').innerText(),/95.00/);
+    await selected.getByRole('button',{name:'Añadir al carrito'}).click();await characters.page.locator('.cart-item-price').waitFor();
+    assert.match(await characters.page.locator('.cart-item-name').innerText(),/Héroe de prueba B/);assert.match(await characters.page.locator('.cart-item-price').innerText(),/95.00/);
+    await characters.page.locator('#cartModal').getByRole('button',{name:'Cerrar',exact:true}).click();await selected.locator('[data-cart-state="selected"]').waitFor();assert.match(await selected.innerText(),/SELECCIONADO/i);
+    await selected.getByRole('button',{name:'Reservar ahora'}).click();await characters.page.locator('#bookingForm').waitFor();
+    const characterSaved=await sendNormalBooking(characters);assert.equal(characterSaved.serviciosSeleccionados[0].nombre,'Héroe de prueba B');assert.equal(characterSaved.serviciosSeleccionados[0].precio,95);assert.equal(characterSaved.serviciosSeleccionados[0].cantidad,1);
+    console.log('PASS: admin-created character photos/prices, cart selection and reservation retain the chosen character.');
 
     const denied=await fixture({blockedStorage:true});await denied.page.goto(origin);await denied.ready();assert.equal(await denied.page.locator('#themeBootLoader').count(),0);assert.deepEqual(denied.errors,[]);
     const offline=await fixture({offline:true});await offline.page.goto(origin);await offline.page.waitForFunction(()=>!document.documentElement.classList.contains('diverty-booting'));assert.deepEqual(offline.errors,[]);

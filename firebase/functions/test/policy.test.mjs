@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {quoteBooking,checkAvailability,controlDates,projections,ADMIN_UID} from '../policy.mjs';
 import {coverage} from '../coverage.mjs';
+import {productOptionsForSave} from '../../../assets/js/diverty-catalog-product.mjs';
 export const sample={id:'web-00000000-0000-0000-0000-000000000001',cliente:'Prueba',email:'test@example.test',telefono:'60000000',telefonoBusqueda:'60000000',tipoEvento:'Cumpleaños',ninos:'10',fecha:'2026-11-10',hora:'10:00',direccion:'PH que no aparece',referenciaLugar:'',comentarios:'',serviciosSeleccionados:[{id:'plan',origenCatalogo:'catalogo_web',cantidad:1,precioOriginal:100}],esNavidad:false,total:'100',transporte:'0',descuento:'0'};
 export const product={nombre:'Plan recreativo',precio:100,descripcion:'1 animador. 2 horas',activo:true};
 const now=new Date('2026-10-06T12:00:00Z');
@@ -22,6 +23,20 @@ test('coupon changes require explicit new quote; hourly quantity reserves full d
   const e=quote({...sample,total:'150',serviciosSeleccionados:[{...sample.serviciosSeleccionados[0],cantidad:3,precioOriginal:50}]},raw);
   assert.equal(e.resourceRequirements.durationMinutes,180);
   assert.throws(()=>quoteBooking(sample,'customer',[product],{activo:true,type:'percent',discount:10},null,now),e=>e.reason==='PRICE_CHANGED'&&e.details.quote.total==='90.00');
+});
+test('admin quantity settings enforce bounds and quote 200 products at their catalog unit price',()=>{
+  const raw={nombre:'Hot dogs',precio:2,...productOptionsForSave({tipoServicio:'producto',tipoCobro:'unidad',cantidadMinima:50,cantidadMaxima:500,incrementoCantidad:25,unidadEtiqueta:'hot dog'})};
+  const event={...sample,total:'400',serviciosSeleccionados:[{...sample.serviciosSeleccionados[0],cantidad:200,precioOriginal:2}]};
+  const saved=quote(event,raw);
+  assert.equal(saved.total,'400.00');assert.equal(saved.serviciosSeleccionados[0].cantidad,200);assert.equal(saved.serviciosSeleccionados[0].precio,400);assert.equal(saved.serviciosSeleccionados[0].precioOriginal,2);
+  for(const cantidad of [49,501,200.5])assert.throws(()=>quote({...event,serviciosSeleccionados:[{...event.serviciosSeleccionados[0],cantidad}]},raw),e=>e.reason==='INVALID_QUANTITY');
+});
+test('character bookings retain the chosen catalog name and fixed price and reject extra units',()=>{
+  const raw={nombre:'Personaje B',precio:95,...productOptionsForSave({tipoServicio:'personaje',tematica:'Superhéroes'})};
+  const event={...sample,total:'95',serviciosSeleccionados:[{...sample.serviciosSeleccionados[0],id:'personaje-b',nombre:'Nombre modificado',precioOriginal:95}]};
+  const saved=quote(event,raw);
+  assert.equal(saved.serviciosSeleccionados[0].nombre,'Personaje B');assert.equal(saved.serviciosSeleccionados[0].id,'personaje-b');assert.equal(saved.total,'95.00');
+  assert.throws(()=>quote({...event,serviciosSeleccionados:[{...event.serviciosSeleccionados[0],cantidad:2}]},raw),e=>e.reason==='INVALID_QUANTITY');
 });
 test('different start times compete for staff and capacity; adjacent boundaries do not overlap',()=>{
   const e=quote(),config={capacidadSimultanea:3,recursosDisponibles:{animadores:1,payasos:1}};

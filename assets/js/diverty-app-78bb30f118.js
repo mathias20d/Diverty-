@@ -1517,6 +1517,30 @@ function captureBookingGps(form, isCurrent, onProgress) {
             return q;
         }
 
+        function escapeCatalogText(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+        }
+        function readItemQuantity(id, fallback=1) {
+            const input = document.getElementById(`qty-${id}`);
+            return Number(input && 'value' in input ? input.value : input?.textContent ?? fallback);
+        }
+        function setItemQuantityDisplay(item, value) {
+            const rule = getItemQuantityRule(item), q = clampItemQuantity(item, value);
+            document.querySelectorAll(`[id="qty-${item.id}"]`).forEach(el => { if ('value' in el) el.value=q; else el.textContent=q; });
+            document.querySelectorAll(`[id="qty-label-${item.id}"]`).forEach(el=>el.textContent=q===1?rule.singular:rule.plural);
+            document.querySelectorAll(`[data-quantity-total="${item.id}"]`).forEach(el=>el.textContent=`${q} × $${Number(item.price).toFixed(2)} = $${(q*Number(item.price)).toFixed(2)}`);
+            updateProductButtonState(item.id);
+            return q;
+        }
+        function quantityControlHTML(item, q) {
+            const rule=getItemQuantityRule(item), name=escapeCatalogText(item.name), id=escapeCatalogText(item.id);
+            return `<div class="service-quantity-control"><div class="service-quantity-row"><button type="button" data-action="change-service-qty" data-item-id="${id}" data-change="-1" aria-label="Disminuir ${name}">−</button><label><input type="number" inputmode="numeric" id="qty-${id}" data-service-quantity="${id}" aria-label="Cantidad de ${name}" min="${rule.min}" ${rule.max?`max="${rule.max}"`:''} step="${rule.step}" value="${q}"><small id="qty-label-${id}">${escapeCatalogText(q===1?rule.singular:rule.plural)}</small></label><button type="button" data-action="change-service-qty" data-item-id="${id}" data-change="1" aria-label="Aumentar ${name}">+</button></div><p class="service-quantity-hint">Mínimo ${rule.min}${rule.max?` · Máximo ${rule.max}`:''}</p><strong class="service-quantity-total" data-quantity-total="${id}">${q} × $${Number(item.price).toFixed(2)} = $${(q*Number(item.price)).toFixed(2)}</strong></div>`;
+        }
+        function createCharacterTileHTML(item) {
+            const selected=app.cart.some(row=>row.id===item.id), name=escapeCatalogText(item.name), id=escapeCatalogText(item.id);
+            return `<article class="catalog-character-card"><button type="button" class="catalog-character-photo" data-action="open-item-detail" data-item-id="${id}" aria-label="Ver ${name}"><img src="${escapeCatalogText(optimizeCloudinaryImage(item.cardImage||item.image,480))}" alt="${name}" loading="lazy" decoding="async"></button><div class="catalog-character-body">${item.tematica?`<p class="catalog-character-theme">${escapeCatalogText(item.tematica)}</p>`:''}<h3>${name}</h3><strong class="catalog-character-price">$${Number(item.price).toFixed(2)}</strong><div class="catalog-character-actions"><button type="button" class="season-btn" data-action="add-to-cart" data-item-id="${id}" data-cart-state="${selected?'selected':'none'}">${selected?'Seleccionado':'Añadir al carrito'}</button><button type="button" class="direct-booking-btn" data-action="book-now" data-item-id="${id}">Reservar ahora</button></div></div></article>`;
+        }
+
         function quantityLabelForCart(item) {
             const rule = getItemQuantityRule(item);
             if (!rule.enabled) return '1 servicio';
@@ -1581,7 +1605,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
             
             if(quantityRule.enabled){
                 const unitLabel = iq === 1 ? quantityRule.singular : quantityRule.plural;
-                ab=`<div class="mt-auto w-full relative z-10 pb-2"><div class="flex items-center justify-between mb-3 bg-[color-mix(in_srgb,var(--s-text-title)_3%,transparent)] border border-[var(--s-glass-border)] p-1.5 rounded-[20px]"><button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95" aria-label="Disminuir ${quantityRule.plural}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button><span class="min-w-[84px] text-center"><strong id="qty-${item.id}" class="block text-lg font-black season-text-title leading-none">${iq}</strong><small id="qty-label-${item.id}" class="block mt-1 text-[9px] uppercase tracking-widest font-black season-text-muted">${unitLabel}</small></span><button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" class="w-11 h-11 bg-[var(--s-bg-color)] hover:bg-[var(--s-primary)] hover:text-white rounded-[14px] flex items-center justify-center season-text-title transition-colors shadow-sm border border-[var(--s-glass-border)] active:scale-95" aria-label="Aumentar ${quantityRule.plural}"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button></div><div class="direct-booking-actions"><button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'refresh':'none'}" class="season-btn ${btn} py-3 text-[11px] sm:text-xs text-white" style="${ic?'background: #F59E0B;':''}">${ic?`${S_ICONS.refresh} Actualizar Cantidad`:`${S_ICONS.cart} Añadir al Carrito`}</button><button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button></div></div>`;
+                ab=`<div class="mt-auto w-full relative z-10 pb-2">${quantityControlHTML(item,iq)}<div class="direct-booking-actions"><button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'refresh':'none'}" class="season-btn ${btn} py-3 text-[11px] sm:text-xs text-white" style="${ic?'background: #F59E0B;':''}">${ic?`${S_ICONS.refresh} Actualizar Cantidad`:`${S_ICONS.cart} Añadir al Carrito`}</button><button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button></div></div>`;
             } else {
                 ab=`<div class="mt-auto w-full relative z-10 pb-2 direct-booking-actions"><button data-action="add-to-cart" data-item-id="${item.id}" data-cart-state="${ic?'selected':'none'}" class="season-btn ${btn} py-3 text-[11px] sm:text-xs text-white shadow-md" style="${ic?'background: #10B981;':''}">${ic?`${S_ICONS.check} Seleccionado`:`${S_ICONS.cart} Carrito`}</button><button data-action="book-now" data-item-id="${item.id}" class="direct-booking-btn"><i data-lucide="calendar-check"></i> Reservar ahora</button></div>`;
             }
@@ -1808,7 +1832,8 @@ function captureBookingGps(form, isCurrent, onProgress) {
           const price = Number(item.price || 0);
           const oldPrice = Number(item.originalPrice || 0);
           const hasOffer = (item.discountApplied || item.oferta) && oldPrice > price;
-          const unit = item.isHourly ? '<span class="catalog-tile-unit">/hr</span>' : '';
+          const rule=getItemQuantityRule(item);
+          const unit = rule.enabled ? `<span class="catalog-tile-unit">/${escapeCatalogText(rule.singular)}</span>` : '';
           const itemName = cleanStr(item.name || item.title || '');
 
           return `
@@ -1840,7 +1865,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 </div>
 
                 <div class="catalog-tile-action">
-                  <span>Ver plan</span>
+                  <span>${item.tipoServicio==='personaje'?'Ver personaje':'Ver servicio'}</span>
                   <i data-lucide="arrow-right"></i>
                 </div>
               </div>
@@ -1891,11 +1916,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
             const detailQty = inCart ? clampItemQuantity(item, inCart.quantity) : detailQuantityRule.min;
             const actionArea = detailQuantityRule.enabled
                 ? `<div class="catalog-detail-actions">
-                    <div class="catalog-detail-qty">
-                        <button data-action="change-service-qty" data-item-id="${item.id}" data-change="-1" aria-label="Disminuir ${detailQuantityRule.plural}"><i data-lucide="minus"></i></button>
-                        <span class="min-w-[76px] text-center"><strong id="qty-${item.id}" class="block">${detailQty}</strong><small id="qty-label-${item.id}" class="block text-[9px] uppercase tracking-widest font-black opacity-60">${detailQty===1?detailQuantityRule.singular:detailQuantityRule.plural}</small></span>
-                        <button data-action="change-service-qty" data-item-id="${item.id}" data-change="1" aria-label="Aumentar ${detailQuantityRule.plural}"><i data-lucide="plus"></i></button>
-                    </div>
+                    ${quantityControlHTML(item,detailQty)}
                     <div class="direct-booking-actions catalog-detail-button-row">
                         <button data-action="add-hourly-to-cart" data-item-id="${item.id}" data-cart-state="${inCart ? 'refresh' : 'none'}" class="season-btn catalog-detail-cart">
                             <i data-lucide="${inCart ? 'refresh-cw' : 'shopping-cart'}"></i>
@@ -1944,7 +1965,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                                     <span class="catalog-detail-price-label">Precio</span>
                                     <div>
                                         ${hasOffer ? `<span class="catalog-detail-old-price">$${oldPrice.toFixed(2)}</span>` : ''}
-                                        <span class="catalog-detail-price">$${price.toFixed(2)}${item.isHourly ? '<small>/hr</small>' : ''}</span>
+                                        <span class="catalog-detail-price">$${price.toFixed(2)}${detailQuantityRule.enabled ? `<small>/${escapeCatalogText(detailQuantityRule.singular)}</small>` : ''}</span>
                                     </div>
                                 </div>
 
@@ -2009,7 +2030,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 </div>
 
                 <div class="catalog-products-grid">
-                  ${items.map(createCatalogTileHTML).join('')}
+                  ${items.map(item=>item.tipoServicio==='personaje'?createCharacterTileHTML(item):createCatalogTileHTML(item)).join('')}
                 </div>
               </section>
             </div>
@@ -3202,7 +3223,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
 
                 if(ic){
                     const qe = document.querySelector(`#qty-${itemId}`); 
-                    const vq = qe ? parseInt(qe.textContent) : ic.quantity;
+                    const vq = readItemQuantity(itemId,ic.quantity);
                     
                     if(isQuantityButton && vq !== ic.quantity){ 
                         b.innerHTML = `${S_ICONS.refresh} Actualizar Cantidad`; 
@@ -3393,7 +3414,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                         const rule = getItemQuantityRule(it);
                         const qtyEl = document.querySelector(`#qty-${it.id}`);
                         const existing = app.cart.find(i=>i.id===it.id);
-                        const requestedQty = rule.enabled ? clampItemQuantity(it, qtyEl ? parseInt(qtyEl.textContent,10) : (existing?.quantity ?? rule.min)) : 1;
+                        const requestedQty = rule.enabled ? clampItemQuantity(it, readItemQuantity(it.id,existing?.quantity ?? rule.min)) : 1;
                         app.cart = [{...it, quantity: requestedQty}];
                         appliedCoupon = null;
                         updateCartUI();
@@ -3422,7 +3443,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 case 'add-hourly-to-cart': { 
                     let sh = allPurchasableItems.find(s=>s.id===itemId); 
                     const qe = document.querySelector(`#qty-${itemId}`); 
-                    const qh = qe?parseInt(qe.textContent):1; 
+                    const qh = readItemQuantity(itemId,1);
                     
                     if (!sh && target.dataset.isCampaign === 'true') {
                         const camp = app.campaigns.find(c => c.id === itemId);
@@ -3454,14 +3475,11 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     if(qe){ 
                         const quantityItem = allPurchasableItems.find(s=>s.id===itemId) || app.catalog.find(s=>s.id===itemId) || app.cart.find(s=>s.id===itemId);
                         const rule = getItemQuantityRule(quantityItem || {});
-                        let cq=parseInt(qe.textContent,10); 
+                        let cq=readItemQuantity(itemId,rule.min);
                         if(!Number.isFinite(cq)) cq=rule.min;
                         const delta=(parseInt(change,10)||0)*rule.step;
                         let nq=clampItemQuantity(quantityItem || {}, cq+delta);
-                        qe.textContent=nq; 
-                        const label=document.querySelector(`#qty-label-${itemId}`);
-                        if(label) label.textContent=nq===1?rule.singular:rule.plural;
-                        updateProductButtonState(itemId); 
+                        setItemQuantityDisplay(quantityItem,nq);
                     } 
                     break; 
                 }
@@ -4114,7 +4132,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     const rows = await fetchStaticCollection('catalogo_web');
                     if(rows.length) {
                         const cd = rows.map(dt => { 
-                            return markChristmasBookingItem({ id:dt.id, name:dt.nombre, title:dt.titulo, slug:dt.slug, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, cardImage:dt.imagenTarjeta || dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], tipoCobro:dt.tipoCobro||'paquete', isHourly:dt.tipoCobro==='hora', isPerChild:dt.tipoCobro==='nino', cantidadMinima:dt.cantidadMinima, cantidadMaxima:dt.cantidadMaxima, incrementoCantidad:dt.incrementoCantidad, unidadEtiqueta:dt.unidadEtiqueta, categoria:dt.categoria, orden: dt.orden, esNavidad:dt.esNavidad===true, recursoNavidad:dt.recursoNavidad||'', _raw:dt }); 
+                            return markChristmasBookingItem({ id:dt.id, name:dt.nombre, title:dt.titulo, slug:dt.slug, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, cardImage:dt.imagenTarjeta || dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], tipoServicio:dt.tipoServicio||'servicio', tematica:dt.tematica||'', tipoCobro:dt.tipoCobro||'paquete', isHourly:dt.tipoCobro==='hora', isPerChild:dt.tipoCobro==='nino', cantidadMinima:dt.cantidadMinima, cantidadMaxima:dt.cantidadMaxima, incrementoCantidad:dt.incrementoCantidad, unidadEtiqueta:dt.unidadEtiqueta, categoria:dt.categoria, orden: dt.orden, esNavidad:dt.esNavidad===true, recursoNavidad:dt.recursoNavidad||'', _raw:dt });
                         });
                         if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
                         catalogLoaded = true; window.catalogLoaded = true;
@@ -4357,6 +4375,11 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 }
             }, { passive: true });
             
+            document.addEventListener('change', e => {
+                if (!e.target.matches('[data-service-quantity]')) return;
+                const item=allPurchasableItems.find(row=>row.id===e.target.dataset.serviceQuantity);
+                if(item) setItemQuantityDisplay(item,e.target.value);
+            });
             document.addEventListener('change', e => { if (e.target.matches('#cartLocation')) { app.location = e.target.value; updateCartUI(); } });
         }
 
