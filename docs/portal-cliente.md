@@ -10,12 +10,12 @@ El portal utiliza `POST /api/customer-portal`, una función de Netlify. No neces
 
 El código de la función se publica con el repositorio y `netlify.toml`. `firebase-admin` es una dependencia del servidor y no se descarga en el navegador. La carpeta `netlify/functions` queda fuera de `dist`.
 
-El único acceso privado necesario para la función es la variable **`DIVERTY_PORTAL_FIREBASE_ACCOUNT`** de Netlify: JSON de una cuenta de servicio del proyecto `diverty-eventos` con el rol **Cloud Datastore User** para leer reservas y mantener índices/contadores. Preferir una cuenta dedicada al portal, sin roles Owner/Editor ni permisos para administrar usuarios o facturación. Guardarla como variable del contexto de producción y alcance Functions; no en el repositorio, HTML, variables públicas ni conversaciones.
+El único acceso privado necesario para la función es la variable **`DIVERTY_PORTAL_FIREBASE_ACCOUNT`** de Netlify: JSON de una cuenta de servicio del proyecto `diverty-eventos` con el rol **Cloud Datastore User** para leer reservas y mantener índices/contadores. Preferir una cuenta dedicada al portal, sin roles Owner/Editor ni permisos para administrar usuarios o facturación. Guardarla como secreto del contexto de producción; no en el repositorio, HTML, variables públicas ni conversaciones. Elegir únicamente el alcance Functions si el plan permite seleccionar alcances. En Legacy Free esa selección no está disponible: usar los alcances de compilación, funciones y ejecución, excluyendo postprocesamiento. El código de compilación no debe copiar este secreto a los archivos públicos.
 
 Si se configura manualmente:
 
 1. Crear una cuenta de servicio dedicada en Google Cloud IAM del proyecto `diverty-eventos` y asignarle Cloud Datastore User. Crear su clave JSON.
-2. En Netlify, abrir el proyecto `divertypanama`, **Project configuration → Environment variables → Add a variable**. Añadir `DIVERTY_PORTAL_FIREBASE_ACCOUNT` con el JSON completo, para Functions en producción.
+2. En Netlify, abrir el proyecto `divertypanama`, **Project configuration → Environment variables → Add a variable**. Añadir `DIVERTY_PORTAL_FIREBASE_ACCOUNT` con el JSON completo, marcarla como secreto y limitarla al contexto de producción. Seleccionar Functions si el plan lo permite; en Legacy Free aplicar los alcances descritos arriba.
 3. Publicar de nuevo el sitio para que la función reciba la variable. Guardar la clave de manera privada y revocarla en IAM cuando deje de utilizarse.
 
 No modificar las reglas de Firestore ni `centralBookingValidation` para esta alternativa. Las funciones de Firebase que estaban preparadas quedan como una opción futura, sin publicarlas en Spark.
@@ -31,6 +31,8 @@ PORTAL_ONLY=1 node tests/browser/web-stability.cjs
 ```
 
 Después de publicar la app, abrir el panel administrador una vez para completar la actualización de las reservas antiguas. El proceso trabaja en páginas de 50, se ejecuta en segundo plano y marca `configuracion/migracion_portal_v1` como terminado únicamente al completar todas las páginas. Si falla, puede reintentarse al volver a abrir el panel.
+
+El 7 de octubre de 2026 quedó configurada la cuenta dedicada `diverty-portal-netlify@diverty-eventos.iam.gserviceaccount.com` en producción, conservando Firebase Spark y Netlify Legacy Free. Se completó el índice privado de 217 reservas en cinco páginas, sin modificar las reservas originales.
 
 ## Sincronización y privacidad
 
