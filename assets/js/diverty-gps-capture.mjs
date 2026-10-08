@@ -50,5 +50,6 @@ export function capturePreciseGps({ geolocation = globalThis.navigator?.geolocat
 
 export function gpsAccuracyMessage(accuracy) {
     const metres = Math.ceil(accuracy);
-    return accuracy <= 10 ? `Ubicación encontrada · precisión aproximada ±${metres} m.` : `Ubicación aproximada · margen de ±${metres} m. Reintenta al aire libre o pega un enlace con el pin correcto.`;
+    const received = `Ubicación recibida · precisión aproximada ±${metres} m.`;
+    return accuracy > 50 ? received + ' El margen es amplio: añade una dirección detallada o vuelve a medir al aire libre.' : received;
 }

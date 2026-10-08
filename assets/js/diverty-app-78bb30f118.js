@@ -2523,7 +2523,7 @@ function showBookingGpsProgress(form, onCancel) {
                         if (normalStatus) normalStatus.textContent = gpsAccuracyMessage(point.accuracy);
                         normalLocationBtn.innerHTML = '<i data-lucide="map-pin-check" class="w-5 h-5"></i> Volver a medir ubicación';
                         if (window.lucide) lucide.createIcons();
-                        showToast(point.accuracy <= 10 ? 'Ubicación encontrada. Comprueba que corresponda al lugar del evento.' : 'La ubicación es aproximada. Puedes repetir el GPS o pegar el pin correcto.', point.accuracy <= 10 ? 'success' : 'info');
+                        showToast(point.accuracy > 50 ? 'Ubicación recibida. Añade una dirección detallada para ayudarnos a llegar.' : 'Ubicación recibida. Completa el nombre del lugar para continuar.', point.accuracy > 50 ? 'info' : 'success');
                     } catch (error) {
                         if (error?.code === 'GPS_CANCELLED' || !isCurrent()) return;
                         const message = error?.code === 1 ? 'Permite el acceso a tu ubicación o utiliza la dirección manual.' : 'No pudimos obtener tu ubicación. Inténtalo de nuevo o escribe la dirección.';
@@ -2655,7 +2655,7 @@ function showBookingGpsProgress(form, onCancel) {
                         if (christmasStatus) christmasStatus.textContent = gpsAccuracyMessage(point.accuracy);
                         christmasLocationBtn.innerHTML = '<i data-lucide="map-pin-check" class="w-5 h-5"></i> Volver a medir ubicación';
                         if (window.lucide) lucide.createIcons();
-                        showToast(point.accuracy <= 10 ? 'Ubicación encontrada. Comprueba que corresponda al lugar del evento.' : 'La ubicación es aproximada. Puedes repetir el GPS o pegar el pin correcto.', point.accuracy <= 10 ? 'success' : 'info');
+                        showToast(point.accuracy > 50 ? 'Ubicación recibida. Añade una dirección detallada para ayudarnos a llegar.' : 'Ubicación recibida. Completa el nombre del lugar para continuar.', point.accuracy > 50 ? 'info' : 'success');
                     } catch (error) {
                         if (error?.code === 'GPS_CANCELLED' || !isCurrent()) return;
                         const message = error?.code === 1 ? 'Permite el acceso a tu ubicación o utiliza la dirección manual.' : 'No pudimos obtener tu ubicación. Inténtalo de nuevo o escribe la dirección.';
