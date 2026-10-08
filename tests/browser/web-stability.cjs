@@ -294,12 +294,25 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       const acceptedAddress=await gps.page.locator('[name="address"]').inputValue();
       await gps.context.setGeolocation({latitude:9.02,longitude:-79.52,accuracy:2});
       await gps.page.waitForTimeout(100);assert.equal(await gps.page.locator('[name="address"]').inputValue(),acceptedAddress);
-      assert.equal(await gps.page.locator(`[name="${prefix}Reference"]`).isVisible(),true);
-      await gps.page.locator('[data-location-continue]').click();
-      assert.match(await gps.page.locator('#toast').innerText(), /barriada, PH o salón/);
+      const result=gps.page.getByRole('dialog',{name:'Hemos encontrado tu ubicación'});
+      await result.waitFor();
+      assert.equal(await result.locator('textarea').evaluate(el=>el===document.activeElement),false,'opening the receipt must not open the mobile keyboard');
+      assert.match(await result.innerText(), /Precisión aproximada ±6 m/);
+      const action=result.getByRole('button',{name:christmas?'Continuar con la reserva':'Enviar reserva',exact:true});
+      await action.click();
+      await result.getByRole('alert').filter({hasText:'Escribe la barriada, PH o sala de eventos.'}).waitFor();
       assert.equal(await gps.page.locator(christmas?'#step-1.active':'#step-3.active').count(),1);
-      await gps.page.locator(`[name="${prefix}Reference"]`).fill('PH Las Palmeras, salón social');
-      if(christmas){await gps.page.locator('[data-location-continue]').click();await gps.page.locator('#step-2.active').waitFor();await gps.page.locator('#btn-prev').click();await gps.page.locator('#step-1.active').waitFor();}
+      await result.getByLabel('Barriada, PH o sala de eventos').fill('PH Las Palmeras, salón social');
+      assert.equal(await gps.page.locator(`[name="${prefix}Reference"]`).inputValue(),'PH Las Palmeras, salón social');
+      // The window still scrolls to the action on a small viewport with a keyboard.
+      await gps.page.setViewportSize({width:392,height:430});
+      await action.scrollIntoViewIfNeeded();
+      assert.equal(await action.evaluate(el=>{const r=el.getBoundingClientRect();return r.top>=0&&r.bottom<=innerHeight;}),true);
+      await gps.page.setViewportSize({width:392,height:852});
+      if(christmas){await action.click();await gps.page.locator('#step-2.active').waitFor();await gps.page.locator('#btn-prev').click();await gps.page.locator('#step-1.active').waitFor();}
+      else await result.getByRole('button',{name:'Volver',exact:true}).click();
+      assert.equal(await gps.page.locator('#booking-gps-result').count(),0);
+      assert.equal(await gps.page.locator(`[name="${prefix}Reference"]`).inputValue(),'PH Las Palmeras, salón social');
       await gps.page.locator(`[data-${prefix}-location-mode="manual"]`).click();
       assert.equal(await gps.page.locator('[name="address"]').inputValue(),'');
       await gps.page.locator(`#${prefix}-manual-address`).fill('Dirección nueva sin estar allí');
@@ -321,6 +334,33 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.equal(await gps.page.locator(`[data-${prefix}-location-mode="manual"]`).getAttribute('aria-pressed'),'true');
       assert.deepEqual(gps.errors,[]);
       console.log(`PASS: GPS ${prefix}, dirección remota y limpieza del punto anterior.`);
+    }
+
+    // Save through the GPS receipt using the same guarded transaction as the form.
+    for(const outside of [false,true]){
+      const f=await fixture();await openBooking(f);
+      await f.page.locator('[name="name"]').fill('Cliente GPS ficticio');await f.page.locator('[name="email"]').fill('gps@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
+      await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();await f.page.locator('#step-3.active').waitFor();
+      await f.context.grantPermissions(['geolocation'],{origin});
+      const point=outside?{latitude:9.16,longitude:-79.10,accuracy:6}:{latitude:9.0123,longitude:-79.5012,accuracy:6};
+      await f.context.setGeolocation(point);await f.page.locator('[data-normal-location-mode="gps"]').click();
+      const result=f.page.getByRole('dialog',{name:'Hemos encontrado tu ubicación'});await result.waitFor();
+      assert.match(await result.locator('.booking-gps-result-coverage').innerText(),outside?/por confirmar/:/\$0.00/);
+      await result.getByLabel('Barriada, PH o sala de eventos').fill('Salón de prueba, entrada principal');
+      await f.page.evaluate(()=>window.__allowBookingWrite=true);
+      await result.getByRole('button',{name:'Enviar reserva',exact:true}).click();
+      if(outside){
+        await f.page.locator('[data-review-send]').waitFor();
+        assert.equal(await f.page.evaluate(()=>Object.keys(window.__fakeWrites||{}).some(key=>key.includes('/eventos/'))),false,'an outside point still requires transport consent');
+        await f.page.locator('[data-review-send]').click();
+      }
+      await f.page.locator('#infoModal.show').waitFor();
+      const saved=await f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid&&x.serviciosSeleccionados));
+      assert.equal(saved.referenciaLugar,'Salón de prueba, entrada principal');
+      assert.equal(saved.direccion,`https://www.google.com/maps?q=${point.latitude.toFixed(6)},${point.longitude.toFixed(6)}`);
+      assert.equal(await f.page.locator('#booking-gps-result').count(),0);
+      assert.equal(new URL(f.page.url()).searchParams.has('vista'),false,'saved request returns to home');
+      assert.deepEqual(f.errors,[]);console.log(`PASS: envío desde ventana GPS ${outside?'fuera de cobertura con consentimiento':'con transporte incluido'}, referencia y punto guardados.`);
     }
 
     for(const christmas of [false,true]){

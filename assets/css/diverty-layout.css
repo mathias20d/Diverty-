@@ -236,3 +236,17 @@ body:has(.catalog-grid-page,.catalog-detail-page) .whatsapp-container { position
 .booking-gps-spinner { width:42px; height:42px; margin:auto; border:3px solid var(--s-glass-border); border-top-color:var(--s-primary,#8b5cf6); border-radius:50%; animation:booking-gps-spin 1s linear infinite; }
 @keyframes booking-gps-spin { to { transform:rotate(360deg); } }
 @media (prefers-reduced-motion:reduce) { .booking-gps-spinner { animation:none; } }
+
+/* The accepted GPS point, venue reference and next action fit in one mobile window. */
+.booking-gps-result { text-align:left; padding:22px; scroll-padding:16px; }
+.booking-gps-found { width:40px; height:40px; border-radius:50%; display:grid; place-items:center; background:#10b98120; color:#10b981; font-size:26px; font-weight:800; }
+.booking-gps-result h2 { margin:12px 0 8px; line-height:1.2; outline:none; }
+.booking-gps-result label { display:block; margin:16px 0 8px; font-size:14px; font-weight:700; }
+.booking-gps-result textarea { display:block; width:100%; min-height:84px; padding:12px; border:1px solid var(--s-glass-border); border-radius:14px; background:var(--s-glass-bg); color:inherit; font-size:16px; line-height:1.4; resize:vertical; }
+.booking-gps-result textarea:focus-visible { outline:2px solid var(--s-primary,#8b5cf6); outline-offset:2px; }
+.booking-gps-result .booking-gps-error { margin:8px 0 0; color:#fb7185; font-size:13px; }
+.booking-gps-result-coverage { margin-top:14px; }
+.booking-gps-result-coverage > div { padding:12px!important; border-radius:14px; }
+.booking-gps-result-coverage p { font-size:13px!important; }
+.booking-gps-result .booking-gps-hint { margin:10px 0 16px; }
+.booking-gps-result .booking-gps-back { margin-top:8px; background:transparent; color:var(--s-text-muted); }
