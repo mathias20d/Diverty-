@@ -1344,14 +1344,31 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         function createInput(label, name, type, extra='') { return `<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase tracking-wider mb-1.5 block">${label} *</label><input type="${type}" name="${name}" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" ${extra}></div>`; }
         function createWizardStep(step, icon, text, opacity) { return `<div class="wizard-step flex flex-col items-center relative z-10 ${opacity}"><div class="w-10 h-10 rounded-full ${opacity ? 'bg-black/5 season-text-muted border border-black/10' : 'season-btn text-white'} flex items-center justify-center font-bold shadow-sm"><i data-lucide="${icon}" class="w-5 h-5"></i></div><span class="text-xs font-bold ${opacity ? 'season-text-muted' : 'season-text-primary'} mt-2">${text}</span></div>`; }
         
+        const escapePortalText = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        function getPortalMessage(title, description = '', icon = 'calendar-heart', tone = '') {
+            return `<div class="portal-message ${tone}"><span class="portal-message-icon" aria-hidden="true"><i data-lucide="${icon}"></i></span><h3>${escapePortalText(title)}</h3>${description ? `<p>${escapePortalText(description)}</p>` : ''}</div>`;
+        }
         function getPortalResultCard(input) {
-            const escapeText=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-            const ev={...input}; for(const key of ['cliente','estado','servicio','fecha','hora']) ev[key]=escapeText(ev[key]);
-            const tot = parseFloat(ev.total||0), abo = parseFloat(ev.abono||0), saldo = Math.max(0, tot-abo);
-            let color = 'bg-amber-500/20 text-amber-500 border-amber-500/30';
-            if(ev.estado.toLowerCase()==='confirmado') color = 'bg-blue-500/20 text-blue-500 border-blue-500/30';
-            if(ev.estado.toLowerCase()==='completado') color = 'bg-emerald-500/20 text-emerald-500 border-emerald-500/30';
-            return `<div class="glass-panel card-alive rounded-2xl overflow-hidden shadow-lg transition-all animate-slide-up"><div class="p-6 border-b" style="border-color: var(--s-glass-border)"><div class="flex justify-between items-start mb-4"><span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${color} shadow-sm"><div class="w-1.5 h-1.5 rounded-full bg-current mr-1.5 opacity-80"></div> ${ev.estado}</span></div><h4 class="text-2xl font-black season-text-title mb-1 capitalize">${ev.cliente}</h4><p class="text-sm season-text-muted flex items-center gap-1.5 font-semibold mb-4"><i data-lucide="calendar-days" class="w-4 h-4 season-text-primary"></i> ${ev.fecha?String(ev.fecha).split('-').reverse().join('/'):'Por definir'} a las ${ev.hora}</p><div class="bg-black/5 border border-black/5 rounded-xl p-4 flex items-start gap-3"><div class="p-2 rounded-lg mt-0.5" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="gift" class="w-5 h-5"></i></div><div><p class="text-[10px] font-bold season-text-primary uppercase tracking-wider mb-1">Paquete / Servicio</p><p class="text-sm font-bold season-text-title leading-snug">${ev.servicio||'Servicio no especificado'}</p></div></div></div><div class="bg-black/5 p-6 flex flex-col gap-3"><div class="flex justify-between items-center text-sm font-semibold season-text-muted"><span>Costo Total</span><span class="season-text-title">$${tot.toFixed(2)}</span></div><div class="flex justify-between items-center text-sm font-semibold text-emerald-500"><span>Abono Realizado</span><span>$${abo.toFixed(2)}</span></div><div class="w-full h-px border-t border-black/10 my-1"></div><div class="flex justify-between items-center"><span class="text-xs font-bold season-text-muted uppercase tracking-wider">Saldo Pendiente</span><span class="text-2xl font-black ${saldo>0?'text-pink-500':'text-emerald-500'}">$${saldo.toFixed(2)}</span></div>${saldo===0?`<div class="mt-2 text-center bg-emerald-500/20 text-emerald-600 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1 border border-emerald-500/30"><i data-lucide="check-circle" class="w-4 h-4"></i> Totalmente Pagado</div>`:''}</div></div>`;
+            const ev = {...input};
+            for (const key of ['cliente','estado','servicio','fecha','hora']) ev[key] = escapePortalText(ev[key]);
+            const money = value => Number.isFinite(Number(value)) ? Math.max(0, Number(value)) : 0;
+            const total = money(input.total), deposit = money(input.abono), balance = Math.max(0, total - deposit);
+            const status = String(input.estado || '').toLowerCase();
+            const tone = status === 'confirmado' ? 'confirmed' : status === 'completado' ? 'completed' : /cancelad/.test(status) ? 'cancelled' : 'pending';
+            return `<article class="portal-reservation" aria-label="Reserva de ${ev.cliente}">
+                <div class="portal-reservation-head"><span class="portal-eyebrow">TU RESERVA</span><span class="portal-status portal-status-${tone}"><span aria-hidden="true"></span>${ev.estado || 'Pendiente'}</span></div>
+                <h3 class="portal-customer">${ev.cliente}</h3>
+                <div class="portal-event-details">
+                    <div><i data-lucide="calendar-days" aria-hidden="true"></i><div><span>Fecha del evento</span><strong>${ev.fecha ? String(ev.fecha).split('-').reverse().join('/') : 'Por definir'}</strong></div></div>
+                    <div><i data-lucide="clock-3" aria-hidden="true"></i><div><span>Hora</span><strong>${ev.hora || 'Por definir'}</strong></div></div>
+                </div>
+                <div class="portal-service"><span class="portal-service-icon" aria-hidden="true"><i data-lucide="gift"></i></span><div><span class="portal-eyebrow">PAQUETE / SERVICIO</span><p>${ev.servicio || 'Servicio no especificado'}</p></div></div>
+                <section class="portal-payments" aria-label="Resumen de pago">
+                    <h4>Resumen de pago</h4>
+                    <dl><div><dt>Costo Total</dt><dd>$${total.toFixed(2)}</dd></div><div class="portal-deposit"><dt>Abono Realizado</dt><dd>$${deposit.toFixed(2)}</dd></div><div class="portal-balance"><dt>Saldo Pendiente</dt><dd>$${balance.toFixed(2)}</dd></div></dl>
+                    ${balance === 0 ? '<p class="portal-paid"><i data-lucide="circle-check" aria-hidden="true"></i> Totalmente Pagado</p>' : ''}
+                </section>
+            </article>`;
         }
 
         function getCampaignsHTML() {
@@ -2273,28 +2290,51 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function renderPortal() {
-            setContent(`<div class="container mx-auto px-4 max-w-3xl pt-28 pb-12"><section class="mb-12 animate-slide-up"><div class="text-center mb-10"><div class="w-16 h-16 bg-black/5 border border-[var(--s-primary)] rounded-[1.25rem] flex items-center justify-center mx-auto mb-4 shadow-sm season-text-primary"><i data-lucide="search" class="w-8 h-8"></i></div><h2 class="text-2xl md:text-3xl font-extrabold season-text-title font-nunito tracking-tight">Portal del Cliente</h2><p class="season-text-muted mt-2 font-medium text-sm">Consulta tu reserva con el nombre o celular que registraste.</p></div><div class="glass-panel card-alive p-6 sm:p-10 shadow-sm"><form id="portalSearchForm" class="flex flex-col gap-3 mb-8"><div class="relative flex-1"><i data-lucide="phone" class="absolute left-4 top-1/2 -translate-y-1/2 season-text-muted w-5 h-5"></i><input type="text" id="searchPhone" aria-label="Nombre o celular de la reserva" autocomplete="off" maxlength="150" placeholder="Tu nombre o celular (Ej. 60000000)" class="w-full bg-black/5 border border-black/10 rounded-2xl py-3.5 pl-12 pr-4 text-sm font-bold season-text-title outline-none focus:border-[var(--s-primary)] transition-colors shadow-inner" required></div><button type="submit" class="w-full season-btn font-bold py-3.5 rounded-2xl flex justify-center items-center gap-2 text-sm transition-transform active:scale-95"><i data-lucide="search" class="w-4 h-4"></i> Buscar Reserva</button></form><div id="portalResults" aria-live="polite" class="space-y-5"><div class="text-center p-8 border-2 border-dashed border-black/10 rounded-2xl bg-black/5"><p class="season-text-muted font-semibold">Escribe el nombre que pusiste en la reserva o tu número de celular. Puedes incluir +507.</p></div></div></div></section></div>`);
+            const helpUrl = christmasWhatsappUrl('Hola, necesito ayuda con mi reserva.');
+            setContent(`<section class="portal-page">
+                <a href="?vista=home" data-target-section="home" class="portal-back nav-action"><i data-lucide="arrow-left" aria-hidden="true"></i> Volver al inicio</a>
+                <header class="portal-header"><div class="portal-brand-mark" aria-hidden="true"><i data-lucide="calendar-heart"></i></div><div><span class="portal-eyebrow">TU EXPERIENCIA DIVERTY</span><h2>Portal del Cliente</h2><p>Los detalles de tu celebración, en un solo lugar.</p></div></header>
+                <div class="portal-layout">
+                    <aside class="portal-search-panel">
+                        <div class="portal-search-heading"><span class="portal-step" aria-hidden="true"><i data-lucide="search"></i></span><div><h3>Encuentra tu reserva</h3><p>Ten los detalles de tu evento a mano.</p></div></div>
+                        <form id="portalSearchForm">
+                            <label for="searchPhone">Nombre o celular</label>
+                            <div class="portal-input-wrap"><i data-lucide="user-round-search" aria-hidden="true"></i><input type="text" id="searchPhone" aria-label="Nombre o celular de la reserva" aria-describedby="portalSearchHint" autocomplete="off" maxlength="150" placeholder="Ej. María Pérez o 60000000" required></div>
+                            <p id="portalSearchHint">Usa los datos que registraste. Tu celular puede incluir +507.</p>
+                            <button type="submit" class="season-btn"><i data-lucide="search" aria-hidden="true"></i> Buscar Reserva</button>
+                        </form>
+                        <div class="portal-help"><i data-lucide="message-circle" aria-hidden="true"></i><div><p>¿Necesitas ayuda?</p><a href="${helpUrl}" target="_blank" rel="noopener noreferrer">Conversemos por WhatsApp <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div></div>
+                    </aside>
+                    <section class="portal-results-panel" aria-labelledby="portalResultsTitle"><div class="portal-results-heading"><h3 id="portalResultsTitle">Detalles de tu reserva</h3><span>DIVERTY · PANAMÁ</span></div><div id="portalResults" aria-live="polite">${getPortalMessage('Tu reserva, a un paso', 'Aquí verás la fecha, el servicio y los pagos de tu evento.')}</div></section>
+                </div>
+            </section>`);
             const form = document.getElementById('portalSearchForm');
             if(form)form.onsubmit = async event => {
                 event.preventDefault();
                 if(form.dataset.searching==='1')return;
-                const input=form.querySelector('#searchPhone'), results=form.querySelector('#portalResults') || document.getElementById('portalResults');
+                const input=form.querySelector('#searchPhone'), results=document.getElementById('portalResults');
                 if(!input || !results)return;
+                const renderMessage = (title, description, icon = 'search', tone = '') => {
+                    results.innerHTML = getPortalMessage(title, description, icon, tone);
+                    if(typeof lucide!=='undefined')lucide.createIcons({root:results});
+                };
                 try { parsePortalQuery(input.value); }
-                catch(error){results.textContent=error.reason==='INVALID_PHONE'?'Escribe el número de celular completo. Puedes incluir +507.':'Escribe el nombre que registraste en la reserva o tu celular completo.';input.focus();return;}
+                catch(error){renderMessage('Revisa tus datos', error.reason==='INVALID_PHONE'?'Escribe el número de celular completo. Puedes incluir +507.':'Escribe el nombre que registraste en la reserva o tu celular completo.', 'circle-alert', 'portal-message-notice');input.focus();return;}
                 const button=form.querySelector('button[type="submit"]'), label=button.innerHTML;
-                form.dataset.searching='1';button.disabled=true;input.disabled=true;button.textContent='Buscando…';
-                results.innerHTML='<div class="text-center p-8 bg-black/5 rounded-2xl"><div class="loading-spinner !w-6 !h-6 !border-2 mx-auto mb-3"></div><p class="season-text-muted font-bold">Consultando tu reserva…</p></div>';
+                form.dataset.searching='1';button.disabled=true;input.disabled=true;button.textContent='Buscando…';results.setAttribute('aria-busy','true');
+                results.innerHTML='<div class="portal-message portal-message-loading"><div class="loading-spinner !w-6 !h-6 !border-2" aria-hidden="true"></div><h3>Consultando tu reserva…</h3><p>Estamos buscando los detalles de tu celebración.</p></div>';
                 try {
                     const rows=await findCustomerReservations(input.value);
                     if(!results.isConnected)return;
-                    results.innerHTML=rows.length ? rows.map(getPortalResultCard).join('') : '<div class="text-center p-8 bg-rose-500/10 rounded-2xl border border-rose-500/20"><p class="text-rose-500 font-bold">No encontramos una reserva con esos datos.</p><p class="season-text-muted text-sm mt-2">Prueba con tu celular completo o escribe el nombre tal como lo registraste.</p></div>';
+                    if(rows.length)results.innerHTML=rows.map(getPortalResultCard).join('');
+                    else renderMessage('No encontramos una reserva con esos datos.', 'Prueba con tu celular completo o escribe el nombre tal como lo registraste.', 'search', 'portal-message-notice');
                 } catch(error) {
                     if(!results.isConnected)return;
-                    results.textContent=error.reason==='AMBIGUOUS_NAME'?'Hay varios clientes con ese nombre. Escribe tu número de celular para ver tu reserva.':error.reason==='RATE_LIMITED'?'Has realizado varias consultas seguidas. Espera un minuto e inténtalo de nuevo.':'No pudimos consultar las reservas. Reintenta o contáctanos por WhatsApp; este mensaje no significa que tu reserva no exista.';
+                    const description=error.reason==='AMBIGUOUS_NAME'?'Hay varios clientes con ese nombre. Escribe tu número de celular para ver tu reserva.':error.reason==='RATE_LIMITED'?'Has realizado varias consultas seguidas. Espera un minuto e inténtalo de nuevo.':'No pudimos consultar las reservas. Reintenta o contáctanos por WhatsApp; este mensaje no significa que tu reserva no exista.';
+                    renderMessage('Vamos a ayudarte', description, 'message-circle', 'portal-message-notice');
                 } finally {
-                    delete form.dataset.searching;button.disabled=false;input.disabled=false;button.innerHTML=label;
-                    if(typeof lucide!=='undefined')lucide.createIcons({root:form.parentElement});
+                    delete form.dataset.searching;button.disabled=false;input.disabled=false;button.innerHTML=label;results.removeAttribute('aria-busy');
+                    if(typeof lucide!=='undefined')lucide.createIcons({root:document.querySelector('.portal-page')});
                 }
             };
         }
