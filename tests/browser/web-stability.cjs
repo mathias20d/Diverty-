@@ -94,11 +94,16 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     await f.page.locator('#bookingForm').waitFor();
     assert.equal(new URL(f.page.url()).searchParams.get('vista'),'booking');
     assert.equal(new URL(f.page.url()).searchParams.has('plan'),false);
+    const christmas=await f.page.locator('[data-christmas-location-mode="gps"]').count()>0;
+    const prefix=christmas?'christmas':'normal';
+    assert.equal(await f.page.locator(`[data-${prefix}-location-mode="gps"]`).getAttribute('aria-pressed'),'true','a new form defaults to GPS');
+    assert.equal(await f.page.locator('#booking-gps-progress').count(),0,'the client starts GPS with an explicit tap');
+    if(christmas)await f.page.locator('[data-christmas-location-mode="manual"]').click();
   };
     const sendNormalBooking=async f=>{
       await f.page.locator('[name="name"]').fill('Cliente catálogo de prueba');await f.page.locator('[name="email"]').fill('catalogo@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
       await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();
-      await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('Casa de prueba, Chepo');await f.page.evaluate(()=>window.__allowBookingWrite=true);
+      await f.page.locator('#step-3.active').waitFor();await f.page.locator('[data-normal-location-mode="manual"]').click();await f.page.locator('#normal-manual-address').fill('Casa de prueba, Chepo');await f.page.evaluate(()=>window.__allowBookingWrite=true);
       await f.page.locator('[data-location-continue]').click();await f.page.locator('[data-review-send]').click();await f.page.waitForFunction(()=>document.querySelector('#infoModal').classList.contains('show'),null,{timeout:f.holdPortalSync?2000:30000});
       assert.deepEqual(f.errors,[]);return f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid&&x.serviciosSeleccionados));
     };
@@ -276,6 +281,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       }
       const prefix=christmas?'christmas':'normal';
       assert.equal(await gps.page.locator(`[data-${prefix}-location-mode]`).first().getAttribute(`data-${prefix}-location-mode`),'gps');
+      if(!christmas){assert.equal(await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).getAttribute('aria-pressed'),'true');assert.equal(await gps.page.locator(`#${prefix}-gps-panel`).isVisible(),true);assert.equal(await gps.page.locator(`#${prefix}-manual-address`).isVisible(),false);}
       await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
       await gps.page.getByRole('dialog',{name:'Buscando ubicación…'}).waitFor();
       await gps.page.waitForFunction(prefix=>document.querySelector(`#${prefix}-location-status`).textContent.includes('±25 m'),prefix);
@@ -327,6 +333,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.equal(await f.page.locator('.location-extra').count(),0);
       assert.equal(await f.page.locator(`#${prefix}-search-address`).count(),0);
       // Just the venue name is still sufficient with the optional map section removed.
+      await f.page.locator(`[data-${prefix}-location-mode="manual"]`).click();
       await f.page.locator(`#${prefix}-manual-address`).fill('');
       await f.page.locator(`[name="${prefix}Reference"]`).fill('Funlandia, Bella Vista');
       await f.page.evaluate(()=>window.__allowBookingWrite=true);
@@ -347,7 +354,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       }else{
         await contact();await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();
         await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();
-        await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('Casa de prueba, Chepo');
+        await f.page.locator('#step-3.active').waitFor();await f.page.locator('[data-normal-location-mode="manual"]').click();await f.page.locator('#normal-manual-address').fill('Casa de prueba, Chepo');
       }
       // Close the day after the visitor has already filled the final step.
       await f.page.evaluate(christmas=>{window.__allowBookingWrite=true;window.__fakeWrites={'artifacts/diverty-oficial/public/data/config_web/fechas_cerradas':{fechas:{[christmas?'2026-12-24':'2026-10-15']:true}}};},christmas);
@@ -385,7 +392,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       const f=await fixture();await openBooking(f);
       await f.page.locator('[name="name"]').fill('Cliente cobertura ficticio');await f.page.locator('[name="email"]').fill('cobertura@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
       await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();await f.page.locator('#step-3.active').waitFor();
-      await f.page.locator('#normal-manual-address').fill(address);
+      await f.page.locator('[data-normal-location-mode="manual"]').click();await f.page.locator('#normal-manual-address').fill(address);
       if(expectedZone==='Ciudad de Panamá')await f.page.locator('#normal-coverage-result').filter({hasText:'$0.00'}).waitFor();
       assert.doesNotMatch(await f.page.locator('#normal-coverage-result').innerText(),/Transporte por confirmar/);
       await f.page.evaluate(()=>window.__allowBookingWrite=true);await f.page.locator('[data-location-continue]').click();

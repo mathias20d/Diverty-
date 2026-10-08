@@ -2374,7 +2374,7 @@ function showBookingGpsProgress(form, onCancel) {
                 <div id="${locationPrefix}-gps-panel" class="form-group hidden">
                     <button type="button" id="${locationPrefix}-use-location" class="hidden" aria-hidden="true" tabindex="-1">Usar mi ubicación actual</button>
                     <div id="${locationPrefix}-location-loader" class="hidden rounded-2xl bg-black/5 p-3 text-center"><div class="text-2xl animate-bounce">${isChristmasEveBooking()?'🎅🛷':'🚐🎈'}</div><p id="${locationPrefix}-location-loader-text" class="text-sm font-bold season-text-title mt-2">Buscando tu ubicación…</p></div>
-                    <p id="${locationPrefix}-location-status" class="text-xs season-text-muted">Permite el GPS para usar este punto. También puedes escribir la dirección.</p>
+                    <p id="${locationPrefix}-location-status" class="text-xs season-text-muted">Pulsa Buscar por GPS para obtener tu ubicación. Si no estás en el lugar del evento, elige Escribir dirección.</p>
                 </div>
                 <div class="form-group">
                     <label for="${referenceName}" class="block text-sm font-bold season-text-title mb-2">Barriada, PH o salón de fiestas</label>
@@ -2733,8 +2733,8 @@ function showBookingGpsProgress(form, onCancel) {
                 });
                 renderChristmasCoverageStatus();
                 if(bForm && Object.keys(bookingFormState).length>0){ for(let k in bookingFormState){ if(bForm.elements[k]) bForm.elements[k].value=bookingFormState[k]; } }
-                if(isChristmasEveBooking()) setChristmasLocationMode(bookingFormState.christmasLocationMode||'manual');
-                else setNormalLocationMode(bookingFormState.normalLocationMode||'manual');
+                if(isChristmasEveBooking()) setChristmasLocationMode(bookingFormState.christmasLocationMode||'gps');
+                else setNormalLocationMode(bookingFormState.normalLocationMode||'gps');
                 const christmasTimeSelect = bForm?.elements?.time;
                 const christmasTimeMessage = document.getElementById('christmas-time-message');
                 const christmasTimeIsUnavailable = () => {
