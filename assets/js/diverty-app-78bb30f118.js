@@ -1,4 +1,4 @@
-import {catalogImageUrl} from './diverty-images.mjs';
+import {responsiveImage} from './diverty-images.mjs';
 import {requestCustomerPortal} from './diverty-portal-api.mjs?v=0d2428d94f21';
 import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=8b19069e9f53';
 import { isClosedBookingDate } from './diverty-date-availability.mjs?v=79d415724694';
@@ -762,11 +762,18 @@ function captureBookingGps(form, isCurrent, onProgress) {
             if (!url || !url.includes('res.cloudinary.com') || !url.includes('/image/upload/')) return url;
             const safeWidth = Math.max(120, Math.min(1600, Number(width) || 720));
             const marker = '/image/upload/';
-            const transform = `f_auto,q_auto:eco,c_limit,w_${safeWidth},dpr_auto/`;
+            const transform = `f_auto,q_auto:eco,c_limit,w_${safeWidth}/`;
             // Evita duplicar nuestra transformación si la función se llama dos veces.
             if (url.includes('/image/upload/f_auto,q_auto:eco,c_limit,')) return url;
             return url.replace(marker, marker + transform);
         };
+
+        const catalogSizes = '(max-width:380px) calc((100vw - 44px) / 2), (max-width:767px) calc((100vw - 54px) / 2), (max-width:1199px) calc((100vw - 88px) / 3), 262px';
+        const categorySizes = '(max-width:380px) calc((100vw - 44px) / 2), (max-width:767px) calc((100vw - 54px) / 2), (max-width:1159px) calc((100vw - 88px) / 3), 357px';
+        function imageAttributes(value,sizes,options={}) {
+            const image=responsiveImage(value,options);
+            return `src="${escapeCatalogText(image.src)}"${image.srcset?` srcset="${escapeCatalogText(image.srcset)}" sizes="${sizes}"`:''}`;
+        }
 
         // NAVIDAD FASE 1 — detección aislada.
         // No modifica calendario, disponibilidad, Firebase ni el guardado de reservas.
@@ -1392,7 +1399,8 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 const titulo = cleanStr(camp.titulo);
                 const sub = cleanStr(camp.subtitulo);
                 const desc = cleanStr(camp.descripcion);
-                const img = optimizeCloudinaryImage(camp.imagen, isDestacada ? 960 : 720);
+                const img = cleanStr(camp.imagen);
+                const campaignImage = imageAttributes(img, isDestacada ? '(max-width:767px) calc(100vw - 64px), (max-width:1279px) 45vw, 520px' : '(max-width:767px) calc(100vw - 64px), 350px', {ratio:0,widths:[320,480,720,1080]});
                 const pPromo = cleanStr(camp.precio);
                 const pAnt = cleanStr(camp.precioOriginal);
                 const tId = cleanStr(camp.id);
@@ -1419,7 +1427,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                         <div class="campaign-featured-badge absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-6 py-1.5 rounded-full z-[40] shadow-md flex items-center gap-1.5 whitespace-nowrap"><i data-lucide="tag" class="w-3 h-3 fill-white"></i> GRAN PROMOCIÓN</div>
                         
                         <div class="glass-panel card-alive flex flex-col md:flex-row h-full rounded-[1.5rem] w-full">
-                            ${img ? `<div class="campaign-featured-image w-full md:w-5/12 h-40 md:h-auto relative shrink-0 pt-5 px-4 md:p-5"><img src="${img}" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-[1rem] shadow-sm border" style="border-color: var(--s-glass-border);"></div>` : ''}
+                            ${img ? `<div class="campaign-featured-image w-full md:w-5/12 h-40 md:h-auto relative shrink-0 pt-5 px-4 md:p-5"><img ${campaignImage} loading="lazy" decoding="async" class="w-full h-full object-cover rounded-[1rem] shadow-sm border" style="border-color: var(--s-glass-border);"></div>` : ''}
                             <div class="campaign-featured-content p-4 sm:p-5 flex flex-col justify-center flex-1 relative z-10 w-full">
                                 ${sub ? `<div class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest w-max mb-3" style="background: color-mix(in srgb, var(--s-primary) 20%, transparent); color: var(--s-primary);"><i data-lucide="star" class="w-3 h-3"></i> ${sub}</div>` : ''}
                                 <h2 class="campaign-main-title text-xl sm:text-2xl lg:text-3xl font-black mb-2 font-nunito leading-tight season-text-title tracking-tight">${titulo}</h2>
@@ -1449,7 +1457,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                         <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-gradient-to-r from-pink-500 to-rose-600 text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full z-[40] shadow-sm flex items-center gap-1 whitespace-nowrap"><i data-lucide="tag" class="w-2.5 h-2.5 fill-white"></i> Promo</div>
                         <div class="glass-panel card-alive p-3 sm:p-4 flex flex-col h-full group w-full">
                             <div class="relative z-10 flex flex-col h-full pt-3">
-                                ${img ? `<div class="w-full h-32 sm:h-40 rounded-xl overflow-hidden mb-3 shrink-0 shadow-sm border border-[var(--s-glass-border)]"><img src="${img}" loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"></div>` : ''}
+                                ${img ? `<div class="w-full h-32 sm:h-40 rounded-xl overflow-hidden mb-3 shrink-0 shadow-sm border border-[var(--s-glass-border)]"><img ${campaignImage} loading="lazy" decoding="async" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"></div>` : ''}
                                 ${sub ? `<span class="text-[9px] sm:text-[10px] font-black uppercase tracking-widest season-text-primary mb-1 block">${sub}</span>` : ''}
                                 <h3 class="text-lg sm:text-xl font-black season-text-title mb-1.5 font-nunito leading-tight">${titulo}</h3>
                                 ${desc ? `<p class="season-text-muted text-[11px] sm:text-xs font-semibold mb-3 leading-snug line-clamp-2">${desc}</p>` : ''}
@@ -1534,9 +1542,9 @@ function captureBookingGps(form, isCurrent, onProgress) {
             const rule=getItemQuantityRule(item), name=escapeCatalogText(item.name), id=escapeCatalogText(item.id);
             return `<div class="service-quantity-control"><div class="service-quantity-row"><button type="button" data-action="change-service-qty" data-item-id="${id}" data-change="-1" aria-label="Disminuir ${name}">−</button><label><input type="number" inputmode="numeric" id="qty-${id}" data-service-quantity="${id}" aria-label="Cantidad de ${name}" min="${rule.min}" ${rule.max?`max="${rule.max}"`:''} step="${rule.step}" value="${q}"><small id="qty-label-${id}">${escapeCatalogText(q===1?rule.singular:rule.plural)}</small></label><button type="button" data-action="change-service-qty" data-item-id="${id}" data-change="1" aria-label="Aumentar ${name}">+</button></div><p class="service-quantity-hint">Mínimo ${rule.min}${rule.max?` · Máximo ${rule.max}`:''}</p><strong class="service-quantity-total" data-quantity-total="${id}">${q} × $${Number(item.price).toFixed(2)} = $${(q*Number(item.price)).toFixed(2)}</strong></div>`;
         }
-        function createCharacterTileHTML(item) {
+        function createCharacterTileHTML(item,index=0) {
             const selected=app.cart.some(row=>row.id===item.id), name=escapeCatalogText(item.name), id=escapeCatalogText(item.id);
-            return `<article class="catalog-character-card"><button type="button" class="catalog-character-photo" data-action="open-item-detail" data-item-id="${id}" aria-label="Ver ${name}"><img src="${escapeCatalogText(catalogImageUrl(item.cardImage||item.image,480,480))}" alt="${name}" loading="lazy" decoding="async"></button><div class="catalog-character-body">${item.tematica?`<p class="catalog-character-theme">${escapeCatalogText(item.tematica)}</p>`:''}<h3>${name}</h3><strong class="catalog-character-price">$${Number(item.price).toFixed(2)}</strong><div class="catalog-character-actions"><button type="button" class="season-btn" data-action="add-to-cart" data-item-id="${id}" data-cart-state="${selected?'selected':'none'}">${selected?'Seleccionado':'Añadir al carrito'}</button><button type="button" class="direct-booking-btn" data-action="book-now" data-item-id="${id}">Reservar ahora</button></div></div></article>`;
+            return `<article class="catalog-character-card"><button type="button" class="catalog-character-photo" data-action="open-item-detail" data-item-id="${id}" aria-label="Ver ${name}"><img ${imageAttributes(item.cardImage||item.image,catalogSizes,{ratio:1})} alt="${name}" width="480" height="480" loading="${index<2?'eager':'lazy'}" fetchpriority="${index<2?'high':'low'}" decoding="async"></button><div class="catalog-character-body">${item.tematica?`<p class="catalog-character-theme">${escapeCatalogText(item.tematica)}</p>`:''}<h3>${name}</h3><strong class="catalog-character-price">$${Number(item.price).toFixed(2)}</strong><div class="catalog-character-actions"><button type="button" class="season-btn" data-action="add-to-cart" data-item-id="${id}" data-cart-state="${selected?'selected':'none'}">${selected?'Seleccionado':'Añadir al carrito'}</button><button type="button" class="direct-booking-btn" data-action="book-now" data-item-id="${id}">Reservar ahora</button></div></div></article>`;
         }
 
         function quantityLabelForCart(item) {
@@ -1769,9 +1777,9 @@ function captureBookingGps(form, isCurrent, onProgress) {
             return;
           }
 
-          const cards = categories.map(cat => {
+          const cards = categories.map((cat,index) => {
             const firstItem = cat.items[0];
-            const cover = optimizeCloudinaryImage(cat.imagen || cat.image || firstItem?.image || '', 720);
+            const cover = cleanStr(cat.imagen || cat.image || firstItem?.image || '');
             const icon = getCatalogIcon(cat);
             const countLabel = `${cat.count} ${cat.count === 1 ? 'opción' : 'opciones'}`;
 
@@ -1782,7 +1790,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 aria-label="Ver ${cleanStr(cat.nombre)}">
                 <div class="catalog-category-media">
                   ${cover
-                    ? `<img src="${cover}" alt="${cleanStr(cat.nombre)}" loading="lazy" decoding="async">`
+                    ? `<img ${imageAttributes(cover,categorySizes)} alt="${cleanStr(cat.nombre)}" width="480" height="360" loading="${index<2?'eager':'lazy'}" fetchpriority="${index<2?'high':'low'}" decoding="async">`
                     : `<div class="catalog-category-placeholder"><i data-lucide="${icon}"></i></div>`
                   }
                   <div class="catalog-category-shade"></div>
@@ -1828,7 +1836,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
             renderSection(items, cat.nombre, getCatalogIcon(cat));
         }
 
-        function createCatalogTileHTML(item) {
+        function createCatalogTileHTML(item,index=0) {
           const price = Number(item.price || 0);
           const oldPrice = Number(item.originalPrice || 0);
           const hasOffer = (item.discountApplied || item.oferta) && oldPrice > price;
@@ -1845,10 +1853,12 @@ function captureBookingGps(form, isCurrent, onProgress) {
 
               <div class="catalog-tile-image-wrap">
                 <img
-                  src="${catalogImageUrl(item.cardImage || item.image,720,540)}"
+                  ${imageAttributes(item.cardImage || item.image,catalogSizes)}
                   alt="${itemName}"
                   class="catalog-tile-image"
-                  loading="lazy"
+                  width="480" height="360"
+                  loading="${index<2?'eager':'lazy'}"
+                  fetchpriority="${index<2?'high':'low'}"
                   decoding="async">
                 ${hasOffer ? `<span class="catalog-tile-offer">OFERTA</span>` : ''}
               </div>
@@ -1949,10 +1959,10 @@ function captureBookingGps(form, isCurrent, onProgress) {
                         <div class="catalog-detail-card">
                             <div class="catalog-detail-image-wrap">
                                 <picture>
-                                <source media="(min-width:768px)" srcset="${optimizeCloudinaryImage(item.image,1080)}">
-                                <img src="${catalogImageUrl(item.image,1080,540)}"
+                                <source media="(min-width:768px)" srcset="${escapeCatalogText(responsiveImage(item.image,{ratio:0,widths:[480,768,1080]}).srcset||item.image)}" sizes="(max-width:1159px) calc((100vw - 40px) / 2), 560px">
+                                <img ${imageAttributes(item.image,'calc(100vw - 40px)',{ratio:2,widths:[480,768,1080]})}
                                      alt="${cleanStr(item.name || item.title)}"
-                                     decoding="async" fetchpriority="high"
+                                     width="1080" height="540" loading="eager" decoding="async" fetchpriority="high"
                                      class="catalog-detail-image">
                                 </picture>
                                 ${hasOffer ? `<span class="catalog-detail-offer">OFERTA</span>` : ''}
@@ -2033,7 +2043,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 </div>
 
                 <div class="catalog-products-grid">
-                  ${items.map(item=>item.tipoServicio==='personaje'?createCharacterTileHTML(item):createCatalogTileHTML(item)).join('')}
+                  ${items.map((item,index)=>item.tipoServicio==='personaje'?createCharacterTileHTML(item,index):createCatalogTileHTML(item,index)).join('')}
                 </div>
               </section>
             </div>
@@ -2045,7 +2055,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
         function renderGallery() {
             if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p>Cargando Galería...</p></div>`); return; }
             if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
-            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative"><img src="${optimizeCloudinaryImage(i.image, 900)}" loading="lazy" decoding="async" fetchpriority="low" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
+            setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative"><img ${imageAttributes(i.image,'(max-width:639px) 75vw, (max-width:767px) 45vw, (max-width:1023px) 33vw, 25vw',{ratio:0,widths:[320,480,720,1080]})} loading="lazy" decoding="async" fetchpriority="low" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
         }
 
         // FIRESTORE OPTIMIZADO: el calendario solo consulta las reservas del mes visible.

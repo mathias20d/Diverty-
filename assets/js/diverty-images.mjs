@@ -28,6 +28,16 @@ export function catalogImageUrl(value,width=720,height=540){
   const h=Math.round(Math.max(120,Math.min(1600,Number(height)||540)));
   return transform(value,`c_fill,g_auto,w_${w},h_${h},f_auto,q_auto:good`)||String(value||'').trim();
 }
+// Explicit pixel candidates let the browser account for both layout and screen
+// density, without multiplying every photo by dpr_auto a second time.
+export function responsiveImage(value,{widths=[240,320,480,720,960],ratio=4/3}={}){
+  const original=String(value||'').trim();
+  if(!cloudinarySource(original))return {src:original,srcset:''};
+  const candidates=[...new Set(widths.map(Number).filter(w=>Number.isFinite(w)&&w>=120&&w<=1600).map(Math.round))].sort((a,b)=>a-b);
+  if(!candidates.length)return {src:original,srcset:''};
+  const url=w=>ratio>0?catalogImageUrl(original,w,Math.round(w/ratio)):transform(original,`c_limit,w_${w},f_auto,q_auto:good`);
+  return {src:url(candidates.find(w=>w>=480)||candidates.at(-1)),srcset:candidates.map(w=>`${url(w)} ${w}w`).join(', ')};
+}
 export function socialImage(value,origin){
   let url;
   try{url=new URL(String(value||'').trim()||'/android-chrome-512x512.png',origin);}catch{return socialImage('',origin);}

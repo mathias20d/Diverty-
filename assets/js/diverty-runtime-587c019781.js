@@ -42,12 +42,13 @@ document.addEventListener('dragstart', function(e){ if(e.target.closest && e.tar
     if(!img||img.dataset.dvPerf2==='1') return;
     img.dataset.dvPerf2='1';
     img.decoding='async';
-    const critical=!!img.closest('#mainHeader,#headerWrapper,#hero-section-identifier,#themeBootLoader');
+    const critical=!!img.closest('#mainHeader,#headerWrapper,#hero-section-identifier,#themeBootLoader') || img.getAttribute('loading')==='eager' || img.getAttribute('fetchpriority')==='high';
     if(critical){
+      img.loading='eager';
       try{img.fetchPriority='high';}catch(_){}
     }else{
-      img.loading='lazy';
-      try{img.fetchPriority='low';}catch(_){}
+      if(!img.hasAttribute('loading'))img.loading='lazy';
+      try{if(!img.hasAttribute('fetchpriority'))img.fetchPriority='low';}catch(_){}
     }
   }
   document.querySelectorAll('img').forEach(tuneImage);

@@ -1,6 +1,8 @@
 # Imágenes de catálogo y enlaces compartidos
 
-Las tarjetas usan encuadre automático de Cloudinary (`g_auto`) para llenar su marco sin deformar la foto. El detalle móvil pide una imagen de 1080 × 540; el escritorio conserva una fuente de mayor altura. Las imágenes ajenas a Cloudinary siguen funcionando con `object-fit: cover`. Las fotos originales guardadas en el catálogo no se modifican.
+Las tarjetas usan encuadre automático de Cloudinary (`g_auto`) para llenar su marco sin deformar la foto. `srcset` ofrece versiones de 240, 320, 480, 720 y 960 píxeles; `sizes` coincide con las columnas del catálogo. El navegador elige según el espacio visible y la densidad de pantalla, en vez de descargar siempre una tarjeta de 720 píxeles. Se mantienen `f_auto` y `q_auto:good`.
+
+El detalle móvil ofrece 480 × 240, 768 × 384 y 1080 × 540; el escritorio conserva una fuente de mayor altura con tamaños de 480, 768 y 1080 píxeles. Personajes, categorías, promociones y galería también usan fuentes adaptables. Las dos primeras tarjetas de cada catálogo tienen carga inmediata y prioridad alta; las siguientes conservan carga diferida y prioridad baja. Se elimina el multiplicador `dpr_auto` de las miniaturas restantes para evitar descargas sobredimensionadas. Las imágenes ajenas a Cloudinary y las URLs firmadas conservan su URL y siguen funcionando con `object-fit: cover`. Las fotos originales guardadas en el catálogo no se modifican.
 
 La función `share-meta` prepara una portada JPEG de 1200 × 630 para los enlaces de planes y categorías. Muestra la imagen original completa centrada sobre una copia desenfocada que llena el fondo. Prioriza `imagen` sobre una miniatura previamente recortada. Cloudinary aplica estos ajustes al entregar la imagen, sin publicar otra foto ni cambiar los documentos de Firebase. Las URLs firmadas o externas se conservan y no se declaran dimensiones desconocidas.
 
@@ -8,4 +10,4 @@ Para compartir una vista previa actualizada, volver a copiar el enlace en el adm
 
 La lógica compartida está en `assets/js/diverty-images.mjs`. La compilación versiona también este módulo para evitar una copia anterior en el navegador. La función de vistas previas usa la caché `diverty-social-preview-v4` y elimina los validadores de la página estática al cambiar sus metadatos.
 
-Comprobaciones: pruebas de transformación y metadatos con Firebase simulado; catálogo en seis temas a 320, 392 y 1280 px; descarga de la portada real de Santa como JPEG de 1200 × 630 y del encuadre móvil de 1080 × 540. No se envían mensajes ni se publican estados de WhatsApp durante las pruebas.
+Comprobaciones: pruebas de transformación y metadatos con Firebase simulado; catálogo en seis temas a 320, 392 y 1280 px y en móvil con densidad 3; selección efectiva de `currentSrc`, proporción del marco, prioridad de carga, precios, inclusiones y carrito; descarga de versiones reales de Santa desde Cloudinary. No se envían mensajes ni se publican estados de WhatsApp durante las pruebas.

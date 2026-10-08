@@ -18,7 +18,8 @@ const server=http.createServer((req,res)=>{
  try{
   for(const theme of (process.env.PREMIUM_THEMES||'normal,halloween,christmas,summer,school,custom').split(',')){
    for(const width of (process.env.PREMIUM_WIDTHS||'320,392,1280').split(',').map(Number)){
-    const context=await browser.newContext({viewport:{width,height:900},reducedMotion:'reduce'});
+    const density=Number(process.env.PREMIUM_DPR||1);
+    const context=await browser.newContext({viewport:{width,height:900},deviceScaleFactor:density,reducedMotion:'reduce'});
     const api={
      config_web:[{id:'global',bannerActive:true,bannerText:'Reserva tu próxima celebración'},{id:'web_sync',version:1,versions:{catalogo_web:1}}],
      temas_web:[{id:theme,nombre:theme,tipo:theme,isDefault:true,animaciones:false,decoracion:'none'}],
@@ -31,6 +32,11 @@ const server=http.createServer((req,res)=>{
       {id:'face',nombre:'Pintacaritas',categoria:'extras',tipoCobro:'hora',precio:40,imagen:'/test-media/face.jpg'},
       {id:'character',nombre:'Personaje temático de prueba',categoria:'personajes',tipoServicio:'personaje',tematica:'Fantasía',precio:80,imagen:'/test-media/face.jpg'}],
     };
+    // Real Cloudinary-shaped URLs exercise browser srcset selection; one local
+    // service photo retains coverage for externally hosted/untransformed images.
+    for(const rows of [api.categorias_web,api.catalogo_web])for(const row of rows){
+     if(row.id!=='basic')row.imagen='https://res.cloudinary.com/demo/image/upload/v1/'+path.basename(row.imagen);
+    }
     if(theme==='custom')Object.assign(api.temas_web[0],{tipo:'normal',themeVersion:2,colorPrimary:'#7C3AED',colorSecondary:'#E11D48',colorButton:'#123456',colorBg:'#F6F0E7',colorCard:'#FFF0DD',colorText:'#172033',buttonStyle:'solid',gradient:'',decorations:'none',animations:false});
     const errors=[];const requests=[];
     await context.route('**/*',async route=>{
@@ -49,6 +55,7 @@ const server=http.createServer((req,res)=>{
       return route.fulfill({json:{documents:rows.map(doc)}});
      }
      if(url.hostname==='res.cloudinary.com'&&url.pathname.includes('f_jpg')&&fs.existsSync('/tmp/diverty-step4-media/hero.jpg'))return route.fulfill({body:fs.readFileSync('/tmp/diverty-step4-media/hero.jpg'),contentType:'image/jpeg'});
+     if(url.hostname==='res.cloudinary.com'&&url.pathname.startsWith('/demo/image/upload/'))return route.fulfill({body:fs.readFileSync(path.join(process.env.PREMIUM_MEDIA_PATH||'/tmp/diverty-step4-media',path.basename(url.pathname))),contentType:'image/jpeg'});
      return route.abort();
     });
     const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
@@ -62,6 +69,7 @@ const server=http.createServer((req,res)=>{
     assert.equal(await page.locator('#hero-video').count(),1);
     assert.equal(await page.locator('h1').count(),1);
     await page.goto(origin+'/?vista=catalog');await ready();await shot('categories');
+    const cachedCategoryPhotos=await page.locator('.catalog-category-media img').evaluateAll(images=>images.filter(img=>img.complete&&img.naturalWidth>0).map(img=>img.currentSrc));
     await page.locator('.catalog-category-card[data-target-section="cat_fiestas"]').click();await page.locator('.catalog-tile').first().waitFor();await page.waitForTimeout(120);await shot('services');
     const layout=await page.evaluate(()=>{
      const rect=e=>{const b=e.getBoundingClientRect();return {width:b.width,height:b.height,x:b.x,y:b.y};};
@@ -69,6 +77,19 @@ const server=http.createServer((req,res)=>{
      return {theme:document.body.dataset.theme,overflow:document.documentElement.scrollWidth-innerWidth,card:rect(card),radius:getComputedStyle(card).borderRadius,surface:getComputedStyle(body).backgroundColor,text:getComputedStyle(name).color,font:getComputedStyle(name).fontFamily,body:rect(body),heading:rect(document.querySelector('.catalog-grid-heading'))};
     });metrics.push({preset:theme,width,...layout});
     assert.ok(layout.overflow<=1,`${theme}/${width} horizontal overflow`);
+    if(!baseline){
+     await page.locator('.catalog-tile-image').first().evaluate(img=>img.decode());
+     const selected=await page.locator('.catalog-tile-image').first().evaluate(img=>({url:img.currentSrc,width:img.getBoundingClientRect().width,dpr:devicePixelRatio,loading:img.loading}));
+     const actual=Number(selected.url.match(/w_(\d+)/)?.[1]);
+     assert.ok(actual>=selected.width*selected.dpr,'small cards retain sufficient resolution for the screen density');
+     // Browsers may reuse a larger decoded category cover instead of fetching a
+     // new smaller version of the exact same photo when opening its services.
+     assert.ok(actual<=Math.max(240,selected.width*selected.dpr*1.55)||cachedCategoryPhotos.includes(selected.url),`small cards download a suitable size or reuse a loaded cover: ${theme}/${width} ${JSON.stringify(selected)}`);
+     assert.equal(selected.loading,'eager');
+     assert.equal(await page.locator('.catalog-tile-image').last().getAttribute('loading'),'lazy');
+     assert.equal(await page.locator('[data-item-id="basic"] .catalog-tile-image').getAttribute('srcset'),null,'a local photo keeps its original URL');
+     metrics.at(-1).image={pixels:actual,density};
+    }
     if(!baseline){
      assert.ok(layout.font.includes('Nunito'));
      assert.ok(layout.body.height<190,'a short service name must not create a tall empty panel');
@@ -100,6 +121,15 @@ const server=http.createServer((req,res)=>{
      metrics.at(-1).detail=compact;
     }
     assert.equal(await page.locator('.catalog-detail-price').innerText(),'$150.00');
+    if(!baseline){
+     await page.locator('.catalog-detail-image').evaluate(img=>img.decode());
+     assert.equal(await page.locator('.catalog-detail-image').getAttribute('loading'),'eager','the runtime must not defer the main detail photo');
+     assert.equal(await page.locator('.catalog-detail-image').getAttribute('fetchpriority'),'high');
+     const selected=await page.locator('.catalog-detail-image').evaluate(img=>({url:img.currentSrc,width:img.getBoundingClientRect().width,dpr:devicePixelRatio}));
+     assert.ok(!selected.url.includes('dpr_auto'));
+     assert.ok(Number(selected.url.match(/w_(\d+)/)?.[1])>=Math.min(1080,selected.width*selected.dpr));
+     if(width<768&&density===1)assert.ok(selected.url.includes('w_480,h_240'),'mobile detail downloads 480 pixels instead of a fixed 1080');
+    }
     assert.equal(await page.locator('.catalog-detail-image').evaluate(el=>getComputedStyle(el).objectFit),'cover');
     assert.equal(await page.locator('.catalog-detail-image').evaluate(el=>{const photo=el.getBoundingClientRect(),frame=el.closest('.catalog-detail-image-wrap').getBoundingClientRect();return Math.abs(photo.width-frame.width)<1&&Math.abs(photo.height-frame.height)<1;}),true);
     await page.locator('[data-action="add-to-cart"][data-item-id="plan"]').click();await page.locator('#cartModal').waitFor({state:'visible'});

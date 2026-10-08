@@ -1,9 +1,24 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {catalogImageUrl,socialImage} from '../assets/js/diverty-images.mjs';
+import {catalogImageUrl,responsiveImage,socialImage} from '../assets/js/diverty-images.mjs';
 import handler from '../netlify/edge-functions/share-meta.js';
 const origin='https://divertypanama.netlify.app';
 const original='https://res.cloudinary.com/demo/image/upload/v123456/fiestas/santa.jpg';
+test('responsive photos provide bounded pixel candidates with the same crop and no extra DPR multiplier',()=>{
+ const image=responsiveImage(original);
+ assert.equal(image.src,catalogImageUrl(original,480,360));
+ assert.match(image.srcset,/w_240,h_180.* 240w, .*w_320,h_240.* 320w/);
+ assert.doesNotMatch(image.srcset,/dpr_auto/);
+ const detail=responsiveImage(original,{ratio:2,widths:[1080,480,768,480,Infinity,-1]});
+ assert.equal(detail.srcset.split(', ').length,3);
+ assert.match(detail.srcset,/w_768,h_384.* 768w/);
+ assert.match(responsiveImage(original,{ratio:1}).src,/w_480,h_480/);
+ const desktop=responsiveImage(original,{ratio:0,widths:[480,768,1080]});
+ assert.match(desktop.srcset,/c_limit,w_768/);assert.doesNotMatch(desktop.srcset,/c_fill|h_\d+/);
+ assert.deepEqual(responsiveImage('/assets/photo.jpg'),{src:'/assets/photo.jpg',srcset:''});
+ const signed=original.replace('/upload/','/upload/s--signature--/');
+ assert.deepEqual(responsiveImage(signed),{src:signed,srcset:''});
+});
 test('catalog crops fit the target frame and recover original files from previously cropped URLs',()=>{
  const cropped='https://res.cloudinary.com/demo/image/upload/c_fill,g_north,w_300,h_300/v123456/fiestas/santa.jpg';
  assert.equal(catalogImageUrl(cropped,720,540),catalogImageUrl(original,720,540));
