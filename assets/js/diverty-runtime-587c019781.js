@@ -38,9 +38,24 @@ document.addEventListener('dragstart', function(e){ if(e.target.closest && e.tar
   const saveData=!!(conn&&conn.saveData);
   if(saveData||lowMemory||lowCPU) root.classList.add('dv-lite');
 
+  function recoverImage(img){
+    const original=img?.dataset?.imageOriginal;
+    if(img?.tagName!=='IMG'||!original||img.dataset.imageRecovered==='original')return;
+    const cached=img.dataset.imageFallback;
+    const useCache=cached&&img.dataset.imageRecovered!=='cached';
+    img.dataset.imageRecovered=useCache?'cached':'original';
+    // A <picture> source otherwise overrides img.src, even after an error.
+    img.closest('picture')?.querySelectorAll('source').forEach(source=>source.remove());
+    img.removeAttribute('srcset');
+    img.removeAttribute('sizes');
+    img.src=useCache?cached:original;
+  }
+  document.addEventListener('error',event=>recoverImage(event.target),true);
+
   function tuneImage(img){
     if(!img||img.dataset.dvPerf2==='1') return;
     img.dataset.dvPerf2='1';
+    if(img.complete&&img.currentSrc&&img.naturalWidth===0)recoverImage(img);
     img.decoding='async';
     const critical=!!img.closest('#mainHeader,#headerWrapper,#hero-section-identifier,#themeBootLoader') || img.getAttribute('loading')==='eager' || img.getAttribute('fetchpriority')==='high';
     if(critical){

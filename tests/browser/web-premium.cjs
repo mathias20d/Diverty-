@@ -4,6 +4,8 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http');
 const output=path.resolve(__dirname,'../../dist');
 const artifact=process.env.BROWSER_ARTIFACT_DIR;
 const baseline=process.env.PREMIUM_BASELINE==='1';
+const failImages=process.env.PREMIUM_FAIL_IMAGES==='1';
+const cacheImages=process.env.PREMIUM_CACHE_IMAGES==='1';
 const encode=value=>typeof value==='boolean'?{booleanValue:value}:typeof value==='number'?{integerValue:String(value)}:Array.isArray(value)?{arrayValue:{values:value.map(encode)}}:value&&typeof value==='object'?{mapValue:{fields:Object.fromEntries(Object.entries(value).map(([k,v])=>[k,encode(v)]))}}:{stringValue:String(value??'')};
 const server=http.createServer((req,res)=>{
  const url=new URL(req.url,'http://localhost');const file=path.resolve(output,'.'+decodeURIComponent(url.pathname));
@@ -31,11 +33,16 @@ const server=http.createServer((req,res)=>{
       {id:'dogs',nombre:'Hot dogs',categoria:'extras',tipoCobro:'unidad',precio:2,cantidadMinima:50,cantidadMaxima:500,cantidadPaso:25,unidadNombre:'hot dog',imagen:'/test-media/snack.jpg'},
       {id:'face',nombre:'Pintacaritas',categoria:'extras',tipoCobro:'hora',precio:40,imagen:'/test-media/face.jpg'},
       {id:'character',nombre:'Personaje temático de prueba',categoria:'personajes',tipoServicio:'personaje',tematica:'Fantasía',precio:80,imagen:'/test-media/face.jpg'}],
+     galeria_web:[{id:'photo',image:'https://res.cloudinary.com/demo/image/upload/v1/plan.jpg'}],
     };
     // Real Cloudinary-shaped URLs exercise browser srcset selection; one local
     // service photo retains coverage for externally hosted/untransformed images.
     for(const rows of [api.categorias_web,api.catalogo_web])for(const row of rows){
      if(row.id!=='basic')row.imagen='https://res.cloudinary.com/demo/image/upload/v1/'+path.basename(row.imagen);
+    }
+    if(cacheImages){
+     api.catalogo_web[0].imagen=api.categorias_web[0].imagen='https://res.cloudinary.com/djfboe8rg/image/upload/v1786171659/blob_wgauxs.png';
+     api.galeria_web[0].image='https://res.cloudinary.com/djfboe8rg/image/upload/v1780880441/369105_quzbs7.jpg';
     }
     if(theme==='custom')Object.assign(api.temas_web[0],{tipo:'normal',themeVersion:2,colorPrimary:'#7C3AED',colorSecondary:'#E11D48',colorButton:'#123456',colorBg:'#F6F0E7',colorCard:'#FFF0DD',colorText:'#172033',buttonStyle:'solid',gradient:'',decorations:'none',animations:false});
     const errors=[];const requests=[];
@@ -55,7 +62,11 @@ const server=http.createServer((req,res)=>{
       return route.fulfill({json:{documents:rows.map(doc)}});
      }
      if(url.hostname==='res.cloudinary.com'&&url.pathname.includes('f_jpg')&&fs.existsSync('/tmp/diverty-step4-media/hero.jpg'))return route.fulfill({body:fs.readFileSync('/tmp/diverty-step4-media/hero.jpg'),contentType:'image/jpeg'});
-     if(url.hostname==='res.cloudinary.com'&&url.pathname.startsWith('/demo/image/upload/'))return route.fulfill({body:fs.readFileSync(path.join(process.env.PREMIUM_MEDIA_PATH||'/tmp/diverty-step4-media',path.basename(url.pathname))),contentType:'image/jpeg'});
+     if(cacheImages&&url.hostname==='res.cloudinary.com'&&url.pathname.startsWith('/djfboe8rg/'))return route.abort();
+     if(url.hostname==='res.cloudinary.com'&&url.pathname.startsWith('/demo/image/upload/')){
+      if(failImages&&url.pathname.includes('/upload/c_'))return route.fulfill({status:404,body:'Unavailable variant'});
+      return route.fulfill({body:fs.readFileSync(path.join(process.env.PREMIUM_MEDIA_PATH||'/tmp/diverty-step4-media',path.basename(url.pathname))),contentType:'image/jpeg'});
+     }
      return route.abort();
     });
     const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
@@ -77,7 +88,11 @@ const server=http.createServer((req,res)=>{
      return {theme:document.body.dataset.theme,overflow:document.documentElement.scrollWidth-innerWidth,card:rect(card),radius:getComputedStyle(card).borderRadius,surface:getComputedStyle(body).backgroundColor,text:getComputedStyle(name).color,font:getComputedStyle(name).fontFamily,body:rect(body),heading:rect(document.querySelector('.catalog-grid-heading'))};
     });metrics.push({preset:theme,width,...layout});
     assert.ok(layout.overflow<=1,`${theme}/${width} horizontal overflow`);
-    if(!baseline){
+    if(failImages){
+     await page.locator('.catalog-tile-image').first().evaluate(img=>img.decode());
+     assert.equal(await page.locator('.catalog-tile-image').first().getAttribute('data-image-recovered'),cacheImages?'cached':'original');
+    }
+    if(!baseline&&!failImages){
      await page.locator('.catalog-tile-image').first().evaluate(img=>img.decode());
      const selected=await page.locator('.catalog-tile-image').first().evaluate(img=>({url:img.currentSrc,width:img.getBoundingClientRect().width,dpr:devicePixelRatio,loading:img.loading}));
      const actual=Number(selected.url.match(/w_(\d+)/)?.[1]);
@@ -127,8 +142,13 @@ const server=http.createServer((req,res)=>{
      assert.equal(await page.locator('.catalog-detail-image').getAttribute('fetchpriority'),'high');
      const selected=await page.locator('.catalog-detail-image').evaluate(img=>({url:img.currentSrc,width:img.getBoundingClientRect().width,dpr:devicePixelRatio}));
      assert.ok(!selected.url.includes('dpr_auto'));
-     assert.ok(Number(selected.url.match(/w_(\d+)/)?.[1])>=Math.min(1080,selected.width*selected.dpr));
-     if(width<768&&density===1)assert.ok(selected.url.includes('w_480,h_240'),'mobile detail downloads 480 pixels instead of a fixed 1080');
+     if(failImages){
+      assert.ok(cacheImages?selected.url.startsWith(origin+'/assets/catalog-fallback/'):selected.url.endsWith('/upload/v1/plan.jpg'),'detail recovers a local copy or the original photo');
+      assert.equal(await page.locator('.catalog-detail-image-wrap source').count(),0,'failed picture candidates must be removed');
+     }else{
+      assert.ok(Number(selected.url.match(/w_(\d+)/)?.[1])>=Math.min(1080,selected.width*selected.dpr));
+      if(width<768&&density===1)assert.ok(selected.url.includes('w_480,h_240'),'mobile detail downloads 480 pixels instead of a fixed 1080');
+     }
     }
     assert.equal(await page.locator('.catalog-detail-image').evaluate(el=>getComputedStyle(el).objectFit),'cover');
     assert.equal(await page.locator('.catalog-detail-image').evaluate(el=>{const photo=el.getBoundingClientRect(),frame=el.closest('.catalog-detail-image-wrap').getBoundingClientRect();return Math.abs(photo.width-frame.width)<1&&Math.abs(photo.height-frame.height)<1;}),true);
@@ -136,6 +156,13 @@ const server=http.createServer((req,res)=>{
     assert.ok((await page.locator('#cartItems').innerText()).includes('Plan Magic'));
     await page.locator('#viewCart').click();
     assert.equal(await page.locator('.catalog-detail-includes li').count(),9);
+    await page.goto(origin+'/?vista=gallery');await ready();
+    await page.locator('.gallery-item img').first().evaluate(img=>img.decode());
+    if(failImages){
+     assert.equal(await page.locator('.gallery-item img').first().getAttribute('srcset'),null);
+     assert.equal(await page.locator('.gallery-item img').first().getAttribute('data-image-recovered'),cacheImages?'cached':'original');
+     assert.equal(await page.locator('.gallery-item img').first().evaluate((img,cached)=>cached?new URL(img.currentSrc).pathname.startsWith('/assets/catalog-fallback/'):img.currentSrc.endsWith('/upload/v1/plan.jpg'),cacheImages),true);
+    }
     assert.deepEqual(errors,[]);assert.equal(requests.some(url=>url.includes('fonts.googleapis.com')),false);
     await context.close();
    }

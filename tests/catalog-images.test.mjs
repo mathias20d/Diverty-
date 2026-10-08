@@ -9,6 +9,7 @@ test('responsive photos provide bounded pixel candidates with the same crop and 
  assert.equal(image.src,catalogImageUrl(original,480,360));
  assert.match(image.srcset,/w_240,h_180.* 240w, .*w_320,h_240.* 320w/);
  assert.doesNotMatch(image.srcset,/dpr_auto/);
+ assert.match(image.srcset,/f_webp/);assert.doesNotMatch(image.srcset,/f_auto/);
  const detail=responsiveImage(original,{ratio:2,widths:[1080,480,768,480,Infinity,-1]});
  assert.equal(detail.srcset.split(', ').length,3);
  assert.match(detail.srcset,/w_768,h_384.* 768w/);

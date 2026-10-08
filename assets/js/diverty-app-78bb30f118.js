@@ -1,4 +1,4 @@
-import {responsiveImage} from './diverty-images.mjs';
+import {responsiveImage,imageFallbackUrl} from './diverty-images.mjs';
 import {requestCustomerPortal} from './diverty-portal-api.mjs?v=0d2428d94f21';
 import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=8b19069e9f53';
 import { isClosedBookingDate } from './diverty-date-availability.mjs?v=79d415724694';
@@ -772,7 +772,9 @@ function captureBookingGps(form, isCurrent, onProgress) {
         const categorySizes = '(max-width:380px) calc((100vw - 44px) / 2), (max-width:767px) calc((100vw - 54px) / 2), (max-width:1159px) calc((100vw - 88px) / 3), 357px';
         function imageAttributes(value,sizes,options={}) {
             const image=responsiveImage(value,options);
-            return `src="${escapeCatalogText(image.src)}"${image.srcset?` srcset="${escapeCatalogText(image.srcset)}" sizes="${sizes}"`:''}`;
+            const original=cleanStr(value);
+            const fallback=imageFallbackUrl(original);
+            return `src="${escapeCatalogText(image.src)}"${image.srcset?` srcset="${escapeCatalogText(image.srcset)}" sizes="${sizes}"`:''}${image.src!==original?` data-image-original="${escapeCatalogText(original)}"`:''}${fallback?` data-image-fallback="${fallback}"`:''}`;
         }
 
         // NAVIDAD FASE 1 — detección aislada.
@@ -4337,6 +4339,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
             // solamente cuando el calendario se acerca a pantalla o el usuario entra a Reservar.
             await Promise.allSettled([loadSecondary()]);
             if(app.activeSection==='home') renderHome();
+            else if(app.activeSection==='gallery') renderGallery();
             bootComplete=true; await drainRefresh();
 
             let lazyAvailabilityStartedAt=0;

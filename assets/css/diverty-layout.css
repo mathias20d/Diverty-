@@ -65,6 +65,9 @@ body.diverty-site #desktopNav .nav-link { font-size:13px; font-weight:600; }
 /* Catalog layout and type scale are independent of the seasonal palette. */
 .catalog-grid-page,.catalog-detail-page { width:100%; min-height:70vh; padding:calc(var(--diverty-header-bottom,100px) + 20px) 20px 56px; }
 .catalog-grid-section,.catalog-detail-shell { max-width:1120px; margin:0 auto; }
+/* These image views must paint immediately after navigation. Native image lazy
+   loading handles the gallery without skipped-content placeholders. */
+.catalog-detail-page,.gallery-item { content-visibility:visible; contain-intrinsic-size:none; }
 .catalog-grid-heading { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:18px; }
 .catalog-grid-heading p { margin-bottom:5px; color:var(--s-text-muted); font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; }
 .catalog-grid-heading h2 { color:var(--s-text-title); font-size:clamp(24px,3.5vw,36px); font-weight:700; line-height:1.2; text-shadow:none; max-width:640px; }
