@@ -113,3 +113,10 @@ test('newly saved defaults and custom maxima keep the same server acceptance',()
   assert.throws(()=>quote({...event,total:String(2*(quantity+1)),serviciosSeleccionados:[{...event.serviciosSeleccionados[0],cantidad:quantity+1}]},raw),e=>e.reason==='INVALID_QUANTITY');
  }
 });
+
+test('Diverty Amigo total duration wins over individual one-hour activities and reserves 120 minutes',()=>{
+ const raw={nombre:'Diverty Amigo(a)',precio:95,duracionHoras:1,serviciosLista:'1 Animador (a)\nAnimación Infantil 1 Hora\nPintacaritas Básicas 1 Hora\nDuración 2 Horas'};
+ const event=quote({...sample,total:'95',serviciosSeleccionados:[{...sample.serviciosSeleccionados[0],precioOriginal:95}]},raw);
+ assert.equal(event.serviciosSeleccionados[0].duracionHoras,2);assert.equal(event.resourceRequirements.durationMinutes,120);assert.equal(event.total,'95.00');
+ assert.throws(()=>checkAvailability(event,[{...event,id:'other',hora:'11:00'}],{recursosDisponibles:{animadores:1,payasos:0}}),e=>e.reason==='SLOT_FULL');
+});

@@ -1,3 +1,4 @@
+import {serviceDurationHours} from '../../assets/js/diverty-service-duration.mjs';
 import { needsPlaceReference } from '../../assets/js/diverty-location-reference.mjs';
 import { isClosedBookingDate } from '../../assets/js/diverty-date-availability.mjs';
 import assert from 'node:assert/strict';
@@ -49,7 +50,7 @@ function client(database, name = 'Cliente de prueba') {
   const form = { dataset: {}, querySelector: () => button };
   const ctx = {
     app: { cart: [{ id: 'paquete', name: 'Paquete de prueba', price: 100, quantity: 1 }], location: 'panama-centro' },
-    needsPlaceReference, isClosedBookingDate, dateClosures: {}, updateBookingDateClosures() {}, appliedCoupon: null, bookingFormState: {}, pendingBooking: null,
+    serviceDurationHours, needsPlaceReference, isClosedBookingDate, dateClosures: {}, updateBookingDateClosures() {}, appliedCoupon: null, bookingFormState: {}, pendingBooking: null,
     transportNeedsReview: data => /por confirmar|por revisar|fuera.*cobertura/i.test(String(data?.ubicacion||'')),
     confirmTransportReview: async()=>true,
     normalLocationState: { status: 'included', source: 'gps', label: 'Panamá Centro' },

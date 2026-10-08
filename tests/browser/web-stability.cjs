@@ -389,6 +389,8 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     await quantity.page.getByRole('button',{name:'Disminuir Hot dogs de prueba',exact:true}).click();assert.equal(await input.inputValue(),'200');
     await quantity.page.locator('[data-action="add-hourly-to-cart"]').click();await quantity.page.locator('#viewCart').click();await quantity.page.locator('.cart-item-price').waitFor();assert.match(await quantity.page.locator('.cart-item-price').innerText(),/400.00/);
     await quantity.page.locator('#cartModal [data-action="navigate-from-modal"]').click();await quantity.page.locator('#bookingForm').waitFor();
+    const amigo=await fixture();Object.assign(amigo.api.catalogo_web[0],{nombre:'Diverty Amigo(a)',precio:95,descripcion:'',serviciosLista:'1 Animador (a)\nAnimación Infantil 1 Hora\nPintacaritas Básicas 1 Hora\nDuración 2 Horas'});await openBooking(amigo);const amigoSaved=await sendNormalBooking(amigo);assert.equal(amigoSaved.serviciosSeleccionados[0].duracionHoras,2);assert.equal(amigoSaved.serviciosSeleccionados[0].precio,95);console.log('PASS: web saves Diverty Amigo with 2 total hours and its unchanged $95 price.');
+
     const quantitySaved=await sendNormalBooking(quantity);assert.equal(quantitySaved.serviciosSeleccionados[0].cantidad,200);assert.equal(quantitySaved.serviciosSeleccionados[0].precio,400);assert.equal(quantitySaved.serviciosSeleccionados[0].precioOriginal,2);assert.equal(quantitySaved.serviciosSeleccionados[0].tipoCobro,'unidad');
     console.log('PASS: admin-created product minimum/maximum, typed quantity, increments, cart and saved 200 × $2 = $400.');
 

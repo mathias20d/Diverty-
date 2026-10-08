@@ -1,3 +1,4 @@
+import {serviceDurationHours} from './service-duration.mjs';
 import {needsPlaceReference} from './location-reference.mjs';
 import { coverage, gps, addressGps, distanceKm } from './coverage.mjs';
 export const ADMIN_UID='OblqzhP2L3XulJ920O82jwd1Qrk1';
@@ -14,7 +15,7 @@ export function resources(event) {
   const r=event.resourceRequirements||{};
   const text=norm([event.servicio,event.descripcionEvento,...(event.serviciosSeleccionados||[]).flatMap(x=>[x.nombre,x.descripcion,...(x.incluye||[])])].join(' '));
   const count=word=>{const m=text.match(new RegExp(`(\\d+)\\s*${word}\\b`));return m?Number(m[1]):new RegExp(`\\b${word}\\b`).test(text)?1:0;};
-  const duration=Math.max(0,...(event.serviciosSeleccionados||[]).map(i=>Number(i.duracionHoras)||0))*60;
+  const duration=Math.max(0,...(event.serviciosSeleccionados||[]).map(i=>serviceDurationHours(i)))*60;
   return {animadores:Math.max(0,Number(r.animadores??count('animador(?:es)?'))),payasos:Math.max(0,Number(r.payasos??count('payasos?'))),durationMinutes:Math.max(30,Number(r.durationMinutes||event.duracionMinutos||duration||120))};
 }
 export function interval(event) {
@@ -63,9 +64,8 @@ export function quoteBooking(input,uid,products,coupon,point,now=new Date()) {
     const find=word=>{const m=text.match(new RegExp(`(\\d+)\\s*${word}\\b`));return m?Number(m[1]):new RegExp(`\\b${word}\\b`).test(text)?1:0;};
     const multiplier=['unidad','unidades','cantidad','por unidad'].includes(mode)?q:1;
     animadores+=find('animador(?:es)?')*multiplier;payasos+=find('payasos?')*multiplier;
-    const m=text.match(/(\d+(?:[.,]\d+)?)\s*(?:h|hr|hrs|hora|horas)\b/);
-    const hours=['hora','horas'].includes(mode)?q:Number(raw.duracionHoras)||(m?Number(m[1].replace(',','.')):text.includes('plan diverty')?3:2);
-    durationMinutes=Math.max(durationMinutes,Math.round(hours*60));subtotal+=cents(price)*q;
+    const hours=serviceDurationHours({...raw,nombre:name,descripcion:description,incluye:includes,tipoCobro:mode,cantidad:q});
+    durationMinutes=Math.max(durationMinutes,Math.round((hours||2)*60));subtotal+=cents(price)*q;
     return {id:item.id,nombre:name,precioOriginal:price,precio:cents(price)*q/100,cantidad:q,descripcion:description,incluye:includes,tipoCobro:mode,isHourly:['hora','horas'].includes(mode),duracionHoras:hours,origenCatalogo:item.origenCatalogo};
   });
   if(durationMinutes>1440||animadores>100||payasos>100)fail('INVALID_QUANTITY','Esta duración o cantidad necesita una cotización personalizada.');
