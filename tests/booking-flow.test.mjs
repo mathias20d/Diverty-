@@ -19,6 +19,9 @@ test('booking atomically writes the event, customer status, public availability 
   assert.equal(db.rows.get(base + 'disponibilidad_web/slot_2026-11-10_10-00').count, 1);
   assert.equal(c.button.disabled, false);
   assert.ok(c.messages.some(m => m.kind === 'success'));
+  assert.deepEqual(c.ctx.completedRoute, ['section','home','replace']);
+  assert.equal(c.ctx.app.activeSection,'home');
+  assert.equal(Object.keys(c.ctx.bookingFormState).length,0);
 });
 
 test('concurrent requests cannot both claim the last slot and the rejected client sees the full-slot message', async () => {

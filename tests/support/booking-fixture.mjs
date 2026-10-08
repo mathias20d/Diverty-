@@ -74,7 +74,7 @@ function client(database, name = 'Cliente de prueba') {
     loadBookedEventsForMonth: async () => {}, currentCalDate: new Date('2026-11-10T12:00:00'),
     document: { getElementById: () => null }, localStorage: { setItem() {} }, navigator: { onLine: true },
     showToast: (text, kind) => messages.push({ text, kind }), showModal: () => messages.push({ kind: 'success' }),
-    updateCartUI() {}, renderBooking() {}, console: { error() {}, warn() {} }
+    updateCartUI() {}, renderBooking() {}, setDirectRoute(...args) { ctx.completedRoute=args; }, setActiveSection(section) { ctx.app.activeSection=section; }, console: { error() {}, warn() {} }
   };
   vm.createContext(ctx);
   vm.runInContext(handler + '\nthis.submit = handleBookingSubmit;', ctx);

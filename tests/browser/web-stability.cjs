@@ -63,6 +63,10 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
         assert.equal(route.request().postDataJSON().url,'https://maps.app.goo.gl/ocTJwiG8PGL8XaSG9');
         return route.fulfill({json:{displayName:'PH Allure, Calle Colombia, Panamá, Provincia de Panamá',point:null}});
       }
+      if(url.hostname==='nominatim.openstreetmap.org' && url.pathname==='/search'){
+        if(api.mapRows !== undefined) return route.fulfill({json:api.mapRows});
+        return route.abort();
+      }
       if(url.origin===origin)return route.continue();
       if(url.hostname==='firestore.googleapis.com'){
         if(offline)return route.abort();
@@ -276,13 +280,16 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
         await gps.page.locator('#btn-next').click();await gps.page.locator('#step-3.active').waitFor();
       }
       const prefix=christmas?'christmas':'normal';
+      assert.equal(await gps.page.locator(`[data-${prefix}-location-mode]`).first().getAttribute(`data-${prefix}-location-mode`),'gps');
       await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
+      await gps.page.getByRole('dialog',{name:'Buscando ubicación…'}).waitFor();
       await gps.page.waitForFunction(prefix=>document.querySelector(`#${prefix}-location-status`).textContent.includes('±25 m'),prefix);
       assert.doesNotMatch(await gps.page.locator('[name="address"]').inputValue(), /google.com\/maps/,'first 25m reading must not finish the search');
       await gps.context.setGeolocation({latitude:9.0123,longitude:-79.5012,accuracy:6});
       await gps.page.waitForFunction(()=>document.querySelector('[name="address"]').value.startsWith('https://www.google.com/maps?q='));
       assert.match(await gps.page.locator('[name="address"]').inputValue(), /9\.012300,-79\.501200/);
       await gps.page.waitForFunction(prefix=>document.querySelector(`#${prefix}-location-status`).textContent.includes('±6 m'),prefix);
+      assert.equal(await gps.page.locator('#booking-gps-progress').count(),0);
       const acceptedAddress=await gps.page.locator('[name="address"]').inputValue();
       await gps.context.setGeolocation({latitude:9.02,longitude:-79.52,accuracy:2});
       await gps.page.waitForTimeout(100);assert.equal(await gps.page.locator('[name="address"]').inputValue(),acceptedAddress);
@@ -296,8 +303,57 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.equal(await gps.page.locator('[name="address"]').inputValue(),'');
       await gps.page.locator(`#${prefix}-manual-address`).fill('Dirección nueva sin estar allí');
       assert.equal(await gps.page.locator('[name="address"]').inputValue(),'Dirección nueva sin estar allí');
+      // Cancelling a live GPS search restores the written address; late fixes cannot replace it.
+      await gps.context.setGeolocation({latitude:9.0128,longitude:-79.5018,accuracy:25});
+      await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
+      await gps.page.getByRole('dialog',{name:'Buscando ubicación…'}).getByRole('button',{name:'Escribir dirección'}).click();
+      await gps.context.setGeolocation({latitude:9.0123,longitude:-79.5012,accuracy:6});
+      await gps.page.waitForTimeout(100);
+      assert.equal(await gps.page.locator('#booking-gps-progress').count(),0);
+      assert.equal(await gps.page.locator(`[data-${prefix}-location-mode="manual"]`).getAttribute('aria-pressed'),'true');
+      assert.equal(await gps.page.locator('[name="address"]').inputValue(),'Dirección nueva sin estar allí');
+      // Denied permission also leaves manual entry available and no stuck modal.
+      await gps.page.evaluate(()=>Object.defineProperty(navigator,'geolocation',{configurable:true,value:{watchPosition(_ok,error){queueMicrotask(()=>error({code:1}));return 99;},clearWatch(){}}}));
+      await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
+      await gps.page.locator('#toast').filter({hasText:'Permite el acceso a tu ubicación'}).waitFor();
+      await gps.page.waitForFunction(prefix=>!document.querySelector('#booking-gps-progress')&&document.querySelector(`[data-${prefix}-location-mode="manual"]`).getAttribute('aria-pressed')==='true',prefix);
+      assert.equal(await gps.page.locator(`[data-${prefix}-location-mode="manual"]`).getAttribute('aria-pressed'),'true');
       assert.deepEqual(gps.errors,[]);
       console.log(`PASS: GPS ${prefix}, dirección remota y limpieza del punto anterior.`);
+    }
+
+    for(const christmas of [false,true]){
+      const f=await fixture({christmas});await openBooking(f);
+      if(!christmas){
+        await f.page.locator('[name="name"]').fill('Cliente mapa ficticio');await f.page.locator('[name="email"]').fill('mapa@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
+        await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();await f.page.locator('#step-3.active').waitFor();
+      }
+      const prefix=christmas?'christmas':'normal';
+      await f.page.locator(`[name="${prefix}Reference"]`).fill('Funlandia');
+      await f.page.locator('.location-extra summary').click();
+      f.api.mapRows=[{lat:'9.0123',lon:'-79.5012',display_name:'Funlandia, Bella Vista, Panamá'}];
+      await f.page.locator(`#${prefix}-search-address`).click();
+      await f.page.waitForFunction(()=>document.querySelector('[name="address"]').value.startsWith('https://www.google.com/maps?q='));
+      assert.equal(await f.page.locator(`[name="${prefix}Reference"]`).inputValue(),'Funlandia');
+      assert.match(await f.page.locator(`#${prefix}-manual-address`).inputValue(),/Funlandia/);
+      assert.equal(f.requests.filter(url=>url.includes('nominatim.openstreetmap.org/search')).length,1,'a matching venue stops repeated searches');
+      assert.ok(f.requests.some(url=>url.includes('Funlandia')));
+      // An unindexed venue retains the entered address and offers a real map link.
+      f.api.mapRows=[];
+      await f.page.locator(`#${prefix}-manual-address`).fill('Salón de prueba que no aparece');
+      await f.page.locator(`#${prefix}-search-address`).click();
+      await f.page.locator(`#${prefix}-place-results a`).waitFor();
+      assert.match(await f.page.locator(`#${prefix}-place-results a`).getAttribute('href'),/^https:\/\/www.google.com\/maps\/search\//);
+      assert.equal(await f.page.locator('[name="address"]').inputValue(),'Salón de prueba que no aparece');
+      // Just the venue name is also sufficient without pressing map search.
+      await f.page.locator(`#${prefix}-manual-address`).fill('');
+      await f.page.locator(`[name="${prefix}Reference"]`).fill('Funlandia, Bella Vista');
+      await f.page.evaluate(()=>window.__allowBookingWrite=true);
+      await f.page.locator('[data-location-continue]').click();
+      if(christmas)await f.page.locator('#step-2.active').waitFor();
+      else await f.page.locator('#infoModal.show').waitFor();
+      assert.deepEqual(f.errors,[]);
+      console.log(`PASS: mapa ${prefix} usa el salón escrito, conserva direcciones y permite continuar sin coincidencias.`);
     }
 
     for(const christmas of [false,true]){
@@ -359,6 +415,13 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.match(await f.page.locator('#modalMessage').innerText(),/WhatsApp.*abono.*confirmar tu reserva/);
       const saved=await f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid&&x.direccion));
       assert.equal(saved.direccion,address);if(address.startsWith('https:'))assert.equal(saved.referenciaLugar,'PH Allure, Calle Colombia, Panamá, Provincia de Panamá');assert.equal(saved.ubicacion,expectedZone);assert.equal(saved.transporte,charge);assert.equal(saved.estado,'Pendiente');assert.equal('lat' in saved,false);assert.deepEqual(f.errors,[]);
+      assert.equal(new URL(f.page.url()).searchParams.has('vista'),false);
+      assert.equal(await f.page.locator('#bookingForm').count(),0);
+      await f.page.locator('#infoModal').getByRole('button',{name:'Volver al inicio'}).click();
+      await f.page.locator('.hero-content h1').waitFor({state:'visible'});
+      await f.page.goto(origin+'/?plan=plan-test');await f.ready();
+      await f.page.locator('[data-action="book-now"][data-item-id="plan-test"]').click();
+      assert.equal(await f.page.locator('[name="normalManualAddress"]').inputValue(),'','completed venue cannot leak into a new request');
       console.log(`PASS: cobertura ${expectedZone}, $${charge}, recibo amable y reserva pendiente.`);
     }
 

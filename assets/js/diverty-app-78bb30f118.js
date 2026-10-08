@@ -22,6 +22,29 @@ function captureBookingGps(form, isCurrent, onProgress) {
     return { cancel: search.cancel, promise: search.promise.finally(() => observer.disconnect()) };
 }
 
+function showBookingGpsProgress(form, onCancel) {
+    const dialog = document.createElement('dialog');
+    dialog.id = 'booking-gps-progress';
+    dialog.className = 'booking-gps-dialog';
+    dialog.setAttribute('aria-labelledby', 'booking-gps-title');
+    dialog.setAttribute('aria-describedby', 'booking-gps-status');
+    dialog.innerHTML = `<div class="booking-gps-spinner" aria-hidden="true"></div><h2 id="booking-gps-title">Buscando ubicación…</h2><p id="booking-gps-status" role="status">Permite el acceso al GPS y mantén el teléfono quieto unos segundos.</p><p class="booking-gps-hint">Usa el GPS solo si estás en el lugar del evento.</p><button type="button">Escribir dirección</button>`;
+    const close = () => { observer.disconnect(); if (dialog.open) dialog.close(); dialog.remove(); };
+    const cancel = () => { close(); onCancel(); };
+    const observer = new MutationObserver(() => { if (!form.isConnected) cancel(); });
+    observer.observe(document.body, { childList: true, subtree: true });
+    dialog.addEventListener('cancel', event => { event.preventDefault(); cancel(); });
+    dialog.querySelector('button').onclick = cancel;
+    document.body.appendChild(dialog);
+    dialog.showModal();
+    return { close, update: text => { dialog.querySelector('#booking-gps-status').textContent = text; } };
+}
+
+function placeSearchFallback(value) {
+    const url = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(value + ', Panamá');
+    return `<div class="rounded-xl border border-[var(--s-glass-border)] p-3 text-xs season-text-title"><p>No encontramos este lugar en el mapa. La dirección escrita se conserva y puedes enviar tu solicitud.</p><a href="${url}" target="_blank" rel="noopener noreferrer" class="block mt-2 font-bold season-text-primary underline">Ver el lugar en Google Maps ↗</a></div>`;
+}
+
 // VELOCIDAD MÓVIL 6A — Firebase pesado bajo demanda.
         // El inicio usa REST ligero para contenido público. Firestore/Auth completos
         // solo se descargan cuando el visitante abre reservas, disponibilidad o portal.
@@ -260,7 +283,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
         async function reverseChristmasLocation(lat,lng){
             try{
                 const url=`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lng)}&zoom=18&addressdetails=1&accept-language=es`;
-                const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) return null;
+                const r=await fetch(url,{headers:{'Accept':'application/json'},signal:AbortSignal.timeout(5000)}); if(!r.ok) return null;
                 const j=await r.json(); return j||null;
             }catch(_){ return null; }
         }
@@ -269,13 +292,15 @@ function captureBookingGps(form, isCurrent, onProgress) {
             if(coords) return [{...coords,displayName:'Ubicación compartida por enlace',kind:'link'}];
             const q=String(value||'').trim(); if(q.length<3) return [];
             const kind=normalizeChristmasPlace(placeType);
+            const searchSignal=AbortSignal.timeout(6000);
             const fetchRows=async queryText=>{
                 try{
                     // Buscamos en Panamá y damos prioridad al corredor operativo de Navidad,
                     // sin limitar por completo la respuesta: si el lugar queda fuera, se marca
                     // "por confirmar" y la solicitud igual puede llegar al CRM.
                     const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=7&countrycodes=pa&addressdetails=1&namedetails=1&accept-language=es&viewbox=-79.70,9.22,-79.23,8.88&bounded=0&q=${encodeURIComponent(queryText)}`;
-                    const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) return [];
+                    if(searchSignal.aborted) return [];
+                    const r=await fetch(url,{headers:{'Accept':'application/json'},signal:searchSignal}); if(!r.ok) return [];
                     const rows=await r.json(); return Array.isArray(rows)?rows:[];
                 }catch(_){ return []; }
             };
@@ -307,7 +332,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 const rows=await fetchRows(queryText);
                 batches.push(...rows);
                 // Evita hacer llamadas innecesarias cuando ya tenemos suficientes candidatos.
-                if(batches.length>=12) break;
+                if(batches.length || searchSignal.aborted) break;
             }
             if(!batches.length) batches.push(...await fetchRows(q));
             const needle=normalizeChristmasPlace(q);
@@ -335,10 +360,12 @@ function captureBookingGps(form, isCurrent, onProgress) {
             if(coords) return [{...coords,displayName:'Ubicación compartida por enlace',kind:'link'}];
             const q=String(value||'').trim(); if(q.length<3) return [];
             const kind=normalizeChristmasPlace(placeType);
+            const searchSignal=AbortSignal.timeout(6000);
             const fetchRows=async queryText=>{
                 try{
                     const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&countrycodes=pa&addressdetails=1&namedetails=1&accept-language=es&viewbox=-79.95,9.35,-79.15,8.75&bounded=0&q=${encodeURIComponent(queryText)}`;
-                    const r=await fetch(url,{headers:{'Accept':'application/json'}}); if(!r.ok) return [];
+                    if(searchSignal.aborted) return [];
+                    const r=await fetch(url,{headers:{'Accept':'application/json'},signal:searchSignal}); if(!r.ok) return [];
                     const rows=await r.json(); return Array.isArray(rows)?rows:[];
                 }catch(_){ return []; }
             };
@@ -355,7 +382,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
             }
             const batches=[];
             for(const queryText of queries.slice(0,5)){
-                const rows=await fetchRows(queryText); batches.push(...rows); if(batches.length>=14) break;
+                const rows=await fetchRows(queryText); batches.push(...rows); if(batches.length || searchSignal.aborted) break;
             }
             if(!batches.length) batches.push(...await fetchRows(q));
             const needle=normalizeChristmasPlace(q); const terms=needle.split(' ').filter(x=>x.length>2); const seen=new Set();
@@ -2452,8 +2479,8 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 <div class="form-group">
                     <p class="text-sm season-text-muted mb-3">Elige cómo indicar el lugar de ${isChristmasEveBooking()?'la entrega':'tu evento'}.</p>
                     <div class="grid grid-cols-2 gap-2.5">
+                        <button type="button" data-${locationPrefix}-location-mode="gps" class="location-mode rounded-2xl border px-3 py-3 text-left season-text-title"><i data-lucide="locate-fixed" class="w-5 h-5 mb-2"></i><span class="block text-sm font-black">Buscar por GPS</span><span class="block text-xs season-text-muted mt-1">Estoy en el lugar del evento</span></button>
                         <button type="button" data-${locationPrefix}-location-mode="manual" class="location-mode rounded-2xl border px-3 py-3 text-left season-text-title"><i data-lucide="pencil-line" class="w-5 h-5 mb-2"></i><span class="block text-sm font-black">Escribir dirección</span><span class="block text-xs season-text-muted mt-1">No necesito estar allí</span></button>
-                        <button type="button" data-${locationPrefix}-location-mode="gps" class="location-mode rounded-2xl border px-3 py-3 text-left season-text-title"><i data-lucide="locate-fixed" class="w-5 h-5 mb-2"></i><span class="block text-sm font-black">Estoy en el lugar</span><span class="block text-xs season-text-muted mt-1">Usar mi GPS</span></button>
                     </div>
                 </div>
                 <div id="${locationPrefix}-manual-panel" class="form-group">
@@ -2471,21 +2498,22 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     <textarea id="${referenceName}" name="${referenceName}" maxlength="500" rows="2" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm" placeholder="Ej.: PH Las Palmeras, salón social, entrada por la garita"></textarea>
                     <p class="text-xs season-text-muted mt-2">Obligatorio al usar GPS o un enlace de mapa. Si ya escribiste el nombre en la dirección, no hace falta repetirlo.</p>
                 </div>
-                <div id="${locationPrefix}-coverage-result" aria-live="polite"></div>
-                <button type="button" data-location-continue class="w-full season-btn font-extrabold py-3.5 px-5 rounded-2xl">${isChristmasEveBooking()?'Continuar con esta ubicación':'Enviar solicitud'}</button>
                 <details class="location-extra rounded-2xl border border-[var(--s-glass-border)] p-3">
-                    <summary class="cursor-pointer text-sm font-bold season-text-title">Buscar en el mapa o añadir detalles <span class="text-xs font-normal season-text-muted">(opcional)</span></summary>
+                    <summary class="cursor-pointer text-sm font-bold season-text-title">Verificar lugar en el mapa <span class="text-xs font-normal season-text-muted">(opcional)</span></summary>
                     <div class="space-y-3 mt-4">
                         <label for="${locationPrefix}-place-type" class="block text-xs font-bold season-text-muted">Tipo de lugar para afinar la búsqueda</label>
                         <select id="${locationPrefix}-place-type" name="${locationPrefix}PlaceType" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm">
                             <option value="" style="color:black">Cualquier lugar</option><option value="ph" style="color:black">PH / edificio</option><option value="barriada" style="color:black">Barriada / residencial</option><option value="sala" style="color:black">Sala de eventos / fiestas infantiles</option>
                         </select>
-                        <button type="button" id="${locationPrefix}-search-address" class="w-full border border-[var(--s-glass-border)] season-text-title font-bold py-3 px-3 rounded-xl">Buscar dirección en el mapa</button>
+                        <button type="button" id="${locationPrefix}-search-address" class="w-full border border-[var(--s-glass-border)] season-text-title font-bold py-3 px-3 rounded-xl">Buscar este lugar</button>
                         <div id="${locationPrefix}-place-results" class="space-y-2"></div>
-                        <p class="text-xs season-text-muted">Si no aparece tu PH o barriada, conserva la dirección escrita y continúa. Revisaremos ubicación y transporte antes de aceptar.</p>
+                        <p class="text-xs season-text-muted">Buscaremos la dirección o el nombre del PH, barriada o salón que escribiste arriba. Si no aparece, puedes continuar con esos datos.</p>
                         <a href="https://wa.me/50766677965" target="_blank" rel="noopener noreferrer" class="block text-sm font-bold season-text-primary underline">Pedir ayuda por WhatsApp</a>
                     </div>
-                </details>`;
+                </details>
+                <div id="${locationPrefix}-coverage-result" aria-live="polite"></div>
+                <button type="button" data-location-continue class="w-full season-btn font-extrabold py-3.5 px-5 rounded-2xl">${isChristmasEveBooking()?'Continuar con esta ubicación':'Enviar solicitud'}</button>
+                `;
 
 
             setContent(`<div class="container mx-auto px-4 max-w-5xl pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl font-extrabold text-center mb-8 season-text-title font-nunito">${isChristmasEveBooking()?'Reserva tu entrega con Santa 🎅':'Reserva tu Evento'}</h2><div class="grid grid-cols-1 lg:grid-cols-12 gap-8"><div class="lg:col-span-5 order-1 lg:order-1"><details id="booking-summary" class="glass-panel card-alive p-6 sm:p-8 shadow-sm sticky top-24" ${window.matchMedia("(min-width: 1024px)").matches?"open":""}><summary class="booking-summary-toggle"><span>Tu reserva</span><span id="booking-summary-compact">$${Math.max(0,fTot).toFixed(2)}</span><small>Ver servicios y detalle del precio</small></summary><div class="booking-summary-details"><p id="booking-summary-appointment" class="text-sm season-text-muted mb-4"></p><div id="booking-cart-summary">${cs}</div>${app.cart.length>0?`<div class="mt-5 pt-5 border-t border-[var(--s-glass-border)] space-y-2 text-right"><p class="text-sm season-text-muted font-semibold">Subtotal: <span class="season-text-title">$${subtotal.toFixed(2)}</span></p>${dVal>0?`<p class="text-sm text-pink-500 font-bold">Descuento: -$${dVal.toFixed(2)}</p>`:''}<p class="text-sm season-text-muted font-semibold">Transporte: <span id="booking-summary-transport" class="season-text-title">$${tCost.toFixed(2)}</span></p><p class="text-2xl font-extrabold text-emerald-500 mt-2"><span id="booking-summary-total-label">Total estimado:</span> <span id="booking-summary-total">$${Math.max(0,fTot).toFixed(2)}</span></p></div>`:''}<p id="booking-summary-note" class="booking-price-note" hidden></p></div></details></div><div class="lg:col-span-7 order-2 lg:order-2">${app.cart.length>0?`<form id="bookingForm" ${isChristmasEveBooking() ? 'novalidate' : ''} class="glass-panel card-alive p-6 sm:p-8 shadow-sm"><div class="flex items-center justify-between mb-8 relative"><div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-black/10 z-0 rounded-full"></div><div id="wizard-progress-bar" class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-[var(--s-primary)] z-0 transition-all duration-300 rounded-full" style="width:0%;"></div>${createWizardStep(1,'user','Contacto','')}${createWizardStep(2,'calendar','Evento','opacity-50')}${createWizardStep(3,'map-pin','Lugar','opacity-50')}</div><div class="space-y-5"><div class="wizard-content active" id="step-1"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Tus Datos</h3>${welcomeBanner}<div class="space-y-5">${createInput('Nombre','name','text')}${createInput('Email','email','email')}${createInput('Teléfono','phone','tel')}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Comentario opcional</label><textarea name="comments" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" rows="2" placeholder="${isChristmasEveBooking()?'Ej: nombre del niño, indicación especial o detalle que debamos saber':'Ej: indicación especial, acceso al lugar o detalle importante del evento'}"></textarea></div></div></div><div class="wizard-content" id="step-2"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Detalles</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-5 relative">${isChristmasEveBooking()?`<input type="hidden" name="eventType" value="Navidad"><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños *</label><select name="guests" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="1" style="color:black">1 niño</option><option value="2" style="color:black">2 niños</option></select><p class="mt-1.5 text-[10px] season-text-muted font-semibold">Máximo 2 niños por entrega.</p></div>`:`<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Tipo de Evento *</label><select name="eventType" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm"><option value="Cumpleaños" style="color:black">🎉 Cumpleaños</option><option value="Halloween" style="color:black">🎃 Halloween</option><option value="Navidad" style="color:black">🎄 Navidad</option><option value="Día del Niño" style="color:black">🧸 Día del Niño</option><option value="Otro" style="color:black">⭐ Otro</option></select></div><div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Niños</label><input type="number" name="guests" class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm" min="1"></div>`}${dateDisplay}<div class="form-group"><label class="form-label font-bold season-text-muted text-xs uppercase mb-1.5 block">Hora *</label><select name="time" required class="w-full glass-panel season-text-title rounded-2xl py-3.5 px-4 text-sm ${isChristmasEveBooking() ? 'hidden' : ''}">${bookingTimeOptions}</select>${isChristmasEveBooking() ? `<div id="christmas-time-cards" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5"></div><div id="christmas-time-message" class="mt-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] font-bold season-text-title">🎅 Los horarios que indican “NO DISPONIBLE” ya alcanzaron el máximo de Santas. Elige otro horario disponible.</div>` : `<div id="normal-resource-message" class="mt-2 rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2 text-[11px] font-bold season-text-muted">Selecciona fecha y hora para comprobar el personal disponible.</div>`}</div></div></div><div class="wizard-content" id="step-3"><h3 class="text-xl font-bold season-text-title mb-6 border-b border-[var(--s-glass-border)] pb-4">Lugar</h3><div class="space-y-5">${bookingLocationFields}</div></div><div class="flex justify-between pt-6 mt-6 border-t border-[var(--s-glass-border)]"><button type="button" id="btn-prev" class="bg-black/5 season-text-title py-3.5 px-6 rounded-full hidden transition-colors font-bold active:scale-95">Atrás</button><button type="button" id="btn-next" class="bg-[var(--s-text-title)] text-[var(--s-bg-color)] font-bold py-3.5 px-6 rounded-full ml-auto transition-colors shadow-md active:scale-95">Siguiente</button><button type="submit" formnovalidate id="btn-submit" class="bg-emerald-500 text-white font-bold py-3.5 px-6 rounded-full hidden ml-auto transition-colors shadow-md active:scale-95">Enviar solicitud</button></div></div></form>` : `<div id="empty-booking-state" class="glass-panel card-alive p-8 sm:p-10 shadow-sm text-center relative overflow-hidden"><div class="relative z-10"><div class="w-20 h-20 bg-black/5 border border-[var(--s-primary)] rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm"><i data-lucide="gift" class="w-10 h-10 season-text-primary"></i></div><h3 class="text-2xl sm:text-3xl font-black season-text-title mb-3 font-nunito tracking-tight">¡Excelente elección!</h3><p class="season-text-muted mb-8 text-sm sm:text-base font-medium max-w-md mx-auto">${dateText} Para continuar, explora nuestros paquetes y agrega los que más te gusten.</p><div class="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">${exploreButtons}</div></div></div>`}</div></div></section></div>`);
@@ -2599,19 +2627,22 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     if (normalLocationBtn.disabled) return;
                     const revision = ++locationRevision;
                     const isCurrent = () => revision === locationRevision && bForm.isConnected;
-                    if (!navigator.geolocation) return showToast('Este dispositivo no permite obtener la ubicación. Puedes escribir la dirección.', 'error');
+                    if (!navigator.geolocation) { setNormalLocationMode('manual'); markNormalManualReview(document.getElementById('normal-manual-address').value); return showToast('Este dispositivo no permite obtener la ubicación. Puedes escribir la dirección.', 'error'); }
                     normalLocationBtn.disabled = true;
                     normalLoader?.classList.remove('hidden');
                     if (normalLoaderText) normalLoaderText.textContent = 'Buscando una ubicación más precisa…';
                     if (normalStatus) normalStatus.textContent = 'Buscando una lectura GPS nueva. Mantén el teléfono quieto unos segundos.';
+                    const progress = showBookingGpsProgress(bForm, () => { if(!bForm.isConnected) { cancelGpsSearch(); return; } setNormalLocationMode('manual'); markNormalManualReview(document.getElementById('normal-manual-address').value); });
                     const search = captureBookingGps(bForm, isCurrent, point => {
+                        progress.update(`Afinando ubicación · mejor lectura ±${Math.ceil(point.accuracy)} m…`);
                         if (normalStatus) normalStatus.textContent = `Afinando ubicación · mejor lectura ±${Math.ceil(point.accuracy)} m…`;
                         if (normalLoaderText) normalLoaderText.textContent = 'Afinando el punto GPS…';
                     });
-                    cancelGpsSearch = search.cancel;
+                    cancelGpsSearch = () => { search.cancel(); progress.close(); };
                     try {
                         const point = await search.promise;
                         if (!isCurrent()) return;
+                        progress.update('Ubicación encontrada. Verificando la zona…');
                         if (normalLoaderText) normalLoaderText.textContent = 'Verificando la zona…';
                         await applyNormalLocation(point.lat, point.lng, { source: 'gps', accuracy: point.accuracy, isCurrent });
                         if (!isCurrent()) return;
@@ -2626,9 +2657,11 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     } catch (error) {
                         if (error?.code === 'GPS_CANCELLED' || !isCurrent()) return;
                         const message = error?.code === 1 ? 'Permite el acceso a tu ubicación o utiliza la dirección manual.' : 'No pudimos obtener tu ubicación. Inténtalo de nuevo o escribe la dirección.';
+                        setNormalLocationMode('manual'); markNormalManualReview(document.getElementById('normal-manual-address').value);
                         if (normalStatus) normalStatus.textContent = message;
                         showToast(message, 'error');
                     } finally {
+                        progress.close();
                         normalLoader?.classList.add('hidden');
                         normalLocationBtn.disabled = false;
                     }
@@ -2653,6 +2686,7 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 const chooseNormalPlace=async(place,input)=>{
                     if(!place) return;
                     if(input&&place.displayName) input.value=place.displayName;
+                    if(!bForm.elements.normalReference.value.trim()) bForm.elements.normalReference.value=place.displayName;
                     if(normalResults) normalResults.innerHTML='';
                     await applyNormalLocation(place.lat,place.lng,{source:'manual-search',displayName:place.displayName||String(input?.value||'')});
                     if(bForm?.elements?.address)bForm.elements.address.value=`https://www.google.com/maps?q=${Number(place.lat).toFixed(6)},${Number(place.lng).toFixed(6)}`;
@@ -2662,11 +2696,15 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 };
                 if(normalSearchBtn&&!isChristmasEveBooking()) normalSearchBtn.onclick=async()=>{
                     const input=document.getElementById('normal-manual-address');
-                    const value=String(input?.value||'').trim();
+                    const reference=String(bForm.elements.normalReference?.value||'').trim();
+                    const value=String(input?.value||'').trim()||reference;
                     const placeType=String(document.getElementById('normal-place-type')?.value||'').trim();
 
                     if(value.length<3) return showToast('Escribe el nombre del PH, barriada o sala de eventos.','error');
+                    setNormalLocationMode('manual');
+                    input.value=value; bookingFormState.normalManualAddress=value;
                     if(shortMapsUrl(value)){
+                        input.dispatchEvent(new Event('input',{bubbles:true}));
                         await pendingMapsLocation;
                         if(bForm.isConnected&&input.value.trim()===value)showToast(normalLocationState.status==='included'?'Ubicación recibida y transporte calculado.':'Ubicación recibida. Puedes continuar con tu solicitud.','info');
                         return;
@@ -2677,9 +2715,9 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     const revision=++locationRevision;
                     const places=await searchNormalPlaces(value,placeType);
                     normalSearchBtn.disabled=false;normalSearchBtn.innerHTML=original;
-                    if(revision!==locationRevision || !bForm.isConnected || input.value.trim()!==value) return;
+                    if(revision!==locationRevision || !bForm.isConnected || input.value.trim()!==value || String(bForm.elements.normalReference?.value||'').trim()!==reference) return;
                     if(!places.length){
-                        if(normalResults) normalResults.innerHTML='<div class="rounded-xl border border-orange-500/25 bg-orange-500/10 p-3 text-[11px] font-bold season-text-title">No encontramos el lugar automáticamente. Puedes seguir con la reserva; verificaremos la ubicación y el transporte contigo por WhatsApp.</div>';
+                        if(normalResults) normalResults.innerHTML=placeSearchFallback(value);
                         return showToast('No encontramos el lugar automáticamente, pero puedes continuar.','info');
                     }
                     if(places.length===1){await chooseNormalPlace(places[0],input);return;}
@@ -2771,19 +2809,22 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     if (christmasLocationBtn.disabled) return;
                     const revision = ++locationRevision;
                     const isCurrent = () => revision === locationRevision && bForm.isConnected;
-                    if (!navigator.geolocation) return showToast('Este dispositivo no permite obtener la ubicación. Puedes escribir la dirección.', 'error');
+                    if (!navigator.geolocation) { setChristmasLocationMode('manual'); markChristmasManualReview(document.getElementById('christmas-manual-address').value); return showToast('Este dispositivo no permite obtener la ubicación. Puedes escribir la dirección.', 'error'); }
                     christmasLocationBtn.disabled = true;
                     christmasLoader?.classList.remove('hidden');
                     if (christmasLoaderText) christmasLoaderText.textContent = 'Buscando una ubicación más precisa…';
                     if (christmasStatus) christmasStatus.textContent = 'Buscando una lectura GPS nueva. Mantén el teléfono quieto unos segundos.';
+                    const progress = showBookingGpsProgress(bForm, () => { if(!bForm.isConnected) { cancelGpsSearch(); return; } setChristmasLocationMode('manual'); markChristmasManualReview(document.getElementById('christmas-manual-address').value); });
                     const search = captureBookingGps(bForm, isCurrent, point => {
+                        progress.update(`Afinando ubicación · mejor lectura ±${Math.ceil(point.accuracy)} m…`);
                         if (christmasStatus) christmasStatus.textContent = `Afinando ubicación · mejor lectura ±${Math.ceil(point.accuracy)} m…`;
                         if (christmasLoaderText) christmasLoaderText.textContent = 'Afinando el punto GPS…';
                     });
-                    cancelGpsSearch = search.cancel;
+                    cancelGpsSearch = () => { search.cancel(); progress.close(); };
                     try {
                         const point = await search.promise;
                         if (!isCurrent()) return;
+                        progress.update('Ubicación encontrada. Verificando la zona…');
                         if (christmasLoaderText) christmasLoaderText.textContent = 'Verificando la zona…';
                         await applyChristmasLocation(point.lat, point.lng, { source: 'gps', accuracy: point.accuracy, isCurrent });
                         if (!isCurrent()) return;
@@ -2794,9 +2835,11 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     } catch (error) {
                         if (error?.code === 'GPS_CANCELLED' || !isCurrent()) return;
                         const message = error?.code === 1 ? 'Permite el acceso a tu ubicación o utiliza la dirección manual.' : 'No pudimos obtener tu ubicación. Inténtalo de nuevo o escribe la dirección.';
+                        setChristmasLocationMode('manual'); markChristmasManualReview(document.getElementById('christmas-manual-address').value);
                         if (christmasStatus) christmasStatus.textContent = message;
                         showToast(message, 'error');
                     } finally {
+                        progress.close();
                         christmasLoader?.classList.add('hidden');
                         christmasLocationBtn.disabled = false;
                     }
@@ -2815,24 +2858,28 @@ function captureBookingGps(form, isCurrent, onProgress) {
                 const chooseChristmasPlace=async(place,input)=>{
                     if(!place) return;
                     if(input && place.displayName) input.value=place.displayName;
+                    if(!bForm.elements.christmasReference.value.trim()) bForm.elements.christmasReference.value=place.displayName;
                     if(manualResults) manualResults.innerHTML='';
                     await applyChristmasLocation(place.lat,place.lng,{source:'manual',displayName:place.displayName||String(input?.value||'')});
                     showToast(christmasLocationState.status==='review'?'Recibiremos la solicitud y revisaremos esta ubicación.':'Lugar encontrado y transporte calculado.','success');
                 };
                 if(manualSearchBtn && isChristmasEveBooking()) manualSearchBtn.onclick=async()=>{
-                    const input=document.getElementById('christmas-manual-address'); const value=String(input?.value||'').trim();
+                    const input=document.getElementById('christmas-manual-address'); const reference=String(bForm.elements.christmasReference?.value||'').trim();
+                    const value=String(input?.value||'').trim()||reference;
                     const placeType=String(document.getElementById('christmas-place-type')?.value||'').trim();
 
                     if(value.length<3) return showToast('Escribe el nombre del PH, barriada o sala de eventos.','error');
+                    setChristmasLocationMode('manual');
+                    input.value=value; bookingFormState.christmasManualAddress=value;
                     markChristmasManualReview(value); // Respaldo: aunque la búsqueda falle, la solicitud no se pierde.
                     if(manualResults) manualResults.innerHTML='';
                     const original=manualSearchBtn.innerHTML; manualSearchBtn.disabled=true; manualSearchBtn.innerHTML='<div class="loading-spinner !w-4 !h-4 !border-2 inline-block mr-2"></div> Buscando lugar…';
                     const revision=++locationRevision;
                     const places=await searchChristmasPlaces(value,placeType);
                     manualSearchBtn.disabled=false; manualSearchBtn.innerHTML=original;
-                    if(revision!==locationRevision || !bForm.isConnected || input.value.trim()!==value) return;
+                    if(revision!==locationRevision || !bForm.isConnected || input.value.trim()!==value || String(bForm.elements.christmasReference?.value||'').trim()!==reference) return;
                     if(!places.length){
-                        if(manualResults) manualResults.innerHTML='<div class="rounded-xl border border-orange-500/25 bg-orange-500/10 p-3 text-[11px] font-bold season-text-title">No encontramos el lugar automáticamente. Puedes seguir con la reserva; nosotros verificaremos la ubicación y te contactaremos por WhatsApp.</div>';
+                        if(manualResults) manualResults.innerHTML=placeSearchFallback(value);
                         return showToast('No encontramos el lugar automáticamente, pero puedes continuar.','info');
                     }
                     if(places.length===1){ await chooseChristmasPlace(places[0],input); return; }
@@ -2857,8 +2904,20 @@ function captureBookingGps(form, isCurrent, onProgress) {
                         }
                     };
                 }
+                for(const prefix of ['normal','christmas']){
+                    bForm.elements[prefix+'Reference']?.addEventListener('input',()=>{
+                        // Ignore candidates from an earlier venue name without interrupting GPS capture.
+                        document.getElementById(prefix+'-place-results').innerHTML='';
+                    });
+                }
                 const locationContinue=document.querySelector('[data-location-continue]');
                 if(locationContinue) locationContinue.onclick=async()=>{
+                    const prefix=isChristmasEveBooking()?'christmas':'normal';
+                    const input=document.getElementById(prefix+'-manual-address');
+                    const reference=String(bForm.elements[prefix+'Reference']?.value||'').trim();
+                    if(bookingFormState[prefix+'LocationMode']==='manual' && !input.value.trim() && reference){
+                        input.value=reference; input.dispatchEvent(new Event('input',{bubbles:true}));
+                    }
                     if(isChristmasEveBooking()){
                         locationContinue.disabled=true;
                         try {await bn?.onclick?.();} finally {locationContinue.disabled=false;}
@@ -4125,7 +4184,9 @@ function captureBookingGps(form, isCurrent, onProgress) {
                     : request.recoveredReceipt
                     ? `Tu solicitud ya estaba guardada para el ${request.data.fecha} a las ${request.data.hora}. Te contactaremos por WhatsApp.`
                     : 'Recibimos tu solicitud. Te contactaremos por WhatsApp para coordinar el abono y confirmar tu reserva. ¡Nos encantará celebrar contigo!';
-                app.cart=[]; appliedCoupon=null; bookingFormState={}; christmasLocationState={ status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' }; normalLocationState={ status:'pending', charge:null, label:'', displayName:'', lat:null, lng:null, source:'', zoneValue:'' }; app.wizardStep=1; updateCartUI(); renderBooking();
+                app.cart=[]; appliedCoupon=null; bookingFormState={}; christmasLocationState={ status:'pending', charge:0, label:'', displayName:'', lat:null, lng:null, source:'' }; normalLocationState={ status:'pending', charge:null, label:'', displayName:'', lat:null, lng:null, source:'', zoneValue:'' }; app.wizardStep=1; updateCartUI();
+                setDirectRoute('section','home','replace'); setActiveSection('home');
+                bookingFormState={};
         }
 
         async function initFirebaseAndData() {

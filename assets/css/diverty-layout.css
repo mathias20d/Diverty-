@@ -220,3 +220,19 @@ body:has(.catalog-grid-page,.catalog-detail-page) .whatsapp-container { position
 @media (prefers-reduced-motion:reduce) {
   #infoModal.show .booking-reception-icon { animation:none; }
 }
+
+/* GPS search stays visible while the phone requests a fresh, accurate reading. */
+.booking-gps-dialog {
+  width:min(360px,calc(100vw - 32px)); max-height:calc(100dvh - 32px);
+  margin:auto; padding:28px 22px; border:1px solid var(--s-glass-border);
+  border-radius:24px; background:var(--s-bg-color,#101020); color:var(--s-text-title,#fff);
+  box-shadow:0 24px 80px #0006; text-align:center; overflow:auto;
+}
+.booking-gps-dialog::backdrop { background:#050814b8; }
+.booking-gps-dialog h2 { margin:18px 0 12px; font-size:22px; font-weight:800; }
+.booking-gps-dialog p { font-size:14px; line-height:1.55; }
+.booking-gps-dialog .booking-gps-hint { margin:12px 0 20px; color:var(--s-text-muted); font-size:12px; }
+.booking-gps-dialog button { width:100%; min-height:44px; padding:12px; border:1px solid var(--s-glass-border); border-radius:14px; font-weight:700; }
+.booking-gps-spinner { width:42px; height:42px; margin:auto; border:3px solid var(--s-glass-border); border-top-color:var(--s-primary,#8b5cf6); border-radius:50%; animation:booking-gps-spin 1s linear infinite; }
+@keyframes booking-gps-spin { to { transform:rotate(360deg); } }
+@media (prefers-reduced-motion:reduce) { .booking-gps-spinner { animation:none; } }
