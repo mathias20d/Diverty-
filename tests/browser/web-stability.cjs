@@ -33,7 +33,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
   const executablePath=process.env.CHROMIUM_PATH||(fs.existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined);
   const browser=await chromium.launch({executablePath,args:['--no-sandbox','--disable-dev-shm-usage']});
   const contexts=[];
-  const fixture=async({width=392,slowTheme=false,blockedStorage=false,christmas=false,offline=false}={})=>{
+  const fixture=async({width=392,slowTheme=false,blockedStorage=false,christmas=false,offline=false,holdReverse=false,reversePlace=null}={})=>{
     const api=seed();if(christmas)Object.assign(api.catalogo_web[0],{nombre:'Entrega de Santa',esNavidad:true,recursoNavidad:'Santa'});
     let releaseTheme;
     const gate=slowTheme?new Promise(resolve=>releaseTheme=resolve):Promise.resolve();
@@ -79,6 +79,10 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
         const rows=api[collection]||[];
         if(id){const row=rows.find(r=>r.id===id);return route.fulfill({status:row?200:404,json:row?documentFor(collection,row):{error:{status:'NOT_FOUND'}}});}
         return route.fulfill({json:{documents:rows.map(row=>documentFor(collection,row))}});
+      }
+      if(url.hostname==='nominatim.openstreetmap.org'&&reversePlace){
+        if(holdReverse)await context.pages()[0].waitForFunction(()=>window.__releaseReverse===true);
+        return route.fulfill({json:{display_name:reversePlace}});
       }
       if(url.hostname==='www.gstatic.com')return route.fulfill({contentType:'text/javascript',body:sdk});
       return route.abort();
@@ -272,7 +276,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
 
     for(const christmas of [false,true]){
       const gps=await fixture({christmas});await gps.context.grantPermissions(['geolocation'],{origin});
-      await gps.context.setGeolocation({latitude:9.0128,longitude:-79.5018,accuracy:25});await openBooking(gps);
+      await gps.context.setGeolocation({latitude:9.0128,longitude:-79.5018,accuracy:80});await openBooking(gps);
       if(!christmas){
         await gps.page.locator('[name="name"]').fill('Cliente ficticio');await gps.page.locator('[name="email"]').fill('prueba@example.com');await gps.page.locator('[name="phone"]').fill('60000000');
         await gps.page.locator('#btn-next').click();await gps.page.locator('#step-2.active').waitFor();
@@ -284,8 +288,8 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       if(!christmas){assert.equal(await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).getAttribute('aria-pressed'),'true');assert.equal(await gps.page.locator(`#${prefix}-gps-panel`).isVisible(),true);assert.equal(await gps.page.locator(`#${prefix}-manual-address`).isVisible(),false);}
       await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
       await gps.page.getByRole('dialog',{name:'Buscando ubicación…'}).waitFor();
-      await gps.page.waitForFunction(prefix=>document.querySelector(`#${prefix}-location-status`).textContent.includes('±25 m'),prefix);
-      assert.doesNotMatch(await gps.page.locator('[name="address"]').inputValue(), /google.com\/maps/,'first 25m reading must not finish the search');
+      await gps.page.waitForFunction(prefix=>document.querySelector(`#${prefix}-location-status`).textContent.includes('±80 m'),prefix);
+      assert.doesNotMatch(await gps.page.locator('[name="address"]').inputValue(), /google.com\/maps/,'first 80m reading must not finish the search');
       await gps.context.setGeolocation({latitude:9.0123,longitude:-79.5012,accuracy:6});
       await gps.page.waitForFunction(()=>document.querySelector('[name="address"]').value.startsWith('https://www.google.com/maps?q='));
       assert.match(await gps.page.locator('[name="address"]').inputValue(), /9\.012300,-79\.501200/);
@@ -318,7 +322,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       await gps.page.locator(`#${prefix}-manual-address`).fill('Dirección nueva sin estar allí');
       assert.equal(await gps.page.locator('[name="address"]').inputValue(),'Dirección nueva sin estar allí');
       // Cancelling a live GPS search restores the written address; late fixes cannot replace it.
-      await gps.context.setGeolocation({latitude:9.0128,longitude:-79.5018,accuracy:25});
+      await gps.context.setGeolocation({latitude:9.0128,longitude:-79.5018,accuracy:80});
       await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
       await gps.page.getByRole('dialog',{name:'Buscando ubicación…'}).getByRole('button',{name:'Escribir dirección'}).click();
       await gps.context.setGeolocation({latitude:9.0123,longitude:-79.5012,accuracy:6});
@@ -334,6 +338,43 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.equal(await gps.page.locator(`[data-${prefix}-location-mode="manual"]`).getAttribute('aria-pressed'),'true');
       assert.deepEqual(gps.errors,[]);
       console.log(`PASS: GPS ${prefix}, dirección remota y limpieza del punto anterior.`);
+    }
+
+    // A slow address lookup must not keep the client out of the reference window.
+    // Its restricted-zone result must still block normal sending or flag Santa for review.
+    for(const christmas of [false,true]){
+      const f=await fixture({christmas,holdReverse:true,reversePlace:'Samaria, San Miguelito, Panamá'});await openBooking(f);
+      if(!christmas){
+        await f.page.locator('[name="name"]').fill('Cliente GPS lento ficticio');await f.page.locator('[name="email"]').fill('gps@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
+        await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();await f.page.locator('#step-3.active').waitFor();
+      }
+      const prefix=christmas?'christmas':'normal';
+      await f.context.grantPermissions(['geolocation'],{origin});await f.context.setGeolocation({latitude:9.0123,longitude:-79.5012,accuracy:26});
+      const started=performance.now();await f.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
+      const result=f.page.getByRole('dialog',{name:'Hemos encontrado tu ubicación'});await result.waitFor({timeout:3000});
+      assert.ok(performance.now()-started<3000,'useful GPS is acknowledged before the slow address lookup completes');
+      assert.equal(await result.getByRole('button',{name:'Verificando transporte…'}).isDisabled(),true);
+      assert.equal(await f.page.locator('[data-location-continue]').isDisabled(),true);
+      await result.getByLabel('Barriada, PH o sala de eventos').fill('Sala de prueba, entrada principal');
+      await f.page.evaluate(()=>window.__releaseReverse=true);
+      const action=result.getByRole('button',{name:christmas?'Continuar con la reserva':'Enviar reserva',exact:true});await action.waitFor();
+      assert.match(await result.locator('.booking-gps-result-coverage').innerText(),christmas?/Ubicación por confirmar/:/no disponible/);
+      await action.click();
+      if(christmas){await f.page.locator('#step-2.active').waitFor();await f.page.locator('#toast').filter({hasText:'Revisaremos esta ubicación'}).waitFor();}
+      else await f.page.locator('#toast').filter({hasText:'no está disponible'}).waitFor();
+      assert.equal(await f.page.evaluate(()=>Object.keys(window.__fakeWrites||{}).some(key=>key.includes('/eventos/'))),false);
+      if(!christmas){
+        await f.page.evaluate(()=>window.__releaseReverse=false);
+        await f.page.locator('[data-normal-location-mode="gps"]').click();await result.waitFor();
+        await result.getByRole('button',{name:'Volver',exact:true}).click();
+        await f.page.locator('[data-normal-location-mode="manual"]').click();
+        await f.page.locator('#normal-manual-address').fill('PH nuevo, Bella Vista');
+        await f.page.evaluate(()=>window.__releaseReverse=true);await f.page.waitForTimeout(300);
+        assert.equal(await f.page.locator('[name="address"]').inputValue(),'PH nuevo, Bella Vista','a late reverse lookup cannot overwrite the manual address');
+        assert.equal(await f.page.locator('[data-location-continue]').isDisabled(),false);
+        assert.equal(await f.page.locator('#booking-gps-result').count(),0);
+      }
+      assert.deepEqual(f.errors,[]);console.log(`PASS: GPS ${prefix} útil en menos de 3s, referencia disponible durante geocodificación lenta y restricciones preservadas.`);
     }
 
     // Save through the GPS receipt using the same guarded transaction as the form.

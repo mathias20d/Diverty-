@@ -40,7 +40,7 @@ function showBookingGpsProgress(form, onCancel) {
     return { close, update: text => { dialog.querySelector('#booking-gps-status').textContent = text; } };
 }
 
-function showBookingGpsResult(form, { prefix, accuracy, onContinue }) {
+function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true }) {
     const reference = form.elements[prefix + 'Reference'];
     if (!form.isConnected || !reference) return;
     const dialog = document.createElement('dialog');
@@ -68,14 +68,30 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue }) {
     };
     input.oninput = () => { syncReference(); error.hidden = true; input.removeAttribute('aria-invalid'); };
     const coverage = form.querySelector(`#${prefix}-coverage-result`);
-    if (coverage) dialog.querySelector('.booking-gps-result-coverage').innerHTML = coverage.innerHTML;
+    const coverageDisplay = dialog.querySelector('.booking-gps-result-coverage');
+    coverageDisplay.setAttribute('aria-live', 'polite');
+    const action = dialog.querySelector('[data-gps-continue]');
+    const actionLabel = action.textContent;
+    const complete = () => {
+        if (!dialog.isConnected) return;
+        if (coverage) coverageDisplay.innerHTML = coverage.innerHTML;
+        action.disabled = false;
+        action.textContent = actionLabel;
+    };
+    if (ready && coverage) coverageDisplay.innerHTML = coverage.innerHTML;
+    if (!ready) {
+        coverageDisplay.textContent = 'Verificando la zona y el transporte… Puedes escribir la referencia mientras tanto.';
+        action.disabled = true;
+        action.textContent = 'Verificando transporte…';
+    }
     dialog.querySelector('.booking-gps-hint').textContent = `Precisión aproximada ±${Math.ceil(accuracy)} m.${accuracy > 50 ? ' Añade una referencia detallada para ayudarnos a llegar.' : ''}`;
     const close = () => { observer.disconnect(); if (dialog.open) dialog.close(); dialog.remove(); };
     const observer = new MutationObserver(() => { if (!form.isConnected) close(); });
     observer.observe(document.body, { childList: true, subtree: true });
     dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
     dialog.querySelector('[data-gps-back]').onclick = close;
-    dialog.querySelector('[data-gps-continue]').onclick = () => {
+    action.onclick = () => {
+        if (action.disabled) return;
         if (!input.value.trim()) {
             error.textContent = 'Escribe la barriada, PH o sala de eventos.';
             error.hidden = false;
@@ -90,6 +106,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue }) {
     };
     document.body.appendChild(dialog);
     dialog.showModal();
+    return { close, complete };
 }
 
 // VELOCIDAD MÓVIL 6A — Firebase pesado bajo demanda.
@@ -2560,11 +2577,20 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue }) {
                         if (normalStatus) normalStatus.textContent = `Afinando ubicación · mejor lectura ±${Math.ceil(point.accuracy)} m…`;
                         if (normalLoaderText) normalLoaderText.textContent = 'Afinando el punto GPS…';
                     });
-                    cancelGpsSearch = () => { search.cancel(); progress.close(); };
+                    let result = null;
+                    const releaseControls = () => {
+                        normalLoader?.classList.add('hidden');
+                        normalLocationBtn.disabled = false;
+                        if (locationContinue && bForm.dataset.sending !== '1') locationContinue.disabled = false;
+                    };
+                    if (locationContinue) locationContinue.disabled = true;
+                    cancelGpsSearch = () => { search.cancel(); progress.close(); result?.close(); releaseControls(); };
                     try {
                         const point = await search.promise;
                         if (!isCurrent()) return;
-                        progress.update('Ubicación encontrada. Verificando la zona…');
+                        progress.close();
+                        if (normalStatus) normalStatus.textContent = gpsAccuracyMessage(point.accuracy);
+                        result = showBookingGpsResult(bForm, { prefix: 'normal', accuracy: point.accuracy, ready: false, onContinue: () => locationContinue?.click() });
                         if (normalLoaderText) normalLoaderText.textContent = 'Verificando la zona…';
                         await applyNormalLocation(point.lat, point.lng, { source: 'gps', accuracy: point.accuracy, isCurrent });
                         if (!isCurrent()) return;
@@ -2575,8 +2601,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue }) {
                         if (normalStatus) normalStatus.textContent = gpsAccuracyMessage(point.accuracy);
                         normalLocationBtn.innerHTML = '<i data-lucide="map-pin-check" class="w-5 h-5"></i> Volver a medir ubicación';
                         if (window.lucide) lucide.createIcons();
-                        progress.close();
-                        showBookingGpsResult(bForm, { prefix: 'normal', accuracy: point.accuracy, onContinue: () => locationContinue?.click() });
+                        result?.complete();
                     } catch (error) {
                         if (error?.code === 'GPS_CANCELLED' || !isCurrent()) return;
                         const message = error?.code === 1 ? 'Permite el acceso a tu ubicación o utiliza la dirección manual.' : 'No pudimos obtener tu ubicación. Inténtalo de nuevo o escribe la dirección.';
@@ -2585,8 +2610,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue }) {
                         showToast(message, 'error');
                     } finally {
                         progress.close();
-                        normalLoader?.classList.add('hidden');
-                        normalLocationBtn.disabled = false;
+                        if (isCurrent()) releaseControls();
                     }
                 };
                 const markNormalManualReview=(value,{displayName='',point=null,source='manual-search'}={})=>{
@@ -2697,19 +2721,27 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue }) {
                         if (christmasStatus) christmasStatus.textContent = `Afinando ubicación · mejor lectura ±${Math.ceil(point.accuracy)} m…`;
                         if (christmasLoaderText) christmasLoaderText.textContent = 'Afinando el punto GPS…';
                     });
-                    cancelGpsSearch = () => { search.cancel(); progress.close(); };
+                    let result = null;
+                    const releaseControls = () => {
+                        christmasLoader?.classList.add('hidden');
+                        christmasLocationBtn.disabled = false;
+                        if (locationContinue && bForm.dataset.sending !== '1') locationContinue.disabled = false;
+                    };
+                    if (locationContinue) locationContinue.disabled = true;
+                    cancelGpsSearch = () => { search.cancel(); progress.close(); result?.close(); releaseControls(); };
                     try {
                         const point = await search.promise;
                         if (!isCurrent()) return;
-                        progress.update('Ubicación encontrada. Verificando la zona…');
+                        progress.close();
+                        if (christmasStatus) christmasStatus.textContent = gpsAccuracyMessage(point.accuracy);
+                        result = showBookingGpsResult(bForm, { prefix: 'christmas', accuracy: point.accuracy, ready: false, onContinue: () => locationContinue?.click() });
                         if (christmasLoaderText) christmasLoaderText.textContent = 'Verificando la zona…';
                         await applyChristmasLocation(point.lat, point.lng, { source: 'gps', accuracy: point.accuracy, isCurrent });
                         if (!isCurrent()) return;
                         if (christmasStatus) christmasStatus.textContent = gpsAccuracyMessage(point.accuracy);
                         christmasLocationBtn.innerHTML = '<i data-lucide="map-pin-check" class="w-5 h-5"></i> Volver a medir ubicación';
                         if (window.lucide) lucide.createIcons();
-                        progress.close();
-                        showBookingGpsResult(bForm, { prefix: 'christmas', accuracy: point.accuracy, onContinue: () => locationContinue?.click() });
+                        result?.complete();
                     } catch (error) {
                         if (error?.code === 'GPS_CANCELLED' || !isCurrent()) return;
                         const message = error?.code === 1 ? 'Permite el acceso a tu ubicación o utiliza la dirección manual.' : 'No pudimos obtener tu ubicación. Inténtalo de nuevo o escribe la dirección.';
@@ -2718,8 +2750,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue }) {
                         showToast(message, 'error');
                     } finally {
                         progress.close();
-                        christmasLoader?.classList.add('hidden');
-                        christmasLocationBtn.disabled = false;
+                        if (isCurrent()) releaseControls();
                     }
                 };
                 const markChristmasManualReview=value=>{

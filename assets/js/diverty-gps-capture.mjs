@@ -1,13 +1,13 @@
 // Take the best fresh device reading; never average it with less accurate positions.
-export function capturePreciseGps({ geolocation = globalThis.navigator?.geolocation, onProgress = () => {}, isCurrent = () => true, targetAccuracy = 10, settleMs = 2000, deadlineMs = 12000, now = Date.now, setTimer = setTimeout, clearTimer = clearTimeout } = {}) {
-    let best = null, finished = false, watchId = null, settleTimer = null, deadlineTimer = null;
+export function capturePreciseGps({ geolocation = globalThis.navigator?.geolocation, onProgress = () => {}, isCurrent = () => true, targetAccuracy = 30, settleMs = 600, usableAccuracy = 50, usableMs = 2500, deadlineMs = 10000, now = Date.now, setTimer = setTimeout, clearTimer = clearTimeout } = {}) {
+    let best = null, finished = false, watchId = null, settleTimer = null, usableTimer = null, deadlineTimer = null;
     let resolve, reject, lastError;
     const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
     const started = now();
     const error = (code, message) => Object.assign(new Error(message), { code });
     const cleanup = () => {
         if (watchId !== null) { geolocation.clearWatch(watchId); watchId = null; }
-        clearTimer(settleTimer); clearTimer(deadlineTimer);
+        clearTimer(settleTimer); clearTimer(usableTimer); clearTimer(deadlineTimer);
     };
     const finish = failure => {
         if (finished) return;
@@ -18,12 +18,14 @@ export function capturePreciseGps({ geolocation = globalThis.navigator?.geolocat
         else reject(lastError || error(2, 'No pudimos obtener una ubicación válida.'));
     };
     const cancel = () => finish(error('GPS_CANCELLED', 'La búsqueda de ubicación se canceló.'));
-    const ready = () => best && best.accuracy <= targetAccuracy && now() - started >= settleMs;
+    // A useful fresh fix should not wait for an ideal 10m reading that may never arrive.
+    const ready = () => best && ((best.accuracy <= targetAccuracy && now() - started >= settleMs) || (best.accuracy <= usableAccuracy && now() - started >= usableMs));
     if (!geolocation?.watchPosition) {
         finish(error(2, 'Este dispositivo no permite obtener la ubicación.'));
         return { promise, cancel };
     }
     settleTimer = setTimer(() => { if (ready()) finish(); }, settleMs);
+    usableTimer = setTimer(() => { if (ready()) finish(); }, usableMs);
     deadlineTimer = setTimer(() => finish(), deadlineMs);
     try {
         watchId = geolocation.watchPosition(position => {

@@ -250,3 +250,4 @@ body:has(.catalog-grid-page,.catalog-detail-page) .whatsapp-container { position
 .booking-gps-result-coverage p { font-size:13px!important; }
 .booking-gps-result .booking-gps-hint { margin:10px 0 16px; }
 .booking-gps-result .booking-gps-back { margin-top:8px; background:transparent; color:var(--s-text-muted); }
+.booking-gps-result button:disabled { opacity:.6; cursor:wait; }
