@@ -59,6 +59,10 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
         if(state.failure){const reason=state.failure.details?.reason||(state.failure.code==='functions/resource-exhausted'?'RATE_LIMITED':'UNAVAILABLE');return route.fulfill({status:reason==='RATE_LIMITED'?429:reason==='AMBIGUOUS_NAME'?409:503,json:{error:{reason}}});}
         return route.fulfill({json:{reservations:state.rows}});
       }
+      if(url.origin===origin&&url.pathname==='/api/map-location'){
+        assert.equal(route.request().postDataJSON().url,'https://maps.app.goo.gl/ocTJwiG8PGL8XaSG9');
+        return route.fulfill({json:{displayName:'PH Allure, Calle Colombia, Panamá, Provincia de Panamá',point:null}});
+      }
       if(url.origin===origin)return route.continue();
       if(url.hostname==='firestore.googleapis.com'){
         if(offline)return route.abort();
@@ -94,7 +98,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     const sendNormalBooking=async f=>{
       await f.page.locator('[name="name"]').fill('Cliente catálogo de prueba');await f.page.locator('[name="email"]').fill('catalogo@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
       await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();
-      await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('PH de prueba, Brisas del Golf');await f.page.evaluate(()=>window.__allowBookingWrite=true);
+      await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('Casa de prueba, Chepo');await f.page.evaluate(()=>window.__allowBookingWrite=true);
       await f.page.locator('[data-location-continue]').click();await f.page.locator('[data-review-send]').click();await f.page.waitForFunction(()=>document.querySelector('#infoModal').classList.contains('show'),null,{timeout:f.holdPortalSync?2000:30000});
       assert.deepEqual(f.errors,[]);return f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid&&x.serviciosSeleccionados));
     };
@@ -306,7 +310,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       }else{
         await contact();await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();
         await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();
-        await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('PH que no aparece, Brisas del Golf');
+        await f.page.locator('#step-3.active').waitFor();await f.page.locator('#normal-manual-address').fill('Casa de prueba, Chepo');
       }
       // Close the day after the visitor has already filled the final step.
       await f.page.evaluate(christmas=>{window.__allowBookingWrite=true;window.__fakeWrites={'artifacts/diverty-oficial/public/data/config_web/fechas_cerradas':{fechas:{[christmas?'2026-12-24':'2026-10-15']:true}}};},christmas);
@@ -330,9 +334,32 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.match(await f.page.locator('#modalMessage').innerText(), /pendiente de cotizar transporte/);
       if(process.env.BROWSER_ARTIFACT_DIR) await f.page.screenshot({path:path.join(process.env.BROWSER_ARTIFACT_DIR,`transport-${christmas?'christmas':'normal'}.png`)});
       const saved=await f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid && x.direccion));
-      assert.equal(saved.direccion,'PH que no aparece, Brisas del Golf');assert.equal(saved.referenciaLugar,'');assert.equal(saved.estado,'Pendiente');assert.equal('lat' in saved,false);
-      assert.equal(saved.ubicacion,christmas?'Ubicación por confirmar':'Ubicación por revisar');
+      assert.equal(saved.direccion,christmas?'PH que no aparece, Brisas del Golf':'Casa de prueba, Chepo');assert.equal(saved.referenciaLugar,'');assert.equal(saved.estado,'Pendiente');assert.equal('lat' in saved,false);
+      assert.equal(saved.ubicacion,christmas?'Ubicación por confirmar':'Fuera del área automática');
       assert.deepEqual(f.errors,[]);console.log(`PASS: envío completo ${christmas?'Navidad':'normal'} con dirección remota y Firebase simulado.`);
+    }
+
+    for(const [address,expectedZone,charge] of [
+      ['https://maps.app.goo.gl/ocTJwiG8PGL8XaSG9','Ciudad de Panamá','0'],
+      ['PH Allure, Calle Colombia, Bella Vista','Ciudad de Panamá','0'],
+      ['Casa de prueba, Costa del Este','Costa del Este','5'],
+      ['Lugar de prueba sin zona identificada','Ubicación por revisar','0']
+    ]){
+      const f=await fixture();await openBooking(f);
+      await f.page.locator('[name="name"]').fill('Cliente cobertura ficticio');await f.page.locator('[name="email"]').fill('cobertura@example.invalid');await f.page.locator('[name="phone"]').fill('60000000');
+      await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();await f.page.locator('#step-3.active').waitFor();
+      await f.page.locator('#normal-manual-address').fill(address);
+      if(expectedZone==='Ciudad de Panamá')await f.page.locator('#normal-coverage-result').filter({hasText:'$0.00'}).waitFor();
+      assert.doesNotMatch(await f.page.locator('#normal-coverage-result').innerText(),/Transporte por confirmar/);
+      await f.page.evaluate(()=>window.__allowBookingWrite=true);await f.page.locator('[data-location-continue]').click();
+      await f.page.waitForFunction(()=>document.querySelector('#infoModal').classList.contains('show'));
+      assert.equal(await f.page.locator('[data-review-send]').count(),0);
+      await f.page.locator('#modalTitle').waitFor({state:'visible'});
+      assert.equal(await f.page.locator('#modalTitle').innerText(),'¡Gracias por elegir Diverty!');
+      assert.match(await f.page.locator('#modalMessage').innerText(),/WhatsApp.*abono.*confirmar tu reserva/);
+      const saved=await f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid&&x.direccion));
+      assert.equal(saved.direccion,address);if(address.startsWith('https:'))assert.equal(saved.referenciaLugar,'PH Allure, Calle Colombia, Panamá, Provincia de Panamá');assert.equal(saved.ubicacion,expectedZone);assert.equal(saved.transporte,charge);assert.equal(saved.estado,'Pendiente');assert.equal('lat' in saved,false);assert.deepEqual(f.errors,[]);
+      console.log(`PASS: cobertura ${expectedZone}, $${charge}, recibo amable y reserva pendiente.`);
     }
 
     const themeDraft=process.env.THEME_FIXTURE_PATH?JSON.parse(fs.readFileSync(process.env.THEME_FIXTURE_PATH,'utf8')):{themeVersion:2,colorPrimary:'#336699',colorSecondary:'#99aabb',colorButton:'#123456',buttonStyle:'solid',colorText:'#f0f0f0',colorBg:'#112233',colorCard:'#223344',decorations:'confetti',animations:false};

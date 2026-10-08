@@ -209,3 +209,14 @@ body:has(.catalog-grid-page,.catalog-detail-page) .whatsapp-container { position
   #hero-section-identifier .hero-content > div.flex.flex-col.gap-3 { grid-template-columns:1fr; }
 }
 @media (prefers-reduced-motion:reduce) { .diverty-site *, .diverty-site *::before, .diverty-site *::after { scroll-behavior:auto!important; } }
+
+/* A brief acknowledgement after the request has actually been saved. */
+#infoModal.show .booking-reception-icon { animation:booking-received .55s ease-out both; }
+@keyframes booking-received {
+  from { opacity:0; transform:scale(.8); }
+  65% { opacity:1; transform:scale(1.06); }
+  to { opacity:1; transform:scale(1); }
+}
+@media (prefers-reduced-motion:reduce) {
+  #infoModal.show .booking-reception-icon { animation:none; }
+}
