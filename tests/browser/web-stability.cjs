@@ -63,10 +63,6 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
         assert.equal(route.request().postDataJSON().url,'https://maps.app.goo.gl/ocTJwiG8PGL8XaSG9');
         return route.fulfill({json:{displayName:'PH Allure, Calle Colombia, Panamá, Provincia de Panamá',point:null}});
       }
-      if(url.hostname==='nominatim.openstreetmap.org' && url.pathname==='/search'){
-        if(api.mapRows !== undefined) return route.fulfill({json:api.mapRows});
-        return route.abort();
-      }
       if(url.origin===origin)return route.continue();
       if(url.hostname==='firestore.googleapis.com'){
         if(offline)return route.abort();
@@ -243,9 +239,8 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       fs.mkdirSync(process.env.BROWSER_ARTIFACT_DIR,{recursive:true});
       await remote.page.locator('#bookingForm').screenshot({path:path.join(process.env.BROWSER_ARTIFACT_DIR,'location.png')});
     }
-    await remote.page.locator('.location-extra summary').click();
+    assert.equal(await remote.page.locator('.location-extra').count(),0);
     await remote.page.locator('#christmas-manual-address').fill('https://www.google.com/maps?q=9.0123,-79.5012');
-    await remote.page.locator('#christmas-search-address').click();
     await remote.page.waitForFunction(()=>document.querySelector('#christmas-coverage-result').textContent.includes('Transporte adicional'));
     await remote.page.locator('#christmas-manual-address').fill('Nueva dirección sin pin');
     await remote.page.locator('[data-location-continue]').click();await remote.page.locator('#step-2.active').waitFor();
@@ -329,23 +324,9 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
         await f.page.locator('#btn-next').click();await f.page.locator('#step-2.active').waitFor();await f.page.locator('#booking-open-date-picker').click();await f.page.locator('[data-calendar-date="2026-10-15"]').click();await f.page.locator('[name="time"]').selectOption('10:00');await f.page.locator('#btn-next').click();await f.page.locator('#step-3.active').waitFor();
       }
       const prefix=christmas?'christmas':'normal';
-      await f.page.locator(`[name="${prefix}Reference"]`).fill('Funlandia');
-      await f.page.locator('.location-extra summary').click();
-      f.api.mapRows=[{lat:'9.0123',lon:'-79.5012',display_name:'Funlandia, Bella Vista, Panamá'}];
-      await f.page.locator(`#${prefix}-search-address`).click();
-      await f.page.waitForFunction(()=>document.querySelector('[name="address"]').value.startsWith('https://www.google.com/maps?q='));
-      assert.equal(await f.page.locator(`[name="${prefix}Reference"]`).inputValue(),'Funlandia');
-      assert.match(await f.page.locator(`#${prefix}-manual-address`).inputValue(),/Funlandia/);
-      assert.equal(f.requests.filter(url=>url.includes('nominatim.openstreetmap.org/search')).length,1,'a matching venue stops repeated searches');
-      assert.ok(f.requests.some(url=>url.includes('Funlandia')));
-      // An unindexed venue retains the entered address and offers a real map link.
-      f.api.mapRows=[];
-      await f.page.locator(`#${prefix}-manual-address`).fill('Salón de prueba que no aparece');
-      await f.page.locator(`#${prefix}-search-address`).click();
-      await f.page.locator(`#${prefix}-place-results a`).waitFor();
-      assert.match(await f.page.locator(`#${prefix}-place-results a`).getAttribute('href'),/^https:\/\/www.google.com\/maps\/search\//);
-      assert.equal(await f.page.locator('[name="address"]').inputValue(),'Salón de prueba que no aparece');
-      // Just the venue name is also sufficient without pressing map search.
+      assert.equal(await f.page.locator('.location-extra').count(),0);
+      assert.equal(await f.page.locator(`#${prefix}-search-address`).count(),0);
+      // Just the venue name is still sufficient with the optional map section removed.
       await f.page.locator(`#${prefix}-manual-address`).fill('');
       await f.page.locator(`[name="${prefix}Reference"]`).fill('Funlandia, Bella Vista');
       await f.page.evaluate(()=>window.__allowBookingWrite=true);
@@ -353,7 +334,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       if(christmas)await f.page.locator('#step-2.active').waitFor();
       else await f.page.locator('#infoModal.show').waitFor();
       assert.deepEqual(f.errors,[]);
-      console.log(`PASS: mapa ${prefix} usa el salón escrito, conserva direcciones y permite continuar sin coincidencias.`);
+      console.log(`PASS: formulario ${prefix} sin verificación de mapa permite continuar con el salón escrito.`);
     }
 
     for(const christmas of [false,true]){

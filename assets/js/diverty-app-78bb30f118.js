@@ -40,11 +40,6 @@ function showBookingGpsProgress(form, onCancel) {
     return { close, update: text => { dialog.querySelector('#booking-gps-status').textContent = text; } };
 }
 
-function placeSearchFallback(value) {
-    const url = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(value + ', Panamá');
-    return `<div class="rounded-xl border border-[var(--s-glass-border)] p-3 text-xs season-text-title"><p>No encontramos este lugar en el mapa. La dirección escrita se conserva y puedes enviar tu solicitud.</p><a href="${url}" target="_blank" rel="noopener noreferrer" class="block mt-2 font-bold season-text-primary underline">Ver el lugar en Google Maps ↗</a></div>`;
-}
-
 // VELOCIDAD MÓVIL 6A — Firebase pesado bajo demanda.
         // El inicio usa REST ligero para contenido público. Firestore/Auth completos
         // solo se descargan cuando el visitante abre reservas, disponibilidad o portal.
@@ -286,118 +281,6 @@ function placeSearchFallback(value) {
                 const r=await fetch(url,{headers:{'Accept':'application/json'},signal:AbortSignal.timeout(5000)}); if(!r.ok) return null;
                 const j=await r.json(); return j||null;
             }catch(_){ return null; }
-        }
-        async function searchChristmasPlaces(value, placeType=''){
-            const coords=christmasCoordsFromText(value);
-            if(coords) return [{...coords,displayName:'Ubicación compartida por enlace',kind:'link'}];
-            const q=String(value||'').trim(); if(q.length<3) return [];
-            const kind=normalizeChristmasPlace(placeType);
-            const searchSignal=AbortSignal.timeout(6000);
-            const fetchRows=async queryText=>{
-                try{
-                    // Buscamos en Panamá y damos prioridad al corredor operativo de Navidad,
-                    // sin limitar por completo la respuesta: si el lugar queda fuera, se marca
-                    // "por confirmar" y la solicitud igual puede llegar al CRM.
-                    const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=7&countrycodes=pa&addressdetails=1&namedetails=1&accept-language=es&viewbox=-79.70,9.22,-79.23,8.88&bounded=0&q=${encodeURIComponent(queryText)}`;
-                    if(searchSignal.aborted) return [];
-                    const r=await fetch(url,{headers:{'Accept':'application/json'},signal:searchSignal}); if(!r.ok) return [];
-                    const rows=await r.json(); return Array.isArray(rows)?rows:[];
-                }catch(_){ return []; }
-            };
-            const queries=[];
-            const pushQuery=v=>{ const clean=String(v||'').trim(); if(clean && !queries.includes(clean)) queries.push(clean); };
-            if(kind==='ph'){
-                pushQuery(`PH ${q}, Panamá, Panamá`);
-                pushQuery(`${q}, Panamá, Panamá`);
-                pushQuery(`${q} edificio, Panamá`);
-            }else if(kind==='barriada'){
-                pushQuery(`Barriada ${q}, Panamá, Panamá`);
-                pushQuery(`Residencial ${q}, Panamá`);
-                pushQuery(`${q}, Panamá, Panamá`);
-            }else if(kind==='sala'){
-                pushQuery(`${q} sala de eventos, Panamá`);
-                pushQuery(`${q} salón de fiestas, Panamá`);
-                pushQuery(`${q} fiestas infantiles, Panamá`);
-                pushQuery(`${q}, Panamá, Panamá`);
-            }else{
-                // Si el cliente no sabe cómo está registrado, intentamos las tres categorías.
-                pushQuery(`${q}, Panamá, Panamá`);
-                pushQuery(`PH ${q}, Panamá`);
-                pushQuery(`Barriada ${q}, Panamá`);
-                pushQuery(`${q} sala de eventos, Panamá`);
-                pushQuery(`${q} fiestas infantiles, Panamá`);
-            }
-            const batches=[];
-            for(const queryText of queries.slice(0,5)){
-                const rows=await fetchRows(queryText);
-                batches.push(...rows);
-                // Evita hacer llamadas innecesarias cuando ya tenemos suficientes candidatos.
-                if(batches.length || searchSignal.aborted) break;
-            }
-            if(!batches.length) batches.push(...await fetchRows(q));
-            const needle=normalizeChristmasPlace(q);
-            const terms=needle.split(' ').filter(x=>x.length>2);
-            const seen=new Set();
-            return batches.map(row=>{
-                const lat=Number(row.lat), lng=Number(row.lon);
-                const displayName=String(row.display_name||row.namedetails?.name||q).trim();
-                const normalized=normalizeChristmasPlace(displayName);
-                const matchScore=terms.reduce((score,t)=>score+(normalized.includes(t)?1:0),0);
-                const coverage=evaluateChristmasCoverage(lat,lng,displayName);
-                const coverageScore=coverage.status==='included'||coverage.status==='surcharge'?2:(coverage.status==='review'?1:0);
-                return {lat,lng,displayName,kind:String(row.type||row.category||'lugar'),matchScore,coverageScore};
-            }).filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&Math.abs(x.lat)<=90&&Math.abs(x.lng)<=180)
-              .filter(x=>{const key=`${x.lat.toFixed(5)},${x.lng.toFixed(5)}`;if(seen.has(key))return false;seen.add(key);return true;})
-              .sort((a,b)=>b.matchScore-a.matchScore||b.coverageScore-a.coverageScore||a.displayName.localeCompare(b.displayName,'es'))
-              .slice(0,8);
-        }
-        async function geocodeChristmasAddress(value){
-            const rows=await searchChristmasPlaces(value);
-            return rows[0]||null;
-        }
-        async function searchNormalPlaces(value, placeType=''){
-            const coords=christmasCoordsFromText(value);
-            if(coords) return [{...coords,displayName:'Ubicación compartida por enlace',kind:'link'}];
-            const q=String(value||'').trim(); if(q.length<3) return [];
-            const kind=normalizeChristmasPlace(placeType);
-            const searchSignal=AbortSignal.timeout(6000);
-            const fetchRows=async queryText=>{
-                try{
-                    const url=`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=8&countrycodes=pa&addressdetails=1&namedetails=1&accept-language=es&viewbox=-79.95,9.35,-79.15,8.75&bounded=0&q=${encodeURIComponent(queryText)}`;
-                    if(searchSignal.aborted) return [];
-                    const r=await fetch(url,{headers:{'Accept':'application/json'},signal:searchSignal}); if(!r.ok) return [];
-                    const rows=await r.json(); return Array.isArray(rows)?rows:[];
-                }catch(_){ return []; }
-            };
-            const queries=[];
-            const pushQuery=v=>{ const clean=String(v||'').trim(); if(clean && !queries.includes(clean)) queries.push(clean); };
-            if(kind==='ph'){
-                pushQuery(`PH ${q}, Panamá`); pushQuery(`${q}, Panamá`); pushQuery(`${q} edificio, Panamá`);
-            }else if(kind==='barriada'){
-                pushQuery(`Barriada ${q}, Panamá`); pushQuery(`Residencial ${q}, Panamá`); pushQuery(`${q}, Panamá`);
-            }else if(kind==='sala'){
-                pushQuery(`${q} sala de eventos, Panamá`); pushQuery(`${q} salón de fiestas, Panamá`); pushQuery(`${q} fiestas infantiles, Panamá`); pushQuery(`${q}, Panamá`);
-            }else{
-                pushQuery(`${q}, Panamá`); pushQuery(`PH ${q}, Panamá`); pushQuery(`Barriada ${q}, Panamá`); pushQuery(`${q} sala de eventos, Panamá`);
-            }
-            const batches=[];
-            for(const queryText of queries.slice(0,5)){
-                const rows=await fetchRows(queryText); batches.push(...rows); if(batches.length || searchSignal.aborted) break;
-            }
-            if(!batches.length) batches.push(...await fetchRows(q));
-            const needle=normalizeChristmasPlace(q); const terms=needle.split(' ').filter(x=>x.length>2); const seen=new Set();
-            return batches.map(row=>{
-                const lat=Number(row.lat), lng=Number(row.lon);
-                const displayName=String(row.display_name||row.namedetails?.name||q).trim();
-                const normalized=normalizeChristmasPlace(displayName);
-                const matchScore=terms.reduce((score,t)=>score+(normalized.includes(t)?1:0),0);
-                const coverage=evaluateNormalCoverage(lat,lng,displayName);
-                const coverageScore=coverage.status==='included'?2:(coverage.status==='review'?1:0);
-                return {lat,lng,displayName,kind:String(row.type||row.category||'lugar'),matchScore,coverageScore};
-            }).filter(x=>Number.isFinite(x.lat)&&Number.isFinite(x.lng)&&Math.abs(x.lat)<=90&&Math.abs(x.lng)<=180)
-              .filter(x=>{const key=`${x.lat.toFixed(5)},${x.lng.toFixed(5)}`;if(seen.has(key))return false;seen.add(key);return true;})
-              .sort((a,b)=>b.matchScore-a.matchScore||b.coverageScore-a.coverageScore||a.displayName.localeCompare(b.displayName,'es'))
-              .slice(0,8);
         }
         // NAVIDAD — REGLAS DE COBERTURA PROTEGIDAS.
         // No reutilizar los precios de reservas normales aquí. Santa tiene una política propia:
@@ -2469,7 +2352,7 @@ function placeSearchFallback(value) {
                  exploreButtons += `<button data-action="navigate-from-modal" data-target-section="home" class="w-full sm:w-auto season-btn font-extrabold py-3.5 px-8 rounded-2xl active:scale-95 transition-transform flex items-center justify-center gap-2 nav-action"><i data-lucide="home" class="w-5 h-5"></i> Volver al Inicio</button>`;
             }
 
-            // Una dirección escrita basta para solicitar; mapa, tipo y referencia siguen disponibles.
+            // Ubicación por GPS o dirección escrita, con referencia del lugar.
             const locationAttribute=value=>String(value||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             const locationPrefix=isChristmasEveBooking()?'christmas':'normal';
             const referenceName=isChristmasEveBooking()?'christmasReference':'normalReference';
@@ -2498,19 +2381,6 @@ function placeSearchFallback(value) {
                     <textarea id="${referenceName}" name="${referenceName}" maxlength="500" rows="2" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm" placeholder="Ej.: PH Las Palmeras, salón social, entrada por la garita"></textarea>
                     <p class="text-xs season-text-muted mt-2">Obligatorio al usar GPS o un enlace de mapa. Si ya escribiste el nombre en la dirección, no hace falta repetirlo.</p>
                 </div>
-                <details class="location-extra rounded-2xl border border-[var(--s-glass-border)] p-3">
-                    <summary class="cursor-pointer text-sm font-bold season-text-title">Verificar lugar en el mapa <span class="text-xs font-normal season-text-muted">(opcional)</span></summary>
-                    <div class="space-y-3 mt-4">
-                        <label for="${locationPrefix}-place-type" class="block text-xs font-bold season-text-muted">Tipo de lugar para afinar la búsqueda</label>
-                        <select id="${locationPrefix}-place-type" name="${locationPrefix}PlaceType" class="w-full glass-panel season-text-title rounded-2xl py-3 px-4 text-sm">
-                            <option value="" style="color:black">Cualquier lugar</option><option value="ph" style="color:black">PH / edificio</option><option value="barriada" style="color:black">Barriada / residencial</option><option value="sala" style="color:black">Sala de eventos / fiestas infantiles</option>
-                        </select>
-                        <button type="button" id="${locationPrefix}-search-address" class="w-full border border-[var(--s-glass-border)] season-text-title font-bold py-3 px-3 rounded-xl">Buscar este lugar</button>
-                        <div id="${locationPrefix}-place-results" class="space-y-2"></div>
-                        <p class="text-xs season-text-muted">Buscaremos la dirección o el nombre del PH, barriada o salón que escribiste arriba. Si no aparece, puedes continuar con esos datos.</p>
-                        <a href="https://wa.me/50766677965" target="_blank" rel="noopener noreferrer" class="block text-sm font-bold season-text-primary underline">Pedir ayuda por WhatsApp</a>
-                    </div>
-                </details>
                 <div id="${locationPrefix}-coverage-result" aria-live="polite"></div>
                 <button type="button" data-location-continue class="w-full season-btn font-extrabold py-3.5 px-5 rounded-2xl">${isChristmasEveBooking()?'Continuar con esta ubicación':'Enviar solicitud'}</button>
                 `;
@@ -2666,8 +2536,6 @@ function placeSearchFallback(value) {
                         normalLocationBtn.disabled = false;
                     }
                 };
-                const normalSearchBtn=document.getElementById('normal-search-address');
-                const normalResults=document.getElementById('normal-place-results');
                 const markNormalManualReview=(value,{displayName='',point=null,source='manual-search'}={})=>{
                     const clean=String(value||'').trim();
                     const direct=mapsLocationFromUrl(clean);
@@ -2682,50 +2550,6 @@ function placeSearchFallback(value) {
                     if(bForm?.elements?.address)bForm.elements.address.value=clean;
                     if(bForm?.elements?.location)bForm.elements.location.value=coverage.label;
                     renderNormalCoverageStatus();
-                };
-                const chooseNormalPlace=async(place,input)=>{
-                    if(!place) return;
-                    if(input&&place.displayName) input.value=place.displayName;
-                    if(!bForm.elements.normalReference.value.trim()) bForm.elements.normalReference.value=place.displayName;
-                    if(normalResults) normalResults.innerHTML='';
-                    await applyNormalLocation(place.lat,place.lng,{source:'manual-search',displayName:place.displayName||String(input?.value||'')});
-                    if(bForm?.elements?.address)bForm.elements.address.value=`https://www.google.com/maps?q=${Number(place.lat).toFixed(6)},${Number(place.lng).toFixed(6)}`;
-                    bookingFormState.address=bForm?.elements?.address?.value||bookingFormState.address||'';
-                    if(bForm?.elements?.location)bForm.elements.location.value=normalLocationState.label||'';
-                    showToast(normalLocationState.status==='review'?'Recibiremos la solicitud y revisaremos esta ubicación.':'Lugar encontrado y transporte calculado.','success');
-                };
-                if(normalSearchBtn&&!isChristmasEveBooking()) normalSearchBtn.onclick=async()=>{
-                    const input=document.getElementById('normal-manual-address');
-                    const reference=String(bForm.elements.normalReference?.value||'').trim();
-                    const value=String(input?.value||'').trim()||reference;
-                    const placeType=String(document.getElementById('normal-place-type')?.value||'').trim();
-
-                    if(value.length<3) return showToast('Escribe el nombre del PH, barriada o sala de eventos.','error');
-                    setNormalLocationMode('manual');
-                    input.value=value; bookingFormState.normalManualAddress=value;
-                    if(shortMapsUrl(value)){
-                        input.dispatchEvent(new Event('input',{bubbles:true}));
-                        await pendingMapsLocation;
-                        if(bForm.isConnected&&input.value.trim()===value)showToast(normalLocationState.status==='included'?'Ubicación recibida y transporte calculado.':'Ubicación recibida. Puedes continuar con tu solicitud.','info');
-                        return;
-                    }
-                    markNormalManualReview(value);
-                    if(normalResults) normalResults.innerHTML='';
-                    const original=normalSearchBtn.innerHTML;normalSearchBtn.disabled=true;normalSearchBtn.innerHTML='<div class="loading-spinner !w-4 !h-4 !border-2 inline-block mr-2"></div> Buscando lugar…';
-                    const revision=++locationRevision;
-                    const places=await searchNormalPlaces(value,placeType);
-                    normalSearchBtn.disabled=false;normalSearchBtn.innerHTML=original;
-                    if(revision!==locationRevision || !bForm.isConnected || input.value.trim()!==value || String(bForm.elements.normalReference?.value||'').trim()!==reference) return;
-                    if(!places.length){
-                        if(normalResults) normalResults.innerHTML=placeSearchFallback(value);
-                        return showToast('No encontramos el lugar automáticamente, pero puedes continuar.','info');
-                    }
-                    if(places.length===1){await chooseNormalPlace(places[0],input);return;}
-                    if(normalResults){
-                        normalResults.innerHTML=`<p class="text-[10px] font-black uppercase tracking-wider season-text-muted">Selecciona el lugar correcto</p>${places.map((place,i)=>`<button type="button" data-normal-place-index="${i}" class="w-full rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2.5 text-left active:scale-[.99]"><span class="block text-xs font-black season-text-title">${cleanStr(place.displayName).split(',')[0]||'Lugar encontrado'}</span><span class="block mt-1 text-[9px] season-text-muted line-clamp-2">${cleanStr(place.displayName)}</span></button>`).join('')}`;
-                        normalResults.querySelectorAll('[data-normal-place-index]').forEach(btn=>btn.onclick=()=>chooseNormalPlace(places[Number(btn.dataset.normalPlaceIndex)||0],input));
-                    }
-                    showToast('Encontramos varias opciones. Selecciona la correcta.','info');
                 };
                 if(!isChristmasEveBooking()) renderNormalCoverageStatus();
 
@@ -2844,57 +2668,23 @@ function placeSearchFallback(value) {
                         christmasLocationBtn.disabled = false;
                     }
                 };
-                const manualSearchBtn=document.getElementById('christmas-search-address');
-                const manualResults=document.getElementById('christmas-place-results');
                 const markChristmasManualReview=value=>{
                     const clean=String(value||'').trim();
-                    christmasLocationState={status:'review',charge:0,label:'Ubicación por confirmar',displayName:clean,lat:null,lng:null,source:'manual'};
+                    const point=gpsPointFromText(clean);
+                    const coverage=point?evaluateChristmasCoverage(point.lat,point.lng,clean):{status:'review',charge:0,label:'Ubicación por confirmar'};
+                    christmasLocationState={...coverage,displayName:clean,lat:point?.lat??null,lng:point?.lng??null,source:'manual'};
                     delete bookingFormState.christmasLat; delete bookingFormState.christmasLng;
-                    bookingFormState.christmasTransportCost=0; bookingFormState.christmasCoverageStatus='review'; bookingFormState.christmasCoverageLabel='Ubicación por confirmar'; bookingFormState.christmasLocationName=clean; bookingFormState.christmasLocationSource='manual'; bookingFormState.address=clean; bookingFormState.location='Ubicación por confirmar';
+                    if(point){bookingFormState.christmasLat=point.lat;bookingFormState.christmasLng=point.lng;}
+                    bookingFormState.christmasTransportCost=coverage.charge; bookingFormState.christmasCoverageStatus=coverage.status; bookingFormState.christmasCoverageLabel=coverage.label; bookingFormState.christmasLocationName=clean; bookingFormState.christmasLocationSource='manual'; bookingFormState.address=clean; bookingFormState.location=coverage.label;
                     if(bForm?.elements?.address) bForm.elements.address.value=clean;
-                    if(bForm?.elements?.location) bForm.elements.location.value='Ubicación por confirmar';
+                    if(bForm?.elements?.location) bForm.elements.location.value=coverage.label;
                     renderChristmasCoverageStatus();
-                };
-                const chooseChristmasPlace=async(place,input)=>{
-                    if(!place) return;
-                    if(input && place.displayName) input.value=place.displayName;
-                    if(!bForm.elements.christmasReference.value.trim()) bForm.elements.christmasReference.value=place.displayName;
-                    if(manualResults) manualResults.innerHTML='';
-                    await applyChristmasLocation(place.lat,place.lng,{source:'manual',displayName:place.displayName||String(input?.value||'')});
-                    showToast(christmasLocationState.status==='review'?'Recibiremos la solicitud y revisaremos esta ubicación.':'Lugar encontrado y transporte calculado.','success');
-                };
-                if(manualSearchBtn && isChristmasEveBooking()) manualSearchBtn.onclick=async()=>{
-                    const input=document.getElementById('christmas-manual-address'); const reference=String(bForm.elements.christmasReference?.value||'').trim();
-                    const value=String(input?.value||'').trim()||reference;
-                    const placeType=String(document.getElementById('christmas-place-type')?.value||'').trim();
-
-                    if(value.length<3) return showToast('Escribe el nombre del PH, barriada o sala de eventos.','error');
-                    setChristmasLocationMode('manual');
-                    input.value=value; bookingFormState.christmasManualAddress=value;
-                    markChristmasManualReview(value); // Respaldo: aunque la búsqueda falle, la solicitud no se pierde.
-                    if(manualResults) manualResults.innerHTML='';
-                    const original=manualSearchBtn.innerHTML; manualSearchBtn.disabled=true; manualSearchBtn.innerHTML='<div class="loading-spinner !w-4 !h-4 !border-2 inline-block mr-2"></div> Buscando lugar…';
-                    const revision=++locationRevision;
-                    const places=await searchChristmasPlaces(value,placeType);
-                    manualSearchBtn.disabled=false; manualSearchBtn.innerHTML=original;
-                    if(revision!==locationRevision || !bForm.isConnected || input.value.trim()!==value || String(bForm.elements.christmasReference?.value||'').trim()!==reference) return;
-                    if(!places.length){
-                        if(manualResults) manualResults.innerHTML=placeSearchFallback(value);
-                        return showToast('No encontramos el lugar automáticamente, pero puedes continuar.','info');
-                    }
-                    if(places.length===1){ await chooseChristmasPlace(places[0],input); return; }
-                    if(manualResults){
-                        manualResults.innerHTML=`<p class="text-[10px] font-black uppercase tracking-wider season-text-muted">Selecciona el lugar correcto</p>${places.map((place,i)=>`<button type="button" data-christmas-place-index="${i}" class="w-full rounded-xl border border-[var(--s-glass-border)] bg-black/5 px-3 py-2.5 text-left active:scale-[.99]"><span class="block text-xs font-black season-text-title">${cleanStr(place.displayName).split(',')[0]||'Lugar encontrado'}</span><span class="block mt-1 text-[9px] season-text-muted line-clamp-2">${cleanStr(place.displayName)}</span></button>`).join('')}`;
-                        manualResults.querySelectorAll('[data-christmas-place-index]').forEach(btn=>btn.onclick=()=>chooseChristmasPlace(places[Number(btn.dataset.christmasPlaceIndex)||0],input));
-                    }
-                    showToast('Encontramos varias opciones. Selecciona la correcta.','info');
                 };
                 for(const prefix of ['normal','christmas']){
                     const input=document.getElementById(prefix+'-manual-address');
                     if(input) input.oninput=()=>{
                         locationRevision++;
                         bookingFormState[prefix+'ManualAddress']=input.value;
-                        document.getElementById(prefix+'-place-results').innerHTML='';
                         (prefix==='christmas'?markChristmasManualReview:markNormalManualReview)(input.value);
                         if(prefix==='normal'){
                             const value=input.value.trim(),revision=locationRevision;
@@ -2903,12 +2693,6 @@ function placeSearchFallback(value) {
                             }):Promise.resolve();
                         }
                     };
-                }
-                for(const prefix of ['normal','christmas']){
-                    bForm.elements[prefix+'Reference']?.addEventListener('input',()=>{
-                        // Ignore candidates from an earlier venue name without interrupting GPS capture.
-                        document.getElementById(prefix+'-place-results').innerHTML='';
-                    });
                 }
                 const locationContinue=document.querySelector('[data-location-continue]');
                 if(locationContinue) locationContinue.onclick=async()=>{
