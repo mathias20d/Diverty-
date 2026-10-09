@@ -444,3 +444,14 @@ body.diverty-site #calendar-bottom-box > .flex > div { font-size:9px; letter-spa
 @media (min-width:1024px) and (prefers-reduced-motion:reduce) {
  body.diverty-site #headerWrapper { transition:none; }
 }
+
+/* Restore the opening copy and calls to action to a generous desktop scale. */
+@media (min-width:1024px) {
+ body.diverty-site #hero-section-identifier > .relative > section { min-height:680px; padding:160px 0 44px; }
+ body.diverty-site #hero-section-identifier .hero-content h1 { max-width:760px; font-size:clamp(48px,4.5vw,60px); line-height:1.12; letter-spacing:-.025em; margin-bottom:22px; }
+ body.diverty-site #hero-section-identifier .hero-content > p { max-width:680px; font-size:18px; line-height:1.65; margin-bottom:26px; }
+ body.diverty-site #hero-section-identifier .hero-content > div.flex.justify-between { max-width:680px; padding:18px 0; margin-bottom:26px; }
+ body.diverty-site #hero-section-identifier .hero-content > div.flex.flex-col.gap-3 { max-width:680px; gap:16px; }
+ body.diverty-site #hero-section-identifier .hero-content button { min-height:58px; padding:16px 20px!important; font-size:16px; }
+ body.diverty-site #hero-section-identifier .hero-content > div:first-child { font-size:12px; }
+}

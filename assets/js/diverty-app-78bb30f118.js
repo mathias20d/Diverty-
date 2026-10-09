@@ -853,6 +853,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             clearTimeout(window.__divertyCartAnimTimer);
 
             if(shouldOpen) {
+                hw?.classList.remove('desktop-header-hidden');
                 toggleMobileMenu(false, false, true);
 
                 // Pausa el video mientras el carrito está abierto:
@@ -4478,7 +4479,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                         const delta = position - headerScrollPosition;
                         if (hw && desktopHeaderQuery.matches) {
                             const menuOpen = document.getElementById('desktopCatalogMenu')?.open;
-                            if (position < 140 || menuOpen || hw.contains(document.activeElement) || delta < -6) {
+                            if (position < 140 || menuOpen || document.getElementById('cartModal')?.classList.contains('show') || hw.contains(document.activeElement) || delta < -6) {
                                 hw.classList.remove('desktop-header-hidden');
                             } else if (delta > 6) {
                                 hw.classList.add('desktop-header-hidden');
