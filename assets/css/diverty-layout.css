@@ -406,8 +406,8 @@ body:has(.portal-page) .whatsapp-container { position:static!important; margin:1
 }
 
 /* Featured offers form a compact grid without oversized carousel cards. */
-body.diverty-site #home-featured-wrapper { max-width:1120px; margin-top:8px; }
-body.diverty-site #home-featured-wrapper .home-featured-track { display:grid!important; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px!important; overflow:visible!important; padding-top:12px!important; align-items:start!important; }
+body.diverty-site #home-featured-wrapper { width:100%!important; max-width:1120px!important; margin-top:8px; }
+body.diverty-site #home-featured-wrapper .home-featured-track { display:grid!important; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px!important; overflow:visible!important; padding-top:12px!important; align-items:start!important; margin-inline:0!important; }
 body.diverty-site #home-featured-wrapper .featured-offer-shell { width:100%!important; max-width:350px!important; min-width:0; padding-top:0!important; margin:0 auto!important; }
 body.diverty-site #home-featured-wrapper .featured-offer-card { padding:10px!important; border-radius:18px!important; }
 body.diverty-site #home-featured-wrapper .featured-offer-card .relative.w-full.h-40,
