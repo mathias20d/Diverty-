@@ -34,6 +34,7 @@ const server=http.createServer((req,res)=>{
       {id:'face',nombre:'Pintacaritas',categoria:'extras',tipoCobro:'hora',precio:40,imagen:'/test-media/face.jpg'},
       {id:'character',nombre:'Personaje temático de prueba',categoria:'personajes',tipoServicio:'personaje',tematica:'Fantasía',precio:80,imagen:'/test-media/face.jpg'}],
      galeria_web:[{id:'photo',image:'https://res.cloudinary.com/demo/image/upload/v1/plan.jpg'}],
+     campanas_web:[{id:'promo-test',activo:true,destacada:true,titulo:'Celebración especial Diverty',descripcion:'Animación y actividades para compartir en familia.',imagen:'https://res.cloudinary.com/demo/image/upload/v1/plan.jpg',precio:150,precioOriginal:180,incluye:['Animación infantil','Juegos y concursos','Globoflexia','Pintacaritas','Música infantil','Duración 2 horas']}],
     };
     // Real Cloudinary-shaped URLs exercise browser srcset selection; one local
     // service photo retains coverage for externally hosted/untransformed images.
@@ -73,6 +74,16 @@ const server=http.createServer((req,res)=>{
     const ready=async()=>{await page.waitForFunction(()=>window.catalogLoaded===true);await page.waitForLoadState('networkidle');await page.evaluate(()=>document.fonts.ready);};
     const shot=async name=>{if(artifact){fs.mkdirSync(artifact,{recursive:true});await page.screenshot({path:path.join(artifact,`${theme}-${width}-${name}.png`)});}};
     await page.goto(origin);await ready();await shot('home');
+    const campaign=page.locator('.campaign-featured-card-wrap');
+    await campaign.scrollIntoViewIfNeeded();await page.evaluate(()=>document.fonts.ready);await shot('campaign');
+    assert.equal(await campaign.locator('li').count(),6,'compact promotions retain all inclusions');
+    const campaignBox=await campaign.boundingBox();assert.ok(campaignBox.width<=900);
+    if(width>=768)assert.ok(campaignBox.height<450,'the desktop promotion fits in a compact panel');
+    else assert.ok((await campaign.locator('.campaign-featured-image').boundingBox()).height<=161);
+    await campaign.locator('[data-action="add-to-cart"]').click();
+    await page.locator('#cartModal').waitFor({state:'visible'});
+    assert.ok((await page.locator('#cartItems').innerText()).includes('Celebración especial Diverty'));
+    await page.locator('#viewCart').click();await page.evaluate(()=>scrollTo(0,0));
     if(!baseline){
      assert.ok(await page.locator('.hero-content').evaluate(el=>el.getBoundingClientRect().top>=document.querySelector('#headerWrapper').getBoundingClientRect().bottom),'the header must not cover the hero copy');
      if(theme==='custom')assert.equal(await page.locator('.hero-content .season-btn').evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(18, 52, 86)');

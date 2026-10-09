@@ -228,6 +228,24 @@ body.diverty-site #desktopNav .nav-link { font-size:13px; font-weight:600; }
   .catalog-detail-cart,.catalog-detail-button-row .direct-booking-btn { min-height:44px; padding:10px 6px; font-size:12px; gap:6px; }
   .catalog-detail-cart svg,.catalog-detail-button-row .direct-booking-btn svg { flex-shrink:0; width:16px; height:16px; }
 }
+/* Promotions keep their complete content inside a smaller, balanced panel. */
+body.diverty-site #home-campaigns-wrapper { max-width:900px; }
+body.diverty-site #home-campaigns-wrapper > .container { margin-bottom:24px; gap:16px; }
+body.diverty-site #home-campaigns-wrapper .campaign-featured-card-wrap { margin-top:14px; padding-top:30px!important; }
+body.diverty-site #home-campaigns-wrapper .campaign-featured-badge { min-height:24px; padding:5px 12px!important; font-size:10px!important; }
+body.diverty-site #home-campaigns-wrapper .campaign-featured-card-wrap > .glass-panel { height:auto; min-height:0; border-radius:20px!important; }
+body.diverty-site #home-campaigns-wrapper .campaign-featured-content { padding:16px!important; }
+body.diverty-site #home-campaigns-wrapper .campaign-main-title { margin:0 0 10px!important; padding:8px 10px!important; font-size:19px!important; line-height:1.25!important; }
+body.diverty-site #home-campaigns-wrapper .direct-booking-actions { gap:8px; }
+body.diverty-site #home-campaigns-wrapper .direct-booking-actions button { min-height:42px; padding:10px 12px!important; font-size:11px; border-radius:12px; }
+@media (min-width:768px) {
+  body.diverty-site #home-campaigns-wrapper .campaign-featured-image { width:34%; height:240px; min-height:0; align-self:center; padding:16px!important; }
+  body.diverty-site #home-campaigns-wrapper .campaign-featured-content ul { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 12px; padding:10px; }
+  body.diverty-site #home-campaigns-wrapper .campaign-featured-content li { margin:0!important; }
+}
+@media (max-width:767px) {
+  body.diverty-site #home-campaigns-wrapper .campaign-featured-card-wrap .campaign-featured-image { height:160px!important; min-height:160px!important; }
+}
 /* Contact remains available below the catalog instead of covering purchase actions. */
 body:has(.catalog-grid-page,.catalog-detail-page) .whatsapp-container { position:static!important; margin:16px auto; width:fit-content; }
 @media (max-width:380px) {
