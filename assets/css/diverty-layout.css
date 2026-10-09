@@ -404,3 +404,21 @@ body:has(.portal-page) .whatsapp-container { position:static!important; margin:1
   .portal-event-details > div { gap:7px; }
   .portal-event-details strong { font-size:13px; }
 }
+
+/* Featured offers form a compact grid without oversized carousel cards. */
+body.diverty-site #home-featured-wrapper { max-width:1120px; margin-top:8px; }
+body.diverty-site #home-featured-wrapper .home-featured-track { display:grid!important; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px!important; overflow:visible!important; padding-top:12px!important; align-items:start!important; }
+body.diverty-site #home-featured-wrapper .featured-offer-shell { width:100%!important; max-width:350px!important; min-width:0; padding-top:0!important; margin:0 auto!important; }
+body.diverty-site #home-featured-wrapper .featured-offer-card { padding:10px!important; border-radius:18px!important; }
+body.diverty-site #home-featured-wrapper .featured-offer-card .relative.w-full.h-40,
+body.diverty-site #home-featured-wrapper .featured-offer-card .relative.w-full.h-40 img { height:160px!important; min-height:160px!important; max-height:160px!important; border-radius:12px!important; }
+body.diverty-site #home-featured-wrapper .featured-offer-card h3 { font-size:19px!important; line-height:1.2!important; }
+body.diverty-site #home-featured-wrapper .featured-offer-card .absolute.bottom-0 { padding:12px!important; }
+body.diverty-site #home-featured-wrapper .featured-offer-benefits > summary { min-height:46px!important; padding:8px 10px; }
+body.diverty-site #home-featured-wrapper .featured-offer-card .season-gradient-text { font-size:26px!important; }
+body.diverty-site #home-featured-wrapper .direct-booking-actions { gap:8px; }
+body.diverty-site #home-featured-wrapper .direct-booking-actions button { min-height:42px!important; padding:10px 8px!important; font-size:11px!important; border-radius:12px!important; }
+@media(max-width:767px) {
+ body.diverty-site #home-featured-wrapper .home-featured-track { grid-template-columns:1fr; }
+ body.diverty-site #home-featured-wrapper > .flex.md\:hidden { display:none; }
+}
