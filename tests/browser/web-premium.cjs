@@ -74,6 +74,14 @@ const server=http.createServer((req,res)=>{
     const ready=async()=>{await page.waitForFunction(()=>window.catalogLoaded===true);await page.waitForLoadState('networkidle');await page.evaluate(()=>document.fonts.ready);};
     const shot=async name=>{if(artifact){fs.mkdirSync(artifact,{recursive:true});await page.screenshot({path:path.join(artifact,`${theme}-${width}-${name}.png`)});}};
     await page.goto(origin);await ready();await shot('home');
+    await page.locator('#calendar-section').scrollIntoViewIfNeeded();
+    await page.locator('#nextMonth').click();
+    await page.locator('#calendar-section .calendar-day[data-action="select-date"]').first().click();
+    await page.locator('#calendar-bottom-box [data-action="confirm-date"]').waitFor({state:'visible'});
+    assert(await page.locator('#calendar-section .calendar-day.is-selected').count()===1,'Calendar highlights the selected date');
+    await shot('calendar');
+    await page.evaluate(()=>scrollTo(0,0));
+
     const campaign=page.locator('.campaign-featured-card-wrap');
     await campaign.scrollIntoViewIfNeeded();await page.evaluate(()=>document.fonts.ready);await shot('campaign');
     assert.equal(await campaign.locator('li').count(),6,'compact promotions retain all inclusions');
