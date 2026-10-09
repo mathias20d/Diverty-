@@ -190,11 +190,25 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
     assert.deepEqual(closedPicker.errors,[]);
     console.log('PASS: closed dates remain visible and disabled in both calendars; reopening synchronizes without a new deployment.');
 
-    const desktop=await fixture({width:1280});await desktop.page.goto(origin+'/?vista=catalog');await desktop.ready();
-    const desktopLayout=await desktop.page.evaluate(()=>({nav:document.querySelector('#desktopNav').getBoundingClientRect().toJSON(),logo:document.querySelector('#mainHeaderLogo').getBoundingClientRect().toJSON()}));
-    assert.ok(desktopLayout.nav.top>=desktopLayout.logo.bottom);
-    assert.ok(desktopLayout.nav.right<=1280);
-    assert.deepEqual(desktop.errors,[]);console.log('PASS: menú de escritorio sin solaparse con el logo.');
+    for(const width of [1024,1280,1366,1920]){
+      const desktop=await fixture({width});await desktop.page.goto(origin+'/?vista=catalog');await desktop.ready();
+      const desktopLayout=await desktop.page.evaluate(()=>({nav:document.querySelector('#desktopNav').getBoundingClientRect().toJSON(),logo:document.querySelector('#mainHeaderLogo').getBoundingClientRect().toJSON(),header:document.querySelector('#headerWrapper').getBoundingClientRect().bottom,heading:document.querySelector('.catalog-grid-heading').getBoundingClientRect().top,overflow:document.documentElement.scrollWidth-innerWidth}));
+      assert.ok(desktopLayout.logo.right<=desktopLayout.nav.left,'logo and navigation have separate space');
+      assert.ok(desktopLayout.nav.right<=width);
+      assert.ok(desktopLayout.header<=112,'the desktop header leaves room for the page');
+      assert.ok(desktopLayout.heading>=desktopLayout.header,'catalog headings remain readable below the header');
+      assert.ok(desktopLayout.overflow<=1);
+      const menu=desktop.page.locator('#desktopCatalogMenu'),summary=menu.locator('summary');
+      await summary.click();await desktop.page.locator('#navCat_fiestas').waitFor({state:'visible'});
+      const option=await desktop.page.locator('#navCat_fiestas').boundingBox();assert.ok(option.x>=0&&option.x+option.width<=width);
+      await desktop.page.keyboard.press('Escape');assert.equal(await menu.getAttribute('open'),null);
+      assert.ok(await summary.evaluate(el=>el===document.activeElement));
+      await summary.click();await desktop.page.locator('#navCat_fiestas').click();await desktop.page.locator('.catalog-tile').waitFor();
+      assert.equal(await menu.getAttribute('open'),null,'selecting a category closes its menu');
+      await summary.click();await desktop.page.locator('.catalog-grid-heading').click();assert.equal(await menu.getAttribute('open'),null,'clicking the page closes the menu');
+      assert.deepEqual(desktop.errors,[]);
+    }
+    console.log('PASS: cabecera compacta en cuatro tamaños de PC, categorías, Escape y cierre al navegar.');
 
     const cart=await fixture();await cart.page.goto(origin+'/?plan=plan-test');await cart.ready();
     await cart.page.locator('[data-action="add-to-cart"][data-item-id="plan-test"]').first().click();

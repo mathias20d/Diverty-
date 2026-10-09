@@ -81,7 +81,7 @@ const server=http.createServer((req,res)=>{
     assert.equal(await page.locator('h1').count(),1);
     await page.goto(origin+'/?vista=catalog');await ready();await shot('categories');
     const cachedCategoryPhotos=await page.locator('.catalog-category-media img').evaluateAll(images=>images.filter(img=>img.complete&&img.naturalWidth>0).map(img=>img.currentSrc));
-    await page.locator('.catalog-category-card[data-target-section="cat_fiestas"]').click();await page.locator('.catalog-tile').first().waitFor();await page.waitForTimeout(120);await shot('services');
+    await page.locator('.catalog-category-card[data-target-section="cat_fiestas"]').click();await page.locator('.catalog-tile').first().waitFor();await page.evaluate(()=>document.fonts.ready);await page.waitForTimeout(120);await shot('services');
     const layout=await page.evaluate(()=>{
      const rect=e=>{const b=e.getBoundingClientRect();return {width:b.width,height:b.height,x:b.x,y:b.y};};
      const card=document.querySelector('.catalog-tile'),body=card.querySelector('.catalog-tile-body'),name=card.querySelector('h3');

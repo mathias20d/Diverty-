@@ -744,8 +744,8 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             return url.replace(marker, marker + transform);
         };
 
-        const catalogSizes = '(max-width:380px) calc((100vw - 44px) / 2), (max-width:767px) calc((100vw - 54px) / 2), (max-width:1199px) calc((100vw - 88px) / 3), 262px';
-        const categorySizes = '(max-width:380px) calc((100vw - 44px) / 2), (max-width:767px) calc((100vw - 54px) / 2), (max-width:1159px) calc((100vw - 88px) / 3), 357px';
+        const catalogSizes = '(max-width:380px) calc((100vw - 44px) / 2), (max-width:767px) calc((100vw - 54px) / 2), (max-width:1023px) calc((100vw - 88px) / 3), (max-width:1159px) calc((100vw - 94px) / 4), 267px';
+        const categorySizes = catalogSizes;
         function imageAttributes(value,sizes,options={}) {
             const image=responsiveImage(value,options);
             const original=cleanStr(value);
@@ -1177,9 +1177,11 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             const dNav = document.getElementById('desktopNav');
             if (dNav) {
                 let dHtml = `<button id="navHome" data-target-section="home" class="nav-link nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 season-text-primary"></i>Inicio</button>`;
+                dHtml += `<details id="desktopCatalogMenu" class="desktop-catalog-menu"><summary><i data-lucide="layout-grid" class="w-4 h-4 season-text-primary"></i>Catálogo<i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></summary><div class="desktop-catalog-options">`;
                 dynamicCategories.forEach(c => {
                     if (isCategoryCurrentlyVisible(c)) dHtml += `<button id="navCat_${c.id}" data-target-section="cat_${c.id}" class="nav-link nav-action"><i data-lucide="${getCatalogIcon(c)}" class="w-4 h-4 mr-2 season-text-primary"></i>${c.nombre}</button>`;
                 });
+                dHtml += `</div></details><button data-target-section="portal" class="nav-link nav-action"><i data-lucide="search" class="w-4 h-4 mr-2 season-text-primary"></i>Mi reserva</button>`;
                 dHtml += `<button id="navGallery" data-target-section="gallery" class="nav-link nav-action"><i data-lucide="image" class="w-4 h-4 mr-2 text-emerald-500"></i>Galería</button>
                           <button id="navBooking" data-target-section="booking" class="season-btn nav-action text-white shadow-md ml-2 py-2 px-4 rounded-full flex items-center font-bold text-sm"><i data-lucide="calendar-check" class="w-4 h-4 mr-1.5"></i>Reservar</button>`;
                 dNav.innerHTML = dHtml;
@@ -4423,6 +4425,14 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             setTimeout(() => { window.scrollTo({ top: 0, behavior: 'instant' }); }, 50);
             
             document.body.addEventListener('click', handleGlobalClick);
+            document.body.addEventListener('click', e => {
+                const menu = document.getElementById('desktopCatalogMenu');
+                if (menu?.open && (!menu.contains(e.target) || e.target.closest('.nav-action'))) menu.open = false;
+            });
+            document.addEventListener('keydown', e => {
+                const menu = document.getElementById('desktopCatalogMenu');
+                if (e.key === 'Escape' && menu?.open) { menu.open = false; menu.querySelector('summary')?.focus(); }
+            });
             
             const header=document.getElementById('headerWrapper');
             const measureHeader=()=>{if(header) document.documentElement.style.setProperty('--diverty-header-bottom',`${Math.ceil(header.getBoundingClientRect().bottom)+8}px`);};
