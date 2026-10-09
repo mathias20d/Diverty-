@@ -4462,11 +4462,30 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             }
             
             let ticking = false;
+            let headerScrollPosition = Math.max(0, window.scrollY);
+            const desktopHeaderQuery = window.matchMedia('(min-width:1024px)');
+            desktopHeaderQuery.addEventListener('change', () => {
+                header?.classList.remove('desktop-header-hidden');
+                headerScrollPosition = Math.max(0, window.scrollY);
+            });
+            header?.addEventListener('focusin', () => header.classList.remove('desktop-header-hidden'));
             window.addEventListener('scroll', () => { 
                 if (!ticking) {
                     window.requestAnimationFrame(() => {
                         const hw = document.getElementById('headerWrapper'); 
                         if(hw) window.scrollY > 50 ? hw.classList.add('scrolled') : hw.classList.remove('scrolled');
+                        const position = Math.max(0, window.scrollY);
+                        const delta = position - headerScrollPosition;
+                        if (hw && desktopHeaderQuery.matches) {
+                            const menuOpen = document.getElementById('desktopCatalogMenu')?.open;
+                            if (position < 140 || menuOpen || hw.contains(document.activeElement) || delta < -6) {
+                                hw.classList.remove('desktop-header-hidden');
+                            } else if (delta > 6) {
+                                hw.classList.add('desktop-header-hidden');
+                            }
+                        }
+                        if (Math.abs(delta) > 6 || position < 140) headerScrollPosition = position;
+
                         ticking = false;
                     });
                     ticking = true;

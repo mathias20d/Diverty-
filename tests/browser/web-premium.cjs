@@ -74,6 +74,17 @@ const server=http.createServer((req,res)=>{
     const ready=async()=>{await page.waitForFunction(()=>window.catalogLoaded===true);await page.waitForLoadState('networkidle');await page.evaluate(()=>document.fonts.ready);};
     const shot=async name=>{if(artifact){fs.mkdirSync(artifact,{recursive:true});await page.screenshot({path:path.join(artifact,`${theme}-${width}-${name}.png`)});}};
     await page.goto(origin);await ready();await shot('home');
+    await page.evaluate(()=>scrollTo(0,400));
+    if(width>=1024) {
+      await page.waitForFunction(()=>document.querySelector('#headerWrapper').classList.contains('desktop-header-hidden'));
+      await page.evaluate(()=>scrollTo(0,200));
+      await page.waitForFunction(()=>!document.querySelector('#headerWrapper').classList.contains('desktop-header-hidden'));
+    } else {
+      await page.waitForTimeout(300);
+      assert(!await page.locator('#headerWrapper').evaluate(el=>el.classList.contains('desktop-header-hidden')),'Mobile header keeps its existing scroll behavior');
+    }
+    await page.evaluate(()=>scrollTo(0,0));
+
     await page.locator('#calendar-section').scrollIntoViewIfNeeded();
     await page.locator('#nextMonth').click();
     await page.locator('#calendar-section .calendar-day[data-action="select-date"]').first().click();
@@ -86,8 +97,8 @@ const server=http.createServer((req,res)=>{
     await campaign.scrollIntoViewIfNeeded();await page.evaluate(()=>document.fonts.ready);await shot('campaign');
     assert.equal(await campaign.locator('li').count(),6,'compact promotions retain all inclusions');
     const campaignBox=await campaign.boundingBox();assert.ok(campaignBox.width<=900);
-    if(width>=768)assert.ok(campaignBox.height<450,'the desktop promotion fits in a compact panel');
-    else assert.ok((await campaign.locator('.campaign-featured-image').boundingBox()).height<=161);
+    if(width>=1024)assert.ok(campaignBox.height<450,'the desktop promotion fits in a compact panel');
+    else assert.ok((await campaign.locator('.campaign-featured-image').boundingBox()).height===245);
     await campaign.locator('[data-action="add-to-cart"]').click();
     await page.locator('#cartModal').waitFor({state:'visible'});
     assert.ok((await page.locator('#cartItems').innerText()).includes('Celebración especial Diverty'));

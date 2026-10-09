@@ -228,6 +228,7 @@ body.diverty-site #desktopNav .nav-link { font-size:13px; font-weight:600; }
   .catalog-detail-cart,.catalog-detail-button-row .direct-booking-btn { min-height:44px; padding:10px 6px; font-size:12px; gap:6px; }
   .catalog-detail-cart svg,.catalog-detail-button-row .direct-booking-btn svg { flex-shrink:0; width:16px; height:16px; }
 }
+@media (min-width:1024px) {
 /* Promotions keep their complete content inside a smaller, balanced panel. */
 body.diverty-site #home-campaigns-wrapper { max-width:900px; }
 body.diverty-site #home-campaigns-wrapper > .container { margin-bottom:24px; gap:16px; }
@@ -243,8 +244,6 @@ body.diverty-site #home-campaigns-wrapper .direct-booking-actions button { min-h
   body.diverty-site #home-campaigns-wrapper .campaign-featured-content ul { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px 12px; padding:10px; }
   body.diverty-site #home-campaigns-wrapper .campaign-featured-content li { margin:0!important; }
 }
-@media (max-width:767px) {
-  body.diverty-site #home-campaigns-wrapper .campaign-featured-card-wrap .campaign-featured-image { height:160px!important; min-height:160px!important; }
 }
 /* Contact remains available below the catalog instead of covering purchase actions. */
 body:has(.catalog-grid-page,.catalog-detail-page) .whatsapp-container { position:static!important; margin:16px auto; width:fit-content; }
@@ -405,6 +404,7 @@ body:has(.portal-page) .whatsapp-container { position:static!important; margin:1
   .portal-event-details strong { font-size:13px; }
 }
 
+@media (min-width:1024px) {
 /* Featured offers form a compact grid without oversized carousel cards. */
 body.diverty-site #home-featured-wrapper { width:100%!important; max-width:1120px!important; margin-top:8px; }
 body.diverty-site #home-featured-wrapper .home-featured-track { display:grid!important; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px!important; overflow:visible!important; padding-top:12px!important; align-items:start!important; margin-inline:0!important; }
@@ -418,11 +418,6 @@ body.diverty-site #home-featured-wrapper .featured-offer-benefits > summary { mi
 body.diverty-site #home-featured-wrapper .featured-offer-card .season-gradient-text { font-size:26px!important; }
 body.diverty-site #home-featured-wrapper .direct-booking-actions { gap:8px; }
 body.diverty-site #home-featured-wrapper .direct-booking-actions button { min-height:42px!important; padding:10px 8px!important; font-size:11px!important; border-radius:12px!important; }
-@media(max-width:767px) {
- body.diverty-site #home-featured-wrapper .home-featured-track { grid-template-columns:1fr; }
- body.diverty-site #home-featured-wrapper > .flex.md\:hidden { display:none; }
-}
-
 /* A restrained calendar surface with clear dates and compact availability. */
 body.diverty-site #calendar-section { margin-top:24px!important; padding:0 0 24px!important; }
 body.diverty-site #calendar-section > div { width:100%; max-width:400px; padding-inline:0; }
@@ -438,4 +433,14 @@ body.diverty-site #calendar-section .calendar-day { min-height:36px; border-radi
 body.diverty-site #calendar-section .calendar-day:focus-visible { outline:2px solid var(--s-primary); outline-offset:2px; }
 body.diverty-site #calendar-bottom-box > .flex { gap:8px; padding-top:12px; margin-top:14px; }
 body.diverty-site #calendar-bottom-box > .flex > div { font-size:9px; letter-spacing:0; padding:5px 7px; background:transparent!important; border:0!important; box-shadow:none!important; }
-@media(max-width:380px) { body.diverty-site #calendar-card-inner { padding:14px!important; } }
+
+}
+
+@media (min-width:1024px) {
+ body.diverty-site #headerWrapper { transition:transform .24s ease,opacity .24s ease; }
+ body.diverty-site #headerWrapper.desktop-header-hidden { transform:translateY(-110%); opacity:0; pointer-events:none; }
+ body.diverty-site #headerWrapper:focus-within { transform:translateY(0); opacity:1; pointer-events:auto; }
+}
+@media (min-width:1024px) and (prefers-reduced-motion:reduce) {
+ body.diverty-site #headerWrapper { transition:none; }
+}
