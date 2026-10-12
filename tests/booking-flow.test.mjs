@@ -24,6 +24,16 @@ test('booking atomically writes the event, customer status, public availability 
   assert.equal(Object.keys(c.ctx.bookingFormState).length,0);
 });
 
+test('WhatsApp registration follows a saved booking, requires consent and cannot fail the reservation',async()=>{
+  const database=store(),c=client(database);let calls=0;
+  c.values.whatsappConsent='on';
+  c.ctx.queueWhatsappConfirmation=async id=>{calls++;assert.ok(database.rows.has(base+'eventos/'+id));throw new Error('Unavailable');};
+  await c.submit();assert.equal(calls,1);assert.ok(c.messages.some(message=>message.kind==='success'));
+  assert.ok(c.messages.some(message=>/solicitud se guardó/.test(message.text||'')));
+  const noConsent=client(store());noConsent.ctx.queueWhatsappConfirmation=async()=>{throw new Error('must not run');};await noConsent.submit();
+  assert.ok(noConsent.messages.some(message=>message.kind==='success'));
+});
+
 test('concurrent requests cannot both claim the last slot and the rejected client sees the full-slot message', async () => {
   const db = store();
   db.rows.set(base + 'config_web/global', { capacidadSimultanea: 1 });

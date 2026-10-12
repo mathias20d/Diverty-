@@ -1,7 +1,9 @@
+import {defineSecret} from 'firebase-functions/params';
+import {whatsappBookings,sendWhatsappTemplate,WHATSAPP_JOBS} from './whatsapp-booking.mjs';
 import {initializeApp} from 'firebase-admin/app';
 import {getFirestore} from 'firebase-admin/firestore';
 import {onCall,HttpsError} from 'firebase-functions/v2/https';
-import {onDocumentWritten} from 'firebase-functions/v2/firestore';
+import {onDocumentCreated,onDocumentWritten} from 'firebase-functions/v2/firestore';
 import {customerPortalService} from './portal-service.mjs';
 import {PortalError} from './portal-policy.mjs';
 import {bookingService} from './service.mjs';
@@ -35,4 +37,10 @@ export const lookupCustomerReservations=onCall(options,async request=>{
 });
 export const syncCustomerPortal=onDocumentWritten({...options,retry:true,document:'artifacts/diverty-oficial/public/data/eventos/{reservationId}'},async event=>{
   await portal.sync(event.params.reservationId);
+});
+
+const whatsappToken=defineSecret('DIVERTY_WHATSAPP_ACCESS_TOKEN');
+export const sendBookingWhatsApp=onDocumentCreated({...options,secrets:[whatsappToken],retry:true,document:`${WHATSAPP_JOBS}/{reservationId}`},async event=>{
+  const config={token:whatsappToken.value(),phoneNumberId:process.env.DIVERTY_WHATSAPP_PHONE_NUMBER_ID,apiVersion:process.env.DIVERTY_WHATSAPP_API_VERSION,template:process.env.DIVERTY_WHATSAPP_TEMPLATE,language:process.env.DIVERTY_WHATSAPP_LANGUAGE||'es'};
+  await whatsappBookings(getFirestore()).deliver(event.params.reservationId,reservation=>sendWhatsappTemplate(reservation,config));
 });

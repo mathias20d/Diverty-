@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import { readFileSync } from 'node:fs';
 import { prepareBookingAttempt, readBookingReceipt } from '../../assets/js/diverty-booking-state.mjs';
+import {queueWhatsappConfirmation} from '../../assets/js/diverty-whatsapp-confirmation.mjs';
 
 const source = readFileSync(new URL('../../assets/js/diverty-app-78bb30f118.js', import.meta.url), 'utf8');
 const start = source.indexOf('async function handleBookingSubmit(e)');
@@ -67,7 +68,7 @@ function client(database, name = 'Cliente de prueba') {
     getDocs: async q => ({ docs: [...database.rows.entries()]
       .filter(([ref, row]) => ref.startsWith(q.ref + '/') && row.fecha === values.date)
       .map(([ref, row]) => snapshot(ref.split('/').pop(), row)) }),
-    runTransaction: database.runTransaction, prepareBookingAttempt, readBookingReceipt,
+    runTransaction: database.runTransaction, prepareBookingAttempt, readBookingReceipt, queueWhatsappConfirmation,
     fetchWithTimeout: async p => p, fetch: async () => ({ ok: true }),
     isBlockingEvent: v => !/cancelad|rechaz|cot/i.test(v.estado || ''),
     bookedEventsMonthCache: new Map(), routeEventsMonthCache: new Map(),
