@@ -300,6 +300,9 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       const prefix=christmas?'christmas':'normal';
       assert.equal(await gps.page.locator(`[data-${prefix}-location-mode]`).first().getAttribute(`data-${prefix}-location-mode`),'gps');
       if(!christmas){assert.equal(await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).getAttribute('aria-pressed'),'true');assert.equal(await gps.page.locator(`#${prefix}-gps-panel`).isVisible(),true);assert.equal(await gps.page.locator(`#${prefix}-manual-address`).isVisible(),false);}
+      // Refresh the emulated timestamp after filling the form: real stale fixes
+      // are deliberately rejected, and a slower Windows run can exceed 5s here.
+      await gps.context.setGeolocation({latitude:9.0128,longitude:-79.5018,accuracy:80});
       await gps.page.locator(`[data-${prefix}-location-mode="gps"]`).click();
       await gps.page.getByRole('dialog',{name:'Buscando ubicación…'}).waitFor();
       await gps.page.waitForFunction(prefix=>document.querySelector(`#${prefix}-location-status`).textContent.includes('±80 m'),prefix);

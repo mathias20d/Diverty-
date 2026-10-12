@@ -1,19 +1,20 @@
-import {serviceDurationHours} from './diverty-service-duration.mjs';
-import {responsiveImage,imageFallbackUrl} from './diverty-images.mjs';
-import {readMapsLocation,shortMapsUrl,mapsLocationFromUrl} from './diverty-maps-link.mjs';
-import {requestCustomerPortal} from './diverty-portal-api.mjs?v=0d2428d94f21';
-import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=8b19069e9f53';
-import { isClosedBookingDate } from './diverty-date-availability.mjs?v=79d415724694';
-import { catalogQuantityLimits, clampCatalogQuantity } from './diverty-catalog-product.mjs?v=997168bfeec5';
-import { resolveTheme, themeControlsCss } from './diverty-theme-options.mjs?v=d9e520083145';
+import {serviceDurationHours} from './diverty-service-duration.mjs?v=6f70f5b24c56';
+import {responsiveImage,imageFallbackUrl} from './diverty-images.mjs?v=64d519d228f7';
+import {readMapsLocation,shortMapsUrl,mapsLocationFromUrl} from './diverty-maps-link.mjs?v=f39acfc459a8';
+import {requestCustomerPortal} from './diverty-portal-api.mjs?v=f60c0331f0df';
+import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=ed78a5cc7297';
+import { isClosedBookingDate } from './diverty-date-availability.mjs?v=eb035e69cbda';
+import { catalogQuantityLimits, clampCatalogQuantity } from './diverty-catalog-product.mjs?v=e03151084326';
+import { browseCatalog } from './diverty-catalog-browser.mjs?v=39e5baad64ec';
+import { resolveTheme, themeControlsCss } from './diverty-theme-options.mjs?v=217509ea6290';
 const isThemePreview=location.pathname==='/theme-preview.html'&&window.__DIVERTY_THEME_PREVIEW__===true;
 let previewTheme=null;
-import { gpsPointFromText } from './diverty-gps-point.mjs?v=1fb92a5943a5';
-import { capturePreciseGps, gpsAccuracyMessage } from './diverty-gps-capture.mjs?v=832eee9812fc';
-import { needsPlaceReference } from './diverty-location-reference.mjs?v=89e3fe00c169';
-import { peakResourceUsage } from './diverty-resource-usage.mjs?v=9191a8365a60';
-import { prepareBookingAttempt, readBookingReceipt, isNormalDayFullyBooked, readBrowserStorage, writeBrowserStorage } from './diverty-booking-state.mjs?v=de97c2385636';
-import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=547ea6fb13e5';
+import { gpsPointFromText } from './diverty-gps-point.mjs?v=126f0b271d88';
+import { capturePreciseGps, gpsAccuracyMessage } from './diverty-gps-capture.mjs?v=e01d4b810953';
+import { needsPlaceReference } from './diverty-location-reference.mjs?v=e666d9364da4';
+import { peakResourceUsage } from './diverty-resource-usage.mjs?v=cd3d0ce00dff';
+import { prepareBookingAttempt, readBookingReceipt, isNormalDayFullyBooked, readBrowserStorage, writeBrowserStorage } from './diverty-booking-state.mjs?v=f9ab11e6559b';
+import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=e6350f9ee660';
 
 function captureBookingGps(form, isCurrent, onProgress) {
     const search = capturePreciseGps({ isCurrent, onProgress });
@@ -119,7 +120,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             if(isThemePreview)throw new Error('Theme preview is read-only');
             if (db && auth?.currentUser && getDocs && doc) return { db, auth };
             if (!firebaseRuntimePromise) {
-                firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js?v=e295fdb06aaf')
+                firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js?v=6208ea238f8d')
                     .then(m => m.getDivertyFirebaseRuntime(firebaseConfig, 'DivertyWeb', typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : ''))
                     .then(rt => {
                         db = rt.db; auth = rt.auth;
@@ -804,7 +805,17 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
 
         function setContent(html) { 
             const mc = document.getElementById('mainContent'); 
-            if(mc){ mc.innerHTML = html; if(typeof lucide!=='undefined') lucide.createIcons({ root: mc }); setupSliders(); } 
+            if(mc){
+                const input = mc.querySelector('[data-catalog-query]');
+                const searchFocus = input === document.activeElement ? { scope: input.closest('[data-catalog-scope]')?.dataset.catalogScope, start: input.selectionStart, end: input.selectionEnd } : null;
+                mc.innerHTML = html;
+                if(typeof lucide!=='undefined') lucide.createIcons({ root: mc });
+                setupSliders();
+                const next = mc.querySelector('[data-catalog-query]');
+                if (searchFocus && next && next.closest('[data-catalog-scope]')?.dataset.catalogScope === searchFocus.scope) {
+                    next.focus({ preventScroll: true }); next.setSelectionRange(searchFocus.start, searchFocus.end);
+                }
+            }
         }
 
         function setupSliders() {
@@ -1722,6 +1733,43 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             if(typeof renderCalendar === 'function') renderCalendar(); 
         }
 
+        const catalogBrowseState = new Map();
+        let catalogDetailReturn = '';
+
+        function catalogBrowserHTML(key) {
+            const state = catalogBrowseState.get(key) || { query: '', kind: 'all', sort: 'recommended' };
+            return `<div class="catalog-browser" data-catalog-scope="${escapeCatalogText(key)}" role="search" aria-label="Buscar en el catálogo">
+                <label class="catalog-browser-search"><span>Buscar servicio o personaje</span><div><i data-lucide="search" aria-hidden="true"></i><input type="search" maxlength="150" data-catalog-query value="${escapeCatalogText(state.query)}" placeholder="Nombre, temática o actividad" autocomplete="off"></div></label>
+                <label><span>Mostrar</span><select data-catalog-kind><option value="all">Todos</option><option value="offers">Ofertas</option><option value="characters">Personajes</option></select></label>
+                <label><span>Ordenar</span><select data-catalog-sort><option value="recommended">Original</option><option value="price-asc">Menor precio</option><option value="price-desc">Mayor precio</option><option value="name">Nombre A–Z</option></select></label>
+                <div class="catalog-browser-summary"><p data-catalog-count role="status" aria-live="polite"></p><button type="button" data-catalog-clear>Limpiar filtros</button></div>
+            </div>`;
+        }
+
+        function attachCatalogBrowser(items, key, defaultHTML = '') {
+            const toolbar = document.querySelector('.catalog-browser'), results = document.getElementById('catalogBrowserResults');
+            if (!toolbar || !results) return;
+            const state = catalogBrowseState.get(key) || { query: '', kind: 'all', sort: 'recommended' };
+            const input = toolbar.querySelector('[data-catalog-query]'), kind = toolbar.querySelector('[data-catalog-kind]'), sort = toolbar.querySelector('[data-catalog-sort]');
+            const clear = toolbar.querySelector('[data-catalog-clear]'), count = toolbar.querySelector('[data-catalog-count]');
+            input.value = state.query; kind.value = state.kind; sort.value = state.sort;
+            const update = () => {
+                state.query = input.value; state.kind = kind.value; state.sort = sort.value;
+                catalogBrowseState.set(key, { ...state });
+                const filtered = browseCatalog(items, state, dynamicCategories);
+                const active = !!state.query.trim() || state.kind !== 'all' || state.sort !== 'recommended';
+                count.textContent = `${filtered.length} de ${items.length} opciones`;
+                clear.disabled = !active;
+                if (!active && defaultHTML) results.innerHTML = defaultHTML;
+                else if (filtered.length) results.innerHTML = `<div class="catalog-products-grid">${filtered.map((item, index) => item.tipoServicio === 'personaje' ? createCharacterTileHTML(item, index) : createCatalogTileHTML(item, index)).join('')}</div>`;
+                else results.innerHTML = `<div class="catalog-empty-light"><i data-lucide="search" aria-hidden="true"></i><h3>No encontramos opciones con esos filtros</h3><p>Prueba otro nombre o limpia los filtros para explorar el catálogo.</p></div>`;
+                if (typeof lucide !== 'undefined') lucide.createIcons({ root: results });
+            };
+            input.addEventListener('input', update); kind.addEventListener('change', update); sort.addEventListener('change', update);
+            clear.onclick = () => { input.value = ''; kind.value = 'all'; sort.value = 'recommended'; update(); input.focus(); };
+            update();
+        }
+
         function renderAllCatalog() {
           if(!isFirebaseLoaded || !catalogLoaded){
             setContent(`
@@ -1819,11 +1867,13 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                   </span>
                 </div>
 
-                <div class="catalog-categories-grid">${cards}</div>
+                ${catalogBrowserHTML('catalog')}
+                <div id="catalogBrowserResults"><div class="catalog-categories-grid">${cards}</div></div>
               </section>
             </div>
           `);
 
+          attachCatalogBrowser(categories.flatMap(category => category.items), 'catalog', `<div class="catalog-categories-grid">${cards}</div>`);
           if(typeof lucide !== 'undefined') lucide.createIcons();
         }
 
@@ -1831,7 +1881,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             const cat = dynamicCategories.find(c => c.id === catId);
             if (!cat) return;
             const items = app.catalog.filter(i => i.categoria === catId).sort((a,b) => (a.orden || 0) - (b.orden || 0));
-            renderSection(items, cat.nombre, getCatalogIcon(cat));
+            renderSection(items, cat.nombre, getCatalogIcon(cat), catId);
         }
 
         function createCatalogTileHTML(item,index=0) {
@@ -1947,11 +1997,11 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                 <div class="catalog-detail-page">
                     <div class="catalog-detail-shell animate-slide-up">
                         <button type="button"
-                            data-action="back-to-category"
+                            data-action="${catalogDetailReturn === 'catalog' ? 'back-to-catalog' : 'back-to-category'}"
                             data-category-id="${item.categoria}"
                             class="catalog-detail-back">
                             <i data-lucide="arrow-left"></i>
-                            <span>Volver a ${cleanStr(categoryTitle)}</span>
+                            <span>${catalogDetailReturn === 'catalog' ? 'Volver a resultados' : `Volver a ${cleanStr(categoryTitle)}`}</span>
                         </button>
 
                         <div class="catalog-detail-card">
@@ -1992,7 +2042,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             window.scrollTo(0, 0);
         }
 
-        function renderSection(items, title, icon) {
+        function renderSection(items, title, icon, catId) {
           if(!isFirebaseLoaded){
             setContent(`
               <div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted">
@@ -2040,13 +2090,15 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                   </span>
                 </div>
 
-                <div class="catalog-products-grid">
+                ${catalogBrowserHTML(catId)}
+                <div id="catalogBrowserResults"><div class="catalog-products-grid">
                   ${items.map((item,index)=>item.tipoServicio==='personaje'?createCharacterTileHTML(item,index):createCatalogTileHTML(item,index)).join('')}
-                </div>
+                </div></div>
               </section>
             </div>
           `);
 
+          attachCatalogBrowser(items, catId);
           if(typeof lucide !== 'undefined') lucide.createIcons();
         }
 
@@ -3393,6 +3445,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                     break;
                 case 'open-item-detail': {
                     e.preventDefault();
+                    catalogDetailReturn = app.activeSection === 'catalog' ? 'catalog' : '';
                     const itemForNav = app.catalog.find(i => i.id === itemId);
                     if (itemForNav?.categoria) catalogNavMemory.save(itemForNav.categoria);
                     renderItemDetail(itemId);

@@ -73,6 +73,22 @@ body.diverty-site #desktopNav .nav-link { font-size:13px; font-weight:600; }
 .catalog-grid-heading h2 { color:var(--s-text-title); font-size:clamp(24px,3.5vw,36px); font-weight:700; line-height:1.2; text-shadow:none; max-width:640px; }
 .catalog-heading-gradient { color:var(--s-primary); background:none; -webkit-text-fill-color:currentColor; }
 .catalog-grid-count { flex-shrink:0; padding:8px 12px; border:1px solid var(--dv-border); border-radius:999px; background:var(--dv-surface); color:var(--s-text-title); font-size:11px; font-weight:700; }
+.catalog-browser { display:grid; grid-template-columns:minmax(0,2fr) repeat(2,minmax(0,1fr)); gap:12px; padding:16px; margin-bottom:20px; border:1px solid var(--dv-border); border-radius:18px; background:var(--dv-surface); color:var(--s-text-title); }
+.catalog-browser label { min-width:0; display:grid; gap:6px; font-size:12px; font-weight:700; }
+.catalog-browser input,.catalog-browser select { width:100%; min-width:0; min-height:44px; padding:10px 12px; border:1px solid var(--dv-border); border-radius:10px; background:var(--dv-soft); color:var(--s-text-title); font:inherit; }
+.catalog-browser select { font-size:13px!important; }
+.catalog-browser-search > div { position:relative; }
+.catalog-browser-search input { padding-left:38px; }
+.catalog-browser-search svg { position:absolute; width:17px; height:17px; top:14px; left:12px; color:var(--s-text-muted); pointer-events:none; }
+.catalog-browser-summary { grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:12px; }
+.catalog-browser-summary p { color:var(--s-text-muted); }
+.catalog-browser-summary button { min-height:36px; padding:6px 10px; border:1px solid var(--dv-border); border-radius:9px; font-weight:700; }
+.catalog-browser-summary button:disabled { opacity:.45; cursor:default; }
+.catalog-empty-light p { max-width:460px; color:var(--s-text-muted); font-size:14px; }
+@media (max-width:767px) {
+  .catalog-browser { grid-template-columns:repeat(2,minmax(0,1fr)); padding:12px; gap:10px; }
+  .catalog-browser-search { grid-column:1/-1; }
+}
 .catalog-categories-grid,.catalog-products-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; align-items:start; }
 /* Compact surfaces keep the photo, full name and price together without spacers. */
 .catalog-category-card,.catalog-tile {
