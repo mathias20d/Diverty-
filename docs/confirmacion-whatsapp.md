@@ -2,6 +2,16 @@
 
 **Integración preparada y desactivada. No se han conectado cuentas, enviado mensajes reales, publicado funciones en Firebase, cambiado reglas ni habilitado facturación.** WhatsApp Business del teléfono necesita conectarse a WhatsApp Business Platform para enviar avisos disparados por la web. Los mensajes iniciados por la empresa requieren una plantilla aprobada y autorización del cliente: [política oficial](https://whatsappbusiness.com/policy/).
 
+## Estado comprobado en Meta (12 de octubre de 2026)
+
+La verificación de acceso del administrador se completó. El portfolio `1526363454507968` contiene la cuenta `divertypty` (`3200342153689672`), identificada explícitamente como **App de WhatsApp Business**. El número público `+507 6667-7965` aparece **Sin conexión**, con calidad Alta; el panel muestra el identificador de teléfono `1170217636184418`. No hay apps agregadas al portfolio, ni método de pago en esta cuenta. El negocio figura No verificado y la cuenta Aprobada; esos estados no demuestran una conexión a Cloud API ni habilitan por sí solos el envío desde la web.
+
+La [documentación oficial de coexistencia](https://developers.facebook.com/documentation/business-messaging/whatsapp/embedded-signup/onboarding-business-app-users), consultada directamente en Meta, requiere un socio de soluciones o proveedor de tecnología con registro insertado y webhooks. La conexión conserva la app del teléfono, pero los mensajes de la API están sujetos a sus tarifas. Antes de elegir proveedor, confirmar presupuesto, compatibilidad con la API usada por esta integración y permisos mínimos; no contratar, habilitar pagos, compartir historial ni conceder acceso automáticamente.
+
+No utilizar los identificadores visibles como prueba de activación. Al terminar el alta, verificar con acceso autorizado al número que `is_on_biz_app` sea `true` y `platform_type` sea `CLOUD_API`, y confirmar los identificadores devueltos. La coexistencia omite el registro convencional del número porque ya está registrado: **no eliminar la cuenta del teléfono ni ejecutar una migración estándar**. Las apps complementarias pueden desvincularse durante el alta y existen limitaciones de funciones, detalladas por Meta; revisar esas condiciones con el usuario antes de conectar.
+
+El flujo de registro insertado debe usar la versión vigente: Meta anuncia que las versiones 2 y 3 quedan obsoletas el 15 de octubre de 2026 y pide migrar a v4. El proveedor debe encargarse del alta y sus webhooks; este repositorio no implementa una app de proveedor ni sincronización del historial. El envío de confirmaciones sigue desactivado mientras se elige y conecta una opción compatible.
+
 ## Lo que recibirá el cliente
 
 Crear en Meta una plantilla de utilidad llamada `diverty_solicitud_recibida`, idioma español `es`, con seis parámetros de texto en este orden:
