@@ -24,6 +24,8 @@ for (const module of ['diverty-service-duration.mjs', 'diverty-whatsapp-confirma
 }
 js = js.replace(/diverty-location-reference\.mjs(?:\?v=[a-f0-9]+)?/g,
   `diverty-location-reference.mjs?v=${version('assets/js/diverty-location-reference.mjs')}`);
+js = js.replace(/diverty-analytics\.mjs(?:\?v=[a-f0-9]+)?/g,
+  `diverty-analytics.mjs?v=${version('assets/js/diverty-analytics.mjs')}`);
 js = js.replace(/diverty-booking-state\.mjs(?:\?v=[a-f0-9]+)?/g,
   `diverty-booking-state.mjs?v=${version('assets/js/diverty-booking-state.mjs')}`);
 js = js.replace(/diverty-date-picker\.mjs(?:\?v=[a-f0-9]+)?/g,
@@ -124,7 +126,7 @@ for (const file of ['index.html', 'admin.html']) {
 
 // Preview uses the actual published templates and CSS, with bookings and analytics disabled.
 let preview = fs.readFileSync(path.join(output, 'index.html'), 'utf8');
-preview = preview.replace(/<!-- Google Analytics:[\s\S]*?<script>[\s\S]*?<\/script>/, '');
+preview = preview.replace(/<!-- Google Analytics:[\s\S]*?<script\b[^>]*>[\s\S]*?<\/script>/, '');
 preview = preview.replace('<head>', '<head><script>window.__DIVERTY_THEME_PREVIEW__=true;</script><meta name="robots" content="noindex,nofollow">');
 preview = preview.replace(/try \{snapshot=JSON.parse/, 'try {if(!window.__DIVERTY_THEME_PREVIEW__)snapshot=JSON.parse');
 preview = preview.replace("window.__divertyShowSplash=!(snapshot && seen)", "window.__divertyShowSplash=!window.__DIVERTY_THEME_PREVIEW__&&!(snapshot && seen)");

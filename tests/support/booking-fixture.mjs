@@ -51,6 +51,7 @@ function client(database, name = 'Cliente de prueba') {
   const form = { dataset: {}, querySelector: () => button };
   const ctx = {
     app: { cart: [{ id: 'paquete', name: 'Paquete de prueba', price: 100, quantity: 1 }], location: 'panama-centro' },
+    analytics: { lead() {}, resetCheckout() {} },
     serviceDurationHours, needsPlaceReference, isClosedBookingDate, dateClosures: {}, updateBookingDateClosures() {}, appliedCoupon: null, bookingFormState: {}, pendingBooking: null,
     transportNeedsReview: data => /por confirmar|por revisar|fuera.*cobertura/i.test(String(data?.ubicacion||'')),
     confirmTransportReview: async()=>true,

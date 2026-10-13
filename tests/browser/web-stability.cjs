@@ -1,5 +1,5 @@
 // Navegador real; Firebase y servicios externos siempre se sustituyen por datos ficticios.
-const {chromium}=require('playwright');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
@@ -45,6 +45,7 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       window.setInterval=(fn,ms,...args)=>{if(ms===45000)window.__syncTick=fn;return interval(fn,ms,...args);};
       if(blocked){const deny=()=>{throw new DOMException('Storage blocked','SecurityError');};Object.defineProperty(window,'localStorage',{get:deny});Object.defineProperty(window,'sessionStorage',{get:deny});}
     },blockedStorage);
+    if (process.env.ANALYTICS_ONLY) await context.addInitScript(() => { window.__DIVERTY_ANALYTICS_TEST__ = true; });
     await context.route('**/*',async route=>{
       const url=new URL(route.request().url());
       if(url.origin===origin&&url.pathname==='/api/customer-portal'){
@@ -112,6 +113,59 @@ export const setDoc=async()=>{throw new Error('Unexpected write');};export const
       assert.deepEqual(f.errors,[]);return f.page.evaluate(()=>Object.values(window.__fakeWrites).find(x=>x.ownerUid&&x.serviciosSeleccionados));
     };
   try {
+    if (process.env.ANALYTICS_ONLY) {
+      const readEvents = page => page.evaluate(() => (window.dataLayer || []).filter(args => args[0] === 'event').map(args => ({ name: args[1], params: args[2] })));
+      for (const width of [392, 1366]) {
+        const f = await fixture({ width });
+        await f.page.goto(origin + '/?plan=plan-test&utm_source=facebook&utm_medium=paid_social&utm_campaign=navidad_2026&email=private@example.invalid&phone=60000000#secret'); await f.ready();
+        let measured = await readEvents(f.page);
+        assert.equal(measured.filter(row => row.name === 'page_view').length, 1, 'direct entry must not invent a home view');
+        assert.equal(measured.filter(row => row.name === 'view_item').length, 1);
+        assert.match(measured[0].params.page_location, /plan=plan-test&utm_source=facebook/);
+        assert.doesNotMatch(JSON.stringify(measured), /private@example|60000000|#secret/);
+        const config = await f.page.evaluate(() => [...window.dataLayer.find(args => args[0] === 'config')]);
+        assert.equal(config[2].send_page_view, false);
+        // The real Google SDK is blocked in these fixtures. Shopping and booking still work.
+        await f.page.locator('[data-action="add-to-cart"][data-item-id="plan-test"]').first().click();
+        const beforeDrawer = (await readEvents(f.page)).filter(row => row.name === 'page_view').length;
+        await f.page.locator('#cartModal.show').waitFor();
+        await f.page.goBack(); await f.page.waitForFunction(() => !document.querySelector('#cartModal')?.classList.contains('show'));
+        assert.equal((await readEvents(f.page)).filter(row => row.name === 'page_view').length, beforeDrawer, 'drawer history is not a page view');
+        await f.page.locator('[data-action="book-now"][data-item-id="plan-test"]').click(); await f.page.locator('#bookingForm').waitFor();
+        measured = await readEvents(f.page);
+        assert.equal(measured.filter(row => row.name === 'begin_checkout').length, 1);
+        assert.equal(measured.filter(row => row.name === 'booking_step' && row.params.booking_step === 1).length, 1);
+        assert.equal(measured.filter(row => row.name === 'generate_lead').length, 0);
+        const saved = await sendNormalBooking(f);
+        measured = await readEvents(f.page);
+        assert.deepEqual(measured.filter(row => row.name === 'booking_step').map(row => row.params.booking_step_name), ['Contacto', 'Evento', 'Lugar']);
+        assert.equal(measured.filter(row => row.name === 'begin_checkout').length, 1);
+        assert.equal(measured.filter(row => row.name === 'generate_lead').length, 1);
+        assert.equal(measured.filter(row => row.name === 'page_view').at(-1).params.page_title, 'Inicio | Diverty Panamá');
+        assert.doesNotMatch(JSON.stringify(measured), /Cliente catálogo|catalogo@example|60000000|Casa de prueba|Chepo|test-user/);
+        await f.page.evaluate(receipt => { window.__divertyAnalytics.lead(receipt, []); }, saved.id);
+        assert.equal((await readEvents(f.page)).filter(row => row.name === 'generate_lead').length, 1, 'receipt recovery must not count a second lead');
+        await f.page.locator('#infoModal [data-action="close-modal"]').first().click();
+        await f.page.locator('.whatsapp-btn').evaluate(link => link.addEventListener('click', event => event.preventDefault(), { once: true }));
+        await f.page.locator('.whatsapp-btn').click();
+        assert.equal((await readEvents(f.page)).filter(row => row.name === 'whatsapp_click').length, 1);
+        assert.deepEqual(f.errors, []);
+        console.log(`PASS: Analytics ${width}px: direct entry, UTM privacy, cart/drawer, checkout steps, saved receipt and safe WhatsApp click with Google blocked.`);
+      }
+      const denied = await fixture({ blockedStorage: true }); await openBooking(denied); await sendNormalBooking(denied);
+      assert.equal((await readEvents(denied.page)).filter(row => row.name === 'generate_lead').length, 1);
+      const christmas = await fixture({ christmas: true }); await openBooking(christmas);
+      const christmasEvents = await readEvents(christmas.page);
+      assert.equal(christmasEvents.find(row => row.name === 'begin_checkout').params.booking_kind, 'navidad');
+      assert.equal(christmasEvents.find(row => row.name === 'booking_step').params.booking_step_name, 'Lugar');
+      assert.deepEqual(christmas.errors, []);
+      console.log('PASS: Analytics with blocked storage and correct Christmas step order.');
+      const preview = await fixture(); await preview.page.goto(origin + '/theme-preview.html'); await preview.ready();
+      assert.equal(await preview.page.evaluate(() => window.dataLayer), undefined);
+      assert.equal(preview.requests.some(url => url.includes('googletagmanager.com')), false);
+      console.log('PASS: theme preview sends no Analytics events or Google script requests.');
+      return;
+    }
     // Run the focused portal/booking synchronization checks without the full catalog/GPS sweep.
     if(!process.env.PORTAL_ONLY){
     const cold=await fixture({slowTheme:true});await cold.page.goto(origin,{waitUntil:'domcontentloaded'});

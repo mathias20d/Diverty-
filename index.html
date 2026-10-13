@@ -1,29 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Google Analytics: se conecta después del primer render para no competir con la carga principal -->
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-6FYQV9RK3X');
-      (function(){
-        let loaded = false;
-        function loadAnalytics(){
-          if (loaded) return;
-          loaded = true;
-          const s = document.createElement('script');
-          s.async = true;
-          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-6FYQV9RK3X';
-          document.head.appendChild(s);
-        }
-        if ('requestIdleCallback' in window) {
-          requestIdleCallback(loadAnalytics, { timeout: 2500 });
-        } else {
-          setTimeout(loadAnalytics, 1800);
-        }
-      })();
-    </script>
+    <!-- Google Analytics: carga diferida y navegación virtual sin datos personales -->
+    <script type="module" src="/assets/js/diverty-analytics.mjs"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -291,7 +270,7 @@
     
     <div id="toast"></div>
 
-    <script type="module" src="/assets/js/diverty-app-78bb30f118.js?v=804898e00c06"></script>
+    <script type="module" src="/assets/js/diverty-app-78bb30f118.js?v=eabb615a8d69"></script>
 
 
 <div id="diverty-halloween-stage" aria-hidden="true"><div class="hw-branch left"></div><div class="hw-branch right"></div><div class="hw-web"></div><div class="hw-web r"></div><div class="hw-moon"></div><i class="hw-pumpkin" style="left:4%"></i><i class="hw-pumpkin" style="right:5%;transform:scale(.78)"></i><div class="hw-fog"></div></div>

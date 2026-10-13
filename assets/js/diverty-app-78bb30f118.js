@@ -1,4 +1,5 @@
 import { queueWhatsappConfirmation } from './diverty-whatsapp-confirmation.mjs?v=c022580a871d';
+import { analytics } from './diverty-analytics.mjs?v=cd495b721575';
 import {serviceDurationHours} from './diverty-service-duration.mjs?v=4b9aeccab616';
 import {responsiveImage,imageFallbackUrl} from './diverty-images.mjs?v=64d519d228f7';
 import {readMapsLocation,shortMapsUrl,mapsLocationFromUrl} from './diverty-maps-link.mjs?v=f39acfc459a8';
@@ -1636,6 +1637,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function renderHome() {
+            if (isFirebaseLoaded) analytics.view('home');
             let ex = '';
             if(!isFirebaseLoaded || (app.catalog && app.catalog.length === 0 && !catalogLoaded)){ 
                 ex = `<div class="w-full flex flex-col items-center justify-center py-12"><i data-lucide="loader-2" class="w-10 h-10 season-text-primary animate-spin mb-4"></i><p class="text-sm font-bold season-text-muted tracking-widest uppercase">Cargando nuestros paquetes...</p></div>`; 
@@ -1773,6 +1775,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function renderAllCatalog() {
+          if (isFirebaseLoaded && catalogLoaded) analytics.view('catalog');
           if(!isFirebaseLoaded || !catalogLoaded){
             setContent(`
               <div class="catalog-grid-page all-catalog-page">
@@ -1882,6 +1885,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         function renderCategory(catId) {
             const cat = dynamicCategories.find(c => c.id === catId);
             if (!cat) return;
+            if (isFirebaseLoaded) analytics.view('cat_' + catId, cat.nombre);
             const items = app.catalog.filter(i => i.categoria === catId).sort((a,b) => (a.orden || 0) - (b.orden || 0));
             renderSection(items, cat.nombre, getCatalogIcon(cat), catId);
         }
@@ -1952,6 +1956,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             const item = app.catalog.find(i => i.id === itemId);
             if (!item) return;
             if (syncUrl) setDirectRoute('plan', itemId);
+            if (isFirebaseLoaded) analytics.view('detail', '', item);
 
             const cat = dynamicCategories.find(c => c.id === item.categoria);
             const categoryTitle = cat ? cat.nombre : 'Catálogo';
@@ -2106,6 +2111,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function renderGallery() {
+            if (isFirebaseLoaded) analytics.view('gallery');
             if(!isFirebaseLoaded){ setContent(`<div class="container mx-auto px-4 pt-32 pb-12 text-center season-text-muted"><i data-lucide="loader-2" class="w-12 h-12 mx-auto mb-4 animate-spin season-text-primary"></i><p>Cargando Galería...</p></div>`); return; }
             if(gallery.length===0){ setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="text-center season-text-muted animate-slide-up"><i data-lucide="image" class="w-16 h-16 mx-auto mb-4 opacity-30"></i><p>Galería vacía.</p></div></section></div>`); return; }
             setContent(`<div class="container mx-auto px-4 pt-28 pb-12"><section class="mb-10 animate-slide-up"><h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-4 season-text-title font-nunito">Nuestra Galería</h2><div class="flex overflow-x-auto snap-x snap-mandatory gap-5 pb-8 w-full hide-scrollbar pt-2 items-stretch px-2 md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-auto">${gallery.map(i=>`<a href="${cleanStr(i.image)}" target="_blank" class="gallery-item flex-shrink-0 min-w-[75vw] sm:min-w-[45vw] md:min-w-0 snap-center block group border border-[var(--s-glass-border)] rounded-[2rem] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 relative"><img ${imageAttributes(i.image,'(max-width:639px) 75vw, (max-width:767px) 45vw, (max-width:1023px) 33vw, 25vw',{ratio:0,widths:[320,480,720,1080]})} loading="lazy" decoding="async" fetchpriority="low" class="w-full h-72 md:h-64 object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"></a>`).join('')}</div></section></div>`);
@@ -2348,6 +2354,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function renderPortal() {
+            if (isFirebaseLoaded) analytics.view('portal');
             const helpUrl = christmasWhatsappUrl('Hola, necesito ayuda con mi reserva.');
             setContent(`<section class="portal-page">
                 <a href="?vista=home" data-target-section="home" class="portal-back nav-action"><i data-lucide="arrow-left" aria-hidden="true"></i> Volver al inicio</a>
@@ -2398,6 +2405,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function renderBooking() {
+            if (isFirebaseLoaded) analytics.view('booking');
             const previousForm = document.getElementById('bookingForm');
             if (previousForm && app.cart.length > 0) { bookingFormState = {...bookingFormState, ...Object.fromEntries(new FormData(previousForm).entries())}; if (previousForm.elements.whatsappConsent) bookingFormState.whatsappConsent = previousForm.elements.whatsappConsent.checked; }
             bookingDatePickerCleanup?.(); bookingDatePickerCleanup = null;
@@ -3072,6 +3080,8 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                 let cs = app.wizardStep;
                 const updUI = () => {
                     app.wizardStep=cs;
+                    analytics.checkout(app.cart, isChristmasEveBooking());
+                    analytics.step(cs, isChristmasEveBooking());
                     document.querySelectorAll('.wizard-content').forEach((el,i)=>el.classList.toggle('active',i+1===cs));
                     const pb = document.getElementById('wizard-progress-bar'); if(pb) pb.style.width=`${((cs-1)/2)*100}%`;
                     document.querySelectorAll('.wizard-step').forEach((el,i)=>{
@@ -3346,6 +3356,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function updateCartUI() {
+            if (!app.cart.length) analytics.resetCheckout();
             updateCartBadgeAndTotals();
             renderCartItemsHTML();
         }
@@ -3354,11 +3365,14 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             const rule = getItemQuantityRule(item);
             const safeQty = rule.enabled ? clampItemQuantity(item, qty) : 1;
             const e = app.cart.find(i=>i.id===item.id);
+            const previousQuantity = e?.quantity || 0;
             if(e) {
                 e.quantity = rule.enabled ? clampItemQuantity(item, e.quantity + safeQty) : 1;
                 if(item.isCampaign) e.price = item.price;
             } 
             else { app.cart.push({...item,quantity:safeQty}); }
+            const addedQuantity = (app.cart.find(i => i.id === item.id)?.quantity || 0) - previousQuantity;
+            if (addedQuantity > 0) analytics.add([{ ...item, quantity: addedQuantity }]);
             
             updateCartUI(); 
             updateProductButtonState(item.id);
@@ -3366,6 +3380,8 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function removeFromCart(id) { 
+            const removed = app.cart.find(item => item.id === id);
+            if (removed) analytics.remove([removed]);
             app.cart=app.cart.filter(i=>i.id!==id); 
             if(app.cart.length===0) appliedCoupon=null; 
             
@@ -3527,6 +3543,8 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                         const existing = app.cart.find(i=>i.id===it.id);
                         const requestedQty = rule.enabled ? clampItemQuantity(it, readItemQuantity(it.id,existing?.quantity ?? rule.min)) : 1;
                         app.cart = [{...it, quantity: requestedQty}];
+                        analytics.resetCheckout();
+                        analytics.add(app.cart);
                         appliedCoupon = null;
                         updateCartUI();
                         bookingFormState = {};
@@ -4124,6 +4142,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         async function finishBookingRequest(request) {
+                analytics.lead(request.id, app.cart, isChristmasEveBooking());
                 // Netlify indexes the saved request privately without Cloud Functions.
                 // Synchronize alongside the existing notification, preserving the saved booking on failure.
                 void (async()=>{
