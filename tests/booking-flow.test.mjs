@@ -3,6 +3,16 @@ import assert from 'node:assert/strict';
 import { store, client } from './support/booking-fixture.mjs';
 const base = 'artifacts/diverty-oficial/public/data/';
 
+test('public booking snapshots the explicit catalog duration rather than stale activity text',async()=>{
+  const db=store(),c=client(db);
+  c.ctx.app.cart[0].description='Duración total 3 horas';
+  c.ctx.app.cart[0]._raw={duracionHoras:1.5,duracionCatalogoDefinida:true};
+  await c.submit();
+  const booked=db.rows.get(base+'eventos/web-Cliente de prueba').serviciosSeleccionados[0];
+  assert.equal(booked.duracionHoras,1.5);assert.equal(booked.duracionCatalogoDefinida,true);
+  assert.equal(booked.precio,100);
+});
+
 test('booking atomically writes the event, customer status, public availability and slot', async () => {
   const db = store();
   const c = client(db);

@@ -7,6 +7,11 @@ export const sample={id:'web-00000000-0000-0000-0000-000000000001',cliente:'Prue
 export const product={nombre:'Plan recreativo',precio:100,descripcion:'1 animador. 2 horas',activo:true};
 const now=new Date('2026-10-06T12:00:00Z');
 const quote=(event=sample,raw=product)=>quoteBooking(event,'customer',[raw],null,null,now);
+
+test('central booking preserves an authoritative catalog duration snapshot even with stale activity text',()=>{
+  const row=quote(sample,{...product,duracionHoras:1.5,duracionCatalogoDefinida:true,descripcion:'1 animador. Duración total 3 horas'}).serviciosSeleccionados[0];
+  assert.equal(row.duracionHoras,1.5);assert.equal(row.duracionCatalogoDefinida,true);
+});
 test('manual and outside destinations stay pending; foreign GPS cannot be overridden by Panama text',()=>{
   const e=quote();assert.equal(e.totalPendienteTransporte,true);assert.equal(e.resourceRequirements.animadores,1);assert.equal(e.total,'100.00');
   assert.equal(coverage({lat:4.7,lng:-74.1},false,'Bella Vista, Panamá').status,'review');

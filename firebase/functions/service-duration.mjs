@@ -7,8 +7,14 @@ const normalize=value=>text(value).normalize('NFD').replace(/[\u0300-\u036f]/g,'
 const hourPattern='(\\d+(?:[.,]\\d+)?)\\s*(?:horas?|hrs?|h)\\b(?:\\s+y\\s+media)?';
 function hoursFromText(value,explicit=false){
   const normalized=normalize(value);
-  const match=normalized.match(new RegExp((explicit?'(?:duracion(?:\\s+total)?|tiempo\\s+total)\\s*[:=–—-]?\\s*':'')+hourPattern));
-  return match?positive(match[1])+(/y\s+media/.test(match[0])?.5:0):0;
+  const prefix=explicit?'(?:duracion(?:\\s+total)?|tiempo\\s+total)\\s*[:=–—-]?\\s*':'';
+  const match=normalized.match(new RegExp(prefix+hourPattern));
+  if(match){
+    const remaining=normalized.slice(match.index+match[0].length).match(/^\s*(?:y\s+)?(\d+(?:[.,]\d+)?)\s*(?:minutos?|mins?|min)\b/);
+    return positive(match[1])+(/y\s+media/.test(match[0])?.5:0)+(remaining?positive(remaining[1])/60:0);
+  }
+  const minutes=normalized.match(new RegExp(prefix+'(\\d+(?:[.,]\\d+)?)\\s*(?:minutos?|mins?|min)\\b'));
+  return minutes?positive(minutes[1])/60:0;
 }
 function explicitDuration(service){
   // A duration field or a labelled total describes the whole package;
@@ -29,9 +35,14 @@ export function serviceDurationHours(service={},catalog={}){
   if(['hora','horas'].includes(mode)||(!mode&&(service.isHourly??catalog.isHourly)===true)){
     return positive(service.cantidad??service.quantity)||positive(service.duracionHoras)||positive(catalog.duracionHoras);
   }
+  // An explicit per-reservation edit must win over old activity descriptions.
+  if(service.duracionDefinidaManualmente === true)return positive(service.duracionHoras);
+  if(service.duracionCatalogoDefinida === true)return positive(service.duracionHoras);
+  // An unbooked catalog/cart item can carry stale prose alongside its raw data.
+  if(catalog.duracionCatalogoDefinida === true && !positive(service.duracionHoras))return positive(catalog.duracionHoras);
   // Repair legacy lines that saved the first activity's hour as the total.
   // Prefer the booked package's labelled duration; catalog fills missing totals.
-  const total=explicitDuration(service)||explicitDuration(catalog);
+  const total=explicitDuration(service)||(catalog.duracionCatalogoDefinida === true ? positive(catalog.duracionHoras) : explicitDuration(catalog));
   if(total)return total;
   const saved=positive(service.duracionHoras)||positive(catalog.duracionHoras);
   if(saved)return saved;

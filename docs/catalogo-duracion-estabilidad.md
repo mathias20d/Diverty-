@@ -1,0 +1,9 @@
+# Catálogo, duración y estabilidad — 12 de octubre de 2026
+
+La app administrativa y `admin.html` permiten guardar la duración total de servicios/paquetes y campañas. Se usan `duracionHoras` y `duracionCatalogoDefinida`; el indicador distingue el valor explícito del catálogo de una duración antigua inferida de actividades. Los productos por unidad no tienen duración de servicio y los cobros por hora usan la cantidad de horas elegida. Vaciar el campo mantiene la compatibilidad con las descripciones anteriores; valores introducidos inválidos o no positivos se rechazan.
+
+La ficha pública del servicio y las campañas muestran la duración recuperable. La reserva copia el valor y su indicador, de modo que editar posteriormente el catálogo no cambia lo contratado ni los importes. La interpretación de minutos, horas y duración explícita es la misma en la app, la web y el código preparado del servidor. Las funciones y reglas de Firebase no se publican ni se activan en este bloque.
+
+La creación de categorías lee el identificador antes de escribirlo dentro de una transacción. Nombres que generan el mismo identificador, incluidas diferencias de tildes/mayúsculas, muestran un aviso y no reemplazan el catálogo existente. La escritura y el aviso `web_sync` son atómicos. La app también permite quitar la portada opcional de una tarjeta sin modificar su imagen interna.
+
+Pruebas con datos ficticios: persistencia de duración y precio, copia a la reserva, texto anterior que no prevalece sobre el campo explícito, compatibilidad con minutos, conflicto de categoría y catálogo público en normal/Navidad y 320/392/1366 px. Los PDFs del administrador conservan diseño y números; muestran progreso, tiempos de espera limitados y reintento. No se enviaron avisos WhatsApp ni se modificaron reservas reales.

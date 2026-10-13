@@ -1,6 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {serviceDurationHours} from '../assets/js/diverty-service-duration.mjs';
+import {serviceDurationHours as serverDurationHours} from '../firebase/functions/service-duration.mjs';
+
+test('public and server durations agree on explicit catalog fields, minutes and booked snapshots',()=>{
+  for(const [row,expected] of [[{duracionCatalogoDefinida:true,duracionHoras:1.5,descripcion:'Duración total 3 horas'},1.5],[{duracion:'45 minutos'},.75],[{duracion:'1 hora y 30 minutos'},1.5]]){
+    assert.equal(serviceDurationHours(row),expected);assert.equal(serverDurationHours(row),expected);
+  }
+  assert.equal(serviceDurationHours({duracionCatalogoDefinida:true,duracionHoras:1.5},{duracionCatalogoDefinida:true,duracionHoras:4}),1.5);
+});
 
 const amigo={nombre:'Diverty Amigo(a)',cantidad:1,precio:95,duracionHoras:1,incluye:['1 Animador (a)','Animación Infantil 1 Hora','Pintacaritas Básicas 1 Hora','Duración 2 Horas']};
 test('the package total repairs the first-activity hour in historical invoice lines',()=>{

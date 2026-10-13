@@ -347,7 +347,7 @@
                             <h3 class="text-sm font-bold text-slate-300 mb-4 flex items-center gap-2"><i data-lucide="dollar-sign" class="w-4 h-4 text-emerald-400"></i> Precios</h3>
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div><label class="saas-label">Precio ($)</label><input type="number" id="precio" class="saas-input text-emerald-400 font-bold" placeholder="0.00"></div>
-                                <div><label class="saas-label">Tipo de Cobro</label><select id="tipoCobro" class="saas-input bg-slate-900 border-slate-700"><option value="paquete">Fijo</option><option value="hora">Por Hora</option><option value="nino">Por Niño</option><option value="unidad">Por unidad / cantidad</option></select></div>
+                                <div><label class="saas-label">Tipo de Cobro</label><select id="tipoCobro" class="saas-input bg-slate-900 border-slate-700"><option value="paquete">Fijo</option><option value="hora">Por Hora</option><option value="nino">Por Niño</option><option value="unidad">Por unidad / cantidad</option></select></div><div><label class="saas-label" for="duracionHoras">Duración total (horas)</label><input id="duracionHoras" type="number" min="0.01" step="0.25" class="saas-input" placeholder="Ej: 1.5"><p class="text-xs text-slate-400 mt-1">Para servicios y paquetes. Por hora se usa la cantidad; por unidad no aplica.</p></div>
                             </div>
                             
 <div class="grid sm:grid-cols-2 gap-3 mb-4">
@@ -681,7 +681,7 @@
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4">
-                            <div><label class="saas-label text-emerald-400">Precio Promo ($)</label><input type="number" id="campPrecio" class="saas-input bg-slate-900 text-emerald-400 font-bold" placeholder="Opcional"></div>
+                            <div><label class="saas-label text-emerald-400">Precio Promo ($)</label><input type="number" id="campPrecio" class="saas-input bg-slate-900 text-emerald-400 font-bold" placeholder="Opcional"></div><div class="mb-3"><label class="saas-label" for="campDuracionHoras">Duración total (horas)</label><input id="campDuracionHoras" type="number" min="0.01" step="0.25" class="saas-input" placeholder="Ej: 2"></div>
                             <div><label class="saas-label">Precio Anterior ($)</label><input type="number" id="campPrecioOriginal" class="saas-input bg-slate-900 text-slate-500 line-through" placeholder="Opcional"></div>
                         </div>
 
@@ -760,7 +760,7 @@
         import { themeOptionsFromItem, themeOptionsForSave } from '/assets/js/diverty-theme-options.mjs';
         import { productOptionsForSave, productOptionsFromItem } from '/assets/js/diverty-catalog-product.mjs';
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, doc, getDocs, getDoc, writeBatch as sdkWriteBatch, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, getDocs, getDoc, writeBatch as sdkWriteBatch, runTransaction, increment, getCountFromServer } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         
         const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
@@ -793,6 +793,7 @@
         const deleteDoc = ref => {const b=writeBatch(db); b.delete(ref); return b.commit();};
         const addDoc = async (ref,data) => {const target=doc(ref); await setDoc(target,data); return target;};
 
+        const {categorySlug,catalogDurationForm,catalogDurationFields,createCategoryWithSync}=await import('/assets/js/diverty-catalog-editor.mjs?v=000000000000');
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/djfboe8rg/image/upload';
         const CLOUDINARY_UPLOAD_PRESET = 'diverty_web';
 
@@ -1045,18 +1046,16 @@
                     await updateDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', editingCategoryId), { nombre, icono, imagen, visibilidad, fechaInicio, fechaFin, activo, visible: activo });
                     showToast("Catálogo actualizado", "success");
                 } else {
-                    const newId = nombre.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                    const newId = categorySlug(nombre) || doc(collection(db,'artifacts',APP_ID,'public','data','categorias_web')).id;
                     const orden = window.categoriasLocales.length + 1;
-                    await setDoc(doc(db, 'artifacts', APP_ID, 'public', 'data', 'categorias_web', newId), {
-                        id: newId, nombre, icono, imagen, orden, visibilidad, fechaInicio, fechaFin, activo, visible: activo
-                    });
+                    await createCategoryWithSync({database:db,runTransaction,ref:doc(db,'artifacts',APP_ID,'public','data','categorias_web',newId),data:{id:newId,nombre,icono,imagen,orden,visibilidad,fechaInicio,fechaFin,activo,visible:activo},syncRef:doc(db,'artifacts',APP_ID,'public','data','config_web','web_sync'),syncUpdate:{versions:{categorias_web:increment(1)},version:increment(1),updatedAt:new Date().toISOString()}});
                     showToast("Catálogo creado exitosamente", "success");
                 }
                 
                 window.closeCategoryModal();
                 await window.loadCategories();
                 loadDashboardStats();
-            } catch(e) { showToast("Error guardando catálogo", "error"); }
+            } catch(e) { showToast(e.message==='CATEGORY_EXISTS'?"Ya existe un catálogo con ese nombre; edita el existente o usa otro nombre.":"Error guardando catálogo", "error"); }
         };
 
         window.deleteCategory = async (id) => {
@@ -1302,7 +1301,7 @@
             
             const optionForm={tipoCobro:document.getElementById('tipoCobro').value};
             for(const key of ['tipoServicio','tematica','cantidadMinima','cantidadMaxima','incrementoCantidad','unidadEtiqueta'])optionForm[key]=document.getElementById(key).value;
-            let options;try{options=productOptionsForSave(optionForm);}catch(error){return showToast(error.message,'error');}
+            let options;try{options={...productOptionsForSave(optionForm),...catalogDurationFields(document.getElementById('duracionHoras').value,optionForm.tipoCobro)};}catch(error){return showToast(error.message,'error');}
             const dataToSave = { ...options,
                 nombre, categoria: document.getElementById('categoria').value, precio,
                 oferta, destacado, orden, precioOriginal: oferta ? Number(document.getElementById('precioOriginal').value) : null, 
@@ -1319,7 +1318,7 @@
         });
 
         window.editPackage = id => { 
-            editingId = id; const d = paquetesLocales[id]; for(const [key,value] of Object.entries(productOptionsFromItem(d)))document.getElementById(key).value=value??'';
+            editingId = id; const d = paquetesLocales[id]; document.getElementById('duracionHoras').value=catalogDurationForm(d); for(const [key,value] of Object.entries(productOptionsFromItem(d)))document.getElementById(key).value=value??'';
             document.getElementById('formMainTitle').textContent = "Editando: " + d.nombre;
             document.getElementById('nombre').value = d.nombre; document.getElementById('precio').value = d.precio; document.getElementById('categoria').value = d.categoria; 
             document.getElementById('orden').value = (d.orden !== undefined && d.orden !== 999) ? d.orden : ''; document.getElementById('tipoCobro').value = d.tipoCobro; 
@@ -1337,7 +1336,7 @@
         };
 
         document.getElementById('tipoServicio').onchange=e=>{if(e.target.value==='producto')document.getElementById('tipoCobro').value='unidad';if(e.target.value==='personaje')document.getElementById('tipoCobro').value='paquete';};
-        window.cancelEditing = () => {
+        window.cancelEditing = () => { document.getElementById('duracionHoras').value='';
             document.getElementById('adminForm').reset(); editingId = null; 
             document.getElementById('formMainTitle').textContent = "Crear Paquete / Servicio";
             document.getElementById('imagePreviewBox').classList.add('hidden'); document.getElementById('precioOriginalContainer').classList.add('hidden');
@@ -1723,7 +1722,7 @@
             document.getElementById('campOrden').value = window.campanasLocales.length + 1;
             document.getElementById('campFechaInicio').value = '';
             document.getElementById('campFechaFin').value = '';
-            document.getElementById('campPrecio').value = '';
+            document.getElementById('campPrecio').value = ''; document.getElementById('campDuracionHoras').value='';
             document.getElementById('campPrecioOriginal').value = '';
             document.getElementById('campIncluye').value = '';
             document.getElementById('campBotonTexto').value = '';
@@ -1744,7 +1743,7 @@
             
             document.getElementById('campModalTitle').innerHTML = '<i data-lucide="edit-3" class="w-5 h-5 text-rose-400"></i> Editar Campaña';
             document.getElementById('campTitulo').value = c.titulo || ''; 
-            document.getElementById('campSubtitulo').value = c.subtitulo || ''; 
+            document.getElementById('campSubtitulo').value = c.subtitulo || ''; document.getElementById('campDuracionHoras').value=catalogDurationForm(c);
             document.getElementById('campDescripcion').value = c.descripcion || '';
             document.getElementById('campActivo').checked = c.activo !== false; // true por defecto
             document.getElementById('campDestacada').checked = c.destacada || false;
@@ -1823,7 +1822,8 @@
             const incluyeText = document.getElementById('campIncluye').value;
             const incluye = incluyeText.split('\n').map(s => s.trim()).filter(s => s !== '');
 
-            const data = { 
+            let duration;try{duration=catalogDurationFields(document.getElementById('campDuracionHoras').value);}catch(error){return showToast(error.message,'error');}
+            const data = { ...duration,
                 titulo: titulo,
                 subtitulo: document.getElementById('campSubtitulo').value.trim(),
                 descripcion: document.getElementById('campDescripcion').value.trim(),

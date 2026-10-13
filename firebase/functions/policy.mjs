@@ -66,7 +66,7 @@ export function quoteBooking(input,uid,products,coupon,point,now=new Date()) {
     animadores+=find('animador(?:es)?')*multiplier;payasos+=find('payasos?')*multiplier;
     const hours=serviceDurationHours({...raw,nombre:name,descripcion:description,incluye:includes,tipoCobro:mode,cantidad:q});
     durationMinutes=Math.max(durationMinutes,Math.round((hours||2)*60));subtotal+=cents(price)*q;
-    return {id:item.id,nombre:name,precioOriginal:price,precio:cents(price)*q/100,cantidad:q,descripcion:description,incluye:includes,tipoCobro:mode,isHourly:['hora','horas'].includes(mode),duracionHoras:hours,origenCatalogo:item.origenCatalogo};
+    return {id:item.id,nombre:name,precioOriginal:price,precio:cents(price)*q/100,cantidad:q,descripcion:description,incluye:includes,tipoCobro:mode,isHourly:['hora','horas'].includes(mode),duracionHoras:hours,...(raw.duracionCatalogoDefinida===true?{duracionCatalogoDefinida:true}:{}),origenCatalogo:item.origenCatalogo};
   });
   if(durationMinutes>1440||animadores>100||payasos>100)fail('INVALID_QUANTITY','Esta duración o cantidad necesita una cotización personalizada.');
   const santa=products.some(p=>p.esNavidad===true||norm(p.recursoNavidad)==='santa'||/noche\s*buena|entregas?\s+(?:de\s+)?(?:regalos?|santa)|entrega\s+con\s+santa|(?:santa.*(?:visita|regalo|entrega)|(?:visita|regalo|entrega).*santa)/i.test([p.nombre,p.titulo,p.descripcion,p.subtitulo,p.serviciosLista,...(p.incluye||[])].join(' ')));

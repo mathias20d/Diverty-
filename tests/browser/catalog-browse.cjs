@@ -27,7 +27,7 @@ const server = http.createServer((request, response) => {
         temas_web: [{ id: theme, nombre: theme, tipo: theme, isDefault: true }],
         categorias_web: [{ id: 'fiestas', nombre: 'Animación infantil', activo: true, visible: true }, { id: 'comida', nombre: 'Comida', activo: true, visible: true }, { id: 'oculta', nombre: 'Oculta', activo: false, visible: false }],
         catalogo_web: [
-          { id: 'magia', nombre: 'Magia Diverty', categoria: 'fiestas', precio: 100, descripcion: 'Juegos y globoflexia', imagen: '/assets/logo-256.webp', serviciosLista: 'Animación\nGloboflexia', orden: 1 },
+          { id: 'magia', nombre: 'Magia Diverty', categoria: 'fiestas', precio: 100, descripcion: 'Juegos y globoflexia', duracionHoras:1.5, duracionCatalogoDefinida:true, imagen: '/assets/logo-256.webp', serviciosLista: 'Animación\nGloboflexia', orden: 1 },
           { id: 'hero', nombre: 'Héroe azul', categoria: 'fiestas', precio: 80, precioOriginal: 95, tipoServicio: 'personaje', tematica: 'Superhéroes', oferta: true, imagen: '/assets/logo-256.webp', orden: 2 },
           { id: 'dogs', nombre: 'Hot dogs', categoria: 'comida', precio: 2, tipoCobro: 'unidad', cantidadMinima: 50, cantidadMaxima: 500, incrementoCantidad: 25, unidadEtiqueta: 'hot dog', imagen: '/assets/logo-256.webp', orden: 3 },
           { id: 'secret', nombre: 'Servicio oculto', categoria: 'oculta', precio: 1, imagen: '/assets/logo-256.webp' },
@@ -54,6 +54,10 @@ const server = http.createServer((request, response) => {
       assert.equal(await page.locator('.catalog-category-card').count(), 2);
       assert.equal(await count.innerText(), '3 de 3 opciones');
       const before = requests.filter(name => name === 'catalogo_web').length;
+      await search.fill('magia');
+      await page.getByRole('button', { name: 'Ver Magia Diverty', exact: true }).click();
+      assert.match(await page.locator('.catalog-detail-content').innerText(), /Duración:\s*1\.5 horas/);
+      await page.getByRole('button', { name: 'Volver a resultados', exact: true }).click();
       await search.fill('hero animacion');
       await page.getByRole('heading', { name: 'Héroe azul', exact: true }).waitFor();
       assert.equal(await count.innerText(), '1 de 3 opciones');

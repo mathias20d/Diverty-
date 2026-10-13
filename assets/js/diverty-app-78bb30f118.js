@@ -1,5 +1,5 @@
 import { queueWhatsappConfirmation } from './diverty-whatsapp-confirmation.mjs?v=c022580a871d';
-import {serviceDurationHours} from './diverty-service-duration.mjs?v=6f70f5b24c56';
+import {serviceDurationHours} from './diverty-service-duration.mjs?v=4b9aeccab616';
 import {responsiveImage,imageFallbackUrl} from './diverty-images.mjs?v=64d519d228f7';
 import {readMapsLocation,shortMapsUrl,mapsLocationFromUrl} from './diverty-maps-link.mjs?v=f39acfc459a8';
 import {requestCustomerPortal} from './diverty-portal-api.mjs?v=f60c0331f0df';
@@ -1415,7 +1415,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                 const pPromo = cleanStr(camp.precio);
                 const pAnt = cleanStr(camp.precioOriginal);
                 const tId = cleanStr(camp.id);
-                const incluyeHtml = renderIncluye(camp.incluye);
+                const incluyeHtml = renderIncluye(camp.incluye) + (serviceDurationHours(camp)>0 ? `<p class="season-text-muted text-xs font-bold mb-3">Duración: ${escapeCatalogText(serviceDurationHours(camp))} horas</p>` : '');
                 let btnTxt = cleanStr(camp.botonTexto) || 'AÑADIR AL CARRITO';
                 
                 let actionBtn = 'add-to-cart';
@@ -2032,6 +2032,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                                     </div>
                                 </div>
 
+                                ${serviceDurationHours(item,item._raw)>0?`<p class="catalog-detail-description"><strong>Duración:</strong> ${escapeCatalogText(serviceDurationHours(item,item._raw))} horas</p>`:''}
                                 ${services}
                                 ${actionArea}
                             </div>
@@ -3562,7 +3563,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                             sh = {
                                 id: camp.id, name: cleanStr(camp.titulo), price: Number(camp.precio || camp.precioOriginal || 0),
                                 originalPrice: Number(camp.precioOriginal || camp.precio || 0), image: cleanStr(camp.imagen) || '', 
-                                description: cleanStr(camp.subtitulo || camp.descripcion), services: servicesArr, isHourly: true, isCampaign: true, campaignId: camp.id
+                                description: cleanStr(camp.subtitulo || camp.descripcion), services: servicesArr, isHourly: true, isCampaign: true, campaignId: camp.id, _raw:camp
                             };
                         }
                     }
@@ -3896,7 +3897,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                         : (normalLocationState.label || bookingFormState.normalCoverageLabel || 'Ubicación por revisar'),
                     direccion: fd.get('address')||'',
                     referenciaLugar: isChristmasEveBooking() ? (fd.get('christmasReference')||'') : (fd.get('normalReference')||normalLocationState?.resolvedPlaceName||''),
-                    comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const duracionHoras = serviceDurationHours(i,i._raw); return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0, origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa',
+                    comentarios: fd.get('comments')||'', servicio: app.cart.map(i=>i.quantity>1?`${cleanStr(i.name)} (x${i.quantity})`:cleanStr(i.name)).join(' + '), serviciosSeleccionados: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const descripcionBase = cleanStr(i.description)||''; const descripcionCompleta = [descripcionBase, incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n\n'); const duracionHoras = serviceDurationHours(i,i._raw); return { id:i.id, nombre:cleanStr(i.name), precioOriginal:i.price, precio:Number(i.price)*i.quantity, cantidad:i.quantity, descripcion:descripcionCompleta, incluye, tipoCobro:i.tipoCobro || (i.isHourly?'hora':'paquete'), isHourly:i.isHourly===true, duracionHoras:duracionHoras||0,...(i._raw?.duracionCatalogoDefinida===true?{duracionCatalogoDefinida:true}:{}), origenCatalogo:i.isCampaign?'campana_web':'catalogo_web' }; }), descripcionEvento: app.cart.map(i=>{ const incluye = Array.isArray(i.services) ? i.services.map(x=>cleanStr(x)).filter(Boolean) : []; const titulo = i.quantity>1 ? `${cleanStr(i.name)} (x${i.quantity})` : cleanStr(i.name); return [titulo, cleanStr(i.description), incluye.length ? `Todo lo que incluye:\n${incluye.map(x=>`• ${x}`).join('\n')}` : ''].filter(Boolean).join('\n'); }).join('\n\n'), transporte: tc.toString(), descuento: dv.toString(), gastos: '0', detalleGastos: '', total: ft.toString(), abono: '0', estado: 'Pendiente', createdAt: new Date().toISOString(), deletedLocally: false, colisionAprobada: false, origen: 'Web Directa',
                     esNavidad: isChristmasEveBooking(),
                     recursoNavidad: isChristmasEveBooking() ? 'Santa' : '',
                     // Mantener el esquema público compatible con las reglas actuales.
