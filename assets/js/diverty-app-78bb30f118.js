@@ -1804,8 +1804,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                 .filter(i => i.categoria === c.id)
                 .sort((a,b) => (a.orden || 0) - (b.orden || 0));
               return { ...c, items, count: items.length };
-            })
-            .filter(c => c.count > 0);
+            });
 
           if(categories.length === 0){
             setContent(`
@@ -1832,7 +1831,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             const firstItem = cat.items[0];
             const cover = cleanStr(cat.imagen || cat.image || firstItem?.image || '');
             const icon = getCatalogIcon(cat);
-            const countLabel = `${cat.count} ${cat.count === 1 ? 'opción' : 'opciones'}`;
+            const countLabel = cat.count > 0 ? `${cat.count} ${cat.count === 1 ? 'opción' : 'opciones'}` : 'Próximamente';
 
             return `
               <button type="button"
@@ -2076,6 +2075,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                   <div class="catalog-empty-light">
                     <i data-lucide="folder-open"></i>
                     <h3>Próximamente más opciones</h3>
+                    <p>Estamos preparando los servicios de este catálogo. Puedes explorar las demás opciones mientras tanto.</p>
                   </div>
                 </section>
               </div>

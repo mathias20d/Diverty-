@@ -25,7 +25,7 @@ const server = http.createServer((request, response) => {
       const api = {
         config_web: [{ id: 'global', bannerActive: false }, { id: 'web_sync', version: 'test', versions: { catalogo_web: 1 } }],
         temas_web: [{ id: theme, nombre: theme, tipo: theme, isDefault: true }],
-        categorias_web: [{ id: 'fiestas', nombre: 'Animación infantil', activo: true, visible: true }, { id: 'comida', nombre: 'Comida', activo: true, visible: true }, { id: 'oculta', nombre: 'Oculta', activo: false, visible: false }],
+        categorias_web: [{ id: 'fiestas', nombre: 'Animación infantil', activo: true, visible: true }, { id: 'comida', nombre: 'Comida', activo: true, visible: true }, { id: 'vacio', nombre: 'Catálogo recién creado sin servicios', activo: true, visible: true }, { id: 'futuro', nombre: 'Catálogo de temporada futura', activo: true, visible: true, visibilidad: 'temporada', fechaInicio: '2099-01-01', fechaFin: '2099-01-31' }, { id: 'oculta', nombre: 'Oculta', activo: false, visible: false }],
         catalogo_web: [
           { id: 'magia', nombre: 'Magia Diverty', categoria: 'fiestas', precio: 100, descripcion: 'Juegos y globoflexia', duracionHoras:1.5, duracionCatalogoDefinida:true, imagen: '/assets/logo-256.webp', serviciosLista: 'Animación\nGloboflexia', orden: 1 },
           { id: 'hero', nombre: 'Héroe azul', categoria: 'fiestas', precio: 80, precioOriginal: 95, tipoServicio: 'personaje', tematica: 'Superhéroes', oferta: true, imagen: '/assets/logo-256.webp', orden: 2 },
@@ -51,7 +51,16 @@ const server = http.createServer((request, response) => {
       await page.locator('.catalog-category-card').first().waitFor();
       const search = page.getByRole('searchbox', { name: 'Buscar servicio o personaje', exact: true });
       const count = page.locator('[data-catalog-count]');
-      assert.equal(await page.locator('.catalog-category-card').count(), 2);
+      assert.equal(await page.locator('.catalog-category-card').count(), 3);
+      const emptyCategory = page.getByRole('button', { name: 'Ver Catálogo recién creado sin servicios', exact: true });
+      assert.match(await emptyCategory.innerText(), /Próximamente/);
+      assert.equal(await page.getByRole('button', { name: 'Ver Catálogo de temporada futura', exact: true }).count(), 0);
+      assert.equal(await page.getByRole('button', { name: 'Ver Oculta', exact: true }).count(), 0);
+      await emptyCategory.click();
+      await page.getByRole('heading', { name: 'Catálogo recién creado sin servicios', exact: true }).waitFor();
+      await page.getByText('Estamos preparando los servicios de este catálogo. Puedes explorar las demás opciones mientras tanto.', { exact: true }).waitFor();
+      assert.equal(await page.locator('[data-action="book-now"]').count(), 0, 'an empty category must not invent services to reserve');
+      await page.getByRole('button', { name: 'Volver al explorador', exact: true }).click();
       assert.equal(await count.innerText(), '3 de 3 opciones');
       const before = requests.filter(name => name === 'catalogo_web').length;
       await search.fill('magia');
@@ -74,8 +83,19 @@ const server = http.createServer((request, response) => {
       await search.fill('no existe');
       await page.getByRole('heading', { name: 'No encontramos opciones con esos filtros', exact: true }).waitFor();
       await page.getByRole('button', { name: 'Limpiar filtros', exact: true }).click();
-      assert.equal(await page.locator('.catalog-category-card').count(), 2);
+      assert.equal(await page.locator('.catalog-category-card').count(), 3);
       assert.equal(requests.filter(name => name === 'catalogo_web').length, before, 'local filters must not reread Firestore');
+      // Simulate a category created from the administrator while this explorer is open.
+      api.categorias_web.push({ id: 'nuevo', nombre: 'Nuevo catálogo publicado desde la app', activo: true, visible: true, orden: 10 });
+      api.config_web.find(row => row.id === 'web_sync').versions.categorias_web = 1;
+      await page.evaluate(() => window.__syncTick());
+      await page.getByRole('button', { name: 'Ver Nuevo catálogo publicado desde la app', exact: true }).waitFor();
+      assert.equal(await page.locator('.catalog-category-card').count(), 4);
+      assert.equal(requests.filter(name => name === 'catalogo_web').length, before, 'publishing an empty category must reuse the current services');
+      if (process.env.BROWSER_ARTIFACT_DIR) {
+        fs.mkdirSync(process.env.BROWSER_ARTIFACT_DIR, { recursive: true });
+        await page.screenshot({ path: path.join(process.env.BROWSER_ARTIFACT_DIR, `catalog-grid-${theme}-${width}.png`), fullPage: true });
+      }
       await search.fill('magia');
       await search.evaluate(element => element.setSelectionRange(2, 4));
       api.catalogo_web[0].nombre = 'Magia Diverty actualizada';
