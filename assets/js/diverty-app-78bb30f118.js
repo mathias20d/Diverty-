@@ -2,6 +2,7 @@
 const NAVIDAD_TENANT_UID=new URLSearchParams(location.search).get('empresa')||'';
 if(NAVIDAD_TENANT_UID&&!/^[-_A-Za-z0-9]{1,128}$/.test(NAVIDAD_TENANT_UID)){document.body.textContent='El enlace de esta empresa no es válido. Pide que te lo compartan otra vez.';throw Error('Invalid business link');}
 const NAVIDAD_OWNER_UID=NAVIDAD_TENANT_UID||'OblqzhP2L3XulJ920O82jwd1Qrk1';
+function applyCompanyBrand(){if(!NAVIDAD_TENANT_UID)return;for(const id of ['mainHeaderLogo','themeBootLogo']){const el=document.getElementById(id);if(el){el.hidden=true;el.style.display='none';}}document.querySelectorAll('a[href*="instagram.com"],.mobile-social-row').forEach(el=>el.style.display='none');document.querySelectorAll('a[href*="wa.me/"]').forEach(a=>{a.style.display=CHRISTMAS_WHATSAPP?'':'none';if(CHRISTMAS_WHATSAPP){const u=new URL(a.href);u.pathname='/'+CHRISTMAS_WHATSAPP;a.href=u.href;const span=a.querySelector('span');if(span)span.textContent='WhatsApp de '+navidadCompanyName;}});const copyright=document.querySelector('footer p.opacity-70');if(copyright)copyright.textContent='© 2026 '+navidadCompanyName+' · Operación Navidad';}
 let navidadCompanyName=NAVIDAD_TENANT_UID?'Operación Navidad':'Diverty Eventos';
 const privateRouteHints=new Map();
 const pointKey=point=>point?Number(point.lat).toFixed(6)+','+Number(point.lng).toFixed(6):'manual';
@@ -791,7 +792,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         const isChristmasEveBooking = () => Array.isArray(app.cart) && app.cart.some(isChristmasEveItem);
 
         function setContent(html) {
- if(NAVIDAD_TENANT_UID){html=html.replaceAll('Diverty Eventos',escapeCatalogText(navidadCompanyName)).replaceAll('https://wa.me/50766677965','https://wa.me/'+CHRISTMAS_WHATSAPP);}
+ applyCompanyBrand();if(NAVIDAD_TENANT_UID){html=html.replaceAll('Diverty confirmará','La empresa confirmará').replaceAll('Diverty Eventos',escapeCatalogText(navidadCompanyName)).replaceAll('https://wa.me/50766677965','https://wa.me/'+CHRISTMAS_WHATSAPP);}
  
             const mc = document.getElementById('mainContent'); 
             if(mc){
@@ -4011,7 +4012,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                     const configRows = await fetchStaticCollection('config_web');
                     const bannerData = configRows.find(row => row.id === 'global') || {};
                     whatsappBookingEnabled = bannerData.whatsappBookingEnabled === true;
-                    if(NAVIDAD_TENANT_UID){navidadCompanyName=String(bannerData.nombreEmpresa||'Operación Navidad').slice(0,100);CHRISTMAS_WHATSAPP=String(bannerData.telefonoEmpresa||'').replace(/\D/g,'').slice(0,15);whatsappBookingEnabled=false;document.title=navidadCompanyName+' · Navidad';document.querySelectorAll('a[href*="wa.me/"]').forEach(a=>{const u=new URL(a.href);u.pathname='/'+CHRISTMAS_WHATSAPP;a.href=u.href;});}
+                    if(NAVIDAD_TENANT_UID){navidadCompanyName=String(bannerData.nombreEmpresa||'Operación Navidad').slice(0,100);CHRISTMAS_WHATSAPP=String(bannerData.telefonoEmpresa||'').replace(/\D/g,'').slice(0,15);whatsappBookingEnabled=false;applyCompanyBrand();document.title=navidadCompanyName+' · Navidad';document.querySelectorAll('a[href*="wa.me/"]').forEach(a=>{const u=new URL(a.href);u.pathname='/'+CHRISTMAS_WHATSAPP;a.href=u.href;});}
                     const bannerEl = document.getElementById('topAnnouncementBanner');
                     if (bannerData.bannerActive === true && bannerData.bannerText) {
                         document.getElementById('bannerTextSpan').textContent = cleanStr(bannerData.bannerText);
