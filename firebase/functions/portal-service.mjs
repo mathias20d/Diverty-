@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto';
 import { PortalError, parsePortalQuery, portalIndex, portalSummary, matchesPortalQuery, assertUnambiguousName } from './portal-policy.mjs';
-const base = 'artifacts/diverty-oficial/public/data';
+
 const maxResults = 200;
 
-export function customerPortalService(db, clock = () => new Date()) {
+export function customerPortalService(db, clock = () => new Date(),scope={}) {
+  const base=scope.base||'artifacts/diverty-oficial/public/data';
   const ref = (section,id) => db.doc(`${base}/${section}/${id}`);
   const throttle = async (uid, ip) => {
     const now = clock().getTime();
@@ -45,6 +46,8 @@ export function customerPortalService(db, clock = () => new Date()) {
       if(typeof payload?.search!=='string'||payload.search.length>254)throw new PortalError('INVALID_NAME');
       const search=parsePortalQuery(payload.search);
       await throttle(uid,ip);
+      if(scope.ownerReceiptsOnly){const owned=await db.collection(`${base}/eventos`).where('ownerUid','==',uid).limit(maxResults+1).get();const rows=owned.docs.filter(d=>matchesPortalQuery(d.data(),search));assertUnambiguousName(rows.map(d=>d.data()),search);return {reservations:rows.map(d=>portalSummary(d.data(),d.id)).sort((a,b)=>b.fecha.localeCompare(a.fecha)||b.hora.localeCompare(a.hora))};}
+
       const index=await db.collection(`${base}/portal_busqueda`).where(search.kind==='phone'?'telefonoKey':'nombreKey','==',search.value).limit(maxResults+1).get();
       if(index.size>maxResults)throw new PortalError(search.kind==='name'?'AMBIGUOUS_NAME':'TOO_MANY_RESULTS');
       const snapshots=await Promise.all(index.docs.map(index=>ref('eventos',index.id).get()));
@@ -56,7 +59,8 @@ export function customerPortalService(db, clock = () => new Date()) {
       const legacy=await Promise.all(legacyQueries.map(query=>query.limit(maxResults+1).get()));
       if(legacy.some(snapshot=>snapshot.size>maxResults))throw new PortalError(search.kind==='name'?'AMBIGUOUS_NAME':'TOO_MANY_RESULTS');
       legacy.forEach(snapshot=>snapshot.docs.forEach(event=>{if(matchesPortalQuery(event.data(),search))rows.set(event.id,event.data());}));
-      assertUnambiguousName([...rows.values()],search);
+      if(scope.christmasOnly){for(const [id,event]of rows)if(event.esNavidad!==true&&!/nochebuena/i.test(event.servicio||''))rows.delete(id);}
+        assertUnambiguousName([...rows.values()],search);
       if(!rows.size) {
         const migration=await ref('configuracion','migracion_portal_v1').get();
         if(migration.data()?.done!==true)throw new PortalError('INDEX_NOT_READY');

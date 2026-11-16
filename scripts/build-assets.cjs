@@ -35,9 +35,9 @@ js = js.replace(/diverty-resource-usage\.mjs(?:\?v=[a-f0-9]+)?/g,
 js = js.replace(/diverty-booking-firebase\.js(?:\?v=[a-f0-9]+)?/g,
   `diverty-booking-firebase.js?v=${version('assets/js/diverty-booking-firebase.js')}`);
 fs.writeFileSync(path.join(root, main), js);
-for (const file of ['index.html', 'admin.html']) {
+for (const file of ['index.html']) {
   let html = fs.readFileSync(path.join(root, file), 'utf8');
-  for (const asset of ['assets/css/diverty-tailwind-local.css', 'assets/css/diverty-eb0b36bf04.css', 'assets/css/diverty-layout.css', 'assets/js/diverty-runtime-587c019781.js', 'assets/vendor/lucide.min.js', main]) {
+  for (const asset of ['assets/css/diverty-tailwind-local.css', 'assets/css/diverty-eb0b36bf04.css', 'assets/css/diverty-layout.css', 'assets/css/operacion-navidad.css', 'assets/js/diverty-runtime-587c019781.js', 'assets/vendor/lucide.min.js', main]) {
     const escaped = asset.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     html = html.replace(new RegExp(`/${escaped}(?:\\?v=[a-f0-9]+)?`, 'g'), `/${asset}?v=${version(asset)}`);
   }
@@ -46,12 +46,13 @@ for (const file of ['index.html', 'admin.html']) {
 
 // Publish only the website, keeping build tooling and tests out of
 // the deployed directory. Edge functions are still discovered from the base.
-const output = path.join(root, 'dist');
+const output = path.resolve(root, 'dist');
+if(!output.startsWith(path.resolve(root)+path.sep) || (fs.existsSync(output)&&fs.lstatSync(output).isSymbolicLink()))throw Error('Unsafe build output');
 fs.rmSync(output, { recursive: true, force: true });
 fs.mkdirSync(output, { recursive: true });
 fs.cpSync(path.join(root, 'assets'), path.join(output, 'assets'), { recursive: true });
 for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
-  if (entry.isFile() && (/\.(html|json|txt|xml|png|jpe?g|ico|mp4)$/i.test(entry.name) &&
+  if (entry.name !== 'admin.html' && entry.name !== 'Video' && !/\.mp4$/i.test(entry.name) && entry.isFile() && (/\.(html|json|txt|xml|png|jpe?g|ico|mp4)$/i.test(entry.name) &&
       !['package.json', 'package-lock.json', 'vercel.json'].includes(entry.name) || entry.name === 'Video')) {
     fs.copyFileSync(path.join(root, entry.name), path.join(output, entry.name));
   }
@@ -76,7 +77,7 @@ for (const file of fs.readdirSync(path.join(output, 'assets/js'))) {
 // configured by the admin still load the complete library when first needed.
 const fullIcons = 'assets/vendor/lucide-full.min.js';
 fs.copyFileSync(path.join(output, 'assets/vendor/lucide.min.js'), path.join(output, fullIcons));
-const templates = ['index.html', 'admin.html', main, 'assets/js/diverty-runtime-587c019781.js'].map(file => fs.readFileSync(path.join(root, file), 'utf8')).join('\n');
+const templates = ['index.html', main, 'assets/js/diverty-runtime-587c019781.js'].map(file => fs.readFileSync(path.join(root, file), 'utf8')).join('\n');
 const catalogIcons = templates.slice(templates.indexOf('function getCatalogIcon('), templates.indexOf('function getLocalDateISO('));
 const names = [...new Set([
   ...[...templates.matchAll(/data-lucide=["']([a-z0-9-]+)["']/g)].map(match => match[1]),
@@ -114,7 +115,7 @@ for (const file of modules.concat(path.basename(main))) {
   const target = path.join(output, 'assets/js', file);
   fs.writeFileSync(target, versionReferences(fs.readFileSync(target, 'utf8')));
 }
-for (const file of ['index.html', 'admin.html']) {
+for (const file of ['index.html']) {
   const target = path.join(output, file);
   let html = fs.readFileSync(target, 'utf8');
   html = html.replace(/\/assets\/[\w./-]+\.(?:js|mjs|css|webp|woff2)(?:\?v=[a-f0-9]+)?/g, match => {

@@ -1,10 +1,11 @@
+const currentCompany=()=>typeof location==='undefined'?'':new URLSearchParams(location.search).get('empresa')||'';
 import {PortalError} from './diverty-portal.mjs?v=54148b70bb91';
 
 export async function requestCustomerPortal(payload,token,{fetchImpl=fetch,timeoutMs=10000}={}) {
   if(typeof token!=='string'||!token)throw new PortalError('UNAVAILABLE');
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),timeoutMs);
   try {
-    const response=await fetchImpl('/api/customer-portal',{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(payload),signal:controller.signal});
+    const response=await fetchImpl('/api/customer-portal'+(currentCompany()?'?empresa='+encodeURIComponent(currentCompany()):''),{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(payload),signal:controller.signal});
     // Netlify may return its own non-JSON response when limiting requests.
     if(response.status===429)throw new PortalError('RATE_LIMITED');
     const data=await response.json();

@@ -3,7 +3,7 @@ const FIREBASE_PROJECT_ID = "diverty-eventos";
 const APP_ID = "diverty-oficial";
 
 const SITE_NAME = "Diverty Panamá";
-const GENERIC_TITLE = "Diverty Eventos | Planes de Fiestas en Panamá";
+const GENERIC_TITLE = "Diverty Eventos | Operación Navidad";
 const GENERIC_DESCRIPTION =
   "¡Celebra con Diverty Eventos! Fiestas infantiles en Panamá. Payasitos, animadores, pintacaritas y shows de burbujas.";
 

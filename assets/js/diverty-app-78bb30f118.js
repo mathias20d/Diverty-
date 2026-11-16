@@ -1,9 +1,20 @@
+
+const NAVIDAD_TENANT_UID=new URLSearchParams(location.search).get('empresa')||'';
+if(NAVIDAD_TENANT_UID&&!/^[-_A-Za-z0-9]{1,128}$/.test(NAVIDAD_TENANT_UID)){document.body.textContent='El enlace de esta empresa no es válido. Pide que te lo compartan otra vez.';throw Error('Invalid business link');}
+const NAVIDAD_OWNER_UID=NAVIDAD_TENANT_UID||'OblqzhP2L3XulJ920O82jwd1Qrk1';
+let navidadCompanyName=NAVIDAD_TENANT_UID?'Operación Navidad':'Diverty Eventos';
+const privateRouteHints=new Map();
+const pointKey=point=>point?Number(point.lat).toFixed(6)+','+Number(point.lng).toFixed(6):'manual';
+async function readNavidadAvailability(date,point=null){const month=getMonthRange(date).start.slice(0,7);const response=await fetch('/api/navidad',{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json'},body:JSON.stringify({empresa:NAVIDAD_OWNER_UID,action:'availability',month,location:point})});if(!response.ok)throw Error('No se pudo consultar la disponibilidad.');const data=await response.json();if(!Array.isArray(data.rows)||!data.recommendations||!Number.isInteger(data.capacity))throw Error('Disponibilidad incompleta');privateRouteHints.set(pointKey(point),data.recommendations);christmasCapacityCache={at:Date.now(),value:data.capacity};return data;}
+const readBrowserStorage=(type,key)=>legacyReadBrowserStorage(type,NAVIDAD_TENANT_UID?'navidad_'+NAVIDAD_TENANT_UID+'_'+key:key);
+const writeBrowserStorage=(type,key,value)=>legacyWriteBrowserStorage(type,NAVIDAD_TENANT_UID?'navidad_'+NAVIDAD_TENANT_UID+'_'+key:key,value);
+document.addEventListener('click',event=>{if(!NAVIDAD_TENANT_UID)return;const link=event.target.closest?.('a[href]');if(!link)return;let target;try{target=new URL(link.href);}catch{return;}if(!['wa.me','api.whatsapp.com'].includes(target.hostname))return;event.preventDefault();event.stopImmediatePropagation();if(!CHRISTMAS_WHATSAPP)return showToast('Esta empresa no tiene WhatsApp configurado.','info');const text=target.searchParams.get('text')||'';window.open('https://wa.me/'+CHRISTMAS_WHATSAPP+(text?'?text='+encodeURIComponent(text):''),'_blank','noopener,noreferrer');},true);
 import { queueWhatsappConfirmation } from './diverty-whatsapp-confirmation.mjs?v=c022580a871d';
 import { analytics } from './diverty-analytics.mjs?v=cd495b721575';
 import {serviceDurationHours} from './diverty-service-duration.mjs?v=4b9aeccab616';
 import {responsiveImage,imageFallbackUrl} from './diverty-images.mjs?v=64d519d228f7';
 import {readMapsLocation,shortMapsUrl,mapsLocationFromUrl} from './diverty-maps-link.mjs?v=f39acfc459a8';
-import {requestCustomerPortal} from './diverty-portal-api.mjs?v=f60c0331f0df';
+import {requestCustomerPortal} from './diverty-portal-api.mjs?v=a066b53319f9';
 import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=ed78a5cc7297';
 import { isClosedBookingDate } from './diverty-date-availability.mjs?v=eb035e69cbda';
 import { catalogQuantityLimits, clampCatalogQuantity } from './diverty-catalog-product.mjs?v=e03151084326';
@@ -15,7 +26,7 @@ import { gpsPointFromText } from './diverty-gps-point.mjs?v=126f0b271d88';
 import { capturePreciseGps, gpsAccuracyMessage } from './diverty-gps-capture.mjs?v=e01d4b810953';
 import { needsPlaceReference } from './diverty-location-reference.mjs?v=e666d9364da4';
 import { peakResourceUsage } from './diverty-resource-usage.mjs?v=cd3d0ce00dff';
-import { prepareBookingAttempt, readBookingReceipt, isNormalDayFullyBooked, readBrowserStorage, writeBrowserStorage } from './diverty-booking-state.mjs?v=f9ab11e6559b';
+import { prepareBookingAttempt, readBookingReceipt, isNormalDayFullyBooked, readBrowserStorage as legacyReadBrowserStorage, writeBrowserStorage as legacyWriteBrowserStorage } from './diverty-booking-state.mjs?v=f9ab11e6559b';
 import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=e6350f9ee660';
 
 function captureBookingGps(form, isCurrent, onProgress) {
@@ -122,7 +133,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             if(isThemePreview)throw new Error('Theme preview is read-only');
             if (db && auth?.currentUser && getDocs && doc) return { db, auth };
             if (!firebaseRuntimePromise) {
-                firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js?v=6208ea238f8d')
+                firebaseRuntimePromise = import('/assets/js/diverty-booking-firebase.js?v=94857d742168')
                     .then(m => m.getDivertyFirebaseRuntime(firebaseConfig, 'DivertyWeb', typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : ''))
                     .then(rt => {
                         db = rt.db; auth = rt.auth;
@@ -164,6 +175,8 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             return decodeFirestoreDocument(await r.json());
         }
         async function fetchPublicRestCollection(collectionName) {
+ if(NAVIDAD_TENANT_UID&&collectionName==='config_web'){const ids=['global','tema_global','web_sync','fechas_cerradas','disponibilidad'];const rows=await Promise.all(ids.map(id=>fetchPublicRestDoc(collectionName,id).catch(()=>null)));return rows.filter(Boolean);}
+
             const base=`https://firestore.googleapis.com/v1/projects/${firebaseConfig.projectId}/databases/(default)/documents/artifacts/${CRM_APP_ID}/public/data/${collectionName}`;
             const rows=[]; let pageToken='';
             for(let page=0; page<5; page++) {
@@ -199,7 +212,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
 
         const firebaseConfig = { apiKey: "AIzaSyDxE2E1KMuZU523k8oWHabi1jDrFxPOD-0", authDomain: "diverty-eventos.firebaseapp.com", projectId: "diverty-eventos", storageBucket: "diverty-eventos.firebasestorage.app", messagingSenderId: "491130670516", appId: "1:491130670516:web:8c80abd09ccc92c194f6e1" };
-        const CRM_APP_ID = "diverty-oficial"; 
+        const CRM_APP_ID = NAVIDAD_TENANT_UID ? "navidad_"+NAVIDAD_TENANT_UID : "diverty-oficial"; 
 
         let locations = [{ value: 'panama-centro', label: 'Panamá Centro (Base)', cost: 0 }];
         let gallery = [], activeCoupons = [], allPurchasableItems = [];
@@ -295,36 +308,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             const score=Math.max(0,addedTravel)+sameDate.length*2+startRoutePenalty-nearbyBonus;
             return {feasible:fitsPrevious&&fitsNext,score,addedTravel,nearestKm,nearestTimeGap,anchors:sameDate.length,previous,next,legPrev,legNext};
         };
-        function computeChristmasSmartRoute(date,time,capacity,gps,rows=routeEvents){
-            const t=christmasRouteTimeMinutes(time);
-            const cap=Math.max(1,Number(capacity)||1);
-            if(!gps||t===null) return null;
-            const santaNames=Array.from({length:cap},(_,i)=>`Santa ${i+1}`);
-            const dayRows=(Array.isArray(rows)?rows:[]).filter(ev=>{
-                const id=String(ev._eventId||ev.id||'');
-                const isSanta=ev.esNavidad===true||String(ev.recursoNavidad||'').toLowerCase()==='santa';
-                return id&&isSanta&&String(ev.fecha||'')===String(date)&&christmasRouteTimeMinutes(ev.hora)!==null;
-            }).map(ev=>({...ev,id:String(ev._eventId||ev.id||'')}));
-            const routes=new Map(santaNames.map(name=>[name,[]]));
-            const unassigned=[];
-            for(const ev of dayRows){
-                const santa=String(ev.santaAsignado||'').trim();
-                if(routes.has(santa)) routes.get(santa).push(ev); else unassigned.push(ev);
-            }
-            // Compatibilidad: si una reserva antigua no tenía Santa, la distribuimos virtualmente
-            // para que no desaparezca de la planificación mientras la app la reconcilia.
-            for(const ev of unassigned.sort((a,b)=>christmasRouteTimeMinutes(a.hora)-christmasRouteTimeMinutes(b.hora))){
-                const choices=santaNames.map(name=>({name,...christmasRouteInsertion(ev,routes.get(name))}))
-                    .filter(x=>x.feasible).sort((a,b)=>a.score-b.score||routes.get(a.name).length-routes.get(b.name).length);
-                const chosen=choices[0]?.name||santaNames.slice().sort((a,b)=>routes.get(a).length-routes.get(b).length)[0];
-                if(chosen) routes.get(chosen).push({...ev,santaAsignado:chosen});
-            }
-            const candidate={id:'__candidate__',fecha:String(date),hora:String(time),lat:Number(gps.lat),lng:Number(gps.lng)};
-            const choices=santaNames.map(name=>({name,load:routes.get(name).length,...christmasRouteInsertion(candidate,routes.get(name))}))
-                .filter(x=>x.feasible).sort((a,b)=>a.score-b.score||a.load-b.load||a.name.localeCompare(b.name,undefined,{numeric:true}));
-            const best=choices[0]||null;
-            return best ? {feasible:true,bestSanta:best.name,score:best.score,nearestKm:best.nearestKm,nearestTimeGap:best.nearestTimeGap,anchors:best.anchors,addedTravel:best.addedTravel} : {feasible:false,bestSanta:'',score:9999,nearestKm:null,nearestTimeGap:null,anchors:dayRows.length};
-        }
+        function computeChristmasSmartRoute(date,time,capacity,gps){if(!gps)return null;return privateRouteHints.get(pointKey(gps))?.[String(date)+'|'+String(time)]||{feasible:false,score:9999,nearby:false,anchors:0,nearestKm:null,nearestTimeGap:null,bestSanta:''};}
         let currentCalDate = new Date(); 
         let bookingFormState = {}; 
         let selectedCalendarDate = null; 
@@ -334,7 +318,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         let normalResourceCapacityCache = { at:0, value:{animadores:3,payasos:1} };
         let normalBookingCapacity = null;
 
-        const CHRISTMAS_WHATSAPP = '50766677965';
+        let CHRISTMAS_WHATSAPP = NAVIDAD_TENANT_UID?'':'50766677965';
         const CHRISTMAS_REVIEW_TERMS = [
             'barraza','chorrillo','calle 24','calle 25','san pedro','ciudad radial','villa del rey',
             'rana de oro','san joaquin','nazareno','villa cecilia','villa lobos','monterico sector 7',
@@ -806,7 +790,9 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
 
         const isChristmasEveBooking = () => Array.isArray(app.cart) && app.cart.some(isChristmasEveItem);
 
-        function setContent(html) { 
+        function setContent(html) {
+ if(NAVIDAD_TENANT_UID){html=html.replaceAll('Diverty Eventos',escapeCatalogText(navidadCompanyName)).replaceAll('https://wa.me/50766677965','https://wa.me/'+CHRISTMAS_WHATSAPP);}
+ 
             const mc = document.getElementById('mainContent'); 
             if(mc){
                 const input = mc.querySelector('[data-catalog-query]');
@@ -1102,7 +1088,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             css+=themeControlsCss(resolved);
             style.textContent=css;
             document.head.appendChild(style);
-            if(!isThemePreview)try{localStorage.setItem('diverty_theme_snapshot',JSON.stringify({theme:current.theme,css}));}catch(_){}
+            if(!isThemePreview)try{localStorage.setItem('diverty_theme_snapshot'+(NAVIDAD_TENANT_UID?'_'+NAVIDAD_TENANT_UID:''),JSON.stringify({theme:current.theme,css}));}catch(_){}
             const logoStr = cleanStr(themeData.logoUrl || themeData.imagenLogo || themeData.logo);
             if (logoStr) { const headLogo = document.getElementById('mainHeaderLogo'); if(headLogo) headLogo.src = logoStr; const bootLogo = document.getElementById('themeBootLogo'); if(bootLogo) bootLogo.src = logoStr; }
 
@@ -1188,68 +1174,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             return true;
         }
 
-        function buildDynamicNav() {
-            const dNav = document.getElementById('desktopNav');
-            if (dNav) {
-                let dHtml = `<button id="navHome" data-target-section="home" class="nav-link nav-action"><i data-lucide="sun" class="w-4 h-4 mr-2 season-text-primary"></i>Inicio</button>`;
-                dHtml += `<details id="desktopCatalogMenu" class="desktop-catalog-menu"><summary><i data-lucide="layout-grid" class="w-4 h-4 season-text-primary"></i>Catálogo<i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></summary><div class="desktop-catalog-options">`;
-                dynamicCategories.forEach(c => {
-                    if (isCategoryCurrentlyVisible(c)) dHtml += `<button id="navCat_${c.id}" data-target-section="cat_${c.id}" class="nav-link nav-action"><i data-lucide="${getCatalogIcon(c)}" class="w-4 h-4 mr-2 season-text-primary"></i>${c.nombre}</button>`;
-                });
-                dHtml += `</div></details><button data-target-section="portal" class="nav-link nav-action"><i data-lucide="search" class="w-4 h-4 mr-2 season-text-primary"></i>Mi reserva</button>`;
-                dHtml += `<button id="navGallery" data-target-section="gallery" class="nav-link nav-action"><i data-lucide="image" class="w-4 h-4 mr-2 text-emerald-500"></i>Galería</button>
-                          <button id="navBooking" data-target-section="booking" class="season-btn nav-action text-white shadow-md ml-2 py-2 px-4 rounded-full flex items-center font-bold text-sm"><i data-lucide="calendar-check" class="w-4 h-4 mr-1.5"></i>Reservar</button>`;
-                dNav.innerHTML = dHtml;
-            }
-
-            const mNav = document.getElementById('mobileNavLinks');
-            if (mNav) {
-                let mHtml = `
-                <button id="mobileHome" data-target-section="home" class="w-full mobile-nav-link nav-action group">
-                    <div class="mobile-nav-icon-box mr-3"><i data-lucide="sun" class="w-4 h-4 text-[var(--s-text-muted)] group-hover:text-[var(--s-primary)] transition-colors"></i></div>
-                    <span class="flex-1 text-left tracking-wide text-[14px]">Inicio</span>
-                    <i data-lucide="chevron-right" class="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:text-[var(--s-primary)] transition-colors"></i>
-                </button>
-                <button id="mobilePortal" data-target-section="portal" class="w-full mobile-nav-link nav-action group">
-                    <div class="mobile-nav-icon-box mr-3"><i data-lucide="search" class="w-4 h-4 text-[var(--s-text-muted)] group-hover:text-[var(--s-primary)] transition-colors"></i></div>
-                    <span class="flex-1 text-left tracking-wide text-[14px]">Mi Reserva</span>
-                    <i data-lucide="chevron-right" class="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:text-[var(--s-primary)] transition-colors"></i>
-                </button>`;
-                dynamicCategories.forEach(c => {
-                    if (isCategoryCurrentlyVisible(c)) {
-                        mHtml += `
-                        <button id="mobileCat_${c.id}" data-target-section="cat_${c.id}" class="w-full mobile-nav-link nav-action group">
-                            <div class="mobile-nav-icon-box mr-3"><i data-lucide="${getCatalogIcon(c)}" class="w-4 h-4 text-[var(--s-text-muted)] group-hover:text-[var(--s-primary)] transition-colors"></i></div>
-                            <span class="flex-1 text-left tracking-wide text-[14px]">${c.nombre}</span>
-                            <i data-lucide="chevron-right" class="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:text-[var(--s-primary)] transition-colors"></i>
-                        </button>`;
-                    }
-                });
-                mHtml += `
-                <button id="mobileGallery" data-target-section="gallery" class="w-full mobile-nav-link nav-action group">
-                    <div class="mobile-nav-icon-box mr-3"><i data-lucide="image" class="w-4 h-4 text-[var(--s-text-muted)] group-hover:text-[var(--s-primary)] transition-colors"></i></div>
-                    <span class="flex-1 text-left tracking-wide text-[14px]">Galería de Eventos</span>
-                    <i data-lucide="chevron-right" class="w-4 h-4 opacity-40 group-hover:opacity-100 group-hover:text-[var(--s-primary)] transition-colors"></i>
-                </button>`;
-                mNav.innerHTML = mHtml;
-            }
-
-            const fNav = document.getElementById('footerNavLinks');
-            if (fNav) {
-                let fHtml = `<a href="#home" data-target-section="home" class="nav-action transition-colors">Inicio</a>`;
-                dynamicCategories.forEach(c => {
-                    if (isCategoryCurrentlyVisible(c)) fHtml += `<a href="#cat_${c.id}" data-target-section="cat_${c.id}" class="nav-action transition-colors">${c.nombre}</a>`;
-                });
-                fHtml += `
-                    <a href="#gallery" data-target-section="gallery" class="nav-action transition-colors">Galería</a>
-                    <a href="#booking" data-target-section="booking" class="nav-action transition-colors">Reservar</a>
-                    <a href="#portal" data-target-section="portal" class="nav-action transition-colors">Mi Reserva</a>
-                `;
-                fNav.innerHTML = fHtml;
-            }
-            if(typeof lucide !== 'undefined') lucide.createIcons();
-            updateNavigationState();
-        }
+        function buildDynamicNav(){const links='<button data-target-section="home" class="nav-link nav-action">Navidad</button><button data-target-section="booking" class="nav-link nav-action">Reservar entrega</button><button data-target-section="portal" class="nav-link nav-action">Mi reserva</button>';for(const id of ['desktopNav','mobileNavLinks','footerNavLinks']){const el=document.getElementById(id);if(el)el.innerHTML=links;}if(window.lucide)lucide.createIcons();}
 
         // --- ENLACES DIRECTOS PREMIUM: paquetes y categorías ---
         function getDirectRoute() {
@@ -1297,7 +1222,8 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                 }
             }
 
-            if (categoryId) {
+            if (categoryId) { setDirectRoute('', '', 'replace'); setActiveSection('home'); return true; }
+            if (false && categoryId) {
                 const cat = dynamicCategories.find(c => c.id === categoryId && isCategoryCurrentlyVisible(c));
                 if (cat) {
                     app.activeSection = `cat_${categoryId}`;
@@ -1335,7 +1261,8 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function setActiveSection(sectionId) {
-            if (!sectionId) sectionId = 'home';
+            if (!sectionId || !['home','booking','portal','catalog'].includes(sectionId)) sectionId = 'home';
+            if(sectionId==='catalog')sectionId='home';
             if(app.activeSection==='booking' && sectionId!=='booking'){
                 const form=document.getElementById('bookingForm');
                 if(form) bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(form).entries())};
@@ -1636,106 +1563,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             </div>`;
         }
 
-        function renderHome() {
-            if (isFirebaseLoaded) analytics.view('home');
-            let ex = '';
-            if(!isFirebaseLoaded || (app.catalog && app.catalog.length === 0 && !catalogLoaded)){ 
-                ex = `<div class="w-full flex flex-col items-center justify-center py-12"><i data-lucide="loader-2" class="w-10 h-10 season-text-primary animate-spin mb-4"></i><p class="text-sm font-bold season-text-muted tracking-widest uppercase">Cargando nuestros paquetes...</p></div>`; 
-            } else {
-                let eh = '';
-                if(app.catalog && app.catalog.length>0){ 
-                    const destacados = app.catalog.filter(i => i.destacado === true); 
-                    if(destacados.length > 0) {
-                        eh += destacados.map(createDetailedCardHTML).join(''); 
-                        ex = `${destacados.length > 1 ? `<div class="flex md:hidden justify-center mb-1 opacity-80 animate-slide-up w-full"><span class="text-[10px] season-text-muted font-bold uppercase tracking-widest border border-[var(--s-glass-border)] bg-black/5 px-3 py-1 rounded-full shadow-sm">Desliza 👉</span></div>` : ''}<div class="home-swipe-track home-featured-track pt-10">${eh}</div>`;
-                    } else {
-                        ex = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="sparkles" class="w-10 h-10 mx-auto mb-3 opacity-50 season-text-primary"></i><p class="text-sm font-bold season-text-muted">Nuevos paquetes espectaculares próximamente.</p></div>`;
-                    }
-                } else {
-                    ex = `<div class="w-full text-center py-10 animate-slide-up"><i data-lucide="folder-open" class="w-10 h-10 mx-auto mb-3 opacity-50 season-text-primary"></i><p class="text-sm font-bold season-text-muted">No hay paquetes disponibles en este momento.</p></div>`;
-                }
-            }
-            
-            let rc = '';
-            if(isFirebaseLoaded && customerReviews && customerReviews.length>0){
-                rc = `<div class="container mx-auto px-4 relative z-10 pb-12 mt-12">
-                    <h2 class="text-3xl lg:text-4xl font-extrabold text-center mb-10 season-text-title font-nunito">Lo que dicen de nosotros <i data-lucide="heart" class="w-8 h-8 inline text-rose-500 animate-pulse"></i></h2>
-                    <div class="flex md:hidden items-center justify-center mb-6 opacity-80"><span class="text-[10px] season-text-muted font-bold uppercase px-3 py-1 rounded-full border border-[var(--s-glass-border)] bg-black/5 shadow-sm">Desliza 👉</span></div>
-                    <div class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 px-2 hide-scrollbar md:grid md:grid-cols-3 pt-6">` + 
-                    customerReviews.map(r => `
-                    <div class="w-[85vw] max-w-[350px] md:w-full snap-center flex-shrink-0 h-full animate-slide-up relative mt-4">
-                        <div class="absolute top-2 right-4 opacity-[0.07] z-0 text-[var(--s-primary)]">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="90" height="90" viewBox="0 0 24 24" fill="currentColor"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
-                        </div>
-                        <div class="glass-panel card-alive flex flex-col h-full rounded-[2rem] p-7 shadow-sm relative overflow-hidden group transition-all hover:-translate-y-2">
-                            <div class="flex items-center gap-4 mb-5 relative z-10">
-                                <div class="relative">
-                                    <div class="w-14 h-14 rounded-full border-[3px] border-white/60 bg-gradient-to-tr ${r.color||'from-purple-500 to-indigo-500'} flex items-center justify-center text-white font-black text-2xl shadow-[0_5px_15px_rgba(0,0,0,0.15)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">${r.initial}</div>
-                                    <div class="absolute -bottom-1 -right-1 bg-yellow-400 text-yellow-900 rounded-full p-1 shadow-sm border-2 border-[var(--s-glass-bg)]"><i data-lucide="star" class="w-3 h-3 fill-current"></i></div>
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="season-text-title font-black text-lg truncate tracking-tight leading-tight">${r.name}</div>
-                                    <div class="text-[11px] season-text-primary font-bold uppercase tracking-wider truncate flex items-center gap-1 mt-0.5"><i data-lucide="map-pin" class="w-3 h-3"></i> ${r.location}</div>
-                                </div>
-                            </div>
-                            <div class="season-text-muted mb-6 flex-grow relative z-10">
-                                <p class="font-semibold text-[15px] leading-relaxed italic whitespace-normal break-words opacity-90 group-hover:opacity-100 transition-opacity">"${r.comment}"</p>
-                            </div>
-                            <div class="border-t border-[var(--s-glass-border)] pt-5 flex justify-between items-center relative z-10">
-                                <div class="flex gap-0.5 text-yellow-400 drop-shadow-sm group-hover:scale-110 group-hover:translate-x-2 transition-transform duration-300 origin-left">
-                                    ${'<i data-lucide="star" class="w-4 h-4 fill-current"></i>'.repeat(r.rating)}
-                                </div>
-                                <div class="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-500/15 px-3 py-1.5 rounded-full border border-emerald-500/30 flex items-center gap-1.5 shadow-sm"><i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Verificado</div>
-                            </div>
-                        </div>
-                    </div>`).join('') + `</div></div>`;
-            }
-            
-            const firstCatTarget = dynamicCategories.length > 0 ? `cat_${dynamicCategories[0].id}` : 'home';
-            
-            const existingHero = document.getElementById('hero-section-identifier');
-            const mainCont = document.getElementById('mainContent');
-
-            if (existingHero && app.activeSection === 'home' && mainCont.contains(existingHero)) {
-                
-                const campWrap = document.getElementById('home-campaigns-wrapper');
-                if (campWrap && isFirebaseLoaded) { 
-                    campWrap.innerHTML = getCampaignsHTML(); 
-                    if(typeof lucide !== 'undefined') lucide.createIcons({root: campWrap}); 
-                }
-
-                const featWrap = document.getElementById('home-featured-wrapper');
-                if (featWrap) { 
-                    featWrap.innerHTML = ex; 
-                    if(typeof lucide !== 'undefined') lucide.createIcons({root: featWrap}); 
-                    setupSliders(); 
-                }
-
-                const revWrap = document.getElementById('home-reviews-wrapper');
-                if (revWrap) { 
-                    revWrap.innerHTML = rc; 
-                    if(typeof lucide !== 'undefined') lucide.createIcons({root: revWrap}); 
-                    setupSliders(); 
-                }
-
-                if(typeof renderCalendar === 'function') renderCalendar();
-                window.__divertyObserveCalendar?.();
-                return;
-            }
-
-            setContent(`<div id="hero-section-identifier"><div class="relative"><section class="relative min-h-[75vh] flex flex-col justify-end pb-16 pt-40 isolate overflow-hidden"><video id="hero-video" autoplay loop muted playsinline webkit-playsinline disablePictureInPicture preload="none" poster="https://res.cloudinary.com/dv40hkeyz/video/upload/so_0,w_720,q_auto,f_jpg/v1723578146/20250813_151416_0001_p5lwst.jpg" class="absolute inset-0 w-full h-full object-cover z-[1] pointer-events-none"><source data-src-mobile="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto:good,f_mp4,vc_h264:baseline,fps_30,ac_none/v1723578146/20250813_151416_0001_p5lwst.mp4" data-src="https://res.cloudinary.com/dv40hkeyz/video/upload/w_720,q_auto,f_mp4,vc_h264:baseline,fps_30/v1723578146/20250813_151416_0001_p5lwst.mp4" type="video/mp4"></video><div class="dv-hero-shade absolute inset-0 bg-black/50 z-[2] pointer-events-none"></div><div class="dv-hero-fade absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[var(--s-bg-color)] to-transparent z-[2] pointer-events-none"></div><div class="hero-content z-[3] relative px-6 w-full max-w-lg mx-auto flex flex-col items-start text-left mt-auto animate-slide-up"><div class="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-yellow-500/30 text-yellow-400 text-[11px] font-bold mb-5 shadow-lg"><span>✨</span> Diversión garantizada</div><h1 class="text-4xl sm:text-5xl font-black mb-4 font-poppins leading-[1.1] text-white drop-shadow-lg">Fiestas infantiles inolvidables en <span class="season-gradient-text drop-shadow-md">Panamá</span></h1><p class="text-base sm:text-lg mb-6 text-slate-200 font-medium font-quicksand leading-relaxed drop-shadow-md">Animación, magia y shows espectaculares para hacer de cada celebración un momento único.</p><div class="flex justify-between items-center w-full mb-6 border-y border-white/20 py-4 gap-2"><div class="flex flex-col items-start flex-1 border-r border-white/20 pr-2"><div class="flex items-center gap-1 text-cyan-400 mb-1"><i data-lucide="users" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">+500</span></div><span class="text-[9px] text-slate-300 leading-tight">eventos<br>realizados</span></div><div class="flex flex-col items-center flex-1 border-r border-white/20 px-2 text-center"><div class="flex items-center gap-1 text-yellow-400 mb-1"><i data-lucide="star" class="w-4 h-4 fill-yellow-400"></i> <span class="font-bold text-white text-[13px]">4.9/5</span></div><span class="text-[9px] text-slate-300 leading-tight">en Google</span></div><div class="flex flex-col items-end flex-1 pl-2 text-right"><div class="flex items-center gap-1 text-pink-400 mb-1"><i data-lucide="smile" class="w-4 h-4"></i> <span class="font-bold text-white text-[13px]">100%</span></div><span class="text-[9px] text-slate-300 leading-tight">diversión<br>asegurada</span></div></div><div class="flex flex-col gap-3 w-full mb-6"><button data-action="navigate-from-modal" data-target-section="booking" class="nav-action w-full season-btn rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-transform active:scale-95 font-bold text-base shadow-lg"><i data-lucide="calendar-check" class="w-5 h-5"></i> Reservar ahora</button><button data-action="scroll-to-catalog" class="w-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 rounded-2xl py-3.5 flex items-center justify-center gap-2 transition-colors font-bold text-base shadow-md active:scale-95"><i data-lucide="eye" class="w-5 h-5"></i> Ver catálogo</button></div></div></section><div id="home-campaigns-wrapper" class="w-full relative z-30 flex flex-col items-center mt-6"></div><div class="container mx-auto px-4 relative z-30 flex flex-col items-center mt-4" id="home-featured-wrapper">${ex}</div></div><div class="container mx-auto px-4 relative z-10 pb-12"><section id="calendar-section" class="mt-4 py-4 animate-slide-up"><div class="max-w-[340px] mx-auto px-2"><div class="glass-panel card-alive p-4 sm:p-5 shadow-sm relative overflow-hidden" id="calendar-card-inner"><div class="flex items-center gap-3 mb-2"><div class="w-9 h-9 rounded-[10px] border-[2px] border-[var(--s-primary)]/20 bg-[var(--s-primary)]/10 flex items-center justify-center season-text-primary shadow-inner"><i data-lucide="calendar-heart" class="w-4 h-4"></i></div><div class="text-left"><h2 class="text-lg font-black season-text-title font-poppins leading-none tracking-tight">Selecciona tu fecha</h2><p class="season-text-muted text-[10px] mt-1 font-medium">Reserva en segundos</p></div></div><div class="calendar-motivation mt-3 mb-1 rounded-[14px] px-3.5 py-3 border border-[var(--s-glass-border)] text-left" style="background: color-mix(in srgb, var(--s-primary) 8%, var(--s-glass-bg));"><p class="season-text-title text-[11px] sm:text-xs font-extrabold leading-snug flex items-start gap-2"><i data-lucide="sparkles" class="w-4 h-4 season-text-primary shrink-0 mt-0.5"></i><span>Tu celebración comienza aquí. Elige una fecha disponible y asegura tu espacio antes de que se agote.</span></p></div><div class="flex justify-between items-center mb-4 mt-3 relative z-10 bg-[var(--s-glass-bg)] backdrop-blur-md p-1.5 rounded-[12px] border border-[var(--s-glass-border)] shadow-sm w-full mx-auto gap-2"><button data-action="prevMonth" id="prevMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-left" class="w-4 h-4"></i></button><h3 id="cal-month-year" class="text-sm sm:text-base font-black season-text-title capitalize leading-none font-poppins px-1 tracking-wide">Cargando...</h3><button data-action="nextMonth" id="nextMonth" class="w-7 h-7 hover:bg-[var(--s-primary)]/10 season-text-title hover:text-[var(--s-primary)] rounded-lg flex items-center justify-center transition-colors border border-transparent hover:border-[var(--s-primary)]/20 active:scale-95"><i data-lucide="chevron-right" class="w-4 h-4"></i></button></div><div id="availability-calendar-grid" class="grid grid-cols-7 gap-y-1 gap-x-1 text-center relative z-10 w-full mb-2"></div></div></div></section></div><div id="home-reviews-wrapper">${rc}</div></div>`);
-            
-            const campWrapper = document.getElementById('home-campaigns-wrapper');
-            if (campWrapper && isFirebaseLoaded) {
-                campWrapper.innerHTML = getCampaignsHTML();
-                if(typeof lucide !== 'undefined') lucide.createIcons({root: campWrapper});
-            }
-
-            window.__divertyScheduleHero?.();
-            window.__divertyObserveCalendar?.();
-
-            if(typeof renderCalendar === 'function') renderCalendar(); 
-        }
+        function renderHome(){const items=app.catalog.filter(isChristmasEveItem);setContent('<section class="christmas-landing"><span class="christmas-label">'+escapeCatalogText(navidadCompanyName)+'</span><h1>La magia de Santa llega a tu puerta</h1><p class="christmas-date">24 y 25 de diciembre de 2026</p><p>Escoge tu entrega, indica el lugar y consulta los horarios recomendados para tu ubicación.</p><a href="#christmas-services" class="season-btn christmas-cta">Ver entregas de Navidad</a></section><section id="christmas-services" class="container mx-auto px-4 py-8"><h2 class="text-2xl font-extrabold mb-5">Entregas de Navidad</h2>'+(items.length?'<div class="grid grid-cols-1 md:grid-cols-2 gap-6">'+items.map(createDetailedCardHTML).join('')+'</div>':'<p role="status">'+(catalogLoaded?'Todavía no hay entregas navideñas publicadas. Contáctanos para consultar.':'Cargando entregas de Navidad…')+'</p>')+'<aside class="christmas-how"><h2>Tu reserva, paso a paso</h2><ol><li>Elige la entrega de Santa.</li><li>Indica la ubicación y los detalles del lugar.</li><li>Consulta transporte, horario y disponibilidad recomendada.</li><li>Envía tu solicitud. Diverty confirmará la reserva.</li></ol><button class="season-btn nav-action christmas-cta" data-target-section="portal">Consultar mi reserva</button></aside></section>');buildDynamicNav();if(window.lucide)lucide.createIcons();}
 
         const catalogBrowseState = new Map();
         let catalogDetailReturn = '';
@@ -2185,92 +2013,10 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         let availabilityStatusCache = { at: 0, ready: false };
-        async function loadBookedEventsForMonth(date, { force = false } = {}) {
-            const { start, end, key } = getMonthRange(date);
-            const requestSeq = ++bookedEventsRequestSeq;
-            const publicRead=!db;
-            const closuresReady = loadClosedDates({force}).then(()=>true,()=>false);
-            // La proyección de cupos es pública: no requiere descargar Auth ni crear una sesión.
-            // Las reservas siguen utilizando Firestore y su validación transaccional.
-            // El indicador de disponibilidad cambia muy poco. Evita releerlo al pasar de un
-            // mes a otro repetidamente; force=true sigue permitiendo una comprobación inmediata.
-            if (force || Date.now() - availabilityStatusCache.at > 60000) {
-                const [status] = await Promise.all([
-                    (!publicRead ? getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','disponibilidad')).then(s=>s.data()) : fetchWithTimeout(fetchPublicRestDoc('config_web','disponibilidad'),8000)).catch(() => null),
-                    getNormalResourceCapacity({force,publicRead})
-                ]);
-                availabilityStatusCache = { at: Date.now(), ready: status?.lista === true && normalBookingCapacity !== null };
-            }
-            if (!await closuresReady || !availabilityStatusCache.ready) { availabilityReady=false; bookedEvents = []; return []; }
-
-            if (!force && bookedEventsMonthCache.has(key) && Date.now()-bookedEventsMonthCache.get(key).at<60000) {
-                bookedEvents = bookedEventsMonthCache.get(key).rows;
-                availabilityReady=true;
-                return bookedEvents;
-            }
-
-            availabilityReady=false;
-            try {
-                let monthEvents;
-                if(!publicRead){
-                    const eventsRef=collection(db,'artifacts',CRM_APP_ID,'public','data','disponibilidad_web');
-                    const snap=await fetchWithTimeout(getDocs(query(eventsRef,where('fecha','>=',start),where('fecha','<=',end))),8000);
-                    monthEvents=snap.docs.map(d=>({...d.data(),_availabilityId:d.id}));
-                }else{
-                    monthEvents=await fetchWithTimeout(fetchPublicRestMonth(start,end),8000);
-                }
-                monthEvents=monthEvents.filter(isBlockingEvent);
-
-                // RUTAS NAVIDAD: disponibilidad_web es la fuente pública autorizada.
-                // Las reservas nuevas ya guardan lat/lng aquí al confirmar la reserva.
-                bookedEventsMonthCache.set(key, {at:Date.now(),rows:monthEvents});
-
-                // Evita que una respuesta antigua reemplace el mes que el usuario ya cambió.
-                if (requestSeq === bookedEventsRequestSeq || getMonthRange(currentCalDate).key === key) {
-                    bookedEvents = monthEvents;
-                    availabilityReady=true;
-                }
-                return monthEvents;
-            } catch (e) {
-                if(requestSeq===bookedEventsRequestSeq)availabilityReady=false;
-                console.warn('No se pudo cargar disponibilidad del mes:', e);
-                return bookedEventsMonthCache.get(key)?.rows || [];
-            }
-        }
+        async function loadBookedEventsForMonth(date,{force=false}={}){const {key}=getMonthRange(date);availabilityReady=false;try{const [data]=await Promise.all([readNavidadAvailability(date),loadClosedDates({force})]);bookedEvents=data.rows;bookedEventsMonthCache.set(key,{at:Date.now(),rows:bookedEvents});availabilityReady=true;availabilityStatusCache={at:Date.now(),ready:true};return bookedEvents;}catch(error){bookedEvents=[];availabilityReady=false;throw error;}}
 
 
-        async function loadRouteEventsForMonth(date, { force = false } = {}) {
-            const { start, end, key } = getMonthRange(date);
-            if (!force && routeEventsMonthCache.has(key) && Date.now() - routeEventsMonthCache.get(key).at < 60000) {
-                routeEvents = routeEventsMonthCache.get(key).rows;
-                return routeEvents;
-            }
-
-            // IMPORTANTE: la web pública NO puede listar `eventos` (correcto por seguridad).
-            // Usamos `disponibilidad_web`, que es la misma fuente autorizada que ya calcula cupos.
-            // Primero aseguramos que el mes esté cargado; luego reutilizamos esos documentos.
-            const monthRows = await loadBookedEventsForMonth(date, { force });
-            const rows = (Array.isArray(monthRows) ? monthRows : [])
-                .filter(ev => {
-                    const id = String(ev._availabilityId || ev.id || '');
-                    const fecha = String(ev.fecha || '').trim();
-                    return !!id && !id.startsWith('slot_') && isChristmasAvailabilityRow(ev) && fecha >= start && fecha <= end;
-                })
-                .map(ev => {
-                    const lat=Number(ev.lat), lng=Number(ev.lng);
-                    const validGps=Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180&&!(lat===0&&lng===0);
-                    return {
-                        ...ev,
-                        id: String(ev._availabilityId || ev.id || ''),
-                        _eventId: String(ev._availabilityId || ev.id || ''),
-                        ...(validGps ? {lat,lng} : {})
-                    };
-                });
-
-            routeEventsMonthCache.set(key, { at: Date.now(), rows });
-            routeEvents = rows;
-            return rows;
-        }
+        async function loadRouteEventsForMonth(date,{force=false}={}){const lat=Number(bookingFormState.christmasLat??christmasLocationState.lat),lng=Number(bookingFormState.christmasLng??christmasLocationState.lng);const valid=Number.isFinite(lat)&&Number.isFinite(lng)&&Math.abs(lat)<=90&&Math.abs(lng)<=180&&!(lat===0&&lng===0);const point=valid?{lat,lng}:null;const [data]=await Promise.all([readNavidadAvailability(date,point),loadClosedDates({force})]);bookedEvents=data.rows;availabilityReady=true;routeEvents=[];return routeEvents;}
 
         async function findCustomerReservations(value) {
             await ensureFirebaseRuntime();
@@ -3023,7 +2769,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                             return {opt,count,fullByCapacity,hint,base:String(opt.textContent||'').split(' — ')[0]};
                         });
 
-                        const candidates=optionInfos.filter(x=>!x.fullByCapacity&&x.hint?.feasible&&x.hint.anchors>0&&Number.isFinite(x.hint.nearestKm)&&x.hint.nearestKm<=10&&Number.isFinite(x.hint.nearestTimeGap)&&x.hint.nearestTimeGap<=120)
+                        const candidates=optionInfos.filter(x=>!x.fullByCapacity&&x.hint?.feasible&&x.hint.nearby===true)
                             .sort((a,b)=>a.hint.score-b.hint.score||timeMinutes(a.opt.value)-timeMinutes(b.opt.value));
                         const bestInfo=candidates[0]||null;
                         const bestScore=bestInfo?.hint?.score ?? null;
@@ -3032,7 +2778,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                             const {opt,count,fullByCapacity,hint,base}=info;
                             const routeBlocked=!fullByCapacity&&hint&&hint.feasible===false;
                             const isBest=!!bestInfo&&opt.value===bestInfo.opt.value;
-                            const isGood=!isBest&&!fullByCapacity&&!routeBlocked&&hint?.feasible&&hint.anchors>0&&Number.isFinite(hint.nearestKm)&&hint.nearestKm<=10&&Number.isFinite(hint.nearestTimeGap)&&hint.nearestTimeGap<=120&&bestScore!==null&&hint.score<=bestScore+12;
+                            const isGood=!isBest&&!fullByCapacity&&!routeBlocked&&hint?.feasible&&hint.nearby===true&&bestScore!==null&&hint.score<=bestScore+12;
                             opt.disabled=fullByCapacity||routeBlocked;
                             opt.dataset.routeRank=opt.disabled?'blocked':isBest?'best':isGood?'good':'available';
                             opt.dataset.santa=hint?.bestSanta||'';
@@ -3362,6 +3108,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         }
 
         function addToCart(item, qty=1) {
+            if(!isChristmasEveItem(item)){showToast("Esta página recibe únicamente reservas de Navidad.","info");return;}
             const rule = getItemQuantityRule(item);
             const safeQty = rule.enabled ? clampItemQuantity(item, qty) : 1;
             const e = app.cart.find(i=>i.id===item.id);
@@ -3941,7 +3688,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                 try {
                     const capacitySnap = await getDoc(doc(db,'artifacts',CRM_APP_ID,'public','data','config_web','global'));
                     const configCapacity = capacitySnap?.exists() ? (capacitySnap.data() || {}) : {};
-                    centralValidation = configCapacity.centralBookingValidation === true;
+                    centralValidation = true;
                     const configuredCapacity = Number(
                         reservaNavidad
                             ? (christmasSmartCapacity ?? await getChristmasCapacity())
@@ -4193,7 +3940,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             // Un solo documento pequeño indica si el administrador cambió contenido web.
             // Las colecciones públicas se conservan en localStorage entre visitas y solo
             // vuelven a descargarse cuando cambia esta versión.
-            const WEB_CACHE_PREFIX = 'diverty_web_cache_v4_';
+            const WEB_CACHE_PREFIX = 'diverty_web_cache_v5_'+CRM_APP_ID+'_';
             let currentWebSyncVersion = '';
             let sectionVersions = {};
             let refreshStaticContent = null;
@@ -4264,6 +4011,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                     const configRows = await fetchStaticCollection('config_web');
                     const bannerData = configRows.find(row => row.id === 'global') || {};
                     whatsappBookingEnabled = bannerData.whatsappBookingEnabled === true;
+                    if(NAVIDAD_TENANT_UID){navidadCompanyName=String(bannerData.nombreEmpresa||'Operación Navidad').slice(0,100);CHRISTMAS_WHATSAPP=String(bannerData.telefonoEmpresa||'').replace(/\D/g,'').slice(0,15);whatsappBookingEnabled=false;document.title=navidadCompanyName+' · Navidad';document.querySelectorAll('a[href*="wa.me/"]').forEach(a=>{const u=new URL(a.href);u.pathname='/'+CHRISTMAS_WHATSAPP;a.href=u.href;});}
                     const bannerEl = document.getElementById('topAnnouncementBanner');
                     if (bannerData.bannerActive === true && bannerData.bannerText) {
                         document.getElementById('bannerTextSpan').textContent = cleanStr(bannerData.bannerText);
@@ -4299,7 +4047,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                         const cd = rows.map(dt => { 
                             return markChristmasBookingItem({ id:dt.id, name:dt.nombre, title:dt.titulo, slug:dt.slug, price:dt.precio, originalPrice:dt.precioOriginal||dt.precio, discountApplied: dt.oferta===true, destacado: dt.destacado===true, description:dt.descripcion, image:dt.imagen, cardImage:dt.imagenTarjeta || dt.imagen, services:dt.serviciosLista?dt.serviciosLista.split('\n').filter(s=>s.trim()!==''):[], tipoServicio:dt.tipoServicio||'servicio', tematica:dt.tematica||'', tipoCobro:dt.tipoCobro||'paquete', isHourly:dt.tipoCobro==='hora', isPerChild:dt.tipoCobro==='nino', cantidadMinima:dt.cantidadMinima, cantidadMaxima:dt.cantidadMaxima, incrementoCantidad:dt.incrementoCantidad, unidadEtiqueta:dt.unidadEtiqueta, categoria:dt.categoria, orden: dt.orden, esNavidad:dt.esNavidad===true, recursoNavidad:dt.recursoNavidad||'', _raw:dt });
                         });
-                        if(cd.length>0){ app.catalog = cd.sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
+                        if(cd.length>0){ app.catalog = cd.filter(isChristmasEveItem).sort((a,b) => (a.orden || 0) - (b.orden || 0)); allPurchasableItems = [...app.catalog]; }
                         catalogLoaded = true; window.catalogLoaded = true;
                     } else {
                         app.catalog = [];
@@ -4320,6 +4068,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                         let themeConfig=(await fetchStaticCollection('config_web')).find(t=>t.id==='tema_global')||{};
                         const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Panama',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
                         let sel = themeConfig.modo==='manual' ? themes.find(t=>t.id===themeConfig.temaManualActivo) : themes.find(t=>t.fechaInicio && t.fechaFin && today>=t.fechaInicio && today<=t.fechaFin);
+                        sel=themes.find(t=>/christmas|navidad/i.test([t.nombre,t.tipo,t.tema].join(' '))) || {nombre:'Navidad'};
                         if (!sel) sel = themes.find(t => t.isDefault === true);
                         if (!sel) sel = themes[0];
                         
@@ -4341,11 +4090,11 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             const loadGallery = async () => { gallery=(await fetchStaticCollection('galeria_web')).map(d=>({image:d.image,alt:'Diverty'})); };
             const loadReviews = async () => { customerReviews=await fetchStaticCollection('resenas_web'); };
             const loadCoupons = async () => { activeCoupons=(await fetchStaticCollection('cupones_web')).filter(c=>c.active!==false && c.activo!==false); if(appliedCoupon){appliedCoupon=activeCoupons.find(c=>c.code===appliedCoupon.code)||null;} };
-            const loadSecondary = async () => { await Promise.allSettled([loadTransport(),loadGallery(),loadReviews(),loadCoupons()]); };
+            const loadSecondary = async () => { await Promise.allSettled([loadTransport(),loadCoupons()]); };
 
             const normalizeCatalogVisibility = () => {
                 const visibleCategoryIds = new Set(dynamicCategories.map(c => c.id));
-                app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria));
+                app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria) && isChristmasEveItem(item));
                 allPurchasableItems = [...app.catalog];
             };
             const rerenderAfterSelectiveSync = changed => {
@@ -4377,10 +4126,10 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                     if (!isThemePreview && (full || changed.has('config_web'))) jobs.push(loadClosedDates({force:true}).then(()=>{renderCalendar();updateBookingDateClosures();}));
                     if (full || changed.has('categorias_web')) jobs.push(loadCategories());
                     if (full || changed.has('catalogo_web')) jobs.push(loadCatalog());
-                    if (full || changed.has('campanas_web')) jobs.push(loadCampaigns());
+                    
                     if (full || changed.has('transporte_web')) jobs.push(loadTransport());
-                    if (full || changed.has('galeria_web')) jobs.push(loadGallery());
-                    if (full || changed.has('resenas_web')) jobs.push(loadReviews());
+                    
+                    
                     if (full || changed.has('cupones_web')) jobs.push(loadCoupons());
                     await Promise.allSettled(jobs);
 
@@ -4403,7 +4152,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             // Así un catálogo oculto o fuera de temporada tampoco deja paquetes sueltos
             // en destacados, búsquedas, páginas de categoría o acciones de compra.
             const visibleCategoryIds = new Set(dynamicCategories.map(c => c.id));
-            app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria));
+            app.catalog = app.catalog.filter(item => visibleCategoryIds.has(item.categoria) && isChristmasEveItem(item));
             allPurchasableItems = [...app.catalog];
 
             buildDynamicNav();

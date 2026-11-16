@@ -1,0 +1,412 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == 'OblqzhP2L3XulJ920O82jwd1Qrk1';
+    }
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function shortText(value, max) {
+      return value is string && value.size() <= max;
+    }
+
+    function validGps(d) {
+      return d.get('lat', null) is number
+        && d.lat >= -90
+        && d.lat <= 90
+        && d.get('lng', null) is number
+        && d.lng >= -180
+        && d.lng <= 180
+        && !(d.lat == 0 && d.lng == 0);
+    }
+
+    function pendingManualLocation(d) {
+      return d.esNavidad == true
+        && d.estado == 'Pendiente'
+        && d.ubicacion == 'Ubicación por confirmar'
+        && d.transporte == '0'
+        && shortText(d.direccion, 1500)
+        && d.direccion.size() >= 3
+        && !d.keys().hasAny(['lat', 'lng']);
+    }
+
+    function validRequest(id) {
+      let d = request.resource.data;
+
+      return signedIn()
+        && id.matches('web-[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}')
+
+        && d.keys().hasOnly([
+          'id', 'ownerUid', 'cliente', 'email', 'telefono',
+          'telefonoBusqueda', 'tipoEvento', 'ninos', 'fecha', 'hora',
+          'ubicacion', 'direccion', 'referenciaLugar', 'comentarios',
+          'servicio', 'serviciosSeleccionados', 'descripcionEvento',
+          'transporte', 'descuento', 'gastos', 'detalleGastos',
+          'total', 'abono', 'estado', 'createdAt', 'deletedLocally',
+          'colisionAprobada', 'origen', 'esNavidad', 'recursoNavidad',
+          'lat', 'lng'
+        ])
+
+        && d.id == id
+        && d.ownerUid == request.auth.uid
+
+        && shortText(d.cliente, 150)
+        && d.cliente.size() > 0
+        && shortText(d.email, 254)
+        && shortText(d.telefono, 30)
+
+        && shortText(d.telefonoBusqueda, 20)
+        && d.telefonoBusqueda.matches('[0-9]{6,15}')
+
+        && shortText(d.tipoEvento, 100)
+        && shortText(d.ninos, 10)
+
+        && d.fecha is string
+        && d.fecha.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+
+        && d.hora is string
+        && d.hora.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+
+        && shortText(d.ubicacion, 200)
+        && shortText(d.direccion, 1500)
+        && shortText(d.referenciaLugar, 500)
+
+        && shortText(d.comentarios, 3000)
+        && shortText(d.servicio, 3000)
+        && shortText(d.descripcionEvento, 30000)
+
+        && d.serviciosSeleccionados is list
+        && d.serviciosSeleccionados.size() > 0
+        && d.serviciosSeleccionados.size() <= 50
+
+        && d.transporte is string
+        && d.transporte.matches('[0-9]+([.][0-9]+)?')
+
+        && d.descuento is string
+        && d.descuento.matches('[0-9]+([.][0-9]+)?')
+
+        && d.total is string
+        && d.total.matches('[0-9]+([.][0-9]+)?')
+
+        && d.abono == '0'
+        && d.gastos == '0'
+        && d.detalleGastos == ''
+
+        && d.estado == 'Pendiente'
+        && d.origen == 'Web Directa'
+        && d.deletedLocally == false
+        && d.colisionAprobada == false
+
+        && d.esNavidad is bool
+        && d.recursoNavidad is string
+        && d.recursoNavidad.size() <= 50
+
+        && (
+          d.esNavidad == false
+          || validGps(d)
+          || pendingManualLocation(d)
+        )
+
+        && shortText(d.createdAt, 40);
+    }
+
+    function eventPath(id) {
+      return /databases/$(database)/documents/artifacts/diverty-oficial/public/data/eventos/$(id);
+    }
+
+    function availabilityPath(id) {
+      return /databases/$(database)/documents/artifacts/diverty-oficial/public/data/disponibilidad_web/$(id);
+    }
+
+    function receiptPath(id) {
+      return /databases/$(database)/documents/artifacts/diverty-oficial/public/data/reservas_cliente/$(id);
+    }
+
+    function lockId(d) {
+      return (d.esNavidad ? 'slot_santa_' : 'slot_')
+        + d.fecha + '_' + d.hora.replace(':', '-');
+    }
+
+    function configuredCapacity(santa) {
+      let path = /databases/$(database)/documents/artifacts/diverty-oficial/public/data/config_web/global;
+      let config = exists(path) ? get(path).data : {};
+
+      return config.get(
+        santa ? 'capacidadSanta' : 'capacidadSimultanea',
+        santa ? 1 : 3
+      );
+    }
+
+    function lockShape(d) {
+      return d.keys().hasOnly([
+          'fecha', 'hora', 'count', 'capacity',
+          'reservationIds', 'updatedAt'
+        ])
+
+        && shortText(d.fecha, 10)
+        && d.fecha.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+
+        && shortText(d.hora, 5)
+        && d.hora.matches('([01][0-9]|2[0-3]):[0-5][0-9]')
+
+        && d.capacity is int
+        && d.capacity >= 1
+        && d.capacity <= 100
+
+        && d.count is int
+        && d.count >= 1
+        && d.count <= d.capacity
+
+        && d.reservationIds is list
+        && d.reservationIds.size() == d.count
+        && d.reservationIds.toSet().size() == d.count
+
+        && shortText(d.updatedAt, 40);
+    }
+
+    function newReservationOwnsLock(id, d) {
+      let addedId = d.reservationIds[d.count - 1];
+      let event = getAfter(eventPath(addedId)).data;
+
+      return !exists(eventPath(addedId))
+        && event.ownerUid == request.auth.uid
+        && event.fecha == d.fecha
+        && event.hora == d.hora
+        && id == lockId(event)
+        && d.capacity == configuredCapacity(event.esNavidad);
+    }
+
+    function unchangedLockOwned(id, d) {
+      let path = eventPath(d.reservationIds[d.count - 1]);
+
+      return exists(path)
+        && get(path).data.ownerUid == request.auth.uid
+        && id == lockId(get(path).data)
+        && d.fecha == resource.data.fecha
+        && d.hora == resource.data.hora
+        && d.count == resource.data.count
+        && d.capacity == resource.data.capacity
+        && d.reservationIds.toSet()
+          == resource.data.reservationIds.toSet();
+    }
+
+    function stalePublicReservation(id, before) {
+      let path = availabilityPath(id);
+
+      return !exists(path)
+        || get(path).data.fecha != before.fecha
+        || get(path).data.hora != before.hora
+        || get(path).data.get('estado', '')
+          .matches('(?i).*(cancelad|rechaz|cot).*');
+    }
+
+    function preservesOtherReservations(d) {
+      let removed = resource.data.reservationIds
+        .removeAll(d.reservationIds);
+      let addedId = d.reservationIds[d.count - 1];
+
+      return resource.data.reservationIds is list
+        && !resource.data.reservationIds.hasAny([addedId])
+        && d.reservationIds.toSet()
+          .difference(resource.data.reservationIds.toSet())
+          .size() == 1
+        && (
+          removed.size() == 0
+          || (
+            removed.size() == 1
+            && stalePublicReservation(removed[0], resource.data)
+          )
+        );
+    }
+
+    function eventHasNewCapacity(d) {
+      let path = availabilityPath(lockId(d));
+      let after = getAfter(path).data;
+
+      return lockShape(after)
+        && after.fecha == d.fecha
+        && after.hora == d.hora
+        && after.capacity == configuredCapacity(d.esNavidad)
+        && after.reservationIds.hasAny([d.id])
+        && (
+          !exists(path)
+          || !get(path).data.reservationIds.hasAny([d.id])
+        );
+    }
+
+    function eventHasReceipt(id, d) {
+      let r = getAfter(receiptPath(id)).data;
+
+      return r.ownerUid == d.ownerUid
+        && r.cliente == d.cliente
+        && r.telefono == d.telefono
+        && r.fecha == d.fecha
+        && r.hora == d.hora
+        && r.estado == d.estado
+        && r.servicio == d.servicio
+        && r.total == d.total
+        && r.abono == d.abono;
+    }
+
+    // CONTENIDO PÚBLICO Y ADMINISTRACIÓN
+
+    match /artifacts/diverty-oficial/public/data/{section}/{id} {
+      allow read, write: if isAdmin();
+
+      allow read: if section in [
+        'categorias_web',
+        'catalogo_web',
+        'campanas_web',
+        'temas_web',
+        'transporte_web',
+        'galeria_web',
+        'resenas_web',
+        'cupones_web',
+        'config_web'
+      ];
+    }
+
+    // EVENTOS
+
+    match /artifacts/diverty-oficial/public/data/eventos/{id} {
+      allow read: if isAdmin();
+
+      // Public clients use the validated booking endpoint; no direct writes.
+
+      // Public clients use the validated booking endpoint; no direct writes.
+
+      allow update, delete: if isAdmin();
+    }
+
+    // DISPONIBILIDAD Y CUPOS
+
+    match /artifacts/diverty-oficial/public/data/disponibilidad_web/{id} {
+      // Public clients use the validated booking endpoint; no direct writes.
+
+      // Public clients use the validated booking endpoint; no direct writes.
+
+      allow update, delete: if isAdmin();
+
+      // Public clients use the validated booking endpoint; no direct writes.
+
+      // Public clients use the validated booking endpoint; no direct writes.
+
+      allow delete: if isAdmin();
+    }
+
+    // SEGUIMIENTO PRIVADO DEL CLIENTE
+
+    match /artifacts/diverty-oficial/public/data/reservas_cliente/{id} {
+      function matchesEvent() {
+        let event = getAfter(eventPath(id)).data;
+        let d = request.resource.data;
+
+        return d.keys().hasOnly([
+          'ownerUid', 'cliente', 'telefono', 'fecha', 'hora',
+          'estado', 'servicio', 'total', 'abono'
+        ])
+
+        && d.ownerUid == request.auth.uid
+        && event.ownerUid == request.auth.uid
+
+        && d.cliente == event.cliente
+        && d.telefono == event.telefono
+        && d.fecha == event.fecha
+        && d.hora == event.hora
+        && d.estado == event.estado
+        && d.servicio == event.servicio
+        && d.total == event.total
+        && d.abono == event.abono;
+      }
+
+      allow read: if signedIn()
+        && resource.data.ownerUid == request.auth.uid;
+
+      // Public clients use the validated booking endpoint; no direct writes.
+
+      // Public clients use the validated booking endpoint; no direct writes.
+
+      allow delete: if isAdmin();
+    }
+
+    // TOKENS ADMINISTRATIVOS
+
+    match /tokens/{token} {
+      allow read, write: if isAdmin();
+    }
+    // NAVIDAD: registered owners are isolated by Firebase Auth UID.
+    function christmasOwner(company) {
+      return request.auth != null
+        && company == 'navidad_' + request.auth.uid
+        && request.auth.token.get('firebase', {}).get('sign_in_provider', '') != 'anonymous';
+    }
+    function christmasPublished(company) {
+      return company.matches('navidad_[A-Za-z0-9_-]{1,128}')
+        && get(/databases/$(database)/documents/artifacts/$(company)/public/data/config_web/global).data.get('publicado', false) == true;
+    }
+    function christmasText(value, maximum) {
+      return value is string && value.size() <= maximum && value.matches('[^<>]*');
+    }
+    function christmasGlobal() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['nombreEmpresa','telefonoEmpresa','publicado','capacidadSanta','centralBookingValidation','whatsappBookingEnabled','updatedAt'])
+        && christmasText(d.nombreEmpresa,100) && d.nombreEmpresa.size() > 0
+        && d.telefonoEmpresa is string && d.telefonoEmpresa.size() <= 15
+        && d.publicado is bool
+        && d.capacidadSanta is int && d.capacidadSanta >= 1 && d.capacidadSanta <= 20
+        && d.centralBookingValidation == true && d.whatsappBookingEnabled == false
+        && (d.publicado == false || (request.auth.token.get('email_verified',false) == true && d.telefonoEmpresa.matches('[0-9]{8,15}')));
+    }
+    function christmasProduct() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['nombre','precio','precioOriginal','oferta','destacado','descripcion','imagen','imagenTarjeta','categoria','esNavidad','recursoNavidad','tipoCobro','serviciosLista','activo','visible','orden','duracionHoras'])
+        && christmasText(d.nombre,150) && d.nombre.size() > 0
+        && d.precio is number && d.precio >= 0 && d.precio <= 100000
+        && christmasText(d.get('descripcion',''),3000)
+        && christmasText(d.get('serviciosLista',''),3000)
+        && d.get('imagen','') is string && d.get('imagen','').size() <= 1500
+        && (d.get('imagen','') == '' || d.imagen.matches('https://[^<>" ]+'))
+        && d.categoria == 'navidad' && d.esNavidad == true && d.recursoNavidad == 'Santa'
+        && d.tipoCobro == 'paquete';
+    }
+    match /artifacts/{company}/public/data/{section}/{id} {
+      allow read, write: if christmasOwner(company) && section in ['eventos','configuracion','disponibilidad_web','reservas_cliente','portal_busqueda','booking_control','tokens'];
+      allow read: if section == 'reservas_cliente' && request.auth != null && resource.data.ownerUid == request.auth.uid;
+    }
+    match /artifacts/{company}/public/data/config_web/{id} {
+      allow read: if christmasOwner(company)
+        || (christmasPublished(company) && id in ['global','tema_global','web_sync','fechas_cerradas','disponibilidad']);
+      allow create, update: if christmasOwner(company)
+        && (id == 'global' ? christmasGlobal() : id in ['web_sync','fechas_cerradas','tema_global','disponibilidad']);
+      allow delete: if christmasOwner(company);
+    }
+    match /artifacts/{company}/public/data/catalogo_web/{id} {
+      allow read: if christmasOwner(company) || christmasPublished(company);
+      allow create, update: if christmasOwner(company) && christmasProduct();
+      allow delete: if christmasOwner(company);
+    }
+    match /artifacts/{company}/public/data/categorias_web/{id} {
+      allow read: if christmasOwner(company) || christmasPublished(company);
+      allow create, update: if christmasOwner(company) && id == 'navidad'
+        && request.resource.data.keys().hasOnly(['nombre','activo','visible','orden','icono'])
+        && christmasText(request.resource.data.nombre,100);
+      allow delete: if christmasOwner(company);
+    }
+    match /artifacts/{company}/public/data/temas_web/{id} {
+      allow read: if christmasOwner(company) || christmasPublished(company);
+      allow create, update: if christmasOwner(company) && id == 'navidad'
+        && request.resource.data.keys().hasOnly(['nombre','tipo','isDefault','colorPrimario','colorSecundario','colorAcento','colorTexto','colorFondo'])
+        && request.resource.data.tipo == 'christmas'
+        && christmasText(request.resource.data.nombre,100)
+        && request.resource.data.colorPrimario.matches('#[0-9A-Fa-f]{6}');
+      allow delete: if christmasOwner(company);
+    }
+
+  }
+}

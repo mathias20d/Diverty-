@@ -21,7 +21,7 @@ export function customerPortalHandler(getBackend) {
         if(typeof payload.search!=='string'||payload.search.length>254)throw new PortalError('INVALID_REQUEST');
         parsePortalQuery(payload.search);
       }else if(action!=='sync'||typeof payload.reservationId!=='string'||!/^web-[A-Za-z0-9_-]{1,190}$/.test(payload.reservationId))throw new PortalError('INVALID_REQUEST');
-      const backend=await getBackend();
+      const backend=await getBackend(request);
       let identity;try{identity=await backend.verifyToken(authorization.slice(7));}catch{throw new PortalError('AUTH_REQUIRED');}
       if(!identity?.uid)throw new PortalError('AUTH_REQUIRED');
       if(action==='sync'){

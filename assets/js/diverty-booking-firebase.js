@@ -33,7 +33,10 @@ export async function getDivertyFirebaseRuntime(firebaseConfig, appName = 'Diver
     return {
       db, auth,
       callBookingFunction: async (name, data) => {
-        const functions = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js');
+        if(name==='createWebBooking'){
+ const empresa=new URLSearchParams(location.search).get('empresa')||'OblqzhP2L3XulJ920O82jwd1Qrk1';const token=await auth.currentUser.getIdToken();const response=await fetch('/api/navidad',{method:'POST',credentials:'omit',headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:JSON.stringify({empresa,action:'create',payload:data})});const value=await response.json();if(!response.ok){const error=Error('No se pudo completar la reserva. Revisa la disponibilidad.');error.details={reason:value?.error?.reason||'UNAVAILABLE'};throw error;}return value;
+ }
+ const functions = await import('https://www.gstatic.com/firebasejs/10.8.1/firebase-functions.js');
         const response = await functions.httpsCallable(functions.getFunctions(app, 'us-central1'), name)(data);
         return response.data;
       },

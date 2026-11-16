@@ -3,7 +3,8 @@ import {ADMIN_UID, fail, quoteBooking, checkAvailability, controlDates, projecti
 import {gps,addressGps} from './coverage.mjs';
 const base='artifacts/diverty-oficial/public/data';
 const configPath=`${base}/config_web/global`;
-export function bookingService(db,clock=()=>new Date()) {
+export function bookingService(db,clock=()=>new Date(),scope={}) {
+  const base=scope.base||'artifacts/diverty-oficial/public/data',configPath=base+'/config_web/global',ownerUid=scope.ownerUid||ADMIN_UID;
   const ref=(section,id)=>db.doc(`${base}/${section}/${id}`);
   const loadSchedule=async(tx,event)=>{
     const dates=controlDates(event);
@@ -32,7 +33,7 @@ export function bookingService(db,clock=()=>new Date()) {
         const existing=await tx.get(ref('eventos',input.id));
         if(existing.exists){if(existing.data().ownerUid!==uid)fail('FORBIDDEN','Esta solicitud pertenece a otra sesión.');return {event:existing.data(),recovered:true};}
         const configSnap=await tx.get(db.doc(configPath));const config=configSnap.data()||{};
-        if(config.centralBookingValidation!==true)fail('NOT_ENABLED','La validación central todavía no está habilitada.');
+        if(config.centralBookingValidation!==true && scope.trustedEndpoint!==true)fail('NOT_ENABLED','La validación central todavía no está habilitada.');
         const closures = await tx.get(ref('config_web','fechas_cerradas'));
         if(closures.data()?.fechas?.[input.fecha] === true)fail('DATE_CLOSED','Esta fecha está sin disponibilidad. Elige otra fecha.');
         if(!Array.isArray(input.serviciosSeleccionados)||input.serviciosSeleccionados.length<1||input.serviciosSeleccionados.length>50)fail('INVALID_REQUEST','Selecciona los servicios.');
@@ -54,7 +55,7 @@ export function bookingService(db,clock=()=>new Date()) {
       });
     },
     async confirm(uid,payload) {
-      if(uid!==ADMIN_UID)fail('FORBIDDEN','Solo la administración puede aprobar reservas.');
+      if(uid!==ownerUid)fail('FORBIDDEN','Solo la administración puede aprobar reservas.');
       if(typeof payload?.id!=='string'||payload.id.includes('/')||!payload.id)fail('INVALID_REQUEST','Identificador inválido.');
       return db.runTransaction(async tx=>{
         const snap=await tx.get(ref('eventos',payload.id));if(!snap.exists)fail('EVENT_NOT_FOUND','La solicitud ya no existe.');
@@ -63,7 +64,7 @@ export function bookingService(db,clock=()=>new Date()) {
         if(needsPlaceReference(event))fail('PLACE_REFERENCE_REQUIRED','Confirma la barriada, PH o salón antes de aceptar.');
         if(event.centralBookingVersion!==1)fail('LEGACY_REQUEST','Esta solicitud debe revisarse con el flujo existente.');
         const configSnap=await tx.get(db.doc(configPath));const config=configSnap.data()||{};
-        if(config.centralBookingValidation!==true)fail('NOT_ENABLED','La validación central no está habilitada.');
+        if(config.centralBookingValidation!==true && scope.trustedEndpoint!==true)fail('NOT_ENABLED','La validación central no está habilitada.');
         if((event.requiereRevisionUbicacion||event.totalPendienteTransporte)&&event.transporteRevisadoEnApp!==true)fail('TRANSPORT_REVIEW_REQUIRED','Confirma el costo de transporte antes de aceptar.');
         const destination=gps(event)||addressGps(event.direccion);
         // Prices are the trusted server snapshot shown to the customer. Admin may
