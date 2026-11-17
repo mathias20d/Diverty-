@@ -73,6 +73,16 @@ html body .christmas-how .christmas-cta{background:var(--xn-accent)!important;ba
 html body .christmas-how .christmas-cta:hover{background:var(--xn-accent-mid)!important}
 html body .christmas-how li:before{color:#fff!important;-webkit-text-fill-color:#fff!important}
 
+/* ---------- Marca: Operación Navidad 2026 ---------- */
+.xn-wordmark{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.94);border:1px solid rgba(16,24,40,.08);box-shadow:0 4px 14px -6px rgba(16,24,40,.25);font-family:Poppins,Nunito,system-ui,sans-serif;font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap;line-height:1}
+.xn-wordmark b{font-weight:800}
+.xn-wordmark-icon{font-size:17px;line-height:1}
+@media(max-width:380px){.xn-wordmark{font-size:13px;padding:7px 11px}}
+#themeBootLoader .xn-wordmark-boot{font-size:20px;padding:12px 20px}
+html body .xn-wordmark,html body .xn-wordmark span{color:#101828!important;-webkit-text-fill-color:#101828!important}
+html body .xn-wordmark b{color:var(--s-primary,#A3192B)!important;-webkit-text-fill-color:var(--s-primary,#A3192B)!important}
+#topAnnouncementBanner{display:none!important}
+
 /* ---------- Detalles generales del sitio en Navidad ---------- */
 body[data-theme="christmas"] #mainContent{background:var(--xn-bg)}
 body[data-theme="christmas"] #christmas-services .group{border-radius:var(--xn-radius)}

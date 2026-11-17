@@ -10,8 +10,8 @@ async function readNavidadAvailability(date,point=null){const month=getMonthRang
 const readBrowserStorage=(type,key)=>legacyReadBrowserStorage(type,NAVIDAD_TENANT_UID?'navidad_'+NAVIDAD_TENANT_UID+'_'+key:key);
 const writeBrowserStorage=(type,key,value)=>legacyWriteBrowserStorage(type,NAVIDAD_TENANT_UID?'navidad_'+NAVIDAD_TENANT_UID+'_'+key:key,value);
 document.addEventListener('click',event=>{if(!NAVIDAD_TENANT_UID)return;const link=event.target.closest?.('a[href]');if(!link)return;let target;try{target=new URL(link.href);}catch{return;}if(!['wa.me','api.whatsapp.com'].includes(target.hostname))return;event.preventDefault();event.stopImmediatePropagation();if(!CHRISTMAS_WHATSAPP)return showToast('Esta empresa no tiene WhatsApp configurado.','info');const text=target.searchParams.get('text')||'';window.open('https://wa.me/'+CHRISTMAS_WHATSAPP+(text?'?text='+encodeURIComponent(text):''),'_blank','noopener,noreferrer');},true);
-import { queueWhatsappConfirmation } from './diverty-whatsapp-confirmation.mjs?v=c022580a871d';
-import { analytics } from './diverty-analytics.mjs?v=cd495b721575';
+import { queueWhatsappConfirmation } from './diverty-whatsapp-confirmation.mjs?v=131e1774f0fb';
+import { analytics } from './diverty-analytics.mjs?v=20b3c304ab3b';
 import {serviceDurationHours} from './diverty-service-duration.mjs?v=4b9aeccab616';
 import {responsiveImage,imageFallbackUrl} from './diverty-images.mjs?v=64d519d228f7';
 import {readMapsLocation,shortMapsUrl,mapsLocationFromUrl} from './diverty-maps-link.mjs?v=f39acfc459a8';
@@ -19,7 +19,7 @@ import {requestCustomerPortal} from './diverty-portal-api.mjs?v=a066b53319f9';
 import { searchCustomerPortal, parsePortalQuery, PortalError } from './diverty-portal.mjs?v=ed78a5cc7297';
 import { isClosedBookingDate } from './diverty-date-availability.mjs?v=eb035e69cbda';
 import { catalogQuantityLimits, clampCatalogQuantity } from './diverty-catalog-product.mjs?v=e03151084326';
-import { browseCatalog } from './diverty-catalog-browser.mjs?v=39e5baad64ec';
+import { browseCatalog } from './diverty-catalog-browser.mjs?v=e7694639edfb';
 import { resolveTheme, themeControlsCss } from './diverty-theme-options.mjs?v=217509ea6290';
 const isThemePreview=location.pathname==='/theme-preview.html'&&window.__DIVERTY_THEME_PREVIEW__===true;
 let previewTheme=null;
@@ -4013,11 +4013,9 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                     const bannerData = configRows.find(row => row.id === 'global') || {};
                     whatsappBookingEnabled = bannerData.whatsappBookingEnabled === true;
                     if(NAVIDAD_TENANT_UID){navidadCompanyName=String(bannerData.nombreEmpresa||'Operación Navidad').slice(0,100);CHRISTMAS_WHATSAPP=String(bannerData.telefonoEmpresa||'').replace(/\D/g,'').slice(0,15);whatsappBookingEnabled=false;applyCompanyBrand();document.title=navidadCompanyName+' · Navidad';document.querySelectorAll('a[href*="wa.me/"]').forEach(a=>{const u=new URL(a.href);u.pathname='/'+CHRISTMAS_WHATSAPP;a.href=u.href;});}
+                    // Operación Navidad no muestra los anuncios del sitio general (descuentos, planes).
                     const bannerEl = document.getElementById('topAnnouncementBanner');
-                    if (bannerData.bannerActive === true && bannerData.bannerText) {
-                        document.getElementById('bannerTextSpan').textContent = cleanStr(bannerData.bannerText);
-                        bannerEl.style.display = 'flex'; 
-                    } else { bannerEl.style.display = 'none'; }
+                    if (bannerEl) bannerEl.style.display = 'none';
                 } catch(e) {}
             };
 
