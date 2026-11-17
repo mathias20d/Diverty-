@@ -73,6 +73,62 @@ html body .christmas-how .christmas-cta{background:var(--xn-accent)!important;ba
 html body .christmas-how .christmas-cta:hover{background:var(--xn-accent-mid)!important}
 html body .christmas-how li:before{color:#fff!important;-webkit-text-fill-color:#fff!important}
 
+/* ---------- Tarjeta de servicio (solo «Reservar ahora») ---------- */
+.christmas-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:24px;max-width:1040px;margin:0 auto}
+.xn-card{display:flex;flex-direction:column;overflow:hidden;border-radius:22px;background:var(--xn-surface);border:1px solid var(--xn-line);box-shadow:var(--xn-shadow);transition:transform .2s,box-shadow .2s}
+.xn-card:hover{transform:translateY(-2px);box-shadow:0 1px 3px rgba(16,24,40,.08),0 24px 48px -20px rgba(16,24,40,.28)}
+.xn-card-media{position:relative;aspect-ratio:16/9;max-height:300px;width:100%;background:linear-gradient(135deg,var(--xn-accent-deep,#4A0811),var(--xn-accent,#A3192B));overflow:hidden}
+.xn-card-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+.xn-card:hover .xn-card-media img{transform:scale(1.04)}
+.xn-card-badge{position:absolute;top:14px;left:14px;padding:6px 12px;border-radius:999px;background:#fff;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 4px 12px -4px rgba(16,24,40,.35)}
+.xn-card-body{display:flex;flex-direction:column;gap:14px;flex:1;padding:22px 22px 20px}
+.xn-card h3{margin:0;font-family:Poppins,Nunito,system-ui,sans-serif;font-size:21px;font-weight:700;line-height:1.25;letter-spacing:-.02em}
+.xn-card-desc{margin:-4px 0 0;font-size:15px;line-height:1.55}
+.xn-card-list{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.xn-card-list li{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.45}
+.xn-card-list svg{flex-shrink:0;margin-top:2px;padding:3px;box-sizing:content-box;border-radius:999px;background:color-mix(in srgb,var(--xn-accent,#A3192B) 12%,transparent);color:var(--xn-accent,#A3192B)}
+.xn-card-more summary{cursor:pointer;list-style:none;font-size:14px;font-weight:600;color:var(--xn-accent,#A3192B)}
+.xn-card-more summary::-webkit-details-marker{display:none}
+.xn-card-more[open] summary{margin-bottom:8px}
+.xn-card-foot{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-top:auto;padding-top:16px;border-top:1px solid var(--xn-line)}
+.xn-card-price{display:grid;gap:2px}
+.xn-card-price small{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.xn-card-price span{font-family:Poppins,Nunito,system-ui,sans-serif;font-size:26px;font-weight:800;letter-spacing:-.03em;line-height:1.1;font-variant-numeric:tabular-nums}
+.xn-card-price s{margin-right:8px;font-size:15px;font-weight:600;opacity:.6}
+.xn-card-price em{font-style:normal;font-size:14px;font-weight:600;margin-left:2px}
+.xn-card-book{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:12px 22px;border-radius:14px;border:0;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s,filter .15s}
+.xn-card-book:hover{transform:translateY(-1px);filter:brightness(1.06)}
+.xn-card-book:active{transform:translateY(0)}
+@media(max-width:420px){.xn-card-foot{flex-direction:column;align-items:stretch}.xn-card-book{width:100%}}
+html body .xn-card h3,html body .xn-card-price span{color:var(--xn-ink)!important;-webkit-text-fill-color:var(--xn-ink)!important}
+html body .xn-card-desc,html body .xn-card-list li,html body .xn-card-price small,html body .xn-card-price s,html body .xn-card-price em{color:var(--xn-muted)!important;-webkit-text-fill-color:var(--xn-muted)!important}
+html body .xn-card-list li span{color:var(--xn-ink-2)!important;-webkit-text-fill-color:var(--xn-ink-2)!important}
+html body .xn-card-badge{color:var(--xn-accent,#A3192B)!important;-webkit-text-fill-color:var(--xn-accent,#A3192B)!important}
+html body .xn-card-book{background:var(--xn-accent,#A3192B)!important;background-image:none!important;color:#fff!important;-webkit-text-fill-color:#fff!important;box-shadow:0 8px 20px -10px color-mix(in srgb,var(--xn-accent,#A3192B) 80%,transparent)!important}
+/* El carrito ya no se usa en Operación Navidad. */
+#viewCart{display:none!important}
+
+/* ---------- Paso «Lugar»: búsqueda GPS animada ---------- */
+.booking-gps-spinner.xn-radar{position:relative;width:96px;height:96px;margin:4px auto 14px;border:0!important;border-radius:50%;background:none!important;animation:none!important;color:var(--s-primary,#A3192B)}
+.xn-radar span{position:absolute;inset:0;border-radius:50%;border:2px solid currentColor;opacity:0;animation:xn-ping 2.4s cubic-bezier(.2,.6,.4,1) infinite}
+.xn-radar span:nth-child(2){animation-delay:.8s}
+.xn-radar span:nth-child(3){animation-delay:1.6s}
+.xn-radar:before{content:"";position:absolute;inset:18px;border-radius:50%;background:color-mix(in srgb,currentColor 12%,transparent)}
+.xn-radar-pin{position:absolute;left:50%;top:50%;transform:translate(-50%,-62%);display:grid;place-items:center;animation:xn-hover 1.2s ease-in-out infinite}
+.xn-radar-pin svg{filter:drop-shadow(0 6px 6px rgba(16,24,40,.25))}
+@keyframes xn-ping{0%{transform:scale(.35);opacity:.75}80%{opacity:0}100%{transform:scale(1.15);opacity:0}}
+@keyframes xn-hover{0%,100%{transform:translate(-50%,-62%)}50%{transform:translate(-50%,-78%)}}
+.booking-gps-found.xn-found{display:grid;place-items:center;width:72px;height:72px;margin:0 auto 10px;border-radius:50%;background:color-mix(in srgb,#16A34A 12%,transparent)!important;color:#16A34A!important;font-size:0!important;animation:xn-pop .45s cubic-bezier(.2,1.4,.4,1) both}
+.xn-found circle{stroke-dasharray:151;stroke-dashoffset:151;animation:xn-draw .55s ease-out .1s forwards}
+.xn-found path{stroke-dasharray:36;stroke-dashoffset:36;animation:xn-draw .35s ease-out .55s forwards}
+@keyframes xn-draw{to{stroke-dashoffset:0}}
+@keyframes xn-pop{0%{transform:scale(.4);opacity:0}100%{transform:scale(1);opacity:1}}
+.booking-gps-dialog[open]{animation:xn-rise-in .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes xn-rise-in{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.xn-verifying{margin:0;padding:12px 14px;border-radius:14px;font-size:14px;background:linear-gradient(90deg,color-mix(in srgb,currentColor 5%,transparent) 0%,color-mix(in srgb,currentColor 14%,transparent) 50%,color-mix(in srgb,currentColor 5%,transparent) 100%);background-size:200% 100%;animation:xn-shimmer 1.4s linear infinite}
+@keyframes xn-shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+#christmas-coverage-result>div,.booking-gps-result-coverage>div{animation:xn-rise-in .35s cubic-bezier(.2,.8,.2,1)}
+
 /* ---------- Marca: Operación Navidad 2026 ---------- */
 .xn-wordmark{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:rgba(255,255,255,.94);border:1px solid rgba(16,24,40,.08);box-shadow:0 4px 14px -6px rgba(16,24,40,.25);font-family:Poppins,Nunito,system-ui,sans-serif;font-weight:700;font-size:15px;letter-spacing:-.01em;white-space:nowrap;line-height:1}
 .xn-wordmark b{font-weight:800}

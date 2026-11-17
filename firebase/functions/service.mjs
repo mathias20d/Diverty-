@@ -35,6 +35,8 @@ export function bookingService(db,clock=()=>new Date(),scope={}) {
         const configSnap=await tx.get(db.doc(configPath));const config=configSnap.data()||{};
         if(config.centralBookingValidation!==true && scope.trustedEndpoint!==true)fail('NOT_ENABLED','La validación central todavía no está habilitada.');
         const closures = await tx.get(ref('config_web','fechas_cerradas'));
+        const transportSnap = await tx.get(ref('config_web','disponibilidad'));
+        const transportConfig = transportSnap.exists ? transportSnap.data()?.transporte : null;
         if(closures.data()?.fechas?.[input.fecha] === true)fail('DATE_CLOSED','Esta fecha está sin disponibilidad. Elige otra fecha.');
         if(!Array.isArray(input.serviciosSeleccionados)||input.serviciosSeleccionados.length<1||input.serviciosSeleccionados.length>50)fail('INVALID_REQUEST','Selecciona los servicios.');
         const productRefs=input.serviciosSeleccionados.map(item=>{
@@ -46,7 +48,7 @@ export function bookingService(db,clock=()=>new Date(),scope={}) {
         if(code.length>100||code.includes('/'))fail('INVALID_REQUEST','Cupón inválido.');
         const couponSnap=code?await tx.get(ref('cupones_web',code)):null;
         if(code&&!couponSnap.exists)fail('COUPON_UNAVAILABLE','El cupón ya no está disponible.');
-        const event=quoteBooking(input,uid,products.map(s=>s.data()),couponSnap?.data(),payload.location,clock());
+        const event=quoteBooking(input,uid,products.map(s=>s.data()),couponSnap?.data(),payload.location,clock(),transportConfig);
         if(code)event.couponCode=code;
         const schedule=await loadSchedule(tx,event);
         checkAvailability(event,schedule.rows,config);

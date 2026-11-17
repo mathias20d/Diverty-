@@ -1,6 +1,7 @@
 import {bookingService} from '../../firebase/functions/service.mjs';
 import {active,isSanta,checkAvailability,ADMIN_UID} from '../../firebase/functions/policy.mjs';
 import {computeChristmasSmartRoute} from '../../firebase/functions/christmas-recommendations.mjs';
+import {claimSlug} from './navidad-links.mjs';
 const PRIVATE='no-store, private';
 export function scopeForCompany(uid){if(typeof uid!=='string'||!/^[-_A-Za-z0-9]{1,128}$/.test(uid))throw Object.assign(Error('INVALID_REQUEST'),{reason:'INVALID_REQUEST'});return{uid,legacy:uid===ADMIN_UID,base:'artifacts/'+(uid===ADMIN_UID?'diverty-oficial':'navidad_'+uid)+'/public/data'};}
 export function publicBooking(event){const keys=['id','ownerUid','cliente','email','telefono','fecha','hora','estado','servicio','total','abono','precioServicios','transporte','descuento','totalPendienteTransporte','requiereRevisionUbicacion','direccion','referenciaLugar','ubicacion','descripcionEvento'];return Object.fromEntries(keys.filter(k=>event[k]!==undefined).map(k=>[k,event[k]]));}
@@ -39,10 +40,14 @@ export function navidadHandler(getBackend){return async request=>{
    if(!result.recovered)try{await backend.notifyChristmas?.(scope.base,result.event.id);}catch{}
    return reply(200,{event:publicBooking(result.event),recovered:result.recovered===true});
   }
+  if(data.action==='link'){
+   if(identity.uid!==scope.uid)throw Object.assign(Error(),{reason:'FORBIDDEN'});
+   return reply(200,await claimSlug(database,scope.uid,scope.base,data.slug));
+  }
   if(data.action==='confirm'){
    if(identity.uid!==scope.uid)throw Object.assign(Error(),{reason:'FORBIDDEN'});
    const result=await service.confirm(identity.uid,{id:data.id,santaAsignado:data.santaAsignado});return reply(200,result);
   }
   throw Object.assign(Error(),{reason:'INVALID_REQUEST'});
- }catch(error){if(error instanceof SyntaxError)error.reason='INVALID_REQUEST';const allowed=['AUTH_REQUIRED','FORBIDDEN','NOT_FOUND','INVALID_REQUEST','ALREADY_PROCESSED','DATE_CLOSED','SLOT_FULL','ROUTE_FULL','CONFIG_REQUIRED','PLACE_REFERENCE_REQUIRED','TRANSPORT_REVIEW_REQUIRED','SERVICE_UNAVAILABLE','COUPON_UNAVAILABLE','LEGACY_REQUEST'],reason=allowed.includes(error.reason)?error.reason:'UNAVAILABLE';return reply(reason==='AUTH_REQUIRED'?401:reason==='FORBIDDEN'?403:reason==='NOT_FOUND'?404:['SLOT_FULL','ROUTE_FULL','ALREADY_PROCESSED'].includes(reason)?409:reason==='UNAVAILABLE'?503:400,{error:{reason}});}
+ }catch(error){if(error instanceof SyntaxError)error.reason='INVALID_REQUEST';const allowed=['AUTH_REQUIRED','FORBIDDEN','NOT_FOUND','INVALID_REQUEST','ALREADY_PROCESSED','DATE_CLOSED','SLOT_FULL','ROUTE_FULL','CONFIG_REQUIRED','PLACE_REFERENCE_REQUIRED','TRANSPORT_REVIEW_REQUIRED','SERVICE_UNAVAILABLE','COUPON_UNAVAILABLE','LEGACY_REQUEST','INVALID_SLUG','SLUG_TAKEN'],reason=allowed.includes(error.reason)?error.reason:'UNAVAILABLE';return reply(reason==='AUTH_REQUIRED'?401:reason==='FORBIDDEN'?403:reason==='NOT_FOUND'?404:['SLOT_FULL','ROUTE_FULL','ALREADY_PROCESSED','SLUG_TAKEN'].includes(reason)?409:reason==='UNAVAILABLE'?503:400,{error:{reason}});}
 };}

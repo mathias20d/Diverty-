@@ -1,6 +1,7 @@
 import {serviceDurationHours} from './service-duration.mjs';
 import {needsPlaceReference} from './location-reference.mjs';
 import { coverage, gps, addressGps, distanceKm } from './coverage.mjs';
+import { evaluateTransport } from './navidad-transport.mjs';
 export const ADMIN_UID='OblqzhP2L3XulJ920O82jwd1Qrk1';
 export class BookingError extends Error {
   constructor(reason, message, details={}) {super(message);this.reason=reason;this.details={reason,...details};}
@@ -40,7 +41,7 @@ export function validateInput(event,uid,now) {
   if(needsPlaceReference(event))fail('PLACE_REFERENCE_REQUIRED','Escribe la barriada, PH o salón del evento. El GPS solo marca el punto.');
   if(!Array.isArray(event.serviciosSeleccionados)||event.serviciosSeleccionados.length<1||event.serviciosSeleccionados.length>50)fail('INVALID_REQUEST','Selecciona los servicios.');
 }
-export function quoteBooking(input,uid,products,coupon,point,now=new Date()) {
+export function quoteBooking(input,uid,products,coupon,point,now=new Date(),transportConfig=null) {
   validateInput(input,uid,now);
   const seen=new Set();let subtotal=0,animadores=0,payasos=0,durationMinutes=30;
   const items=input.serviciosSeleccionados.map((item,index)=>{
@@ -76,7 +77,8 @@ export function quoteBooking(input,uid,products,coupon,point,now=new Date()) {
   let discount=0;
   if(coupon){if(coupon.activo!==true||!['percent','fixed'].includes(coupon.type)||!Number.isFinite(Number(coupon.discount))||Number(coupon.discount)<0)fail('COUPON_UNAVAILABLE','El cupón ya no está disponible.');discount=Math.min(subtotal,coupon.type==='percent'?Math.round(subtotal*Number(coupon.discount)/100):cents(coupon.discount));}
   const destination=gps(point)||addressGps(input.direccion)||gps(input);
-  const zone=coverage(destination,santa,`${input.direccion} ${input.referenciaLugar}`);
+  // Navidad: zonas, precios y zonas rojas de cada cuenta (por defecto, los de Diverty).
+  const zone=santa?evaluateTransport(transportConfig,destination,`${input.direccion} ${input.referenciaLugar}`):coverage(destination,santa,`${input.direccion} ${input.referenciaLugar}`);
   if(zone.status==='blocked')fail('LOCATION_BLOCKED','Esta ubicación necesita atención directa de Diverty.');
   const pending=zone.status==='review'; const transport=cents(zone.charge);
   const quote={items,descuento:amount(discount),transporte:amount(transport),total:amount(subtotal-discount+transport),precioServicios:amount(subtotal-discount),coverage:zone,totalPendienteTransporte:pending};

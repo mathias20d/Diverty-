@@ -28,6 +28,8 @@ import { capturePreciseGps, gpsAccuracyMessage } from './diverty-gps-capture.mjs
 import { needsPlaceReference } from './diverty-location-reference.mjs?v=e666d9364da4';
 import { peakResourceUsage } from './diverty-resource-usage.mjs?v=cd3d0ce00dff';
 import { prepareBookingAttempt, readBookingReceipt, isNormalDayFullyBooked, readBrowserStorage as legacyReadBrowserStorage, writeBrowserStorage as legacyWriteBrowserStorage } from './diverty-booking-state.mjs?v=f9ab11e6559b';
+import { evaluateTransport } from './diverty-navidad-transport.mjs?v=7b2ca4539170';
+let navidadTransportConfig=null;
 import { panamaDateKey, installBookingDatePicker } from './diverty-date-picker.mjs?v=e6350f9ee660';
 
 function captureBookingGps(form, isCurrent, onProgress) {
@@ -43,7 +45,7 @@ function showBookingGpsProgress(form, onCancel) {
     dialog.className = 'booking-gps-dialog';
     dialog.setAttribute('aria-labelledby', 'booking-gps-title');
     dialog.setAttribute('aria-describedby', 'booking-gps-status');
-    dialog.innerHTML = `<div class="booking-gps-spinner" aria-hidden="true"></div><h2 id="booking-gps-title">Buscando ubicación…</h2><p id="booking-gps-status" role="status">Permite el acceso al GPS y mantén el teléfono quieto unos segundos.</p><p class="booking-gps-hint">Usa el GPS solo si estás en el lugar del evento.</p><button type="button">Escribir dirección</button>`;
+    dialog.innerHTML = `<div class="booking-gps-spinner xn-radar" aria-hidden="true"><span></span><span></span><span></span><i class="xn-radar-pin"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></svg></i></div><h2 id="booking-gps-title">Buscando ubicación…</h2><p id="booking-gps-status" role="status">Permite el acceso al GPS y mantén el teléfono quieto unos segundos.</p><p class="booking-gps-hint">Usa el GPS solo si estás en el lugar del evento.</p><button type="button">Escribir dirección</button>`;
     const close = () => { observer.disconnect(); if (dialog.open) dialog.close(); dialog.remove(); };
     const cancel = () => { close(); onCancel(); };
     const observer = new MutationObserver(() => { if (!form.isConnected) cancel(); });
@@ -63,7 +65,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
     dialog.className = 'booking-gps-dialog booking-gps-result';
     dialog.setAttribute('aria-labelledby', 'booking-gps-result-title');
     dialog.setAttribute('aria-describedby', 'booking-gps-result-help');
-    dialog.innerHTML = `<div class="booking-gps-found" aria-hidden="true">✓</div>
+    dialog.innerHTML = `<div class="booking-gps-found xn-found" aria-hidden="true"><svg viewBox="0 0 52 52" width="64" height="64"><circle cx="26" cy="26" r="24" fill="none" stroke="currentColor" stroke-width="3"/><path d="M15 27l7.5 7.5L38 19" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <h2 id="booking-gps-result-title" tabindex="-1" autofocus>Hemos encontrado tu ubicación</h2>
         <p id="booking-gps-result-help">Escribe la referencia del lugar para ayudarnos a llegar.</p>
         <label for="booking-gps-reference">Barriada, PH o sala de eventos</label>
@@ -95,7 +97,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
     };
     if (ready && coverage) coverageDisplay.innerHTML = coverage.innerHTML;
     if (!ready) {
-        coverageDisplay.textContent = 'Verificando la zona y el transporte… Puedes escribir la referencia mientras tanto.';
+        coverageDisplay.innerHTML = '<p class="xn-verifying">Verificando la zona y el transporte… Puedes escribir la referencia mientras tanto.</p>';
         action.disabled = true;
         action.textContent = 'Verificando transporte…';
     }
@@ -347,7 +349,12 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
         //     después de Villa Zaita hasta La Cabima: recargo único máximo de $5.
         //   • Después de Albrook/Clayton, Pacora o La Cabima: confirmar por WhatsApp.
         //   • Sectores de seguridad especiales: confirmar por WhatsApp, sin mostrar “zona roja” al cliente.
+        // Operación Navidad: cada cuenta define sus zonas, precios y zonas rojas en la app
+        // (config_web/disponibilidad.transporte). Mismo motor que el servidor.
         function evaluateChristmasCoverage(lat,lng,label=''){
+            return evaluateTransport(navidadTransportConfig,{lat,lng},label);
+        }
+        function legacyChristmasCoverage(lat,lng,label=''){
             const text=normalizeChristmasPlace(label);
             const special=CHRISTMAS_REVIEW_TERMS.some(term=>text.includes(term));
             if(special) return {status:'review',charge:0,label:'Ubicación especial · confirmar',reason:'security'};
@@ -631,8 +638,8 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             const s=christmasLocationState||{};
             const safeLabel=cleanStr(s.label||'');
             if(s.status==='included') box.innerHTML=`<div class="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4"><p class="font-black text-emerald-600">✅ ${safeLabel||'Ubicación dentro de cobertura'}</p><p class="text-xs season-text-muted mt-1">Transporte adicional: <b>$0.00</b> · El punto GPS se usará también para recomendar la mejor hora y organizar la ruta del Santa.</p></div>`;
-            else if(s.status==='surcharge') box.innerHTML=`<div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4"><p class="font-black text-amber-600">📍 ${safeLabel||'Ubicación disponible'}</p><p class="text-xs season-text-muted mt-1">Transporte adicional: <b>$5.00</b> · Este es el recargo máximo automático de Navidad.</p></div>`;
-            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Ubicación por confirmar</p><p class="text-xs season-text-muted mt-1">Confirmaremos contigo la dirección y el transporte antes de aceptar. Puedes continuar.</p></div>`;
+            else if(s.status==='surcharge') box.innerHTML=`<div class="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4"><p class="font-black text-amber-600">📍 ${safeLabel||'Ubicación disponible'}</p><p class="text-xs season-text-muted mt-1">Transporte adicional: <b>$${Number(s.charge||0).toFixed(2)}</b> · Calculado según tu zona.</p></div>`;
+            else if(s.status==='review') box.innerHTML=`<div class="rounded-2xl border border-orange-500/30 bg-orange-500/10 p-4"><p class="font-black text-orange-600">📲 Ubicación por confirmar</p><p class="text-xs season-text-muted mt-1">${Number(s.charge)>0?`Transporte estimado: <b>$${Number(s.charge).toFixed(2)}</b>. `:''}Confirmaremos contigo la dirección y el transporte antes de aceptar. Puedes continuar.</p></div>`;
             else box.innerHTML='';
             const t=document.getElementById('booking-summary-transport'); if(t) t.textContent=s.status==='review'?'Por confirmar':`$${effectiveTransportCost(app.cart.reduce((a,i)=>a+i.quantity,0)).toFixed(2)}`;
             const total=document.getElementById('booking-summary-total');
@@ -1564,7 +1571,29 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             </div>`;
         }
 
-        function renderHome(){const items=app.catalog.filter(isChristmasEveItem);const company=escapeCatalogText(navidadCompanyName);setContent('<section class="christmas-landing" aria-labelledby="christmas-title"><div class="christmas-landing-inner"><span class="christmas-label"><i data-lucide="sparkles" class="w-3.5 h-3.5" aria-hidden="true"></i>'+company+'</span><h1 id="christmas-title">La magia de Santa llega a tu puerta</h1><p class="christmas-date"><i data-lucide="calendar-days" class="w-4 h-4" aria-hidden="true"></i>24 y 25 de diciembre de 2026</p><p class="christmas-lead">Escoge tu entrega, indica el lugar y consulta los horarios recomendados para tu ubicación.</p><div class="christmas-actions"><a href="#christmas-services" class="season-btn christmas-cta">Ver entregas de Navidad<i data-lucide="arrow-down" class="w-4 h-4" aria-hidden="true"></i></a><button type="button" class="nav-action christmas-cta christmas-cta-ghost" data-target-section="portal">Consultar mi reserva</button></div><ul class="christmas-trust" aria-label="Lo que incluye tu reserva"><li><i data-lucide="clock" class="w-4 h-4" aria-hidden="true"></i>Horarios recomendados</li><li><i data-lucide="map-pin" class="w-4 h-4" aria-hidden="true"></i>Transporte según tu zona</li><li><i data-lucide="shield-check" class="w-4 h-4" aria-hidden="true"></i>Confirmación de '+company+'</li></ul></div></section><section id="christmas-services" class="christmas-services container mx-auto px-4"><header class="christmas-section-head"><span class="christmas-kicker">Catálogo</span><h2>Entregas de Navidad</h2><p>Elige la visita de Santa que prefieras. Verás el precio, lo que incluye y podrás reservar en pocos pasos.</p></header>'+(items.length?'<div class="christmas-grid grid grid-cols-1 md:grid-cols-2 gap-6">'+items.map(createDetailedCardHTML).join('')+'</div>':'<p role="status" class="christmas-empty">'+(catalogLoaded?'Todavía no hay entregas navideñas publicadas. Contáctanos para consultar.':'Cargando entregas de Navidad…')+'</p>')+'<aside class="christmas-how" aria-labelledby="christmas-how-title"><div><span class="christmas-kicker">Cómo funciona</span><h2 id="christmas-how-title">Tu reserva, paso a paso</h2></div><ol><li><strong>Elige la entrega de Santa.</strong></li><li><strong>Indica la ubicación y los detalles del lugar.</strong></li><li><strong>Consulta transporte, horario y disponibilidad recomendada.</strong></li><li><strong>Envía tu solicitud. '+company+' confirmará la reserva.</strong></li></ol><div class="christmas-how-foot"><p>¿Ya enviaste tu solicitud? Consulta su estado con tu nombre o teléfono.</p><button class="season-btn nav-action christmas-cta" data-target-section="portal">Consultar mi reserva</button></div></aside></section>');buildDynamicNav();if(window.lucide)lucide.createIcons();}
+        // Tarjeta de Operación Navidad: un solo botón «Reservar ahora» (sin carrito).
+        function christmasCardHTML(item){
+            const name=cleanStr(item.name||item.title), description=cleanStr(item.description||'');
+            const services=(item.services||[]).map(s=>cleanStr(s)).filter(Boolean);
+            const price=Number(item.price), original=Number(item.originalPrice);
+            const offer=(item.discountApplied||item.oferta)&&Number.isFinite(original)&&original>price;
+            const check='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+            const li=s=>`<li>${check}<span>${s}</span></li>`;
+            const list=services.length?`<ul class="xn-card-list">${services.slice(0,4).map(li).join('')}</ul>${services.length>4?`<details class="xn-card-more"><summary>Ver todo lo que incluye (${services.length})</summary><ul class="xn-card-list">${services.slice(4).map(li).join('')}</ul></details>`:''}`:'';
+            const rule=getItemQuantityRule(item), inCart=app.cart.find(i=>i.id===item.id);
+            const quantity=rule.enabled?`<div class="xn-card-qty">${quantityControlHTML(item,inCart?clampItemQuantity(item,inCart.quantity):rule.min)}</div>`:'';
+            const priceHTML=Number.isFinite(price)?`<div class="xn-card-price"><small>${offer?'Precio especial':'Precio'}</small><span>${offer?`<s>$${original.toFixed(2)}</s>`:''}$${price.toFixed(2)}${item.isHourly?'<em>/hora</em>':''}</span></div>`:'';
+            return `<article class="xn-card">
+                <div class="xn-card-media">${item.image?`<img src="${optimizeCloudinaryImage(item.image,720)}" alt="" loading="lazy" decoding="async">`:''}${offer?'<span class="xn-card-badge">Oferta</span>':''}</div>
+                <div class="xn-card-body">
+                    <h3>${name}</h3>
+                    ${description?`<p class="xn-card-desc">${description}</p>`:''}
+                    ${list}${quantity}
+                    <div class="xn-card-foot">${priceHTML}<button type="button" data-action="book-now" data-item-id="${item.id}" class="xn-card-book">Reservar ahora<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></button></div>
+                </div>
+            </article>`;
+        }
+        function renderHome(){const items=app.catalog.filter(isChristmasEveItem);const company=escapeCatalogText(navidadCompanyName);setContent('<section class="christmas-landing" aria-labelledby="christmas-title"><div class="christmas-landing-inner"><span class="christmas-label"><i data-lucide="sparkles" class="w-3.5 h-3.5" aria-hidden="true"></i>'+company+'</span><h1 id="christmas-title">La magia de Santa llega a tu puerta</h1><p class="christmas-date"><i data-lucide="calendar-days" class="w-4 h-4" aria-hidden="true"></i>24 y 25 de diciembre de 2026</p><p class="christmas-lead">Escoge tu entrega, indica el lugar y consulta los horarios recomendados para tu ubicación.</p><div class="christmas-actions"><a href="#christmas-services" class="season-btn christmas-cta">Ver entregas de Navidad<i data-lucide="arrow-down" class="w-4 h-4" aria-hidden="true"></i></a><button type="button" class="nav-action christmas-cta christmas-cta-ghost" data-target-section="portal">Consultar mi reserva</button></div><ul class="christmas-trust" aria-label="Lo que incluye tu reserva"><li><i data-lucide="clock" class="w-4 h-4" aria-hidden="true"></i>Horarios recomendados</li><li><i data-lucide="map-pin" class="w-4 h-4" aria-hidden="true"></i>Transporte según tu zona</li><li><i data-lucide="shield-check" class="w-4 h-4" aria-hidden="true"></i>Confirmación de '+company+'</li></ul></div></section><section id="christmas-services" class="christmas-services container mx-auto px-4"><header class="christmas-section-head"><span class="christmas-kicker">Catálogo</span><h2>Entregas de Navidad</h2><p>Elige la visita de Santa que prefieras. Verás el precio, lo que incluye y podrás reservar en pocos pasos.</p></header>'+(items.length?'<div class="christmas-grid">'+items.map(christmasCardHTML).join('')+'</div>':'<p role="status" class="christmas-empty">'+(catalogLoaded?'Todavía no hay entregas navideñas publicadas. Contáctanos para consultar.':'Cargando entregas de Navidad…')+'</p>')+'<aside class="christmas-how" aria-labelledby="christmas-how-title"><div><span class="christmas-kicker">Cómo funciona</span><h2 id="christmas-how-title">Tu reserva, paso a paso</h2></div><ol><li><strong>Elige la entrega de Santa.</strong></li><li><strong>Indica la ubicación y los detalles del lugar.</strong></li><li><strong>Consulta transporte, horario y disponibilidad recomendada.</strong></li><li><strong>Envía tu solicitud. '+company+' confirmará la reserva.</strong></li></ol><div class="christmas-how-foot"><p>¿Ya enviaste tu solicitud? Consulta su estado con tu nombre o teléfono.</p><button class="season-btn nav-action christmas-cta" data-target-section="portal">Consultar mi reserva</button></div></aside></section>');buildDynamicNav();if(window.lucide)lucide.createIcons();}
 
         const catalogBrowseState = new Map();
         let catalogDetailReturn = '';
@@ -4011,6 +4040,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                     // en lugar de hacer una segunda lectura independiente del documento global.
                     const configRows = await fetchStaticCollection('config_web');
                     const bannerData = configRows.find(row => row.id === 'global') || {};
+                    navidadTransportConfig = configRows.find(row => row.id === 'disponibilidad')?.transporte || null;
                     whatsappBookingEnabled = bannerData.whatsappBookingEnabled === true;
                     if(NAVIDAD_TENANT_UID){navidadCompanyName=String(bannerData.nombreEmpresa||'Operación Navidad').slice(0,100);CHRISTMAS_WHATSAPP=String(bannerData.telefonoEmpresa||'').replace(/\D/g,'').slice(0,15);whatsappBookingEnabled=false;applyCompanyBrand();document.title=navidadCompanyName+' · Navidad';document.querySelectorAll('a[href*="wa.me/"]').forEach(a=>{const u=new URL(a.href);u.pathname='/'+CHRISTMAS_WHATSAPP;a.href=u.href;});}
                     // Operación Navidad no muestra los anuncios del sitio general (descuentos, planes).
