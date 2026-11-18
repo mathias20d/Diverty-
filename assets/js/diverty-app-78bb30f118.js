@@ -311,7 +311,12 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
             const score=Math.max(0,addedTravel)+sameDate.length*2+startRoutePenalty-nearbyBonus;
             return {feasible:fitsPrevious&&fitsNext,score,addedTravel,nearestKm,nearestTimeGap,anchors:sameDate.length,previous,next,legPrev,legNext};
         };
-        function computeChristmasSmartRoute(date,time,capacity,gps){if(!gps)return null;return privateRouteHints.get(pointKey(gps))?.[String(date)+'|'+String(time)]||{feasible:false,score:9999,nearby:false,anchors:0,nearestKm:null,nearestTimeGap:null,bestSanta:''};}
+        function computeChristmasSmartRoute(date,time,capacity,gps){if(!gps)return null;const hints=privateRouteHints.get(pointKey(gps));if(!hints)return null;return hints[String(date)+'|'+String(time)]||{feasible:false,score:9999,nearby:false,anchors:0,nearestKm:null,nearestTimeGap:null,bestSanta:''};}
+        // Horarios viables para una fecha y un punto, ordenados: primero los que quedan cerca de
+        // otras entregas (menos recorrido para Santa) y luego por hora. Se usan para sugerir opciones.
+        function christmasViableTimes(date,gps,limit=6){const hints=gps?privateRouteHints.get(pointKey(gps)):null;if(!hints)return[];return Object.entries(hints).filter(([key,h])=>key.startsWith(String(date)+'|')&&h&&h.feasible===true).map(([key,h])=>({time:key.split('|')[1],nearby:h.nearby===true,score:Number(h.score)||0})).sort((a,b)=>(b.nearby-a.nearby)||(a.nearby&&b.nearby?a.score-b.score:0)||a.time.localeCompare(b.time)).slice(0,limit).map(x=>x.time);}
+        function christmasTimeLabel(value){const m=String(value||'').match(/^(\d{1,2}):(\d{2})/);if(!m)return String(value||'');const h=Number(m[1]),suffix=h<12?'a. m.':'p. m.';return (h%12||12)+':'+m[2]+' '+suffix;}
+        function christmasAlternativesText(date,gps){const times=christmasViableTimes(date,gps);return times.length?' Horarios que sí funcionan para tu zona: '+times.map(christmasTimeLabel).join(', '):' No quedan horarios para ese día en tu zona; prueba el otro día.';}
         let currentCalDate = new Date(); 
         let bookingFormState = {}; 
         let selectedCalendarDate = null; 
@@ -2825,7 +2830,9 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                         const selectedOpt=christmasTimeSelect.options[christmasTimeSelect.selectedIndex];
                         bookingFormState.christmasSuggestedSanta=selectedOpt?.dataset?.santa||'';
                         renderChristmasTimeCards(christmasDate, capacity);
-                        if (christmasTimeMessage) christmasTimeMessage.textContent = bestInfo
+                        const christmasOpenCount = optionInfos.filter(info => !info.opt.disabled).length;
+                        if (christmasTimeMessage && !christmasOpenCount) christmasTimeMessage.textContent = `😕 No quedan horarios el ${christmasDate.endsWith('24') ? '24' : '25'} de diciembre para tu zona. Prueba el ${christmasDate.endsWith('24') ? '25' : '24'}.`;
+                        else if (christmasTimeMessage) christmasTimeMessage.textContent = bestInfo
                             ? '⭐ Mejor opción = menor recorrido estimado para el Santa disponible. ✓ Buena opción también mantiene una ruta eficiente.'
                             : '✓ Horarios calculados con la disponibilidad y las rutas actuales de los Santas.';
                         if (christmasTimeMessage) christmasTimeMessage.style.whiteSpace = 'pre-line';
@@ -2977,6 +2984,7 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                     }
                     } finally {advancing=false;bn.disabled=false;if(bp) bp.disabled=false;}
                 };
+                window.goToChristmasTimeStep=async()=>{if(!isChristmasEveBooking()||!bForm?.isConnected)return;cs=2;bookedEventsMonthCache.clear();routeEventsMonthCache.clear();await refreshChristmasTimeAvailability();updUI();requestAnimationFrame(()=>document.getElementById('step-2')?.scrollIntoView({behavior:'smooth',block:'start'}));};
                 if(bp) bp.onclick=async()=>{
                     if(cs<=1 || advancing) return;
                     if(bForm) bookingFormState={...bookingFormState,...Object.fromEntries(new FormData(bForm).entries())};
@@ -3678,8 +3686,9 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                     await loadRouteEventsForMonth(new Date(`${smartDate}T12:00:00`), {force:true});
                     christmasSmartCapacity = await getChristmasCapacity({force:true});
                     const smartRoute = computeChristmasSmartRoute(smartDate, smartTime, christmasSmartCapacity, smartGps, routeEvents);
-                    if (smartGps && (!smartRoute?.feasible || !smartRoute.bestSanta)) {
-                        return showToast('Ese horario dejó de ser viable para las rutas de Santa. Elige otro horario disponible.', 'error');
+                    if (smartGps && smartRoute && smartRoute.feasible === false) {
+                        await window.goToChristmasTimeStep?.();
+                        return showToast('Ese horario ya no encaja en las rutas de Santa.' + christmasAlternativesText(smartDate, smartGps), 'error');
                     }
                     // La web pública usa este resultado solo para validar/recomendar la ruta.
                     // La asignación definitiva se persiste desde la app administrativa,
@@ -3891,10 +3900,17 @@ function showBookingGpsResult(form, { prefix, accuracy, onContinue, ready = true
                     pendingBooking = null;
                     bookedEventsMonthCache.clear(); routeEventsMonthCache.clear();
                     await loadBookedEventsForMonth(new Date(currentCalDate), { force: true });
-                    if (isChristmasEveBooking()) renderBooking();
+                    if (isChristmasEveBooking()) { renderBooking(); await window.goToChristmasTimeStep?.(); }
+                    // Solo en Navidad: sugerir los horarios que sí encajan en las rutas.
+                    const christmasFailHint = isChristmasEveBooking() ? (() => {
+                        const date = normalizeChristmasDateForSubmit(new FormData(submitForm).get('date') || '');
+                        const lat = Number(bookingFormState.christmasLat), lng = Number(bookingFormState.christmasLng);
+                        const gps = Number.isFinite(lat) && Number.isFinite(lng) && !(lat === 0 && lng === 0) ? { lat, lng } : null;
+                        return christmasAlternativesText(date, gps);
+                    })() : '';
                     showToast(
                         isChristmasEveBooking()
-                            ? `Ese horario de Santa ya alcanzó el máximo de ${capacidadSimultanea} reserva${capacidadSimultanea === 1 ? '' : 's'}. Elige otra hora disponible.`
+                            ? 'Ese horario ya no está disponible para Santa.' + christmasFailHint
                             : `Ese horario ya alcanzó el máximo de ${capacidadSimultanea} eventos. Elige otra hora disponible.`,
                         'error'
                     );
