@@ -33,7 +33,7 @@ export function analyticsItems(items = []) {
   })).filter(item => item.item_id);
 }
 
-export function createAnalyticsTracker({ send, origin = 'https://divertypanama.netlify.app', referrer = '', landing = origin, storage, enabled = true } = {}) {
+export function createAnalyticsTracker({ send, origin = 'https://entregasnavidad.netlify.app', referrer = '', landing = origin, storage, enabled = true } = {}) {
   let current = { page_location: origin + '/', page_title: 'Diverty Panamá', page_referrer: safeReferrer(referrer) };
   let lastView = '', lastStep = '', checkoutStarted = false;
   const receipts = new Set();

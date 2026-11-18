@@ -1,4 +1,4 @@
-// Enlaces cortos de Operación Navidad: divertypanama.netlify.app/s/mi-empresa
+// Enlaces cortos de Operación Navidad: entregasnavidad.netlify.app/s/mi-empresa
 // El servidor (Admin SDK) es la única autoridad: garantiza que cada nombre
 // pertenezca a una sola cuenta. Los clientes no leen ni escriben estas colecciones.
 import {ADMIN_UID} from '../../firebase/functions/policy.mjs';
