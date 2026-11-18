@@ -342,12 +342,12 @@
 
         /* Escolar creativo: cuaderno, lápices, bloques de color */
         body[data-theme="school"] { background:#f8fafc; }
-        body[data-theme="school"] .season-overlay { background:linear-gradient(rgba(248,250,252,.88),rgba(248,250,252,.92)),repeating-linear-gradient(0deg,transparent 0 31px,rgba(59,130,246,.08) 32px),linear-gradient(90deg,transparent 0 44px,rgba(244,63,94,.08) 45px 47px,transparent 48px); }
-        body[data-theme="school"] #headerWrapper.scrolled #mainHeader { background:rgba(255,255,255,.96)!important; border-bottom-color:rgba(37,99,235,.12); }
-        body[data-theme="school"] .glass-panel { background:rgba(255,255,255,.92); border-color:rgba(37,99,235,.13); box-shadow:0 18px 45px rgba(30,64,175,.1); }
-        body[data-theme="school"] .card-alive::after { background:linear-gradient(120deg,#2563eb,#f97316,#eab308,#ec4899,#2563eb); opacity:.58; }
-        body[data-theme="school"] .season-btn { background:linear-gradient(135deg,#2563eb,#7c3aed 52%,#f97316)!important; box-shadow:0 10px 25px rgba(37,99,235,.2); }
-        body[data-theme="school"] .season-gradient-text { background:linear-gradient(100deg,#1d4ed8,#7c3aed,#ea580c); -webkit-background-clip:text; color:transparent; }
+        body[data-theme="school"] .season-overlay { background:linear-gradient(rgba(248,250,252,.88),rgba(248,250,252,.92)),repeating-linear-gradient(0deg,transparent 0 31px,rgba(211,50,74,.08) 32px),linear-gradient(90deg,transparent 0 44px,rgba(244,63,94,.08) 45px 47px,transparent 48px); }
+        body[data-theme="school"] #headerWrapper.scrolled #mainHeader { background:rgba(255,255,255,.96)!important; border-bottom-color:rgba(200,40,63,.12); }
+        body[data-theme="school"] .glass-panel { background:rgba(255,255,255,.92); border-color:rgba(200,40,63,.13); box-shadow:0 18px 45px rgba(30,64,175,.1); }
+        body[data-theme="school"] .card-alive::after { background:linear-gradient(120deg,#C8283F,#f97316,#eab308,#ec4899,#C8283F); opacity:.58; }
+        body[data-theme="school"] .season-btn { background:linear-gradient(135deg,#C8283F,#7c3aed 52%,#f97316)!important; box-shadow:0 10px 25px rgba(200,40,63,.2); }
+        body[data-theme="school"] .season-gradient-text { background:linear-gradient(100deg,#B3172E,#7c3aed,#ea580c); -webkit-background-clip:text; color:transparent; }
         body[data-theme="school"] #decor-layer::before { content:"✏️  📚  ⭐  🎒"; position:absolute; top:11vh; left:0; right:0; text-align:center; letter-spacing:clamp(20px,8vw,90px); font-size:clamp(18px,3vw,30px); opacity:.18; transform:rotate(-2deg); }
 
         @media(max-width:768px){
@@ -385,7 +385,7 @@
   align-items:center!important;gap:12px!important;width:100%!important;
   padding:12px!important;margin:0 0 10px!important;background:#fff!important;
   border:1px solid #e7ebf0!important;border-radius:18px!important;
-  box-shadow:0 5px 16px rgba(15,23,42,.055)!important;overflow:hidden!important;
+  box-shadow:0 5px 16px rgba(30,6,12,.055)!important;overflow:hidden!important;
 }
 #cartModal .cart-item-image{width:64px!important;height:64px!important;border-radius:14px!important;object-fit:cover!important;}
 #cartModal .cart-item-info{min-width:0!important;padding:0!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;}
@@ -400,7 +400,7 @@
 #cartModal #cartTotalsFooter{
   padding:13px 16px calc(14px + env(safe-area-inset-bottom))!important;background:#fff!important;
   color:#172033!important;border-top:1px solid #e8edf3!important;border-radius:0!important;
-  box-shadow:0 -8px 24px rgba(15,23,42,.055)!important;
+  box-shadow:0 -8px 24px rgba(30,6,12,.055)!important;
 }
 #cartModal #cartTotalsFooter label,#cartModal #cartTotalsFooter .season-text-muted{color:#7b8798!important;}
 #cartModal #cartLocation{background:#f7f8fa!important;border:1px solid #e4e8ed!important;color:#263244!important;box-shadow:none!important;}
@@ -561,9 +561,9 @@ body[data-theme="school"]{--sc-blue:#2463d4;--sc-yellow:#f5c542;--sc-coral:#f065
 body[data-theme="school"] #diverty-school-stage:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 35px,#6ea0dc22 36px 37px),linear-gradient(90deg,transparent 0 50px,#ed6b6b20 51px 53px,transparent 54px);opacity:.75}
 body[data-theme="school"] .sc-paper{position:absolute;width:150px;height:85px;background:#fffdf6;border:1px solid #d8d2bf;box-shadow:0 10px 24px #3341551c}.sc-paper.p1{left:-45px;top:100px;transform:rotate(-12deg)}.sc-paper.p2{right:-55px;top:190px;transform:rotate(15deg)}
 body[data-theme="school"] .sc-pencil{position:absolute;width:175px;height:15px;border-radius:4px;background:linear-gradient(90deg,#e9b63f 0 78%,#d4b08d 78% 86%,#ef7182 86%);box-shadow:0 6px 15px #3341552b}.sc-pencil.a{left:-38px;top:70px;transform:rotate(24deg)}.sc-pencil.b{right:-45px;bottom:100px;transform:rotate(-24deg)}
-body[data-theme="school"] .sc-dots{position:absolute;inset:0;background-image:radial-gradient(circle,#2563eb 0 2px,transparent 3px),radial-gradient(circle,#f97316 0 2px,transparent 3px),radial-gradient(circle,#eab308 0 2px,transparent 3px);background-size:110px 130px,145px 165px,190px 210px;background-position:15px 20px,70px 85px,20px 130px;opacity:.09}
-body[data-theme="school"] .glass-panel{background:linear-gradient(150deg,rgba(255,255,255,.97),rgba(250,248,239,.96))!important;border:1px solid #2563eb29!important;box-shadow:0 22px 55px #1e3a8a1a,0 0 0 3px #ffffffcc!important}
-body[data-theme="school"] .season-btn{background:linear-gradient(105deg,#2563eb,#6946c7 48%,#f06b45)!important;border:1px solid #ffffff99!important;box-shadow:0 12px 28px #2563eb2b!important}
+body[data-theme="school"] .sc-dots{position:absolute;inset:0;background-image:radial-gradient(circle,#C8283F 0 2px,transparent 3px),radial-gradient(circle,#f97316 0 2px,transparent 3px),radial-gradient(circle,#eab308 0 2px,transparent 3px);background-size:110px 130px,145px 165px,190px 210px;background-position:15px 20px,70px 85px,20px 130px;opacity:.09}
+body[data-theme="school"] .glass-panel{background:linear-gradient(150deg,rgba(255,255,255,.97),rgba(250,248,239,.96))!important;border:1px solid #C8283F29!important;box-shadow:0 22px 55px #1e3a8a1a,0 0 0 3px #ffffffcc!important}
+body[data-theme="school"] .season-btn{background:linear-gradient(105deg,#C8283F,#6946c7 48%,#f06b45)!important;border:1px solid #ffffff99!important;box-shadow:0 12px 28px #C8283F2b!important}
 body[data-theme="school"] #mainHeader{}
 @media(max-width:767px){body[data-theme="halloween"] .hw-moon{width:105px;height:105px;top:90px;opacity:.55}body[data-theme="halloween"] .hw-branch{height:85px}body[data-theme="summer"] .su-sun{width:95px;height:95px;top:92px}body[data-theme="summer"] .su-leaf{width:55px;height:125px;opacity:.55}body[data-theme="school"] .sc-paper{opacity:.5}.sc-pencil{opacity:.65}.hw-pumpkin{transform:scale(.78)}}
 @media(prefers-reduced-motion:reduce){.hw-fog,.su-bubbles{animation:none!important}}
@@ -610,8 +610,8 @@ body[data-theme="school"] .glass-panel{box-shadow:0 15px 36px #1e3a8a17,0 0 0 2p
 /* --- CSS consolidado: diverty-boot-style --- */
 html.diverty-booting body{overflow:hidden}
 html.diverty-booting body> :not(#themeBootLoader){visibility:hidden!important}
-#themeBootLoader{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#0b1220;opacity:1;transition:opacity .28s ease,visibility .28s ease}
-html[data-cached-theme="christmas"] #themeBootLoader{background:radial-gradient(circle at 20% 18%,rgba(59,130,246,.18),transparent 28%),radial-gradient(circle at 82% 82%,rgba(148,163,184,.12),transparent 30%),linear-gradient(160deg,#061426,#071D39 55%,#0B1324)}
+#themeBootLoader{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#1C0A10;opacity:1;transition:opacity .28s ease,visibility .28s ease}
+html[data-cached-theme="christmas"] #themeBootLoader{background:radial-gradient(circle at 20% 18%,rgba(211,50,74,.18),transparent 28%),radial-gradient(circle at 82% 82%,rgba(226,184,92,.12),transparent 30%),linear-gradient(160deg,#1C0A10,#071D39 55%,#0B1324)}
 html[data-cached-theme="halloween"] #themeBootLoader{background:linear-gradient(145deg,#09060f,#1b0b23 58%,#401508)}
 html[data-cached-theme="summer"] #themeBootLoader{background:linear-gradient(145deg,#dff8ff,#eafffb 58%,#fff2cf)}
 html[data-cached-theme="school"] #themeBootLoader{background:linear-gradient(145deg,#fffdf6,#f4f7ff 58%,#fff4cf)}
@@ -661,7 +661,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   width:40px!important;height:40px!important;min-width:40px!important;padding:0!important;
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
   border-radius:999px!important;background:#f8fafc!important;color:#334155!important;
-  border:1px solid #e2e8f0!important;box-shadow:0 3px 10px rgba(15,23,42,.07)!important;
+  border:1px solid #F3E6C8!important;box-shadow:0 3px 10px rgba(30,6,12,.07)!important;
   line-height:1!important;appearance:none!important;-webkit-appearance:none!important;
 }
 #cartModal .cart-close-always svg{width:19px!important;height:19px!important;display:block!important;}
@@ -758,7 +758,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   #home-featured-wrapper .glass-panel {
     border-radius: 22px !important;
     border: 1px solid color-mix(in srgb, var(--s-glass-border) 82%, white 18%) !important;
-    box-shadow: 0 12px 32px rgba(15, 23, 42, .10) !important;
+    box-shadow: 0 12px 32px rgba(30,6,12, .10) !important;
     overflow: hidden;
   }
   #home-campaigns-wrapper img,
@@ -782,14 +782,14 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   #calendar-section { margin-top: .6rem !important; }
   #calendar-card-inner {
     border-radius: 24px !important;
-    box-shadow: 0 14px 38px rgba(15,23,42,.09) !important;
+    box-shadow: 0 14px 38px rgba(30,6,12,.09) !important;
   }
 
   /* Reseñas: coherencia con tarjetas superiores */
   #home-reviews-wrapper .glass-panel,
   #home-reviews-wrapper .card-alive {
     border-radius: 22px !important;
-    box-shadow: 0 12px 30px rgba(15,23,42,.08) !important;
+    box-shadow: 0 12px 30px rgba(30,6,12,.08) !important;
   }
 
   /* Header más nítido en móvil */
@@ -808,7 +808,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   #home-featured-wrapper .card-alive,
   #home-reviews-wrapper .card-alive {
     border-radius: 24px !important;
-    box-shadow: 0 14px 36px rgba(15,23,42,.09) !important;
+    box-shadow: 0 14px 36px rgba(30,6,12,.09) !important;
   }
 }
 
@@ -837,7 +837,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
     border-radius:28px;
     background:color-mix(in srgb,var(--s-glass-bg) 86%,white 14%);
     border:1px solid var(--s-glass-border);
-    box-shadow:0 18px 45px rgba(15,23,42,.08);
+    box-shadow:0 18px 45px rgba(30,6,12,.08);
   }
 
   /* Títulos ya existentes: más jerarquía, sin agregar palabras */
@@ -872,9 +872,9 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   #home-campaigns-wrapper .card-alive,
   #home-featured-wrapper .card-alive {
     border-radius:24px!important;
-    border:1px solid rgba(148,163,184,.22)!important;
+    border:1px solid rgba(226,184,92,.22)!important;
     background:var(--s-glass-bg)!important;
-    box-shadow:0 16px 38px rgba(15,23,42,.13)!important;
+    box-shadow:0 16px 38px rgba(30,6,12,.13)!important;
   }
   #home-campaigns-wrapper .card-alive img,
   #home-featured-wrapper .card-alive img {
@@ -902,13 +902,13 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
       color-mix(in srgb,var(--s-primary) 7%,var(--s-glass-bg)),
       var(--s-glass-bg));
     border:1px solid var(--s-glass-border);
-    box-shadow:0 18px 44px rgba(15,23,42,.08);
+    box-shadow:0 18px 44px rgba(30,6,12,.08);
   }
   #calendar-section > div { max-width:365px!important; }
   #calendar-card-inner {
     border-radius:24px!important;
     border:1px solid color-mix(in srgb,var(--s-primary) 16%,var(--s-glass-border))!important;
-    box-shadow:0 12px 28px rgba(15,23,42,.08)!important;
+    box-shadow:0 12px 28px rgba(30,6,12,.08)!important;
   }
 
   /* Reseñas */
@@ -920,7 +920,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   #home-reviews-wrapper .glass-panel {
     border-radius:24px!important;
     border:1px solid var(--s-glass-border)!important;
-    box-shadow:0 14px 34px rgba(15,23,42,.09)!important;
+    box-shadow:0 14px 34px rgba(30,6,12,.09)!important;
   }
 
   /* Header más tipo app */
@@ -960,7 +960,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   .card-safe-wrapper .card-alive {
     border-radius:25px!important;
     border:1px solid color-mix(in srgb,var(--s-glass-border) 78%,white 22%)!important;
-    box-shadow:0 15px 38px rgba(15,23,42,.11)!important;
+    box-shadow:0 15px 38px rgba(30,6,12,.11)!important;
     overflow:hidden;
   }
   .card-safe-wrapper img {
@@ -987,7 +987,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   /* Chips/badges existentes */
   .card-safe-wrapper .absolute.top-4 {
     border-radius:999px!important;
-    box-shadow:0 7px 18px rgba(15,23,42,.16)!important;
+    box-shadow:0 7px 18px rgba(30,6,12,.16)!important;
   }
 
   /* Carruseles de categorías: se ve parte de la próxima tarjeta */
@@ -1019,13 +1019,13 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   .card-safe-wrapper .card-alive {
     border-radius:26px!important;
     border:1px solid var(--s-glass-border)!important;
-    box-shadow:0 14px 36px rgba(15,23,42,.09)!important;
+    box-shadow:0 14px 36px rgba(30,6,12,.09)!important;
     transition:transform .2s ease,box-shadow .2s ease!important;
   }
   .card-safe-wrapper > .card-alive:hover,
   .card-safe-wrapper .card-alive:hover {
     transform:translateY(-4px);
-    box-shadow:0 20px 44px rgba(15,23,42,.13)!important;
+    box-shadow:0 20px 44px rgba(30,6,12,.13)!important;
   }
   .card-safe-wrapper button {
     border-radius:14px!important;
@@ -1048,7 +1048,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
     border-radius:28px 28px 0 0!important;
     border:1px solid var(--s-glass-border)!important;
     border-bottom:0!important;
-    box-shadow:0 -20px 55px rgba(15,23,42,.22)!important;
+    box-shadow:0 -20px 55px rgba(30,6,12,.22)!important;
     overflow:hidden!important;
   }
   #cartModal > div::before {
@@ -1072,7 +1072,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   #cartModal .glass-panel {
     border-radius:18px!important;
     border:1px solid var(--s-glass-border)!important;
-    box-shadow:0 8px 22px rgba(15,23,42,.07)!important;
+    box-shadow:0 8px 22px rgba(30,6,12,.07)!important;
   }
 
   /* Controles y CTA del carrito */
@@ -1137,7 +1137,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
     top:auto!important;
     border-radius:25px!important;
     border:1px solid color-mix(in srgb,var(--s-primary) 13%,var(--s-glass-border))!important;
-    box-shadow:0 14px 34px rgba(15,23,42,.09)!important;
+    box-shadow:0 14px 34px rgba(30,6,12,.09)!important;
   }
 
   /* Espaciado del flujo de reserva */
@@ -1150,7 +1150,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
 @media (min-width:768px){
   #cartModal > div {
     border-radius:26px!important;
-    box-shadow:0 24px 70px rgba(15,23,42,.22)!important;
+    box-shadow:0 24px 70px rgba(30,6,12,.22)!important;
   }
   #bookingForm input,
   #bookingForm select,
@@ -1186,7 +1186,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   #mainHeader img {
     flex:0 0 auto;
     object-fit:cover;
-    box-shadow:0 5px 15px rgba(15,23,42,.12);
+    box-shadow:0 5px 15px rgba(30,6,12,.12);
   }
   #mainHeader .font-nunito,
   #mainHeader .font-poppins {
@@ -1209,7 +1209,7 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
     width:min(88vw,360px)!important;
     border-radius:28px 0 0 28px!important;
     border-left:1px solid var(--s-glass-border)!important;
-    box-shadow:-22px 0 55px rgba(15,23,42,.24)!important;
+    box-shadow:-22px 0 55px rgba(30,6,12,.24)!important;
     padding-bottom:max(1rem,env(safe-area-inset-bottom))!important;
     overflow-y:auto!important;
     overscroll-behavior:contain;
@@ -1264,8 +1264,8 @@ body.cart-open [data-cart-state="selected"]{visibility:hidden!important;pointer-
   --dv-radius-sm:14px;
   --dv-radius-md:18px;
   --dv-radius-lg:24px;
-  --dv-shadow-soft:0 10px 28px rgba(15,23,42,.08);
-  --dv-shadow-card:0 14px 36px rgba(15,23,42,.10);
+  --dv-shadow-soft:0 10px 28px rgba(30,6,12,.08);
+  --dv-shadow-card:0 14px 36px rgba(30,6,12,.10);
 }
 button,a,input,select,textarea{ -webkit-tap-highlight-color:transparent; }
 button,[role="button"],.nav-action{ touch-action:manipulation; }
@@ -1299,7 +1299,7 @@ footer a:active{ transform:scale(.98); }
 
 /* WhatsApp: integrado pero claramente accesible */
 .whatsapp-container a{
-  box-shadow:0 12px 30px rgba(15,23,42,.18)!important;
+  box-shadow:0 12px 30px rgba(30,6,12,.18)!important;
   transition:transform .18s ease,box-shadow .18s ease!important;
 }
 .whatsapp-container a:active{ transform:scale(.95)!important; }
@@ -1307,7 +1307,7 @@ footer a:active{ transform:scale(.98); }
 /* Toast */
 #toast{
   border-radius:18px!important;
-  box-shadow:0 16px 40px rgba(15,23,42,.18)!important;
+  box-shadow:0 16px 40px rgba(30,6,12,.18)!important;
 }
 
 /* Modales */
@@ -1321,7 +1321,7 @@ footer a:active{ transform:scale(.98); }
   footer a:hover{ opacity:.82; }
   .whatsapp-container a:hover{
     transform:translateY(-2px)!important;
-    box-shadow:0 16px 36px rgba(15,23,42,.22)!important;
+    box-shadow:0 16px 36px rgba(30,6,12,.22)!important;
   }
 }
 
@@ -1521,19 +1521,19 @@ body.theme-summer .season-btn{
 html[data-theme="school"] body,
 body.theme-school{
   background:
-    linear-gradient(rgba(59,130,246,.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(59,130,246,.025) 1px,transparent 1px),
+    linear-gradient(rgba(211,50,74,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(211,50,74,.025) 1px,transparent 1px),
     var(--s-bg)!important;
   background-size:24px 24px!important;
 }
 html[data-theme="school"] .glass-panel,
 body.theme-school .glass-panel{
-  border-color:rgba(59,130,246,.20)!important;
-  box-shadow:0 14px 38px rgba(37,99,235,.09)!important;
+  border-color:rgba(211,50,74,.20)!important;
+  box-shadow:0 14px 38px rgba(200,40,63,.09)!important;
 }
 html[data-theme="school"] .season-btn,
 body.theme-school .season-btn{
-  box-shadow:0 8px 22px rgba(37,99,235,.14);
+  box-shadow:0 8px 22px rgba(200,40,63,.14);
 }
 
 /* Todos los temas: cards coherentes con la identidad activa */
@@ -1551,7 +1551,7 @@ body.theme-summer .card-safe-wrapper > *{
 }
 html[data-theme="school"] .card-safe-wrapper > *,
 body.theme-school .card-safe-wrapper > *{
-  box-shadow:0 14px 34px rgba(37,99,235,.10)!important;
+  box-shadow:0 14px 34px rgba(200,40,63,.10)!important;
 }
 
 /* Móvil: riqueza visual sin recuperar el coste de animación anterior */
@@ -1662,7 +1662,7 @@ body.theme-school .card-safe-wrapper > *{
   /* Calendario más integrado al flujo del inicio */
   #calendar-section .glass-panel,
   #calendar-section [class*="rounded"]{
-    box-shadow:0 12px 32px rgba(15,23,42,.08);
+    box-shadow:0 12px 32px rgba(30,6,12,.08);
   }
 
   /* Opiniones: lectura más cómoda */
@@ -1697,7 +1697,7 @@ body.theme-school .card-safe-wrapper > *{
   }
   #home-featured-wrapper .card-safe-wrapper > *:hover{
     transform:translateY(-3px);
-    box-shadow:0 18px 42px rgba(15,23,42,.13)!important;
+    box-shadow:0 18px 42px rgba(30,6,12,.13)!important;
   }
 }
 
@@ -1799,7 +1799,7 @@ body{
 .card-safe-wrapper > *{
   border:1px solid rgba(255,255,255,.75)!important;
   border-radius:28px!important;
-  box-shadow:0 16px 40px rgba(15,23,42,.11)!important;
+  box-shadow:0 16px 40px rgba(30,6,12,.11)!important;
 }
 .card-safe-wrapper img{
   border-radius:22px!important;
@@ -1818,7 +1818,7 @@ body{
 #calendar-section .glass-panel{
   border-radius:28px!important;
   border:1px solid var(--v11-line)!important;
-  box-shadow:0 18px 45px rgba(15,23,42,.09)!important;
+  box-shadow:0 18px 45px rgba(30,6,12,.09)!important;
 }
 
 /* Opiniones */
@@ -1827,7 +1827,7 @@ body{
   padding-bottom:1rem;
 }
 #home-reviews-wrapper .glass-panel{
-  box-shadow:0 14px 35px rgba(15,23,42,.08)!important;
+  box-shadow:0 14px 35px rgba(30,6,12,.08)!important;
 }
 
 /* Footer: cierre de página más sólido */
@@ -1835,7 +1835,7 @@ footer{
   margin-top:2rem;
   border-radius:34px 34px 0 0;
   overflow:hidden;
-  box-shadow:0 -12px 35px rgba(15,23,42,.05);
+  box-shadow:0 -12px 35px rgba(30,6,12,.05);
 }
 
 /* Desktop */
@@ -1848,7 +1848,7 @@ footer{
   }
   .card-safe-wrapper > *:hover{
     transform:translateY(-5px)!important;
-    box-shadow:0 24px 52px rgba(15,23,42,.15)!important;
+    box-shadow:0 24px 52px rgba(30,6,12,.15)!important;
   }
 }
 
@@ -1865,7 +1865,7 @@ footer{
     min-height:70svh!important;
     border-radius:0 0 34px 34px!important;
     overflow:hidden!important;
-    box-shadow:0 20px 48px rgba(15,23,42,.16);
+    box-shadow:0 20px 48px rgba(30,6,12,.16);
   }
 
   #hero-section h1,
@@ -1892,7 +1892,7 @@ footer{
     margin:.85rem .55rem 0!important;
     padding:1rem .2rem .65rem!important;
     border-radius:28px!important;
-    box-shadow:0 18px 45px rgba(15,23,42,.11)!important;
+    box-shadow:0 18px 45px rgba(30,6,12,.11)!important;
   }
 
   #home-featured-wrapper h2,
@@ -1908,7 +1908,7 @@ footer{
   }
   .card-safe-wrapper > *{
     border-radius:25px!important;
-    box-shadow:0 14px 34px rgba(15,23,42,.12)!important;
+    box-shadow:0 14px 34px rgba(30,6,12,.12)!important;
   }
 
   /* Carruseles llegan visualmente a los bordes */
@@ -1998,98 +1998,98 @@ footer{
 /* --- CSS consolidado: diverty-christmas-blue-silver-v1 --- */
 /* NAVIDAD AZUL + PLATEADO — capa visual, no cambia contenido ni Firebase */
 body[data-theme="christmas"]{
-  background:#061426!important;
-  --xmas-blue:#2563EB;
-  --xmas-ice:#60A5FA;
-  --xmas-silver:#E2E8F0;
-  --xmas-silver-2:#94A3B8;
-  --xmas-deep:#061426;
+  background:#1C0A10!important;
+  --xmas-blue:#C8283F;
+  --xmas-ice:#F0C76A;
+  --xmas-silver:#F3E6C8;
+  --xmas-silver-2:#E2B85C;
+  --xmas-deep:#1C0A10;
 }
 body[data-theme="christmas"] .season-background{
   filter:saturate(.82) contrast(1.08) brightness(.58) hue-rotate(145deg)!important;
 }
 body[data-theme="christmas"] .season-overlay{
   background:
-    radial-gradient(circle at 15% 12%,rgba(191,219,254,.17),transparent 25%),
-    radial-gradient(circle at 86% 18%,rgba(37,99,235,.20),transparent 30%),
+    radial-gradient(circle at 15% 12%,rgba(243,217,164,.17),transparent 25%),
+    radial-gradient(circle at 86% 18%,rgba(200,40,63,.20),transparent 30%),
     linear-gradient(180deg,rgba(4,15,32,.66),rgba(2,10,24,.91))!important;
 }
 body[data-theme="christmas"] #topAnnouncementBanner{
-  background:linear-gradient(90deg,#0B2B55,#2563EB 42%,#64748B 76%,#CBD5E1)!important;
-  border-bottom-color:rgba(226,232,240,.38)!important;
+  background:linear-gradient(90deg,#0B2B55,#C8283F 42%,#64748B 76%,#EAD9C8)!important;
+  border-bottom-color:rgba(243,230,200,.38)!important;
 }
 body[data-theme="christmas"] #mainHeader,
 body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader{
-  background:linear-gradient(180deg,rgba(4,22,45,.97),rgba(5,17,36,.94))!important;
-  border-color:rgba(203,213,225,.38)!important;
-  box-shadow:0 12px 38px rgba(0,0,0,.40),inset 0 -1px rgba(226,232,240,.12)!important;
+  background:linear-gradient(180deg,rgba(58,9,19,.97),rgba(40,7,14,.94))!important;
+  border-color:rgba(234,217,200,.38)!important;
+  box-shadow:0 12px 38px rgba(0,0,0,.40),inset 0 -1px rgba(243,230,200,.12)!important;
 }
 body[data-theme="christmas"] .glass-panel{
-  background:linear-gradient(155deg,rgba(10,37,72,.94),rgba(5,22,47,.96) 62%,rgba(15,23,42,.96))!important;
-  border-color:rgba(203,213,225,.34)!important;
-  box-shadow:0 24px 65px rgba(0,0,0,.46),0 0 0 2px rgba(96,165,250,.10),inset 0 1px rgba(255,255,255,.10)!important;
+  background:linear-gradient(155deg,rgba(70,14,26,.94),rgba(44,8,16,.96) 62%,rgba(30,6,12,.96))!important;
+  border-color:rgba(234,217,200,.34)!important;
+  box-shadow:0 24px 65px rgba(0,0,0,.46),0 0 0 2px rgba(226,184,92,.10),inset 0 1px rgba(255,255,255,.10)!important;
 }
 body[data-theme="christmas"] .glass-panel:before{
-  background:linear-gradient(120deg,rgba(248,250,252,.82),transparent 20%,transparent 76%,rgba(96,165,250,.58))!important;
+  background:linear-gradient(120deg,rgba(248,250,252,.82),transparent 20%,transparent 76%,rgba(226,184,92,.58))!important;
 }
 body[data-theme="christmas"] .season-btn{
-  background:linear-gradient(105deg,#1D4ED8 0%,#2563EB 48%,#64748B 100%)!important;
-  border:1px solid rgba(226,232,240,.48)!important;
-  box-shadow:0 13px 30px rgba(37,99,235,.25),inset 0 1px rgba(255,255,255,.24),0 0 18px rgba(191,219,254,.12)!important;
+  background:linear-gradient(105deg,#B3172E 0%,#C8283F 48%,#64748B 100%)!important;
+  border:1px solid rgba(243,230,200,.48)!important;
+  box-shadow:0 13px 30px rgba(200,40,63,.25),inset 0 1px rgba(255,255,255,.24),0 0 18px rgba(243,217,164,.12)!important;
 }
 body[data-theme="christmas"] .season-btn-outline{
   background:linear-gradient(145deg,rgba(12,42,78,.78),rgba(9,25,50,.76))!important;
-  border-color:rgba(203,213,225,.44)!important;
+  border-color:rgba(234,217,200,.44)!important;
 }
 body[data-theme="christmas"] .season-gradient-text{
-  background:linear-gradient(90deg,#FFFFFF,#BFDBFE 46%,#E2E8F0 78%,#93C5FD)!important;
+  background:linear-gradient(90deg,#FFFFFF,#F3D9A4 46%,#F3E6C8 78%,#F0C76A)!important;
   -webkit-background-clip:text!important;background-clip:text!important;color:transparent!important;
 }
 body[data-theme="christmas"] .card-alive:after{
-  background:linear-gradient(115deg,#F8FAFC,#60A5FA,#64748B,#DBEAFE,#2563EB)!important;
+  background:linear-gradient(115deg,#F8FAFC,#F0C76A,#64748B,#FBF1DC,#C8283F)!important;
 }
 body[data-theme="christmas"] #home-featured-wrapper:before,
 body[data-theme="christmas"] #home-campaigns-wrapper:before{
-  border-top-color:rgba(203,213,225,.55)!important;
+  border-top-color:rgba(234,217,200,.55)!important;
   background:
     radial-gradient(circle at 8% 0,#F8FAFC 0 3px,transparent 4px),
-    radial-gradient(circle at 28% 0,#60A5FA 0 3px,transparent 4px),
-    radial-gradient(circle at 48% 0,#E2E8F0 0 3px,transparent 4px),
-    radial-gradient(circle at 68% 0,#2563EB 0 3px,transparent 4px),
+    radial-gradient(circle at 28% 0,#F0C76A 0 3px,transparent 4px),
+    radial-gradient(circle at 48% 0,#F3E6C8 0 3px,transparent 4px),
+    radial-gradient(circle at 68% 0,#C8283F 0 3px,transparent 4px),
     radial-gradient(circle at 88% 0,#F8FAFC 0 3px,transparent 4px)!important;
-  filter:drop-shadow(0 0 7px rgba(191,219,254,.68))!important;
+  filter:drop-shadow(0 0 7px rgba(243,217,164,.68))!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel{
-  background:linear-gradient(160deg,#071D39,#061426 70%,#0F172A)!important;
-  border-left-color:rgba(203,213,225,.30)!important;
+  background:linear-gradient(160deg,#071D39,#1C0A10 70%,#1C0A10)!important;
+  border-left-color:rgba(234,217,200,.30)!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel:before{
-  background:linear-gradient(90deg,#2563EB,#E2E8F0,#60A5FA,#F8FAFC,#2563EB)!important;
+  background:linear-gradient(90deg,#C8283F,#F3E6C8,#F0C76A,#F8FAFC,#C8283F)!important;
 }
 body[data-theme="christmas"] .whatsapp-btn{
-  border-color:rgba(226,232,240,.72)!important;
-  box-shadow:0 0 0 7px rgba(9,30,58,.66),0 12px 34px rgba(0,0,0,.35),0 0 25px rgba(96,165,250,.22)!important;
+  border-color:rgba(243,230,200,.72)!important;
+  box-shadow:0 0 0 7px rgba(58,16,26,.66),0 12px 34px rgba(0,0,0,.35),0 0 25px rgba(226,184,92,.22)!important;
 }
 /* Luces y adornos navideños pasan de rojo/dorado a hielo/azul/plata */
 body[data-theme="christmas"] .xmas-bulb{
-  background:#E2E8F0!important;
-  box-shadow:0 0 8px #F8FAFC,0 0 22px #60A5FA,0 0 38px rgba(96,165,250,.70)!important;
+  background:#F3E6C8!important;
+  box-shadow:0 0 8px #F8FAFC,0 0 22px #F0C76A,0 0 38px rgba(226,184,92,.70)!important;
 }
 body[data-theme="christmas"] .xmas-bulb:nth-child(2n){
-  background:#2563EB!important;
-  box-shadow:0 0 8px #60A5FA,0 0 22px #2563EB!important;
+  background:#C8283F!important;
+  box-shadow:0 0 8px #F0C76A,0 0 22px #C8283F!important;
 }
 body[data-theme="christmas"] .xmas-ornament{
-  background:radial-gradient(circle at 32% 25%,#fff9 0 7%,transparent 8%),linear-gradient(145deg,#60A5FA,#1D4ED8)!important;
-  border-color:#E2E8F0!important;
-  box-shadow:0 8px 18px #0008,0 0 18px rgba(191,219,254,.35)!important;
+  background:radial-gradient(circle at 32% 25%,#fff9 0 7%,transparent 8%),linear-gradient(145deg,#F0C76A,#B3172E)!important;
+  border-color:#F3E6C8!important;
+  box-shadow:0 8px 18px #0008,0 0 18px rgba(243,217,164,.35)!important;
 }
 body[data-theme="christmas"] .xmas-ornament.gold{
-  background:radial-gradient(circle at 32% 25%,#fff 0 7%,transparent 8%),linear-gradient(145deg,#F8FAFC,#94A3B8)!important;
+  background:radial-gradient(circle at 32% 25%,#fff 0 7%,transparent 8%),linear-gradient(145deg,#F8FAFC,#E2B85C)!important;
 }
 body[data-theme="christmas"] #decor-layer::before{
-  background:repeating-linear-gradient(90deg,#F8FAFC 0 8px,transparent 8px 26px,#2563EB 26px 34px,transparent 34px 52px,#94A3B8 52px 60px,transparent 60px 78px)!important;
-  filter:drop-shadow(0 4px 7px rgba(147,197,253,.42))!important;
+  background:repeating-linear-gradient(90deg,#F8FAFC 0 8px,transparent 8px 26px,#C8283F 26px 34px,transparent 34px 52px,#E2B85C 52px 60px,transparent 60px 78px)!important;
+  filter:drop-shadow(0 4px 7px rgba(226,184,92,.42))!important;
 }
 
 /* --- CSS consolidado: diverty-christmas-elegant-campaigns --- */
@@ -2098,12 +2098,12 @@ body[data-theme="christmas"] #home-campaigns-wrapper .campaign-card,
 body[data-theme="christmas"] #home-campaigns-wrapper [class*="from-red"],
 body[data-theme="christmas"] #home-campaigns-wrapper [class*="from-rose"]{
   background:
-    radial-gradient(circle at 92% 8%,rgba(191,219,254,.18),transparent 24%),
-    linear-gradient(145deg,#0B2A52 0%,#071B36 54%,#101827 100%)!important;
-  border-color:rgba(226,232,240,.58)!important;
+    radial-gradient(circle at 92% 8%,rgba(243,217,164,.18),transparent 24%),
+    linear-gradient(145deg,#5A1020 0%,#3A0914 54%,#24060D 100%)!important;
+  border-color:rgba(243,230,200,.58)!important;
   box-shadow:
     0 24px 60px rgba(0,0,0,.42),
-    0 0 0 1px rgba(96,165,250,.12),
+    0 0 0 1px rgba(226,184,92,.12),
     inset 0 1px rgba(255,255,255,.12)!important;
 }
 
@@ -2114,7 +2114,7 @@ body[data-theme="christmas"] #home-campaigns-wrapper .bg-rose-500,
 body[data-theme="christmas"] #home-campaigns-wrapper .bg-rose-600,
 body[data-theme="christmas"] #home-campaigns-wrapper .bg-pink-500,
 body[data-theme="christmas"] #home-campaigns-wrapper .bg-pink-600{
-  background:linear-gradient(135deg,#2563EB,#64748B)!important;
+  background:linear-gradient(135deg,#C8283F,#64748B)!important;
 }
 
 /* Títulos y textos de la promo */
@@ -2126,7 +2126,7 @@ body[data-theme="christmas"] #home-campaigns-wrapper h4{
 body[data-theme="christmas"] #home-campaigns-wrapper p,
 body[data-theme="christmas"] #home-campaigns-wrapper li,
 body[data-theme="christmas"] #home-campaigns-wrapper span{
-  border-color:rgba(203,213,225,.25);
+  border-color:rgba(234,217,200,.25);
 }
 
 /* Panel de beneficios */
@@ -2134,22 +2134,22 @@ body[data-theme="christmas"] #home-campaigns-wrapper ul,
 body[data-theme="christmas"] #home-campaigns-wrapper .bg-white\/5,
 body[data-theme="christmas"] #home-campaigns-wrapper .bg-black\/5{
   background:rgba(3,16,34,.34)!important;
-  border-color:rgba(203,213,225,.18)!important;
+  border-color:rgba(234,217,200,.18)!important;
 }
 
 /* Etiqueta PROMO: azul hielo/plata en lugar de rosa */
 body[data-theme="christmas"] #home-campaigns-wrapper [class*="pink"],
 body[data-theme="christmas"] #home-campaigns-wrapper [class*="rose"]{
-  border-color:rgba(226,232,240,.55)!important;
+  border-color:rgba(243,230,200,.55)!important;
 }
 
 /* Botones de campañas coherentes con el tema */
 body[data-theme="christmas"] #home-campaigns-wrapper button,
 body[data-theme="christmas"] #home-campaigns-wrapper .season-btn{
-  background:linear-gradient(105deg,#1D4ED8,#2563EB 48%,#64748B)!important;
-  border-color:rgba(226,232,240,.55)!important;
+  background:linear-gradient(105deg,#B3172E,#C8283F 48%,#64748B)!important;
+  border-color:rgba(243,230,200,.55)!important;
   color:#fff!important;
-  box-shadow:0 12px 28px rgba(37,99,235,.25),inset 0 1px rgba(255,255,255,.22)!important;
+  box-shadow:0 12px 28px rgba(200,40,63,.25),inset 0 1px rgba(255,255,255,.22)!important;
 }
 
 /* --- CSS consolidado: diverty-christmas-card-force-v2 --- */
@@ -2160,10 +2160,10 @@ body[data-theme="christmas"] #home-featured-wrapper .glass-panel.card-alive,
 body[data-theme="christmas"] #home-campaigns-wrapper .glass-panel,
 body[data-theme="christmas"] #mainContent .card-alive{
   background:
-    radial-gradient(circle at 90% 5%,rgba(147,197,253,.13),transparent 27%),
-    linear-gradient(150deg,#0B2A52 0%,#071D3B 52%,#081629 100%)!important;
-  background-color:#071D3B!important;
-  border:1px solid rgba(203,213,225,.42)!important;
+    radial-gradient(circle at 90% 5%,rgba(226,184,92,.13),transparent 27%),
+    linear-gradient(150deg,#5A1020 0%,#3A0914 52%,#2A0710 100%)!important;
+  background-color:#3A0914!important;
+  border:1px solid rgba(234,217,200,.42)!important;
   box-shadow:0 20px 48px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.09)!important;
 }
 
@@ -2171,7 +2171,7 @@ body[data-theme="christmas"] #mainContent .card-alive{
 body[data-theme="christmas"] .card-safe-wrapper .glass-panel .bg-black\/5,
 body[data-theme="christmas"] .card-safe-wrapper .glass-panel .bg-white\/5,
 body[data-theme="christmas"] .card-safe-wrapper .glass-panel [class*="border-"]{
-  border-color:rgba(203,213,225,.20)!important;
+  border-color:rgba(234,217,200,.20)!important;
 }
 
 /* Neutraliza fondos rojos/rosados que puedan venir guardados en clases */
@@ -2179,8 +2179,8 @@ body[data-theme="christmas"] .card-safe-wrapper > [class*="bg-red"],
 body[data-theme="christmas"] .card-safe-wrapper > [class*="bg-rose"],
 body[data-theme="christmas"] #home-featured-wrapper [class*="bg-red"],
 body[data-theme="christmas"] #home-featured-wrapper [class*="bg-rose"]{
-  background-color:#071D3B!important;
-  background-image:linear-gradient(150deg,#0B2A52,#071D3B 55%,#081629)!important;
+  background-color:#3A0914!important;
+  background-image:linear-gradient(150deg,#5A1020,#3A0914 55%,#2A0710)!important;
 }
 
 /* Precio y títulos: blanco/hielo */
@@ -2191,15 +2191,15 @@ body[data-theme="christmas"] .card-safe-wrapper .season-text-title{
 }
 body[data-theme="christmas"] .card-safe-wrapper .season-text-primary,
 body[data-theme="christmas"] .card-safe-wrapper .season-gradient-text{
-  color:#DBEAFE!important;
+  color:#FBF1DC!important;
   background:none!important;
   -webkit-text-fill-color:initial!important;
 }
 
 /* Botón conserva azul -> plata */
 body[data-theme="christmas"] .card-safe-wrapper .season-btn{
-  background:linear-gradient(105deg,#1D4ED8 0%,#2563EB 48%,#64748B 100%)!important;
-  border:1px solid rgba(226,232,240,.55)!important;
+  background:linear-gradient(105deg,#B3172E 0%,#C8283F 48%,#64748B 100%)!important;
+  border:1px solid rgba(243,230,200,.55)!important;
   color:#fff!important;
 }
 
@@ -2207,8 +2207,8 @@ body[data-theme="christmas"] .card-safe-wrapper .season-btn{
 body[data-theme="christmas"] .card-safe-wrapper > .glass-panel[style],
 body[data-theme="christmas"] #home-featured-wrapper .glass-panel[style]{
   background:
-    radial-gradient(circle at 90% 5%,rgba(147,197,253,.13),transparent 27%),
-    linear-gradient(150deg,#0B2A52 0%,#071D3B 52%,#081629 100%)!important;
+    radial-gradient(circle at 90% 5%,rgba(226,184,92,.13),transparent 27%),
+    linear-gradient(150deg,#5A1020 0%,#3A0914 52%,#2A0710 100%)!important;
 }
 
 /* --- CSS consolidado: diverty-christmas-unified-v3 --- */
@@ -2217,33 +2217,33 @@ body[data-theme="christmas"] #home-featured-wrapper .glass-panel[style]{
    Solo visual. No altera contenido, datos ni Firebase.
    ========================================================== */
 body[data-theme="christmas"]{
-  --x-navy:#061426;
+  --x-navy:#1C0A10;
   --x-navy2:#081D38;
-  --x-blue:#2563EB;
-  --x-ice:#93C5FD;
-  --x-silver:#CBD5E1;
+  --x-blue:#C8283F;
+  --x-ice:#F0C76A;
+  --x-silver:#EAD9C8;
   --x-white:#F8FAFC;
   --x-muted:#B8C5D6;
-  --x-line:rgba(203,213,225,.30);
+  --x-line:rgba(234,217,200,.30);
 }
 
 /* HEADER / LOGO: elimina contaminación verde */
 body[data-theme="christmas"] #mainHeader,
 body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader{
-  background:linear-gradient(155deg,rgba(5,24,48,.98),rgba(6,20,38,.98))!important;
-  border-color:rgba(203,213,225,.36)!important;
+  background:linear-gradient(155deg,rgba(5,24,48,.98),rgba(28,10,16,.98))!important;
+  border-color:rgba(234,217,200,.36)!important;
   box-shadow:0 14px 40px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.08)!important;
 }
 body[data-theme="christmas"] #mainHeader *{
-  border-color:rgba(203,213,225,.26);
+  border-color:rgba(234,217,200,.26);
 }
 body[data-theme="christmas"] #mainHeader img{
-  background:rgba(8,29,56,.72)!important;
-  box-shadow:0 0 0 2px rgba(147,197,253,.18),0 0 18px rgba(96,165,250,.12)!important;
+  background:rgba(58,12,22,.72)!important;
+  box-shadow:0 0 0 2px rgba(226,184,92,.18),0 0 18px rgba(226,184,92,.12)!important;
 }
 body[data-theme="christmas"] #mainHeader button{
   background:linear-gradient(145deg,#101D36,#111827)!important;
-  border-color:rgba(203,213,225,.22)!important;
+  border-color:rgba(234,217,200,.22)!important;
   color:#F8FAFC!important;
 }
 
@@ -2260,7 +2260,7 @@ body[data-theme="christmas"] #mainContent li{
   color:#D7E0EC;
 }
 body[data-theme="christmas"] #mainContent .season-gradient-text{
-  background:linear-gradient(90deg,#FFFFFF,#BFDBFE 48%,#CBD5E1)!important;
+  background:linear-gradient(90deg,#FFFFFF,#F3D9A4 48%,#EAD9C8)!important;
   -webkit-background-clip:text!important;background-clip:text!important;
   color:transparent!important;
   -webkit-text-fill-color:transparent!important;
@@ -2271,9 +2271,9 @@ body[data-theme="christmas"] .card-safe-wrapper > .glass-panel,
 body[data-theme="christmas"] .card-alive{
   color:#F8FAFC!important;
   background:
-    radial-gradient(circle at 90% 4%,rgba(147,197,253,.12),transparent 26%),
+    radial-gradient(circle at 90% 4%,rgba(226,184,92,.12),transparent 26%),
     linear-gradient(150deg,#0A2A50,#071D39 54%,#071426)!important;
-  border-color:rgba(203,213,225,.38)!important;
+  border-color:rgba(234,217,200,.38)!important;
 }
 body[data-theme="christmas"] .card-safe-wrapper h2,
 body[data-theme="christmas"] .card-safe-wrapper h3,
@@ -2289,12 +2289,12 @@ body[data-theme="christmas"] .card-safe-wrapper span{
 body[data-theme="christmas"] .card-safe-wrapper [class*="text-red"],
 body[data-theme="christmas"] .card-safe-wrapper [class*="text-blue"],
 body[data-theme="christmas"] .card-safe-wrapper [class*="text-green"]{
-  color:#BFDBFE!important;
+  color:#F3D9A4!important;
 }
 body[data-theme="christmas"] .card-safe-wrapper .season-btn{
   color:#fff!important;
-  background:linear-gradient(105deg,#1E4FBF,#2563EB 48%,#718096)!important;
-  border-color:rgba(226,232,240,.52)!important;
+  background:linear-gradient(105deg,#1E4FBF,#C8283F 48%,#718096)!important;
+  border-color:rgba(243,230,200,.52)!important;
 }
 
 /* CALENDARIO: quita marco rojo y azul eléctrico */
@@ -2306,9 +2306,9 @@ body[data-theme="christmas"] #calendar-section{
 body[data-theme="christmas"] #calendar-section > div,
 body[data-theme="christmas"] #calendar-section .glass-panel{
   background:
-    radial-gradient(circle at 92% 5%,rgba(147,197,253,.12),transparent 28%),
+    radial-gradient(circle at 92% 5%,rgba(226,184,92,.12),transparent 28%),
     linear-gradient(155deg,#0A2A50,#071D39 55%,#071426)!important;
-  border-color:rgba(203,213,225,.42)!important;
+  border-color:rgba(234,217,200,.42)!important;
   box-shadow:0 22px 55px rgba(0,0,0,.38),inset 0 1px rgba(255,255,255,.08)!important;
 }
 body[data-theme="christmas"] #calendar-section h2,
@@ -2319,28 +2319,28 @@ body[data-theme="christmas"] #calendar-section h4{
   background:none!important;
 }
 body[data-theme="christmas"] #calendar-section button{
-  border-color:rgba(203,213,225,.26)!important;
+  border-color:rgba(234,217,200,.26)!important;
 }
 body[data-theme="christmas"] #calendar-section [class*="bg-red"],
 body[data-theme="christmas"] #calendar-section [class*="bg-rose"],
 body[data-theme="christmas"] #calendar-section [class*="bg-blue"]{
-  background:linear-gradient(135deg,#1E4FBF,#3B82F6)!important;
+  background:linear-gradient(135deg,#1E4FBF,#D3324A)!important;
   color:#fff!important;
 }
 body[data-theme="christmas"] #calendar-section [class*="text-red"],
 body[data-theme="christmas"] #calendar-section [class*="text-blue"]{
-  color:#BFDBFE!important;
+  color:#F3D9A4!important;
 }
 body[data-theme="christmas"] #calendar-section [class*="border-red"],
 body[data-theme="christmas"] #calendar-section [class*="border-rose"]{
-  border-color:rgba(147,197,253,.42)!important;
+  border-color:rgba(226,184,92,.42)!important;
 }
 
 /* MENÚ MÓVIL: azul noche elegante, activos azul hielo */
 body[data-theme="christmas"] #mobileMenu,
 body[data-theme="christmas"] #mobileMenuPanel{
-  background:linear-gradient(165deg,#071D39 0%,#061426 62%,#0B1324 100%)!important;
-  border-color:rgba(203,213,225,.30)!important;
+  background:linear-gradient(165deg,#071D39 0%,#1C0A10 62%,#0B1324 100%)!important;
+  border-color:rgba(234,217,200,.30)!important;
   color:#F8FAFC!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel h2,
@@ -2350,51 +2350,51 @@ body[data-theme="christmas"] #mobileMenuPanel strong{
 }
 body[data-theme="christmas"] #mobileMenuPanel button,
 body[data-theme="christmas"] #mobileMenuPanel a{
-  color:#E2E8F0!important;
-  border-color:rgba(203,213,225,.16)!important;
+  color:#F3E6C8!important;
+  border-color:rgba(234,217,200,.16)!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel button[class*="bg-red"],
 body[data-theme="christmas"] #mobileMenuPanel a[class*="bg-red"],
 body[data-theme="christmas"] #mobileMenuPanel button[class*="bg-rose"],
 body[data-theme="christmas"] #mobileMenuPanel a[class*="bg-rose"],
 body[data-theme="christmas"] #mobileMenuPanel .active{
-  background:linear-gradient(105deg,#1E4FBF,#2563EB 58%,#64748B)!important;
+  background:linear-gradient(105deg,#1E4FBF,#C8283F 58%,#64748B)!important;
   color:#fff!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel [class*="bg-red"],
 body[data-theme="christmas"] #mobileMenuPanel [class*="bg-rose"]{
-  background:linear-gradient(145deg,#2563EB,#64748B)!important;
+  background:linear-gradient(145deg,#C8283F,#64748B)!important;
   color:#fff!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel [class*="text-red"],
 body[data-theme="christmas"] #mobileMenuPanel [class*="text-blue"]{
-  color:#BFDBFE!important;
+  color:#F3D9A4!important;
 }
 
 /* Estados del calendario: conservan significado pero armonizados */
 body[data-theme="christmas"] .calendar-day.available,
 body[data-theme="christmas"] [data-status="available"]{
-  background:rgba(37,99,235,.16)!important;
-  border-color:#60A5FA!important;
+  background:rgba(200,40,63,.16)!important;
+  border-color:#F0C76A!important;
   color:#F8FAFC!important;
 }
 body[data-theme="christmas"] .calendar-day.limited,
 body[data-theme="christmas"] [data-status="limited"]{
-  background:rgba(148,163,184,.15)!important;
-  border-color:#94A3B8!important;
-  color:#E2E8F0!important;
+  background:rgba(226,184,92,.15)!important;
+  border-color:#E2B85C!important;
+  color:#F3E6C8!important;
 }
 body[data-theme="christmas"] .calendar-day.full,
 body[data-theme="christmas"] [data-status="full"]{
   background:rgba(71,85,105,.20)!important;
   border-color:#64748B!important;
-  color:#CBD5E1!important;
+  color:#EAD9C8!important;
 }
 
 /* Bordes decorativos inferiores: plata/hielo */
 body[data-theme="christmas"] footer,
 body[data-theme="christmas"] #home-reviews-wrapper{
-  border-color:rgba(203,213,225,.24)!important;
+  border-color:rgba(234,217,200,.24)!important;
 }
 
 /* --- CSS consolidado: diverty-christmas-final-clean-v4 --- */
@@ -2405,19 +2405,19 @@ html.diverty-booting body,
 body[data-theme="christmas"],
 body[data-theme="christmas"] #themeBootLoader{
   background:
-    radial-gradient(circle at 20% 18%,rgba(59,130,246,.20),transparent 28%),
-    radial-gradient(circle at 82% 82%,rgba(148,163,184,.13),transparent 30%),
-    linear-gradient(160deg,#061426 0%,#071D39 52%,#0B1324 100%)!important;
+    radial-gradient(circle at 20% 18%,rgba(211,50,74,.20),transparent 28%),
+    radial-gradient(circle at 82% 82%,rgba(226,184,92,.13),transparent 30%),
+    linear-gradient(160deg,#1C0A10 0%,#071D39 52%,#0B1324 100%)!important;
 }
 #themeBootLoader{
   background:
-    radial-gradient(circle at 20% 18%,rgba(59,130,246,.18),transparent 28%),
-    radial-gradient(circle at 82% 82%,rgba(148,163,184,.12),transparent 30%),
-    linear-gradient(160deg,#061426,#071D39 55%,#0B1324)!important;
+    radial-gradient(circle at 20% 18%,rgba(211,50,74,.18),transparent 28%),
+    radial-gradient(circle at 82% 82%,rgba(226,184,92,.12),transparent 30%),
+    linear-gradient(160deg,#1C0A10,#071D39 55%,#0B1324)!important;
 }
 #themeBootLoader > div{
   background:linear-gradient(155deg,rgba(10,42,80,.88),rgba(7,20,38,.92))!important;
-  border-color:rgba(203,213,225,.30)!important;
+  border-color:rgba(234,217,200,.30)!important;
   box-shadow:0 20px 55px rgba(0,0,0,.42),inset 0 1px rgba(255,255,255,.10)!important;
 }
 
@@ -2425,16 +2425,16 @@ body[data-theme="christmas"] #themeBootLoader{
 body[data-theme="christmas"] #mobileMenu,
 body[data-theme="christmas"] #mobileMenuPanel,
 body[data-theme="christmas"] #mobileMenu > div{
-  background:linear-gradient(165deg,#081D38 0%,#061426 64%,#0B1324 100%)!important;
-  background-color:#061426!important;
-  border-color:rgba(203,213,225,.28)!important;
+  background:linear-gradient(165deg,#081D38 0%,#1C0A10 64%,#0B1324 100%)!important;
+  background-color:#1C0A10!important;
+  border-color:rgba(234,217,200,.28)!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel::before{
-  background:linear-gradient(90deg,#2563EB,#E2E8F0,#60A5FA,#CBD5E1)!important;
+  background:linear-gradient(90deg,#C8283F,#F3E6C8,#F0C76A,#EAD9C8)!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel a,
 body[data-theme="christmas"] #mobileMenuPanel button{
-  color:#E2E8F0!important;
+  color:#F3E6C8!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel a > div,
 body[data-theme="christmas"] #mobileMenuPanel button > div,
@@ -2443,18 +2443,18 @@ body[data-theme="christmas"] #mobileMenuPanel [class*="bg-rose"],
 body[data-theme="christmas"] #mobileMenuPanel [class*="bg-pink"]{
   background:linear-gradient(145deg,#173D70,#315B8E)!important;
   background-color:#173D70!important;
-  border-color:rgba(203,213,225,.34)!important;
+  border-color:rgba(234,217,200,.34)!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel .active,
 body[data-theme="christmas"] #mobileMenuPanel [aria-current="page"],
 body[data-theme="christmas"] #mobileMenuPanel a:hover{
-  background:linear-gradient(105deg,rgba(37,99,235,.92),rgba(100,116,139,.88))!important;
+  background:linear-gradient(105deg,rgba(200,40,63,.92),rgba(100,116,139,.88))!important;
   color:#fff!important;
 }
 body[data-theme="christmas"] #mobileMenuPanel [class*="text-red"],
 body[data-theme="christmas"] #mobileMenuPanel [class*="text-blue"],
 body[data-theme="christmas"] #mobileMenuPanel [class*="text-green"]{
-  color:#BFDBFE!important;
+  color:#F3D9A4!important;
 }
 
 /* 3. CALENDARIO: sin rojo */
@@ -2465,22 +2465,22 @@ body[data-theme="christmas"] #calendar-section [class*="bg-rose"]{
 }
 body[data-theme="christmas"] #calendar-section [class*="bg-red"],
 body[data-theme="christmas"] #calendar-section [class*="bg-rose"]{
-  background-image:linear-gradient(105deg,#1E4FBF,#3B82F6 55%,#64748B)!important;
+  background-image:linear-gradient(105deg,#1E4FBF,#D3324A 55%,#64748B)!important;
 }
 body[data-theme="christmas"] #calendar-section [class*="text-red"],
 body[data-theme="christmas"] #calendar-section [class*="text-rose"],
 body[data-theme="christmas"] #calendar-section [class*="text-blue"]{
-  color:#BFDBFE!important;
+  color:#F3D9A4!important;
 }
 body[data-theme="christmas"] #calendar-section [class*="border-red"],
 body[data-theme="christmas"] #calendar-section [class*="border-rose"]{
-  border-color:rgba(147,197,253,.46)!important;
+  border-color:rgba(226,184,92,.46)!important;
 }
 
 /* Cabecera del mes */
 body[data-theme="christmas"] #calendar-section .calendar-header,
 body[data-theme="christmas"] #calendar-section [class*="rounded"][class*="p-"][class*="flex"]{
-  border-color:rgba(203,213,225,.30)!important;
+  border-color:rgba(234,217,200,.30)!important;
 }
 
 /* Días seleccionables / seleccionado */
@@ -2490,17 +2490,17 @@ body[data-theme="christmas"] #calendar-section button:not(:disabled){
 body[data-theme="christmas"] #calendar-section button[class*="bg-red"],
 body[data-theme="christmas"] #calendar-section button[class*="bg-rose"],
 body[data-theme="christmas"] #calendar-section button[class*="bg-blue"]{
-  background:linear-gradient(145deg,#2563EB,#64748B)!important;
-  border-color:#93C5FD!important;
+  background:linear-gradient(145deg,#C8283F,#64748B)!important;
+  border-color:#F0C76A!important;
   color:#fff!important;
-  box-shadow:0 0 0 1px rgba(226,232,240,.14),0 7px 18px rgba(37,99,235,.22)!important;
+  box-shadow:0 0 0 1px rgba(243,230,200,.14),0 7px 18px rgba(200,40,63,.22)!important;
 }
 
 /* Leyenda inferior: disponible pasa a hielo/azul, sin rojo */
 body[data-theme="christmas"] #calendar-section [class*="rounded-full"][class*="bg-red"],
 body[data-theme="christmas"] #calendar-section [class*="rounded-full"][class*="bg-rose"]{
-  background:#2563EB!important;
-  border-color:#60A5FA!important;
+  background:#C8283F!important;
+  border-color:#F0C76A!important;
   color:#F8FAFC!important;
 }
 
@@ -2538,7 +2538,7 @@ html.diverty-booting body > :not(#themeBootLoader){
   /* Fondo neutro mientras Firebase todavía no ha respondido. */
   background:
     radial-gradient(circle at 50% 38%,rgba(124,58,237,.16),transparent 34%),
-    linear-gradient(155deg,#111827,#0b1220 60%,#111827)!important;
+    linear-gradient(155deg,#111827,#1C0A10 60%,#111827)!important;
 }
 
 /* HALLOWEEN */
@@ -2552,9 +2552,9 @@ html[data-cached-theme="halloween"] #themeBootLoader{
 /* NAVIDAD */
 html[data-cached-theme="christmas"] #themeBootLoader{
   background:
-    radial-gradient(circle at 20% 18%,rgba(59,130,246,.18),transparent 28%),
-    radial-gradient(circle at 82% 82%,rgba(226,232,240,.12),transparent 30%),
-    linear-gradient(160deg,#061426 0%,#071d39 52%,#0b1324 100%)!important;
+    radial-gradient(circle at 20% 18%,rgba(211,50,74,.18),transparent 28%),
+    radial-gradient(circle at 82% 82%,rgba(243,230,200,.12),transparent 30%),
+    linear-gradient(160deg,#1C0A10 0%,#071d39 52%,#0b1324 100%)!important;
 }
 
 /* VERANO */
@@ -2568,7 +2568,7 @@ html[data-cached-theme="summer"] #themeBootLoader{
 /* ESCOLAR */
 html[data-cached-theme="school"] #themeBootLoader{
   background:
-    radial-gradient(circle at 82% 18%,rgba(37,99,235,.12),transparent 28%),
+    radial-gradient(circle at 82% 18%,rgba(200,40,63,.12),transparent 28%),
     radial-gradient(circle at 15% 82%,rgba(249,115,22,.12),transparent 30%),
     linear-gradient(145deg,#fffdf6,#f4f7ff 58%,#fff4cf)!important;
 }
@@ -2773,7 +2773,7 @@ html[data-cached-theme="school"] #themeBootLoader{
     display:flex;
     align-items:center;
     justify-content:center;
-    box-shadow:0 5px 14px rgba(15,23,42,.08);
+    box-shadow:0 5px 14px rgba(30,6,12,.08);
     transition:transform .18s ease,background .18s ease,border-color .18s ease;
 }
 
@@ -3361,7 +3361,7 @@ body[data-theme="halloween"] #cartModal .cart-empty-state{
       linear-gradient(180deg,#0d0914,#080711)!important;
 }
 body[data-theme="halloween"] #cartModal .cart-empty-state h3{color:#fff!important;}
-body[data-theme="halloween"] #cartModal .cart-empty-state p{color:#cbd5e1!important;}
+body[data-theme="halloween"] #cartModal .cart-empty-state p{color:#EAD9C8!important;}
 
 /* Catálogo general real */
 .catalog-loading-light,.catalog-empty-light{
@@ -3770,8 +3770,8 @@ body.cart-open #hero-video{
 /* Una sola superficie limpia para la barra. */
 body[data-theme="christmas"] #mainHeader,
 body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader{
-    background:linear-gradient(155deg,rgba(5,24,48,.985),rgba(6,20,38,.985))!important;
-    border:1px solid rgba(203,213,225,.28)!important;
+    background:linear-gradient(155deg,rgba(5,24,48,.985),rgba(28,10,16,.985))!important;
+    border:1px solid rgba(234,217,200,.28)!important;
     box-shadow:0 12px 30px rgba(0,0,0,.34)!important;
     outline:none!important;
 }
@@ -3814,7 +3814,7 @@ body[data-theme="christmas"] #mainHeader #mainHeaderLogo{
 body[data-theme="christmas"] #mainHeader #mobileToggle,
 body[data-theme="christmas"] #mainHeader #viewCart{
     background:rgba(248,250,252,.94)!important;
-    border:1px solid rgba(203,213,225,.52)!important;
+    border:1px solid rgba(234,217,200,.52)!important;
     box-shadow:0 7px 18px rgba(0,0,0,.18)!important;
 }
 body[data-theme="christmas"] #mainHeader #mobileToggle svg,
@@ -3840,10 +3840,10 @@ body[data-theme="christmas"] #mainHeader #viewCart svg{
 
 /* En Navidad la etiqueta sigue la paleta azul/hielo/plata y gana contraste. */
 body[data-theme="christmas"] .campaign-featured-card-wrap > .campaign-featured-badge{
-    background:linear-gradient(105deg,#1D4ED8,#2563EB 48%,#64748B)!important;
+    background:linear-gradient(105deg,#B3172E,#C8283F 48%,#64748B)!important;
     color:#fff!important;
     border-color:rgba(248,250,252,.72)!important;
-    box-shadow:0 8px 24px rgba(2,10,24,.46),0 0 16px rgba(96,165,250,.18)!important;
+    box-shadow:0 8px 24px rgba(2,10,24,.46),0 0 16px rgba(226,184,92,.18)!important;
 }
 
 /* La imagen comienza debajo de la etiqueta, no detrás de ella. */
@@ -3991,8 +3991,8 @@ body[data-theme="christmas"] .campaign-featured-card-wrap > .campaign-featured-b
 
 /* Navidad: contraste hielo/blanco sobre azul oscuro. */
 body[data-theme="christmas"] #home-campaigns-wrapper .campaign-main-title{
-    background:linear-gradient(110deg,rgba(37,99,235,.20),rgba(100,116,139,.16))!important;
-    border-color:rgba(191,219,254,.32)!important;
+    background:linear-gradient(110deg,rgba(200,40,63,.20),rgba(100,116,139,.16))!important;
+    border-color:rgba(243,217,164,.32)!important;
     color:#F8FAFC!important;
     -webkit-text-fill-color:#F8FAFC!important;
 }

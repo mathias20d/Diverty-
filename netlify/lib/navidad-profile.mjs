@@ -25,6 +25,11 @@ export function profileInput(data = {}) {
     if (!Number.isInteger(n) || n < 1 || n > 20) throw fail('INVALID_REQUEST');
     out.capacidadSanta = n;
   }
+  if (data.maxNinos !== undefined) {
+    const n = Number(data.maxNinos);
+    if (!Number.isInteger(n) || n < 1 || n > 50) throw fail('INVALID_REQUEST');
+    out.maxNinos = n;
+  }
   if (data.publicado !== undefined) {
     if (typeof data.publicado !== 'boolean') throw fail('INVALID_REQUEST');
     out.publicado = data.publicado;
@@ -57,6 +62,7 @@ export async function saveProfile(database, scope, data, now = new Date()) {
       telefonoEmpresa: input.telefonoEmpresa ?? current.telefonoEmpresa ?? '',
       publicado: input.publicado ?? current.publicado === true,
       capacidadSanta: input.capacidadSanta ?? (Number.isInteger(current.capacidadSanta) ? current.capacidadSanta : 1),
+      ...(input.maxNinos !== undefined || Number.isInteger(current.maxNinos) ? { maxNinos: input.maxNinos ?? current.maxNinos } : {}),
       centralBookingValidation: true,
       whatsappBookingEnabled: false,
       updatedAt: stamp,
@@ -79,5 +85,5 @@ export async function saveProfile(database, scope, data, now = new Date()) {
     slug = owner.exists ? owner.data().slug || '' : '';
     if (!slug) slug = await autoSlug(database, scope.uid, scope.base, saved.nombreEmpresa).catch(() => '');
   }
-  return { publicado: saved.publicado, nombreEmpresa: saved.nombreEmpresa, telefonoEmpresa: saved.telefonoEmpresa, capacidadSanta: saved.capacidadSanta, slug };
+  return { publicado: saved.publicado, nombreEmpresa: saved.nombreEmpresa, telefonoEmpresa: saved.telefonoEmpresa, capacidadSanta: saved.capacidadSanta, maxNinos: saved.maxNinos ?? 2, slug };
 }

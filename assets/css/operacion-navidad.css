@@ -145,3 +145,69 @@ body[data-theme="christmas"] #christmas-services .group{border-radius:var(--xn-r
 body[data-theme="christmas"] .whatsapp-btn{box-shadow:0 12px 28px -10px rgba(16,24,40,.45)}
 
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ==== Paleta única de Operación Navidad (diseño 2026-11) ====
+   Vino oscuro arriba y abajo, rojo navideño en acciones, dorado en detalles y crema cálido de fondo.
+   Se impone sobre el tema guardado en la base (antes azul marino). */
+html body[data-theme]{
+  --s-primary:#C8283F!important;--s-secondary:#E2B85C!important;--s-accent:#F3E6C8!important;
+  --s-bg-color:#1C0A10!important;--s-overlay:rgba(28,10,16,.84)!important;
+  --s-glass-bg:rgba(58,16,26,.88)!important;--s-glass-border:rgba(226,184,92,.24)!important;
+  --s-text-title:#FFF8EE!important;--s-text-muted:#EAD9C8!important;
+  --s-btn-grad:linear-gradient(135deg,#D3324A,#8E1428)!important;--s-button-text:#FFFFFF!important;
+  --xn-accent:#B3172E;--xn-accent-deep:#4A0811;--xn-accent-mid:#7E1120;
+  --xn-pine:#1F5C3F;--xn-cream:#FBF6EE;
+}
+html body[data-theme="christmas"] #mainHeader,html body[data-theme="christmas"] #headerWrapper.scrolled #mainHeader{background:linear-gradient(180deg,rgba(58,9,19,.97),rgba(40,7,14,.95))!important;border-color:rgba(226,184,92,.28)!important;box-shadow:0 12px 34px rgba(30,4,10,.45),inset 0 -1px rgba(226,184,92,.18)!important}
+html body[data-theme="christmas"] .glass-panel{background:linear-gradient(155deg,rgba(70,14,26,.95),rgba(44,8,16,.97) 62%,rgba(30,6,12,.97))!important;border-color:rgba(226,184,92,.26)!important;box-shadow:0 24px 60px rgba(30,4,10,.45),inset 0 1px rgba(255,255,255,.08)!important}
+html body[data-theme="christmas"] footer.glass-panel{background:linear-gradient(170deg,#4A0811 0%,#2E060D 70%,#1C0A10 100%)!important;border-top:3px solid #E2B85C!important}
+/* Portada (hero) en rojo vino con brillo dorado, sin azul. */
+html body .christmas-landing{background:radial-gradient(120% 140% at 85% 0%,rgba(226,184,92,.30) 0%,transparent 46%),linear-gradient(140deg,#4A0811 0%,#8E1428 55%,#B3172E 100%)!important}
+html body .christmas-services,html body .christmas-how{background:transparent}
+html body main#mainContent:has(.christmas-landing){background:var(--xn-cream)}
+.christmas-kicker{color:#B3172E!important;letter-spacing:.14em}
+
+/* ==== Tarjeta de catálogo ==== */
+.xn-card{border-radius:24px;border:1px solid rgba(126,17,32,.10);box-shadow:0 1px 2px rgba(74,8,17,.06),0 18px 40px -22px rgba(74,8,17,.35);background:#fff}
+.xn-card:hover{transform:translateY(-3px);box-shadow:0 1px 2px rgba(74,8,17,.06),0 28px 56px -24px rgba(74,8,17,.45)}
+.xn-card-media{aspect-ratio:4/3;max-height:none}
+.xn-card-media:after{content:'';position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(180deg,transparent,rgba(28,6,12,.55));pointer-events:none}
+.xn-card-placeholder{position:absolute;inset:0;display:grid;place-items:center;font-size:64px}
+.xn-card-date{position:absolute;left:14px;bottom:14px;z-index:1;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.95);color:#4A0811;font-size:13px;font-weight:800;letter-spacing:.01em;box-shadow:0 6px 16px -8px rgba(0,0,0,.5)}
+.xn-card-badge{top:14px;left:auto;right:14px;background:#E2B85C!important;color:#4A0811!important;-webkit-text-fill-color:#4A0811!important}
+.xn-card-body{gap:12px;padding:22px 24px 24px}
+.xn-card-kicker{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#B3172E}
+.xn-card h3{font-size:23px;margin-top:-4px}
+.xn-card-desc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.xn-card-label{margin:4px 0 -4px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#7E1120}
+.xn-card-list{gap:9px}
+.xn-card-list svg{background:#FBF1DC;color:#9A6B12}
+.xn-card-more summary{color:#B3172E}
+.xn-card-meta{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 0;padding:0;list-style:none}
+.xn-card-meta li{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;background:#FBF6EE;border:1px solid #F1E3CC;font-size:12.5px;font-weight:700;color:#5B3A1A}
+.xn-card-meta svg,.xn-card-meta i{width:14px;height:14px;color:#B3172E}
+.xn-card-foot{flex-direction:column;align-items:stretch;gap:14px;padding-top:18px;border-top:1px dashed #EADBC4}
+.xn-card-price{grid-auto-flow:row}
+.xn-card-price span{font-size:30px}
+html body .xn-card-book{width:100%;min-height:54px;border-radius:16px;font-size:16.5px;background:linear-gradient(135deg,#D3324A,#8E1428)!important;box-shadow:0 14px 28px -14px rgba(142,20,40,.85)!important}
+html body .xn-card-price span{color:#4A0811!important;-webkit-text-fill-color:#4A0811!important}
+/* Un solo servicio: tarjeta destacada horizontal en pantallas anchas. */
+@media(min-width:860px){
+  .christmas-grid:has(.xn-card--feature){grid-template-columns:1fr;max-width:980px}
+  .xn-card--feature{flex-direction:row}
+  .xn-card--feature .xn-card-media{flex:0 0 48%;aspect-ratio:auto;min-height:440px}
+  .xn-card--feature .xn-card-body{padding:30px 32px}
+  .xn-card--feature .xn-card-foot{flex-direction:row;align-items:center}
+  .xn-card--feature .xn-card-book{width:auto;flex:0 0 auto;padding:12px 28px}
+}
+html body .xn-card-label{color:#7E1120!important;-webkit-text-fill-color:#7E1120!important}
+html body .xn-card-meta li{color:#5B3A1A!important;-webkit-text-fill-color:#5B3A1A!important}
+html body .xn-card-date{color:#4A0811!important;-webkit-text-fill-color:#4A0811!important}
+html body .xn-card-kicker{color:#B3172E!important;-webkit-text-fill-color:#B3172E!important}
+
+/* ==== Flujo «Reservar ahora» con la misma identidad (vino, dorado y rojo) ==== */
+html body[data-theme="christmas"] main#mainContent:not(:has(.christmas-landing)){background:radial-gradient(90% 60% at 100% 0%,rgba(226,184,92,.16) 0%,transparent 55%),linear-gradient(170deg,#3A0914 0%,#24060D 55%,#1C0A10 100%)!important}
+html body[data-theme="christmas"] .glass-panel.card-alive{background:radial-gradient(circle at 92% 4%,rgba(226,184,92,.16),transparent 30%),linear-gradient(150deg,#5A1020 0%,#3A0914 55%,#2A0710 100%)!important;background-color:#3A0914!important;border-color:rgba(226,184,92,.30)!important;box-shadow:0 24px 60px -20px rgba(10,2,4,.65),inset 0 1px rgba(255,255,255,.07)!important}
+html body[data-theme="christmas"] .season-btn:not(.christmas-cta){background:linear-gradient(135deg,#D3324A 0%,#B3172E 50%,#8E1428 100%)!important;color:#fff!important;-webkit-text-fill-color:#fff!important;border-color:transparent!important;box-shadow:0 14px 28px -14px rgba(211,50,74,.75)!important}
+html body[data-theme="christmas"] .season-text-primary{color:#F0C76A!important;-webkit-text-fill-color:#F0C76A!important}
+html body[data-theme="christmas"] input:focus,html body[data-theme="christmas"] select:focus,html body[data-theme="christmas"] textarea:focus{border-color:#E2B85C!important;box-shadow:0 0 0 3px rgba(226,184,92,.28)!important;outline:none}

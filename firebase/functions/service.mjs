@@ -1,5 +1,5 @@
 import {needsPlaceReference} from './location-reference.mjs';
-import {ADMIN_UID, fail, quoteBooking, checkAvailability, controlDates, projections, active, isSanta, resources} from './policy.mjs';
+import {ADMIN_UID, fail, quoteBooking, checkAvailability, controlDates, projections, active, isSanta, resources, maxChildren} from './policy.mjs';
 import {gps,addressGps} from './coverage.mjs';
 const base='artifacts/diverty-oficial/public/data';
 const configPath=`${base}/config_web/global`;
@@ -51,7 +51,7 @@ export function bookingService(db,clock=()=>new Date(),scope={}) {
         const event=quoteBooking(input,uid,products.map(s=>s.data()),couponSnap?.data(),payload.location,clock(),transportConfig);
         if(code)event.couponCode=code;
         const schedule=await loadSchedule(tx,event);
-        checkAvailability(event,schedule.rows,config);
+        if(isSanta(event)&&Number(event.ninos)>maxChildren(config))fail('INVALID_REQUEST','Esta empresa atiende hasta '+maxChildren(config)+' niños por visita.');checkAvailability(event,schedule.rows,config);
         commit(tx,event,schedule,config);
         return {event,recovered:false};
       });

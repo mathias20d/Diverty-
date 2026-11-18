@@ -57,3 +57,19 @@ test('only the owner of the account can change its profile', async () => {
   assert.equal((await call('ownerA', 'ownerA')).status, 200);
   assert.equal(db.rows.get(base + '/config_web/global').nombreEmpresa, 'Nuevo');
 });
+
+test('each company chooses how many children a Santa visit serves (default 2)', async () => {
+  const { maxChildren } = await import('../firebase/functions/policy.mjs');
+  assert.equal(maxChildren({}), 2);
+  assert.equal(maxChildren({ maxNinos: 5 }), 5);
+  assert.equal(maxChildren({ maxNinos: 0 }), 2);
+  assert.equal(maxChildren({ maxNinos: 99 }), 2);
+  assert.throws(() => profileInput({ maxNinos: 0 }), e => e.reason === 'INVALID_REQUEST');
+  const db = fakeDb();
+  db.rows.set(base + '/config_web/global', { nombreEmpresa: 'Santa', publicado: false, capacidadSanta: 1 });
+  const saved = await saveProfile(db, scope, { maxNinos: 6 });
+  assert.equal(saved.maxNinos, 6);
+  assert.equal(db.rows.get(base + '/config_web/global').maxNinos, 6);
+  await saveProfile(db, scope, { nombreEmpresa: 'Otro nombre' });
+  assert.equal(db.rows.get(base + '/config_web/global').maxNinos, 6);
+});

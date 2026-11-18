@@ -11,6 +11,9 @@ const norm=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLo
 const cents=v=>Math.round(Number(v)*100);
 const amount=v=>(v/100).toFixed(2);
 export const active=e=>e && !e.deletedLocally && !/cancelad|rechaz|cot/i.test(e.estado||'');
+// Niños por visita de Santa: cada empresa elige su máximo (config_web/global.maxNinos); 2 si no lo configuró.
+export const MAX_CHILDREN_LIMIT=50;
+export const maxChildren=config=>{const n=Number(config?.maxNinos);return Number.isInteger(n)&&n>=1&&n<=MAX_CHILDREN_LIMIT?n:2;};
 export const isSanta=e=>e?.esNavidad===true || /entregas de nochebuena/i.test(e?.servicio||'');
 export function resources(event) {
   const r=event.resourceRequirements||{};
@@ -72,7 +75,7 @@ export function quoteBooking(input,uid,products,coupon,point,now=new Date(),tran
   if(durationMinutes>1440||animadores>100||payasos>100)fail('INVALID_QUANTITY','Esta duración o cantidad necesita una cotización personalizada.');
   const santa=products.some(p=>p.esNavidad===true||norm(p.recursoNavidad)==='santa'||/noche\s*buena|entregas?\s+(?:de\s+)?(?:regalos?|santa)|entrega\s+con\s+santa|(?:santa.*(?:visita|regalo|entrega)|(?:visita|regalo|entrega).*santa)/i.test([p.nombre,p.titulo,p.descripcion,p.subtitulo,p.serviciosLista,...(p.incluye||[])].join(' ')));
   if(Boolean(input.esNavidad)!==santa)fail('INVALID_REQUEST','Revisa el tipo de reserva.');
-  if(santa){const minutes=Number(input.hora.slice(0,2))*60+Number(input.hora.slice(3));if(!['2026-12-24','2026-12-25'].includes(input.fecha)||minutes%30!==0||(input.fecha==='2026-12-24'&&minutes<960)||(input.fecha==='2026-12-25'&&minutes>840)||![1,2].includes(Number(input.ninos)))fail('INVALID_REQUEST','Revisa la fecha, hora y niños de la visita de Santa.');}
+  if(santa){const minutes=Number(input.hora.slice(0,2))*60+Number(input.hora.slice(3));if(!['2026-12-24','2026-12-25'].includes(input.fecha)||minutes%30!==0||(input.fecha==='2026-12-24'&&minutes<960)||(input.fecha==='2026-12-25'&&minutes>840)||!(Number.isInteger(Number(input.ninos))&&Number(input.ninos)>=1&&Number(input.ninos)<=MAX_CHILDREN_LIMIT))fail('INVALID_REQUEST','Revisa la fecha, hora y niños de la visita de Santa.');}
   else if(['2026-12-24','2026-12-25'].includes(input.fecha))fail('INVALID_REQUEST','Esa fecha está reservada para entregas de Santa.');
   let discount=0;
   if(coupon){if(coupon.activo!==true||!['percent','fixed'].includes(coupon.type)||!Number.isFinite(Number(coupon.discount))||Number(coupon.discount)<0)fail('COUPON_UNAVAILABLE','El cupón ya no está disponible.');discount=Math.min(subtotal,coupon.type==='percent'?Math.round(subtotal*Number(coupon.discount)/100):cents(coupon.discount));}
