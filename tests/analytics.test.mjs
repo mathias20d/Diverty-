@@ -20,18 +20,18 @@ test('resolved routes count actual views, including Back, without counting reren
     'Catálogo | Diverty Panamá', 'Fiestas infantiles | Diverty Panamá', 'Mi reserva | Diverty Panamá',
   ]);
   assert.equal(events(calls).filter(call => call[1] === 'view_item').length, 1);
-  assert.equal(events(calls).at(-1)[2].page_referrer, 'https://divertypanama.netlify.app/?categoria=fiestas');
+  assert.equal(events(calls).at(-1)[2].page_referrer, 'https://entregasnavidad.netlify.app/?categoria=fiestas');
 });
 
 test('campaign attribution survives the first virtual view but unknown query data does not', () => {
-  const landing = 'https://divertypanama.netlify.app/?plan=secret&cliente=Cliente&telefono=60000000&utm_source=facebook&utm_medium=paid_social&utm_campaign=navidad_2026&utm_content=video_a#private';
+  const landing = 'https://entregasnavidad.netlify.app/?plan=secret&cliente=Cliente&telefono=60000000&utm_source=facebook&utm_medium=paid_social&utm_campaign=navidad_2026&utm_content=video_a#private';
   const safe = safeLandingUrl(landing);
-  assert.equal(safe, 'https://divertypanama.netlify.app/?utm_source=facebook&utm_medium=paid_social&utm_campaign=navidad_2026&utm_content=video_a');
+  assert.equal(safe, 'https://entregasnavidad.netlify.app/?utm_source=facebook&utm_medium=paid_social&utm_campaign=navidad_2026&utm_content=video_a');
   const { tracker, calls } = fixture({ landing, referrer: 'https://facebook.com/private?email=test@example.invalid' });
   tracker.view('detail', '', item); tracker.view('booking');
   assert.match(events(calls)[0][2].page_location, /plan=magia&utm_source=facebook/);
   assert.equal(events(calls)[0][2].page_referrer, 'https://facebook.com/');
-  assert.equal(events(calls).at(-1)[2].page_location, 'https://divertypanama.netlify.app/?vista=booking');
+  assert.equal(events(calls).at(-1)[2].page_location, 'https://entregasnavidad.netlify.app/?vista=booking');
   assert.doesNotMatch(JSON.stringify(calls), /secret|Cliente|60000000|test@example|#private/);
   assert.equal(new URL(safeLandingUrl('https://example.com/?utm_campaign=test@example.invalid&utm_content=telefono60000000')).search, '');
   assert.equal(safeReferrer('invalid'), '');
@@ -84,7 +84,7 @@ test('WhatsApp measurement accepts a fixed button position and never a message o
   assert.doesNotMatch(JSON.stringify(calls), /Private|60000000/);
 });
 
-function browserFixture({ hostname = 'divertypanama.netlify.app', preview = false, testMode = false, idle = true } = {}) {
+function browserFixture({ hostname = 'entregasnavidad.netlify.app', preview = false, testMode = false, idle = true } = {}) {
   const scripts = [], callbacks = [], listeners = {};
   const win = { location: { hostname, origin: 'https://' + hostname, href: 'https://' + hostname + '/?email=private@example.invalid&utm_source=facebook' },
     document: { referrer: 'https://google.com/search?q=private', createElement: () => ({}), head: { appendChild: script => scripts.push(script) }, addEventListener: (name, fn) => listeners[name] = fn },
